@@ -1,0 +1,40 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Build / deps
+node_modules
+dist
+dist-ssr
+*.tsbuildinfo
+*.local
+
+# Editor / OS
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Private notes, scratch, working docs — never committed
+# Anything matching these patterns stays out of the public repo by default.
+CLAUDE.local.md
+AGENTS.local.md
+NOTES.md
+PRIVATE.md
+SCRATCH.md
+TODO.local.md
+*.private.md
+*.private.txt
+.notes/
+.private/
+.scratch/
