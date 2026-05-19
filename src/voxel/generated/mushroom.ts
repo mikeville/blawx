@@ -7,58 +7,102 @@ export const term = "mushroom";
 const grid: VoxelGrid = {
   size: 8,
   voxels: [
-    { x: 3, y: 0, z: 3, color: 'white' },
-    { x: 4, y: 0, z: 3, color: 'white' },
-    { x: 3, y: 0, z: 4, color: 'white' },
-    { x: 4, y: 0, z: 4, color: 'white' },
-    { x: 2, y: 1, z: 3, color: 'white' },
-    { x: 3, y: 1, z: 3, color: 'white' },
-    { x: 4, y: 1, z: 3, color: 'white' },
-    { x: 5, y: 1, z: 3, color: 'white' },
-    { x: 2, y: 1, z: 4, color: 'white' },
-    { x: 3, y: 1, z: 4, color: 'white' },
-    { x: 4, y: 1, z: 4, color: 'white' },
-    { x: 5, y: 1, z: 4, color: 'white' },
-    { x: 3, y: 2, z: 3, color: 'white' },
-    { x: 4, y: 2, z: 3, color: 'white' },
-    { x: 3, y: 2, z: 4, color: 'white' },
-    { x: 4, y: 2, z: 4, color: 'white' },
+    { x: 3, y: 0, z: 3, color: 'lightGray' },
+    { x: 4, y: 0, z: 3, color: 'lightGray' },
+    { x: 3, y: 0, z: 4, color: 'lightGray' },
+    { x: 4, y: 0, z: 4, color: 'lightGray' },
+    { x: 3, y: 1, z: 3, color: 'lightGray' },
+    { x: 4, y: 1, z: 3, color: 'lightGray' },
+    { x: 3, y: 1, z: 4, color: 'lightGray' },
+    { x: 4, y: 1, z: 4, color: 'lightGray' },
+    { x: 2, y: 2, z: 2, color: 'lightGray' },
+    { x: 3, y: 2, z: 2, color: 'lightGray' },
+    { x: 4, y: 2, z: 2, color: 'lightGray' },
+    { x: 5, y: 2, z: 2, color: 'lightGray' },
+    { x: 2, y: 2, z: 3, color: 'lightGray' },
+    { x: 3, y: 2, z: 3, color: 'lightGray' },
+    { x: 4, y: 2, z: 3, color: 'lightGray' },
+    { x: 5, y: 2, z: 3, color: 'lightGray' },
+    { x: 2, y: 2, z: 4, color: 'lightGray' },
+    { x: 3, y: 2, z: 4, color: 'lightGray' },
+    { x: 4, y: 2, z: 4, color: 'lightGray' },
+    { x: 5, y: 2, z: 4, color: 'lightGray' },
+    { x: 2, y: 2, z: 5, color: 'lightGray' },
+    { x: 3, y: 2, z: 5, color: 'lightGray' },
+    { x: 4, y: 2, z: 5, color: 'lightGray' },
+    { x: 5, y: 2, z: 5, color: 'lightGray' },
+    { x: 1, y: 3, z: 1, color: 'red' },
+    { x: 2, y: 3, z: 1, color: 'white' },
+    { x: 3, y: 3, z: 1, color: 'red' },
+    { x: 4, y: 3, z: 1, color: 'red' },
+    { x: 5, y: 3, z: 1, color: 'white' },
+    { x: 6, y: 3, z: 1, color: 'red' },
+    { x: 1, y: 3, z: 2, color: 'white' },
+    { x: 2, y: 3, z: 2, color: 'white' },
+    { x: 3, y: 3, z: 2, color: 'red' },
+    { x: 4, y: 3, z: 2, color: 'red' },
+    { x: 5, y: 3, z: 2, color: 'white' },
+    { x: 6, y: 3, z: 2, color: 'white' },
+    { x: 1, y: 3, z: 3, color: 'red' },
+    { x: 2, y: 3, z: 3, color: 'red' },
     { x: 3, y: 3, z: 3, color: 'white' },
     { x: 4, y: 3, z: 3, color: 'white' },
+    { x: 5, y: 3, z: 3, color: 'red' },
+    { x: 6, y: 3, z: 3, color: 'red' },
+    { x: 1, y: 3, z: 4, color: 'red' },
+    { x: 2, y: 3, z: 4, color: 'red' },
     { x: 3, y: 3, z: 4, color: 'white' },
     { x: 4, y: 3, z: 4, color: 'white' },
+    { x: 5, y: 3, z: 4, color: 'red' },
+    { x: 6, y: 3, z: 4, color: 'red' },
+    { x: 1, y: 3, z: 5, color: 'white' },
+    { x: 2, y: 3, z: 5, color: 'white' },
+    { x: 3, y: 3, z: 5, color: 'red' },
+    { x: 4, y: 3, z: 5, color: 'red' },
+    { x: 5, y: 3, z: 5, color: 'white' },
+    { x: 6, y: 3, z: 5, color: 'white' },
+    { x: 1, y: 3, z: 6, color: 'red' },
+    { x: 2, y: 3, z: 6, color: 'white' },
+    { x: 3, y: 3, z: 6, color: 'red' },
+    { x: 4, y: 3, z: 6, color: 'red' },
+    { x: 5, y: 3, z: 6, color: 'white' },
+    { x: 6, y: 3, z: 6, color: 'red' },
+    { x: 1, y: 4, z: 1, color: 'red' },
     { x: 2, y: 4, z: 1, color: 'red' },
-    { x: 3, y: 4, z: 1, color: 'red' },
-    { x: 4, y: 4, z: 1, color: 'red' },
+    { x: 3, y: 4, z: 1, color: 'white' },
+    { x: 4, y: 4, z: 1, color: 'white' },
     { x: 5, y: 4, z: 1, color: 'red' },
+    { x: 6, y: 4, z: 1, color: 'red' },
     { x: 1, y: 4, z: 2, color: 'red' },
-    { x: 2, y: 4, z: 2, color: 'red' },
+    { x: 2, y: 4, z: 2, color: 'white' },
     { x: 3, y: 4, z: 2, color: 'red' },
     { x: 4, y: 4, z: 2, color: 'red' },
-    { x: 5, y: 4, z: 2, color: 'red' },
+    { x: 5, y: 4, z: 2, color: 'white' },
     { x: 6, y: 4, z: 2, color: 'red' },
-    { x: 1, y: 4, z: 3, color: 'red' },
+    { x: 1, y: 4, z: 3, color: 'white' },
     { x: 2, y: 4, z: 3, color: 'red' },
     { x: 3, y: 4, z: 3, color: 'red' },
     { x: 4, y: 4, z: 3, color: 'red' },
     { x: 5, y: 4, z: 3, color: 'red' },
-    { x: 6, y: 4, z: 3, color: 'red' },
-    { x: 1, y: 4, z: 4, color: 'red' },
+    { x: 6, y: 4, z: 3, color: 'white' },
+    { x: 1, y: 4, z: 4, color: 'white' },
     { x: 2, y: 4, z: 4, color: 'red' },
     { x: 3, y: 4, z: 4, color: 'red' },
     { x: 4, y: 4, z: 4, color: 'red' },
     { x: 5, y: 4, z: 4, color: 'red' },
-    { x: 6, y: 4, z: 4, color: 'red' },
+    { x: 6, y: 4, z: 4, color: 'white' },
     { x: 1, y: 4, z: 5, color: 'red' },
-    { x: 2, y: 4, z: 5, color: 'red' },
+    { x: 2, y: 4, z: 5, color: 'white' },
     { x: 3, y: 4, z: 5, color: 'red' },
     { x: 4, y: 4, z: 5, color: 'red' },
-    { x: 5, y: 4, z: 5, color: 'red' },
+    { x: 5, y: 4, z: 5, color: 'white' },
     { x: 6, y: 4, z: 5, color: 'red' },
+    { x: 1, y: 4, z: 6, color: 'red' },
     { x: 2, y: 4, z: 6, color: 'red' },
-    { x: 3, y: 4, z: 6, color: 'red' },
-    { x: 4, y: 4, z: 6, color: 'red' },
+    { x: 3, y: 4, z: 6, color: 'white' },
+    { x: 4, y: 4, z: 6, color: 'white' },
     { x: 5, y: 4, z: 6, color: 'red' },
+    { x: 6, y: 4, z: 6, color: 'red' },
     { x: 2, y: 5, z: 1, color: 'red' },
     { x: 3, y: 5, z: 1, color: 'red' },
     { x: 4, y: 5, z: 1, color: 'red' },
@@ -70,7 +114,7 @@ const grid: VoxelGrid = {
     { x: 5, y: 5, z: 2, color: 'red' },
     { x: 6, y: 5, z: 2, color: 'red' },
     { x: 1, y: 5, z: 3, color: 'red' },
-    { x: 2, y: 5, z: 3, color: 'white' },
+    { x: 2, y: 5, z: 3, color: 'red' },
     { x: 3, y: 5, z: 3, color: 'red' },
     { x: 4, y: 5, z: 3, color: 'red' },
     { x: 5, y: 5, z: 3, color: 'red' },
@@ -79,7 +123,7 @@ const grid: VoxelGrid = {
     { x: 2, y: 5, z: 4, color: 'red' },
     { x: 3, y: 5, z: 4, color: 'red' },
     { x: 4, y: 5, z: 4, color: 'red' },
-    { x: 5, y: 5, z: 4, color: 'white' },
+    { x: 5, y: 5, z: 4, color: 'red' },
     { x: 6, y: 5, z: 4, color: 'red' },
     { x: 1, y: 5, z: 5, color: 'red' },
     { x: 2, y: 5, z: 5, color: 'red' },
@@ -91,54 +135,6 @@ const grid: VoxelGrid = {
     { x: 3, y: 5, z: 6, color: 'red' },
     { x: 4, y: 5, z: 6, color: 'red' },
     { x: 5, y: 5, z: 6, color: 'red' },
-    { x: 2, y: 6, z: 1, color: 'red' },
-    { x: 3, y: 6, z: 1, color: 'red' },
-    { x: 4, y: 6, z: 1, color: 'red' },
-    { x: 5, y: 6, z: 1, color: 'red' },
-    { x: 1, y: 6, z: 2, color: 'red' },
-    { x: 2, y: 6, z: 2, color: 'red' },
-    { x: 3, y: 6, z: 2, color: 'white' },
-    { x: 4, y: 6, z: 2, color: 'red' },
-    { x: 5, y: 6, z: 2, color: 'red' },
-    { x: 6, y: 6, z: 2, color: 'red' },
-    { x: 1, y: 6, z: 3, color: 'red' },
-    { x: 2, y: 6, z: 3, color: 'red' },
-    { x: 3, y: 6, z: 3, color: 'red' },
-    { x: 4, y: 6, z: 3, color: 'red' },
-    { x: 5, y: 6, z: 3, color: 'red' },
-    { x: 6, y: 6, z: 3, color: 'red' },
-    { x: 1, y: 6, z: 4, color: 'red' },
-    { x: 2, y: 6, z: 4, color: 'red' },
-    { x: 3, y: 6, z: 4, color: 'red' },
-    { x: 4, y: 6, z: 4, color: 'red' },
-    { x: 5, y: 6, z: 4, color: 'red' },
-    { x: 6, y: 6, z: 4, color: 'red' },
-    { x: 1, y: 6, z: 5, color: 'red' },
-    { x: 2, y: 6, z: 5, color: 'red' },
-    { x: 3, y: 6, z: 5, color: 'red' },
-    { x: 4, y: 6, z: 5, color: 'red' },
-    { x: 5, y: 6, z: 5, color: 'red' },
-    { x: 6, y: 6, z: 5, color: 'red' },
-    { x: 2, y: 6, z: 6, color: 'red' },
-    { x: 3, y: 6, z: 6, color: 'red' },
-    { x: 4, y: 6, z: 6, color: 'red' },
-    { x: 5, y: 6, z: 6, color: 'red' },
-    { x: 2, y: 7, z: 2, color: 'red' },
-    { x: 3, y: 7, z: 2, color: 'red' },
-    { x: 4, y: 7, z: 2, color: 'red' },
-    { x: 5, y: 7, z: 2, color: 'red' },
-    { x: 2, y: 7, z: 3, color: 'red' },
-    { x: 3, y: 7, z: 3, color: 'red' },
-    { x: 4, y: 7, z: 3, color: 'red' },
-    { x: 5, y: 7, z: 3, color: 'red' },
-    { x: 2, y: 7, z: 4, color: 'red' },
-    { x: 3, y: 7, z: 4, color: 'red' },
-    { x: 4, y: 7, z: 4, color: 'red' },
-    { x: 5, y: 7, z: 4, color: 'red' },
-    { x: 2, y: 7, z: 5, color: 'red' },
-    { x: 3, y: 7, z: 5, color: 'red' },
-    { x: 4, y: 7, z: 5, color: 'red' },
-    { x: 5, y: 7, z: 5, color: 'red' },
   ],
 };
 
@@ -147,32 +143,32 @@ export default grid;
 /* pass 1 — silhouettes:
 front:
 ........
+........
 ..RRRR..
-.RRWRRR.
+.RRWWRR.
 .RWRRWR.
-.RRRRRR.
-...WW...
-...WW...
-..WWWW..
+..LLLL..
+...LL...
+...LL...
 
 side:
 ........
+........
 ..RRRR..
-.RRRRRR.
-.RRRRRR.
-.RRRRRR.
-...WW...
-...WW...
-..WWWW..
+.RRWWRR.
+.RWRRWR.
+..LLLL..
+...LL...
+...LL...
 
 top:
 ........
-..RRRR..
-.RRWRRR.
-.RWRRRR.
-.RRRRWR.
 .RRRRRR.
-..RRRR..
+.RRRRRR.
+.RRWWRR.
+.RRWWRR.
+.RRRRRR.
+.RRRRRR.
 ........
 */
 
@@ -181,72 +177,79 @@ y=0
 ........
 ........
 ........
-...WW...
-...WW...
+...LL...
+...LL...
 ........
 ........
 ........
+
 y=1
 ........
 ........
 ........
-..WWWW..
-..WWWW..
+...LL...
+...LL...
 ........
 ........
 ........
+
 y=2
 ........
 ........
+..LLLL..
+..LLLL..
+..LLLL..
+..LLLL..
 ........
-...WW...
-...WW...
 ........
-........
-........
+
 y=3
 ........
+.RWRRWR.
+.WWRRWW.
+.RRWWRR.
+.RRWWRR.
+.WWRRWW.
+.RWRRWR.
 ........
-........
-...WW...
-...WW...
-........
-........
-........
+
 y=4
 ........
-..RRRR..
-.RRRRRR.
-.RRRRRR.
-.RRRRRR.
-.RRRRRR.
-..RRRR..
+.RRWWRR.
+.RWRRWR.
+.WRRRRW.
+.WRRRRW.
+.RWRRWR.
+.RRWWRR.
 ........
+
 y=5
 ........
 ..RRRR..
 .RRRRRR.
-.RWRRRR.
-.RRRRWR.
+.RRRRRR.
+.RRRRRR.
 .RRRRRR.
 ..RRRR..
 ........
+
 y=6
 ........
-..RRRR..
-.RRWRRR.
-.RRRRRR.
-.RRRRRR.
-.RRRRRR.
-..RRRR..
 ........
+........
+........
+........
+........
+........
+........
+
 y=7
 ........
 ........
-..RRRR..
-..RRRR..
-..RRRR..
-..RRRR..
+........
+........
+........
+........
 ........
 ........
 */

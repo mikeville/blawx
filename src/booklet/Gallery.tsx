@@ -2,6 +2,8 @@ import { useState } from 'react';
 import type { Brick, VoxelGrid } from '../voxel/types.ts';
 import { Scene } from '../render/Scene.tsx';
 import { sampleDuck } from '../voxel/sampleDuck.ts';
+import { sampleTree } from '../voxel/sampleTree.ts';
+import { sampleHouse } from '../voxel/sampleHouse.ts';
 import { rotateGrid, type Rotation } from '../voxel/transform.ts';
 import { analyze, type Connectivity } from '../voxel/analyze.ts';
 
@@ -41,6 +43,8 @@ function loadEntries(): Entry[] {
     });
   }
   entries.push({ term: 'duck (reference)', grid: sampleDuck });
+  entries.push({ term: 'tree (reference)', grid: sampleTree });
+  entries.push({ term: 'house (reference)', grid: sampleHouse });
   entries.sort((a, b) => a.term.localeCompare(b.term));
   return entries;
 }

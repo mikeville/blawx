@@ -7,78 +7,116 @@ export const term = "fox";
 const grid: VoxelGrid = {
   size: 8,
   voxels: [
-    { x: 3, y: 0, z: 4, color: 'white' },
-    { x: 4, y: 0, z: 4, color: 'white' },
-    { x: 3, y: 0, z: 5, color: 'white' },
-    { x: 4, y: 0, z: 5, color: 'white' },
+    { x: 2, y: 0, z: 3, color: 'red' },
+    { x: 3, y: 0, z: 3, color: 'red' },
+    { x: 4, y: 0, z: 3, color: 'red' },
+    { x: 5, y: 0, z: 3, color: 'red' },
+    { x: 2, y: 0, z: 4, color: 'red' },
+    { x: 3, y: 0, z: 4, color: 'red' },
+    { x: 4, y: 0, z: 4, color: 'red' },
+    { x: 5, y: 0, z: 4, color: 'red' },
+    { x: 2, y: 0, z: 6, color: 'red' },
+    { x: 3, y: 0, z: 6, color: 'red' },
+    { x: 4, y: 0, z: 6, color: 'red' },
+    { x: 5, y: 0, z: 6, color: 'red' },
+    { x: 2, y: 0, z: 7, color: 'red' },
+    { x: 3, y: 0, z: 7, color: 'red' },
+    { x: 4, y: 0, z: 7, color: 'red' },
+    { x: 5, y: 0, z: 7, color: 'red' },
+    { x: 2, y: 1, z: 3, color: 'red' },
+    { x: 3, y: 1, z: 3, color: 'red' },
+    { x: 4, y: 1, z: 3, color: 'red' },
+    { x: 5, y: 1, z: 3, color: 'red' },
+    { x: 2, y: 1, z: 4, color: 'red' },
     { x: 3, y: 1, z: 4, color: 'red' },
     { x: 4, y: 1, z: 4, color: 'red' },
-    { x: 3, y: 1, z: 5, color: 'red' },
-    { x: 4, y: 1, z: 5, color: 'red' },
-    { x: 3, y: 2, z: 4, color: 'red' },
-    { x: 4, y: 2, z: 4, color: 'red' },
+    { x: 5, y: 1, z: 4, color: 'red' },
+    { x: 2, y: 1, z: 6, color: 'red' },
+    { x: 3, y: 1, z: 6, color: 'red' },
+    { x: 4, y: 1, z: 6, color: 'red' },
+    { x: 5, y: 1, z: 6, color: 'red' },
+    { x: 2, y: 1, z: 7, color: 'red' },
+    { x: 3, y: 1, z: 7, color: 'red' },
+    { x: 4, y: 1, z: 7, color: 'red' },
+    { x: 5, y: 1, z: 7, color: 'red' },
+    { x: 2, y: 2, z: 3, color: 'red' },
+    { x: 3, y: 2, z: 3, color: 'red' },
+    { x: 4, y: 2, z: 3, color: 'red' },
+    { x: 5, y: 2, z: 3, color: 'red' },
+    { x: 2, y: 2, z: 4, color: 'red' },
+    { x: 3, y: 2, z: 4, color: 'white' },
+    { x: 4, y: 2, z: 4, color: 'white' },
+    { x: 5, y: 2, z: 4, color: 'red' },
+    { x: 2, y: 2, z: 5, color: 'red' },
     { x: 3, y: 2, z: 5, color: 'red' },
     { x: 4, y: 2, z: 5, color: 'red' },
-    { x: 3, y: 3, z: 4, color: 'red' },
-    { x: 4, y: 3, z: 4, color: 'red' },
+    { x: 5, y: 2, z: 5, color: 'red' },
+    { x: 2, y: 3, z: 2, color: 'red' },
+    { x: 3, y: 3, z: 2, color: 'red' },
+    { x: 4, y: 3, z: 2, color: 'red' },
+    { x: 5, y: 3, z: 2, color: 'red' },
+    { x: 2, y: 3, z: 3, color: 'red' },
+    { x: 3, y: 3, z: 3, color: 'red' },
+    { x: 4, y: 3, z: 3, color: 'red' },
+    { x: 5, y: 3, z: 3, color: 'red' },
+    { x: 2, y: 3, z: 4, color: 'red' },
+    { x: 3, y: 3, z: 4, color: 'white' },
+    { x: 4, y: 3, z: 4, color: 'white' },
+    { x: 5, y: 3, z: 4, color: 'red' },
+    { x: 2, y: 3, z: 5, color: 'red' },
     { x: 3, y: 3, z: 5, color: 'red' },
     { x: 4, y: 3, z: 5, color: 'red' },
-    { x: 2, y: 4, z: 2, color: 'white' },
+    { x: 5, y: 3, z: 5, color: 'red' },
+    { x: 2, y: 4, z: 2, color: 'red' },
     { x: 3, y: 4, z: 2, color: 'red' },
     { x: 4, y: 4, z: 2, color: 'red' },
-    { x: 5, y: 4, z: 2, color: 'white' },
+    { x: 5, y: 4, z: 2, color: 'red' },
     { x: 2, y: 4, z: 3, color: 'red' },
-    { x: 3, y: 4, z: 3, color: 'red' },
+    { x: 3, y: 4, z: 3, color: 'black' },
     { x: 4, y: 4, z: 3, color: 'red' },
     { x: 5, y: 4, z: 3, color: 'red' },
     { x: 2, y: 4, z: 4, color: 'red' },
     { x: 3, y: 4, z: 4, color: 'red' },
-    { x: 4, y: 4, z: 4, color: 'red' },
+    { x: 4, y: 4, z: 4, color: 'black' },
     { x: 5, y: 4, z: 4, color: 'red' },
-    { x: 2, y: 4, z: 5, color: 'white' },
+    { x: 2, y: 4, z: 5, color: 'red' },
     { x: 3, y: 4, z: 5, color: 'red' },
     { x: 4, y: 4, z: 5, color: 'red' },
-    { x: 5, y: 4, z: 5, color: 'white' },
+    { x: 5, y: 4, z: 5, color: 'red' },
     { x: 2, y: 5, z: 2, color: 'red' },
     { x: 3, y: 5, z: 2, color: 'red' },
-    { x: 4, y: 5, z: 2, color: 'black' },
+    { x: 4, y: 5, z: 2, color: 'red' },
     { x: 5, y: 5, z: 2, color: 'red' },
     { x: 2, y: 5, z: 3, color: 'red' },
-    { x: 3, y: 5, z: 3, color: 'black' },
-    { x: 4, y: 5, z: 3, color: 'black' },
+    { x: 3, y: 5, z: 3, color: 'red' },
+    { x: 4, y: 5, z: 3, color: 'red' },
     { x: 5, y: 5, z: 3, color: 'red' },
     { x: 2, y: 5, z: 4, color: 'red' },
-    { x: 3, y: 5, z: 4, color: 'black' },
-    { x: 4, y: 5, z: 4, color: 'black' },
+    { x: 3, y: 5, z: 4, color: 'red' },
+    { x: 4, y: 5, z: 4, color: 'red' },
     { x: 5, y: 5, z: 4, color: 'red' },
     { x: 2, y: 5, z: 5, color: 'red' },
     { x: 3, y: 5, z: 5, color: 'red' },
-    { x: 4, y: 5, z: 5, color: 'black' },
+    { x: 4, y: 5, z: 5, color: 'red' },
     { x: 5, y: 5, z: 5, color: 'red' },
+    { x: 1, y: 6, z: 1, color: 'red' },
+    { x: 6, y: 6, z: 1, color: 'red' },
     { x: 2, y: 6, z: 2, color: 'red' },
-    { x: 3, y: 6, z: 2, color: 'white' },
-    { x: 4, y: 6, z: 2, color: 'black' },
-    { x: 5, y: 6, z: 2, color: 'white' },
+    { x: 3, y: 6, z: 2, color: 'red' },
+    { x: 4, y: 6, z: 2, color: 'red' },
+    { x: 5, y: 6, z: 2, color: 'red' },
     { x: 2, y: 6, z: 3, color: 'red' },
-    { x: 3, y: 6, z: 3, color: 'white' },
-    { x: 4, y: 6, z: 3, color: 'black' },
-    { x: 5, y: 6, z: 3, color: 'white' },
+    { x: 3, y: 6, z: 3, color: 'red' },
+    { x: 4, y: 6, z: 3, color: 'red' },
+    { x: 5, y: 6, z: 3, color: 'red' },
     { x: 2, y: 6, z: 4, color: 'red' },
-    { x: 3, y: 6, z: 4, color: 'white' },
-    { x: 4, y: 6, z: 4, color: 'black' },
-    { x: 5, y: 6, z: 4, color: 'white' },
+    { x: 3, y: 6, z: 4, color: 'red' },
+    { x: 4, y: 6, z: 4, color: 'red' },
+    { x: 5, y: 6, z: 4, color: 'red' },
     { x: 2, y: 6, z: 5, color: 'red' },
-    { x: 3, y: 6, z: 5, color: 'white' },
-    { x: 4, y: 6, z: 5, color: 'black' },
-    { x: 5, y: 6, z: 5, color: 'white' },
-    { x: 2, y: 7, z: 2, color: 'red' },
-    { x: 5, y: 7, z: 2, color: 'red' },
-    { x: 2, y: 7, z: 3, color: 'red' },
-    { x: 5, y: 7, z: 3, color: 'red' },
-    { x: 2, y: 7, z: 4, color: 'red' },
-    { x: 5, y: 7, z: 4, color: 'red' },
-    { x: 2, y: 7, z: 5, color: 'red' },
-    { x: 5, y: 7, z: 5, color: 'red' },
+    { x: 3, y: 6, z: 5, color: 'red' },
+    { x: 4, y: 6, z: 5, color: 'red' },
+    { x: 5, y: 6, z: 5, color: 'red' },
   ],
 };
 
@@ -86,33 +124,33 @@ export default grid;
 
 /* pass 1 — silhouettes:
 front:
+........
+.R....R.
+.RR..RR.
+.RKRRKR.
+.RRWWRR.
+..RWWR..
 ..R..R..
-..RRRR..
-..RWKWR.
-..RRKRR.
-..WRRRW.
-...RR...
-...RR...
-...WW...
+..R..R..
 
 side:
 ........
-..RR....
-..RRR...
-..RRRR..
+.R......
+.RR.....
 .RRRRR..
-..RR....
-..RR....
-..WW....
+.RRRRRR.
+..RRRR..
+..R..R..
+..R..R..
 
 top:
 ........
-..RRRR..
-..RRRR..
-..RRRR..
-..RRRR..
-...RR...
-...RR...
+.R....R.
+.RRRRRR.
+.RRRRRR.
+.RRRRRR.
+.RRRRRR.
+........
 ........
 */
 
@@ -121,79 +159,79 @@ y=0
 ........
 ........
 ........
+..RRRR..
+..RRRR..
 ........
-...WW...
-...WW...
-........
-........
+..RRRR..
+..RRRR..
 
 y=1
 ........
 ........
 ........
+..RRRR..
+..RRRR..
 ........
-...RR...
-...RR...
-........
-........
+..RRRR..
+..RRRR..
 
 y=2
 ........
 ........
 ........
-........
-...RR...
-...RR...
+..RRRR..
+..RWWR..
+..RRRR..
 ........
 ........
 
 y=3
 ........
 ........
-........
-........
-...RR...
-...RR...
+..RRRR..
+..RRRR..
+..RWWR..
+..RRRR..
 ........
 ........
 
 y=4
 ........
 ........
-..WRRW..
 ..RRRR..
+..RKRR..
+..RRKR..
 ..RRRR..
-..WRRW..
 ........
 ........
 
 y=5
 ........
 ........
-..RRKR..
-..RKKR..
-..RKKR..
-..RRKR..
+..RRRR..
+..RRRR..
+..RRRR..
+..RRRR..
 ........
 ........
 
 y=6
 ........
-........
-..RWKW..
-..RWKW..
-..RWKW..
-..RWKW..
+.R....R.
+..RRRR..
+..RRRR..
+..RRRR..
+..RRRR..
 ........
 ........
 
 y=7
 ........
 ........
-..R..R..
-..R..R..
-..R..R..
-..R..R..
+........
+........
+........
+........
 ........
 ........
 */

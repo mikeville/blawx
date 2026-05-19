@@ -7,83 +7,54 @@ export const term = "fish";
 const grid: VoxelGrid = {
   size: 8,
   voxels: [
-    { x: 2, y: 0, z: 3, color: 'blue' },
-    { x: 3, y: 0, z: 3, color: 'blue' },
-    { x: 4, y: 0, z: 3, color: 'blue' },
-    { x: 5, y: 0, z: 3, color: 'blue' },
-    { x: 2, y: 0, z: 4, color: 'blue' },
-    { x: 3, y: 0, z: 4, color: 'blue' },
-    { x: 4, y: 0, z: 4, color: 'blue' },
-    { x: 5, y: 0, z: 4, color: 'blue' },
-    { x: 2, y: 0, z: 5, color: 'blue' },
-    { x: 3, y: 0, z: 5, color: 'blue' },
-    { x: 4, y: 0, z: 5, color: 'blue' },
-    { x: 5, y: 0, z: 5, color: 'blue' },
-    { x: 1, y: 1, z: 3, color: 'blue' },
-    { x: 2, y: 1, z: 3, color: 'blue' },
-    { x: 3, y: 1, z: 3, color: 'blue' },
-    { x: 4, y: 1, z: 3, color: 'blue' },
-    { x: 5, y: 1, z: 3, color: 'blue' },
-    { x: 6, y: 1, z: 3, color: 'blue' },
-    { x: 1, y: 1, z: 4, color: 'blue' },
-    { x: 2, y: 1, z: 4, color: 'blue' },
-    { x: 3, y: 1, z: 4, color: 'blue' },
-    { x: 4, y: 1, z: 4, color: 'blue' },
-    { x: 5, y: 1, z: 4, color: 'blue' },
-    { x: 6, y: 1, z: 4, color: 'blue' },
-    { x: 7, y: 1, z: 4, color: 'red' },
-    { x: 1, y: 1, z: 5, color: 'blue' },
-    { x: 2, y: 1, z: 5, color: 'blue' },
-    { x: 3, y: 1, z: 5, color: 'blue' },
-    { x: 4, y: 1, z: 5, color: 'blue' },
-    { x: 5, y: 1, z: 5, color: 'blue' },
-    { x: 6, y: 1, z: 5, color: 'blue' },
-    { x: 2, y: 2, z: 3, color: 'blue' },
-    { x: 3, y: 2, z: 3, color: 'blue' },
-    { x: 4, y: 2, z: 3, color: 'blue' },
-    { x: 5, y: 2, z: 3, color: 'blue' },
-    { x: 1, y: 2, z: 4, color: 'blue' },
-    { x: 2, y: 2, z: 4, color: 'black' },
-    { x: 3, y: 2, z: 4, color: 'blue' },
-    { x: 4, y: 2, z: 4, color: 'blue' },
-    { x: 5, y: 2, z: 4, color: 'blue' },
+    { x: 3, y: 0, z: 4, color: 'red' },
+    { x: 4, y: 0, z: 4, color: 'red' },
+    { x: 2, y: 1, z: 3, color: 'red' },
+    { x: 3, y: 1, z: 3, color: 'red' },
+    { x: 4, y: 1, z: 3, color: 'red' },
+    { x: 5, y: 1, z: 3, color: 'red' },
+    { x: 2, y: 1, z: 4, color: 'red' },
+    { x: 3, y: 1, z: 4, color: 'red' },
+    { x: 4, y: 1, z: 4, color: 'red' },
+    { x: 5, y: 1, z: 4, color: 'red' },
+    { x: 2, y: 1, z: 5, color: 'red' },
+    { x: 3, y: 1, z: 5, color: 'red' },
+    { x: 4, y: 1, z: 5, color: 'red' },
+    { x: 5, y: 1, z: 5, color: 'red' },
+    { x: 3, y: 2, z: 2, color: 'red' },
+    { x: 4, y: 2, z: 2, color: 'red' },
+    { x: 2, y: 2, z: 3, color: 'red' },
+    { x: 3, y: 2, z: 3, color: 'red' },
+    { x: 4, y: 2, z: 3, color: 'red' },
+    { x: 5, y: 2, z: 3, color: 'red' },
+    { x: 1, y: 2, z: 4, color: 'red' },
+    { x: 2, y: 2, z: 4, color: 'red' },
+    { x: 3, y: 2, z: 4, color: 'red' },
+    { x: 4, y: 2, z: 4, color: 'red' },
+    { x: 5, y: 2, z: 4, color: 'red' },
     { x: 6, y: 2, z: 4, color: 'red' },
     { x: 7, y: 2, z: 4, color: 'red' },
-    { x: 2, y: 2, z: 5, color: 'blue' },
-    { x: 3, y: 2, z: 5, color: 'blue' },
-    { x: 4, y: 2, z: 5, color: 'blue' },
-    { x: 5, y: 2, z: 5, color: 'blue' },
-    { x: 1, y: 3, z: 3, color: 'blue' },
-    { x: 2, y: 3, z: 3, color: 'blue' },
-    { x: 3, y: 3, z: 3, color: 'blue' },
-    { x: 4, y: 3, z: 3, color: 'blue' },
-    { x: 5, y: 3, z: 3, color: 'blue' },
-    { x: 6, y: 3, z: 3, color: 'blue' },
-    { x: 1, y: 3, z: 4, color: 'blue' },
-    { x: 2, y: 3, z: 4, color: 'blue' },
-    { x: 3, y: 3, z: 4, color: 'blue' },
-    { x: 4, y: 3, z: 4, color: 'blue' },
-    { x: 5, y: 3, z: 4, color: 'blue' },
-    { x: 6, y: 3, z: 4, color: 'blue' },
-    { x: 7, y: 3, z: 4, color: 'red' },
-    { x: 1, y: 3, z: 5, color: 'blue' },
-    { x: 2, y: 3, z: 5, color: 'blue' },
-    { x: 3, y: 3, z: 5, color: 'blue' },
-    { x: 4, y: 3, z: 5, color: 'blue' },
-    { x: 5, y: 3, z: 5, color: 'blue' },
-    { x: 6, y: 3, z: 5, color: 'blue' },
-    { x: 2, y: 4, z: 3, color: 'blue' },
-    { x: 3, y: 4, z: 3, color: 'blue' },
-    { x: 4, y: 4, z: 3, color: 'blue' },
-    { x: 5, y: 4, z: 3, color: 'blue' },
-    { x: 2, y: 4, z: 4, color: 'blue' },
-    { x: 3, y: 4, z: 4, color: 'blue' },
-    { x: 4, y: 4, z: 4, color: 'blue' },
-    { x: 5, y: 4, z: 4, color: 'blue' },
-    { x: 2, y: 4, z: 5, color: 'blue' },
-    { x: 3, y: 4, z: 5, color: 'blue' },
-    { x: 4, y: 4, z: 5, color: 'blue' },
-    { x: 5, y: 4, z: 5, color: 'blue' },
+    { x: 2, y: 2, z: 5, color: 'red' },
+    { x: 3, y: 2, z: 5, color: 'red' },
+    { x: 4, y: 2, z: 5, color: 'red' },
+    { x: 5, y: 2, z: 5, color: 'red' },
+    { x: 3, y: 2, z: 6, color: 'red' },
+    { x: 4, y: 2, z: 6, color: 'red' },
+    { x: 2, y: 3, z: 3, color: 'red' },
+    { x: 3, y: 3, z: 3, color: 'red' },
+    { x: 4, y: 3, z: 3, color: 'red' },
+    { x: 5, y: 3, z: 3, color: 'red' },
+    { x: 2, y: 3, z: 4, color: 'red' },
+    { x: 3, y: 3, z: 4, color: 'red' },
+    { x: 4, y: 3, z: 4, color: 'red' },
+    { x: 5, y: 3, z: 4, color: 'black' },
+    { x: 6, y: 3, z: 4, color: 'red' },
+    { x: 2, y: 3, z: 5, color: 'red' },
+    { x: 3, y: 3, z: 5, color: 'red' },
+    { x: 4, y: 3, z: 5, color: 'red' },
+    { x: 5, y: 3, z: 5, color: 'red' },
+    { x: 3, y: 4, z: 4, color: 'red' },
+    { x: 4, y: 4, z: 4, color: 'red' },
   ],
 };
 
@@ -93,31 +64,31 @@ export default grid;
 front:
 ........
 ........
-..BBBB..
-.BBBKB.R
-.BBBBBRR
-.BBBBBR.
-..BBBB..
+...RR...
+..RRRR..
+.RRRRRRR
+..RRRKR.
+...RR...
 ........
 
 side:
 ........
 ........
-..BBBB..
-.BBBBBB.
-.BBKBBBB
-.BBBBBB.
-..BBBB..
+...RR...
+..RRRR..
+.RRRRRR.
+..RRRR..
+...RR...
 ........
 
 top:
 ........
 ........
-........
-..BBBBR.
-.BBBBBRR
-..BBBBR.
-........
+...RR...
+..RRRR..
+.RRRRRR.
+..RRRR..
+...RR...
 ........
 */
 
@@ -146,9 +117,9 @@ y=2
 ........
 ........
 ........
-..BBBB..
-..BBBB..
-..BBBB..
+........
+...RR...
+........
 ........
 ........
 
@@ -156,29 +127,29 @@ y=3
 ........
 ........
 ........
-.BBBBBB.
-.BBBBBBR
-.BBBBBB.
+..RRRR..
+..RRRR..
+..RRRR..
 ........
 ........
 
 y=4
 ........
 ........
-........
-..BBBB..
-.BKBBBRR
-..BBBB..
-........
+...RR...
+..RRRR..
+.RRRRRRR
+..RRRR..
+...RR...
 ........
 
 y=5
 ........
 ........
 ........
-.BBBBBB.
-.BBBBBBR
-.BBBBBB.
+..RRRR..
+..RRRKR.
+..RRRR..
 ........
 ........
 
@@ -186,9 +157,9 @@ y=6
 ........
 ........
 ........
-..BBBB..
-..BBBB..
-..BBBB..
+........
+...RR...
+........
 ........
 ........
 

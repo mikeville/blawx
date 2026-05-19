@@ -7,50 +7,48 @@ export const term = "chair";
 const grid: VoxelGrid = {
   size: 8,
   voxels: [
-    { x: 2, y: 0, z: 2, color: 'lightGray' },
-    { x: 5, y: 0, z: 2, color: 'lightGray' },
+    { x: 2, y: 0, z: 1, color: 'lightGray' },
+    { x: 5, y: 0, z: 1, color: 'lightGray' },
     { x: 2, y: 0, z: 5, color: 'lightGray' },
     { x: 5, y: 0, z: 5, color: 'lightGray' },
-    { x: 2, y: 1, z: 2, color: 'lightGray' },
-    { x: 5, y: 1, z: 2, color: 'lightGray' },
+    { x: 2, y: 1, z: 1, color: 'lightGray' },
+    { x: 5, y: 1, z: 1, color: 'lightGray' },
     { x: 2, y: 1, z: 5, color: 'lightGray' },
     { x: 5, y: 1, z: 5, color: 'lightGray' },
-    { x: 2, y: 2, z: 2, color: 'lightGray' },
-    { x: 5, y: 2, z: 2, color: 'lightGray' },
+    { x: 2, y: 2, z: 1, color: 'lightGray' },
+    { x: 5, y: 2, z: 1, color: 'lightGray' },
     { x: 2, y: 2, z: 5, color: 'lightGray' },
     { x: 5, y: 2, z: 5, color: 'lightGray' },
-    { x: 2, y: 3, z: 2, color: 'red' },
-    { x: 3, y: 3, z: 2, color: 'red' },
-    { x: 4, y: 3, z: 2, color: 'red' },
-    { x: 5, y: 3, z: 2, color: 'red' },
-    { x: 2, y: 3, z: 3, color: 'red' },
-    { x: 3, y: 3, z: 3, color: 'red' },
-    { x: 4, y: 3, z: 3, color: 'red' },
-    { x: 5, y: 3, z: 3, color: 'red' },
-    { x: 2, y: 3, z: 4, color: 'red' },
-    { x: 3, y: 3, z: 4, color: 'red' },
-    { x: 4, y: 3, z: 4, color: 'red' },
-    { x: 5, y: 3, z: 4, color: 'red' },
-    { x: 2, y: 3, z: 5, color: 'red' },
-    { x: 3, y: 3, z: 5, color: 'red' },
-    { x: 4, y: 3, z: 5, color: 'red' },
-    { x: 5, y: 3, z: 5, color: 'red' },
-    { x: 2, y: 4, z: 2, color: 'red' },
-    { x: 3, y: 4, z: 2, color: 'red' },
-    { x: 4, y: 4, z: 2, color: 'red' },
-    { x: 5, y: 4, z: 2, color: 'red' },
-    { x: 2, y: 5, z: 2, color: 'red' },
-    { x: 3, y: 5, z: 2, color: 'red' },
-    { x: 4, y: 5, z: 2, color: 'red' },
-    { x: 5, y: 5, z: 2, color: 'red' },
-    { x: 2, y: 6, z: 2, color: 'red' },
-    { x: 3, y: 6, z: 2, color: 'red' },
-    { x: 4, y: 6, z: 2, color: 'red' },
-    { x: 5, y: 6, z: 2, color: 'red' },
-    { x: 2, y: 7, z: 2, color: 'red' },
-    { x: 3, y: 7, z: 2, color: 'red' },
-    { x: 4, y: 7, z: 2, color: 'red' },
-    { x: 5, y: 7, z: 2, color: 'red' },
+    { x: 2, y: 3, z: 1, color: 'lightGray' },
+    { x: 3, y: 3, z: 1, color: 'lightGray' },
+    { x: 4, y: 3, z: 1, color: 'lightGray' },
+    { x: 5, y: 3, z: 1, color: 'lightGray' },
+    { x: 2, y: 3, z: 2, color: 'lightGray' },
+    { x: 3, y: 3, z: 2, color: 'lightGray' },
+    { x: 4, y: 3, z: 2, color: 'lightGray' },
+    { x: 5, y: 3, z: 2, color: 'lightGray' },
+    { x: 2, y: 3, z: 3, color: 'lightGray' },
+    { x: 3, y: 3, z: 3, color: 'lightGray' },
+    { x: 4, y: 3, z: 3, color: 'lightGray' },
+    { x: 5, y: 3, z: 3, color: 'lightGray' },
+    { x: 2, y: 3, z: 4, color: 'lightGray' },
+    { x: 3, y: 3, z: 4, color: 'lightGray' },
+    { x: 4, y: 3, z: 4, color: 'lightGray' },
+    { x: 5, y: 3, z: 4, color: 'lightGray' },
+    { x: 2, y: 3, z: 5, color: 'lightGray' },
+    { x: 3, y: 3, z: 5, color: 'lightGray' },
+    { x: 4, y: 3, z: 5, color: 'lightGray' },
+    { x: 5, y: 3, z: 5, color: 'lightGray' },
+    { x: 2, y: 4, z: 1, color: 'lightGray' },
+    { x: 5, y: 4, z: 1, color: 'lightGray' },
+    { x: 2, y: 5, z: 1, color: 'lightGray' },
+    { x: 5, y: 5, z: 1, color: 'lightGray' },
+    { x: 2, y: 6, z: 1, color: 'lightGray' },
+    { x: 5, y: 6, z: 1, color: 'lightGray' },
+    { x: 2, y: 7, z: 1, color: 'lightGray' },
+    { x: 3, y: 7, z: 1, color: 'lightGray' },
+    { x: 4, y: 7, z: 1, color: 'lightGray' },
+    { x: 5, y: 7, z: 1, color: 'lightGray' },
   ],
 };
 
@@ -58,32 +56,32 @@ export default grid;
 
 /* pass 1 — silhouettes:
 front:
-..RRRR..
-..RRRR..
-..RRRR..
-..RRRR..
-..RRRR..
+..LLLL..
+..L..L..
+..L..L..
+..LLLL..
+..L..L..
 ..L..L..
 ..L..L..
 ..L..L..
 
 side:
-..R.....
-..R.....
-..R.....
-..R.....
-..RRRR..
-..L..L..
-..L..L..
-..L..L..
+..L.....
+..L.....
+..L.....
+..LLLLL.
+.....L..
+.....L..
+.....L..
+.....L..
 
 top:
 ........
+..LLLL..
+..LLLL..
+..LLLL..
+..LLLL..
 ........
-..RRRR..
-..RRRR..
-..RRRR..
-..RRRR..
 ........
 ........
 */
@@ -91,8 +89,8 @@ top:
 /* pass 2 — voxel layers:
 y=0
 ........
-........
 ..L..L..
+........
 ........
 ........
 ..L..L..
@@ -101,8 +99,8 @@ y=0
 
 y=1
 ........
-........
 ..L..L..
+........
 ........
 ........
 ..L..L..
@@ -111,8 +109,8 @@ y=1
 
 y=2
 ........
-........
 ..L..L..
+........
 ........
 ........
 ..L..L..
@@ -121,18 +119,18 @@ y=2
 
 y=3
 ........
-........
-..RRRR..
-..RRRR..
-..RRRR..
-..RRRR..
+..LLLL..
+..LLLL..
+..LLLL..
+..LLLL..
+..LLLL..
 ........
 ........
 
 y=4
 ........
+..L..L..
 ........
-..RRRR..
 ........
 ........
 ........
@@ -141,8 +139,8 @@ y=4
 
 y=5
 ........
+..L..L..
 ........
-..RRRR..
 ........
 ........
 ........
@@ -151,8 +149,8 @@ y=5
 
 y=6
 ........
+..L..L..
 ........
-..RRRR..
 ........
 ........
 ........
@@ -161,8 +159,8 @@ y=6
 
 y=7
 ........
+..LLLL..
 ........
-..RRRR..
 ........
 ........
 ........

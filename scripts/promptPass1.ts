@@ -1,3 +1,12 @@
+import { sampleDuck } from '../src/voxel/sampleDuck.ts';
+import { sampleTree } from '../src/voxel/sampleTree.ts';
+import { sampleHouse } from '../src/voxel/sampleHouse.ts';
+import { project, projectionsToPromptBlock } from '../src/voxel/projections.ts';
+
+const duckSilhouettes = projectionsToPromptBlock(project(sampleDuck));
+const treeSilhouettes = projectionsToPromptBlock(project(sampleTree));
+const houseSilhouettes = projectionsToPromptBlock(project(sampleHouse));
+
 export const PASS1_PROMPT = `You are designing a small 3D voxel object the user names. Your job in this turn is to PLAN the object as three architectural views (front, side, top), like an elevation + plan drawing. A second turn will realize the design as voxel layers; this turn locks in the form.
 
 WORLD
@@ -39,11 +48,8 @@ HARD RULES
 2. Use as few voxels as the form needs — 25–60 typically. Don't fill empty space.
 3. Use color to carry features: eyes (K), beaks/accents (R), small distinguishing details. A single black voxel can do real work.
 4. Center the model on the grid. Leave at least 1 cell of empty margin on every side so the silhouette reads.
-5. The three views must be CONSISTENT with each other. For the same model:
-   - The front view's column x has a voxel iff some (x, y, z) is occupied → also visible in the top view's column x and somewhere in the side view.
-   - The top view's column x has a voxel iff some (x, y, z) is occupied → must show in the front view's column x.
-   - And so on. Sanity-check before committing.
-6. SILHOUETTE BEFORE FEATURES. Commit to the overall shape first, then sprinkle feature voxels (eyes, accents) in the colored grids.
+5. The three views must be CONSISTENT with each other.
+6. SILHOUETTE BEFORE FEATURES. Commit to the overall shape first, then sprinkle feature voxels in the colored grids.
 
 OUTPUT FORMAT
 Exactly three labeled grids in this order: front, side, top. Each grid is 8 rows of 8 single-character cells (palette letters). No spaces between cells. No prose. No markdown fences. No commentary.
@@ -66,38 +72,25 @@ side:
 top:
 ... (8 rows of 8 cells)
 
-EXAMPLE — prompt: "duck"
+THREE WORKED EXAMPLES — different archetypes:
 
-front:
-........
-........
-...YY...
-...YKR..
-...YYY..
-.YYYYY..
-.YYYYYY.
-..YYYY..
+EXAMPLE 1 — prompt: "duck" (an asymmetric animal — color carries the eye and beak features)
 
-side:
-........
-........
-...YY...
-...RR...
-...YY...
-...YY...
-...YY...
-...YY...
+${duckSilhouettes}
 
-top:
-........
-........
-........
-.YYYYRY.
-.YYYYRY.
-........
-........
-........
+EXAMPLE 2 — prompt: "tree" (a vertical, symmetric, organic form — thin trunk supporting a wider canopy)
 
-Note how the duck's three views work together: the front shows the body silhouette (yellow), with a single black eye and a 2-voxel red beak at right. The side view from the right shows the beak as a 2-voxel red bar at head height — the beak's right end. The top view shows the bird's footprint, with the beak (red) jutting forward of the body's main mass. The views are consistent — every voxel claimed in one view is consistent with the other two.
+${treeSilhouettes}
+
+EXAMPLE 3 — prompt: "house" (a small building — walls with a door silhouette in front, pyramidal roof)
+
+${houseSilhouettes}
+
+Note how the three differ:
+- The duck is asymmetric and uses color (K, R) for tiny features that read as eye and beak.
+- The tree's silhouette is dominated by negative space — only 22 voxels total — yet the trunk + canopy structure is unmistakable.
+- The house uses a door (K voxel against a W wall) as a focal feature; the views show a small box with a roof.
+
+Each example uses 22–47 voxels. None over-fill. Each uses 2–3 colors. The three silhouettes per example are mutually consistent — a voxel that appears in the front view also shows up in the top view at the same x, etc.
 
 Now design the user's object. Output only the three labeled grids, nothing else.`;

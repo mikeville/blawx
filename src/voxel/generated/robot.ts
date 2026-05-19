@@ -7,50 +7,184 @@ export const term = "robot";
 const grid: VoxelGrid = {
   size: 8,
   voxels: [
+    { x: 1, y: 0, z: 2, color: 'lightGray' },
+    { x: 2, y: 0, z: 2, color: 'lightGray' },
+    { x: 5, y: 0, z: 2, color: 'lightGray' },
+    { x: 6, y: 0, z: 2, color: 'lightGray' },
+    { x: 1, y: 0, z: 3, color: 'lightGray' },
     { x: 2, y: 0, z: 3, color: 'lightGray' },
     { x: 5, y: 0, z: 3, color: 'lightGray' },
-    { x: 2, y: 0, z: 4, color: 'lightGray' },
-    { x: 5, y: 0, z: 4, color: 'lightGray' },
+    { x: 6, y: 0, z: 3, color: 'lightGray' },
+    { x: 1, y: 1, z: 2, color: 'lightGray' },
+    { x: 2, y: 1, z: 2, color: 'lightGray' },
+    { x: 5, y: 1, z: 2, color: 'lightGray' },
+    { x: 6, y: 1, z: 2, color: 'lightGray' },
+    { x: 1, y: 1, z: 3, color: 'lightGray' },
     { x: 2, y: 1, z: 3, color: 'lightGray' },
+    { x: 3, y: 1, z: 3, color: 'lightGray' },
+    { x: 4, y: 1, z: 3, color: 'lightGray' },
     { x: 5, y: 1, z: 3, color: 'lightGray' },
+    { x: 6, y: 1, z: 3, color: 'lightGray' },
+    { x: 1, y: 1, z: 4, color: 'lightGray' },
     { x: 2, y: 1, z: 4, color: 'lightGray' },
+    { x: 3, y: 1, z: 4, color: 'lightGray' },
+    { x: 4, y: 1, z: 4, color: 'lightGray' },
     { x: 5, y: 1, z: 4, color: 'lightGray' },
-    { x: 2, y: 2, z: 3, color: 'blue' },
-    { x: 3, y: 2, z: 3, color: 'blue' },
-    { x: 4, y: 2, z: 3, color: 'blue' },
-    { x: 5, y: 2, z: 3, color: 'blue' },
-    { x: 2, y: 2, z: 4, color: 'blue' },
-    { x: 3, y: 2, z: 4, color: 'blue' },
-    { x: 4, y: 2, z: 4, color: 'blue' },
-    { x: 5, y: 2, z: 4, color: 'blue' },
-    { x: 1, y: 3, z: 3, color: 'blue' },
-    { x: 2, y: 3, z: 3, color: 'blue' },
-    { x: 3, y: 3, z: 3, color: 'blue' },
-    { x: 4, y: 3, z: 3, color: 'blue' },
-    { x: 5, y: 3, z: 3, color: 'blue' },
-    { x: 6, y: 3, z: 3, color: 'blue' },
-    { x: 1, y: 3, z: 4, color: 'blue' },
-    { x: 2, y: 3, z: 4, color: 'blue' },
-    { x: 3, y: 3, z: 4, color: 'red' },
-    { x: 4, y: 3, z: 4, color: 'blue' },
-    { x: 5, y: 3, z: 4, color: 'blue' },
-    { x: 6, y: 3, z: 4, color: 'blue' },
-    { x: 2, y: 4, z: 3, color: 'blue' },
-    { x: 3, y: 4, z: 3, color: 'blue' },
-    { x: 4, y: 4, z: 3, color: 'blue' },
-    { x: 5, y: 4, z: 3, color: 'blue' },
-    { x: 2, y: 4, z: 4, color: 'blue' },
-    { x: 3, y: 4, z: 4, color: 'blue' },
-    { x: 4, y: 4, z: 4, color: 'blue' },
-    { x: 5, y: 4, z: 4, color: 'blue' },
+    { x: 6, y: 1, z: 4, color: 'lightGray' },
+    { x: 3, y: 2, z: 3, color: 'lightGray' },
+    { x: 4, y: 2, z: 3, color: 'lightGray' },
+    { x: 3, y: 2, z: 4, color: 'lightGray' },
+    { x: 4, y: 2, z: 4, color: 'lightGray' },
+    { x: 1, y: 3, z: 1, color: 'lightGray' },
+    { x: 2, y: 3, z: 1, color: 'lightGray' },
+    { x: 3, y: 3, z: 1, color: 'lightGray' },
+    { x: 4, y: 3, z: 1, color: 'lightGray' },
+    { x: 5, y: 3, z: 1, color: 'lightGray' },
+    { x: 6, y: 3, z: 1, color: 'lightGray' },
+    { x: 1, y: 3, z: 2, color: 'lightGray' },
+    { x: 2, y: 3, z: 2, color: 'lightGray' },
+    { x: 3, y: 3, z: 2, color: 'lightGray' },
+    { x: 4, y: 3, z: 2, color: 'lightGray' },
+    { x: 5, y: 3, z: 2, color: 'lightGray' },
+    { x: 6, y: 3, z: 2, color: 'lightGray' },
+    { x: 1, y: 3, z: 3, color: 'lightGray' },
+    { x: 2, y: 3, z: 3, color: 'lightGray' },
+    { x: 3, y: 3, z: 3, color: 'lightGray' },
+    { x: 4, y: 3, z: 3, color: 'lightGray' },
+    { x: 5, y: 3, z: 3, color: 'lightGray' },
+    { x: 6, y: 3, z: 3, color: 'lightGray' },
+    { x: 1, y: 3, z: 4, color: 'lightGray' },
+    { x: 2, y: 3, z: 4, color: 'lightGray' },
+    { x: 3, y: 3, z: 4, color: 'lightGray' },
+    { x: 4, y: 3, z: 4, color: 'lightGray' },
+    { x: 5, y: 3, z: 4, color: 'lightGray' },
+    { x: 6, y: 3, z: 4, color: 'lightGray' },
+    { x: 1, y: 3, z: 5, color: 'lightGray' },
+    { x: 2, y: 3, z: 5, color: 'lightGray' },
+    { x: 3, y: 3, z: 5, color: 'lightGray' },
+    { x: 4, y: 3, z: 5, color: 'lightGray' },
+    { x: 5, y: 3, z: 5, color: 'lightGray' },
+    { x: 6, y: 3, z: 5, color: 'lightGray' },
+    { x: 1, y: 4, z: 1, color: 'lightGray' },
+    { x: 2, y: 4, z: 1, color: 'lightGray' },
+    { x: 3, y: 4, z: 1, color: 'lightGray' },
+    { x: 4, y: 4, z: 1, color: 'lightGray' },
+    { x: 5, y: 4, z: 1, color: 'lightGray' },
+    { x: 6, y: 4, z: 1, color: 'lightGray' },
+    { x: 1, y: 4, z: 2, color: 'lightGray' },
+    { x: 2, y: 4, z: 2, color: 'lightGray' },
+    { x: 3, y: 4, z: 2, color: 'lightGray' },
+    { x: 4, y: 4, z: 2, color: 'lightGray' },
+    { x: 5, y: 4, z: 2, color: 'lightGray' },
+    { x: 6, y: 4, z: 2, color: 'lightGray' },
+    { x: 1, y: 4, z: 3, color: 'lightGray' },
+    { x: 2, y: 4, z: 3, color: 'lightGray' },
+    { x: 3, y: 4, z: 3, color: 'lightGray' },
+    { x: 4, y: 4, z: 3, color: 'red' },
+    { x: 5, y: 4, z: 3, color: 'lightGray' },
+    { x: 6, y: 4, z: 3, color: 'lightGray' },
+    { x: 1, y: 4, z: 4, color: 'lightGray' },
+    { x: 2, y: 4, z: 4, color: 'lightGray' },
+    { x: 3, y: 4, z: 4, color: 'lightGray' },
+    { x: 4, y: 4, z: 4, color: 'lightGray' },
+    { x: 5, y: 4, z: 4, color: 'lightGray' },
+    { x: 6, y: 4, z: 4, color: 'lightGray' },
+    { x: 1, y: 4, z: 5, color: 'lightGray' },
+    { x: 2, y: 4, z: 5, color: 'lightGray' },
+    { x: 3, y: 4, z: 5, color: 'lightGray' },
+    { x: 4, y: 4, z: 5, color: 'lightGray' },
+    { x: 5, y: 4, z: 5, color: 'lightGray' },
+    { x: 6, y: 4, z: 5, color: 'lightGray' },
+    { x: 1, y: 5, z: 1, color: 'lightGray' },
+    { x: 2, y: 5, z: 1, color: 'lightGray' },
+    { x: 3, y: 5, z: 1, color: 'lightGray' },
+    { x: 4, y: 5, z: 1, color: 'lightGray' },
+    { x: 5, y: 5, z: 1, color: 'lightGray' },
+    { x: 6, y: 5, z: 1, color: 'lightGray' },
+    { x: 1, y: 5, z: 2, color: 'lightGray' },
+    { x: 2, y: 5, z: 2, color: 'lightGray' },
+    { x: 3, y: 5, z: 2, color: 'lightGray' },
+    { x: 4, y: 5, z: 2, color: 'lightGray' },
+    { x: 5, y: 5, z: 2, color: 'lightGray' },
+    { x: 6, y: 5, z: 2, color: 'lightGray' },
+    { x: 1, y: 5, z: 3, color: 'lightGray' },
+    { x: 2, y: 5, z: 3, color: 'lightGray' },
     { x: 3, y: 5, z: 3, color: 'lightGray' },
     { x: 4, y: 5, z: 3, color: 'lightGray' },
-    { x: 3, y: 5, z: 4, color: 'black' },
-    { x: 4, y: 5, z: 4, color: 'black' },
+    { x: 5, y: 5, z: 3, color: 'lightGray' },
+    { x: 6, y: 5, z: 3, color: 'lightGray' },
+    { x: 1, y: 5, z: 4, color: 'lightGray' },
+    { x: 2, y: 5, z: 4, color: 'lightGray' },
+    { x: 3, y: 5, z: 4, color: 'lightGray' },
+    { x: 4, y: 5, z: 4, color: 'lightGray' },
+    { x: 5, y: 5, z: 4, color: 'lightGray' },
+    { x: 6, y: 5, z: 4, color: 'lightGray' },
+    { x: 1, y: 5, z: 5, color: 'lightGray' },
+    { x: 2, y: 5, z: 5, color: 'lightGray' },
+    { x: 3, y: 5, z: 5, color: 'lightGray' },
+    { x: 4, y: 5, z: 5, color: 'lightGray' },
+    { x: 5, y: 5, z: 5, color: 'lightGray' },
+    { x: 6, y: 5, z: 5, color: 'lightGray' },
+    { x: 1, y: 6, z: 1, color: 'lightGray' },
+    { x: 2, y: 6, z: 1, color: 'black' },
+    { x: 3, y: 6, z: 1, color: 'lightGray' },
+    { x: 4, y: 6, z: 1, color: 'lightGray' },
+    { x: 5, y: 6, z: 1, color: 'black' },
+    { x: 6, y: 6, z: 1, color: 'lightGray' },
+    { x: 1, y: 6, z: 2, color: 'lightGray' },
+    { x: 2, y: 6, z: 2, color: 'lightGray' },
+    { x: 3, y: 6, z: 2, color: 'lightGray' },
+    { x: 4, y: 6, z: 2, color: 'lightGray' },
+    { x: 5, y: 6, z: 2, color: 'lightGray' },
+    { x: 6, y: 6, z: 2, color: 'lightGray' },
+    { x: 1, y: 6, z: 3, color: 'lightGray' },
+    { x: 2, y: 6, z: 3, color: 'lightGray' },
     { x: 3, y: 6, z: 3, color: 'lightGray' },
     { x: 4, y: 6, z: 3, color: 'lightGray' },
+    { x: 5, y: 6, z: 3, color: 'lightGray' },
+    { x: 6, y: 6, z: 3, color: 'lightGray' },
+    { x: 1, y: 6, z: 4, color: 'lightGray' },
+    { x: 2, y: 6, z: 4, color: 'lightGray' },
     { x: 3, y: 6, z: 4, color: 'lightGray' },
     { x: 4, y: 6, z: 4, color: 'lightGray' },
+    { x: 5, y: 6, z: 4, color: 'lightGray' },
+    { x: 6, y: 6, z: 4, color: 'lightGray' },
+    { x: 1, y: 6, z: 5, color: 'lightGray' },
+    { x: 2, y: 6, z: 5, color: 'lightGray' },
+    { x: 3, y: 6, z: 5, color: 'lightGray' },
+    { x: 4, y: 6, z: 5, color: 'lightGray' },
+    { x: 5, y: 6, z: 5, color: 'lightGray' },
+    { x: 6, y: 6, z: 5, color: 'lightGray' },
+    { x: 1, y: 7, z: 1, color: 'lightGray' },
+    { x: 2, y: 7, z: 1, color: 'lightGray' },
+    { x: 3, y: 7, z: 1, color: 'lightGray' },
+    { x: 4, y: 7, z: 1, color: 'lightGray' },
+    { x: 5, y: 7, z: 1, color: 'lightGray' },
+    { x: 6, y: 7, z: 1, color: 'lightGray' },
+    { x: 1, y: 7, z: 2, color: 'lightGray' },
+    { x: 2, y: 7, z: 2, color: 'lightGray' },
+    { x: 3, y: 7, z: 2, color: 'lightGray' },
+    { x: 4, y: 7, z: 2, color: 'lightGray' },
+    { x: 5, y: 7, z: 2, color: 'lightGray' },
+    { x: 6, y: 7, z: 2, color: 'lightGray' },
+    { x: 1, y: 7, z: 3, color: 'lightGray' },
+    { x: 2, y: 7, z: 3, color: 'lightGray' },
+    { x: 3, y: 7, z: 3, color: 'lightGray' },
+    { x: 4, y: 7, z: 3, color: 'lightGray' },
+    { x: 5, y: 7, z: 3, color: 'lightGray' },
+    { x: 6, y: 7, z: 3, color: 'lightGray' },
+    { x: 1, y: 7, z: 4, color: 'lightGray' },
+    { x: 2, y: 7, z: 4, color: 'lightGray' },
+    { x: 3, y: 7, z: 4, color: 'lightGray' },
+    { x: 4, y: 7, z: 4, color: 'lightGray' },
+    { x: 5, y: 7, z: 4, color: 'lightGray' },
+    { x: 6, y: 7, z: 4, color: 'lightGray' },
+    { x: 1, y: 7, z: 5, color: 'lightGray' },
+    { x: 2, y: 7, z: 5, color: 'lightGray' },
+    { x: 3, y: 7, z: 5, color: 'lightGray' },
+    { x: 4, y: 7, z: 5, color: 'lightGray' },
+    { x: 5, y: 7, z: 5, color: 'lightGray' },
+    { x: 6, y: 7, z: 5, color: 'lightGray' },
   ],
 };
 
@@ -59,31 +193,31 @@ export default grid;
 /* pass 1 — silhouettes:
 front:
 ........
-...LL...
-...KK...
-..BBBB..
-.BBRBBB.
-..BBBB..
+.LLLLLL.
+.LKLLKL.
+.LLLRLL.
+.LLLLLL.
 ..L..L..
-..L..L..
+.LL..LL.
+.LL..LL.
 
 side:
 ........
+.LLLLLL.
+.LLLLLL.
+.LLLRLL.
+.LLLLLL.
 ...LL...
-...LK...
-...BB...
-...BB...
-...BB...
-...LL...
-...LL...
+..LLLL..
+..LLLL..
 
 top:
 ........
-........
-........
-.BBLLBB.
-.BBLLBB.
-........
+.LLLLLL.
+.LLLLLL.
+.LLLLLL.
+.LLLLLL.
+.LLLLLL.
 ........
 ........
 */
@@ -92,9 +226,9 @@ top:
 y=0
 ........
 ........
+.LL..LL.
+.LL..LL.
 ........
-..L..L..
-..L..L..
 ........
 ........
 ........
@@ -102,9 +236,9 @@ y=0
 y=1
 ........
 ........
-........
-..L..L..
-..L..L..
+.LL..LL.
+.LLLLLL.
+.LLLLLL.
 ........
 ........
 ........
@@ -113,59 +247,59 @@ y=2
 ........
 ........
 ........
-..BBBB..
-..BBBB..
+...LL...
+...LL...
 ........
 ........
 ........
 
 y=3
 ........
-........
-........
-.BBBBBB.
-.BBRBBB.
-........
+.LLLLLL.
+.LLLLLL.
+.LLLLLL.
+.LLLLLL.
+.LLLLLL.
 ........
 ........
 
 y=4
 ........
-........
-........
-..BBBB..
-..BBBB..
-........
+.LLLLLL.
+.LLLLLL.
+.LLLRLL.
+.LLLLLL.
+.LLLLLL.
 ........
 ........
 
 y=5
 ........
-........
-........
-...LL...
-...KK...
-........
+.LLLLLL.
+.LLLLLL.
+.LLLLLL.
+.LLLLLL.
+.LLLLLL.
 ........
 ........
 
 y=6
 ........
-........
-........
-...LL...
-...LL...
-........
+.LKLLKL.
+.LLLLLL.
+.LLLLLL.
+.LLLLLL.
+.LLLLLL.
 ........
 ........
 
 y=7
 ........
-........
-........
-........
-........
-........
+.LLLLLL.
+.LLLLLL.
+.LLLLLL.
+.LLLLLL.
+.LLLLLL.
 ........
 ........
 */

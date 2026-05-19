@@ -7,62 +7,150 @@ export const term = "lighthouse";
 const grid: VoxelGrid = {
   size: 8,
   voxels: [
+    { x: 1, y: 0, z: 1, color: 'lightGray' },
+    { x: 2, y: 0, z: 1, color: 'lightGray' },
+    { x: 3, y: 0, z: 1, color: 'lightGray' },
+    { x: 4, y: 0, z: 1, color: 'lightGray' },
+    { x: 5, y: 0, z: 1, color: 'lightGray' },
+    { x: 6, y: 0, z: 1, color: 'lightGray' },
+    { x: 1, y: 0, z: 2, color: 'lightGray' },
     { x: 2, y: 0, z: 2, color: 'lightGray' },
     { x: 3, y: 0, z: 2, color: 'lightGray' },
     { x: 4, y: 0, z: 2, color: 'lightGray' },
     { x: 5, y: 0, z: 2, color: 'lightGray' },
+    { x: 6, y: 0, z: 2, color: 'lightGray' },
+    { x: 1, y: 0, z: 3, color: 'lightGray' },
     { x: 2, y: 0, z: 3, color: 'lightGray' },
     { x: 3, y: 0, z: 3, color: 'lightGray' },
     { x: 4, y: 0, z: 3, color: 'lightGray' },
     { x: 5, y: 0, z: 3, color: 'lightGray' },
+    { x: 6, y: 0, z: 3, color: 'lightGray' },
+    { x: 1, y: 0, z: 4, color: 'lightGray' },
     { x: 2, y: 0, z: 4, color: 'lightGray' },
     { x: 3, y: 0, z: 4, color: 'lightGray' },
     { x: 4, y: 0, z: 4, color: 'lightGray' },
     { x: 5, y: 0, z: 4, color: 'lightGray' },
+    { x: 6, y: 0, z: 4, color: 'lightGray' },
+    { x: 1, y: 0, z: 5, color: 'lightGray' },
     { x: 2, y: 0, z: 5, color: 'lightGray' },
     { x: 3, y: 0, z: 5, color: 'lightGray' },
     { x: 4, y: 0, z: 5, color: 'lightGray' },
     { x: 5, y: 0, z: 5, color: 'lightGray' },
-    { x: 3, y: 1, z: 3, color: 'white' },
-    { x: 4, y: 1, z: 3, color: 'white' },
-    { x: 3, y: 1, z: 4, color: 'white' },
-    { x: 4, y: 1, z: 4, color: 'white' },
-    { x: 3, y: 2, z: 3, color: 'red' },
-    { x: 4, y: 2, z: 3, color: 'red' },
-    { x: 3, y: 2, z: 4, color: 'red' },
-    { x: 4, y: 2, z: 4, color: 'red' },
-    { x: 3, y: 3, z: 3, color: 'white' },
-    { x: 4, y: 3, z: 3, color: 'white' },
-    { x: 3, y: 3, z: 4, color: 'white' },
-    { x: 4, y: 3, z: 4, color: 'white' },
-    { x: 2, y: 4, z: 2, color: 'lightGray' },
-    { x: 3, y: 4, z: 2, color: 'lightGray' },
-    { x: 4, y: 4, z: 2, color: 'lightGray' },
-    { x: 5, y: 4, z: 2, color: 'lightGray' },
-    { x: 2, y: 4, z: 3, color: 'lightGray' },
-    { x: 3, y: 4, z: 3, color: 'lightGray' },
-    { x: 4, y: 4, z: 3, color: 'lightGray' },
-    { x: 5, y: 4, z: 3, color: 'lightGray' },
-    { x: 2, y: 4, z: 4, color: 'lightGray' },
-    { x: 3, y: 4, z: 4, color: 'lightGray' },
-    { x: 4, y: 4, z: 4, color: 'lightGray' },
-    { x: 5, y: 4, z: 4, color: 'lightGray' },
-    { x: 2, y: 4, z: 5, color: 'lightGray' },
-    { x: 3, y: 4, z: 5, color: 'lightGray' },
-    { x: 4, y: 4, z: 5, color: 'lightGray' },
-    { x: 5, y: 4, z: 5, color: 'lightGray' },
-    { x: 3, y: 5, z: 3, color: 'yellow' },
-    { x: 4, y: 5, z: 3, color: 'yellow' },
-    { x: 3, y: 5, z: 4, color: 'yellow' },
-    { x: 4, y: 5, z: 4, color: 'yellow' },
+    { x: 6, y: 0, z: 5, color: 'lightGray' },
+    { x: 1, y: 0, z: 6, color: 'lightGray' },
+    { x: 2, y: 0, z: 6, color: 'lightGray' },
+    { x: 3, y: 0, z: 6, color: 'lightGray' },
+    { x: 4, y: 0, z: 6, color: 'lightGray' },
+    { x: 5, y: 0, z: 6, color: 'lightGray' },
+    { x: 6, y: 0, z: 6, color: 'lightGray' },
+    { x: 1, y: 1, z: 1, color: 'lightGray' },
+    { x: 2, y: 1, z: 1, color: 'lightGray' },
+    { x: 3, y: 1, z: 1, color: 'lightGray' },
+    { x: 4, y: 1, z: 1, color: 'lightGray' },
+    { x: 5, y: 1, z: 1, color: 'lightGray' },
+    { x: 6, y: 1, z: 1, color: 'lightGray' },
+    { x: 1, y: 1, z: 2, color: 'lightGray' },
+    { x: 2, y: 1, z: 2, color: 'lightGray' },
+    { x: 3, y: 1, z: 2, color: 'lightGray' },
+    { x: 4, y: 1, z: 2, color: 'lightGray' },
+    { x: 5, y: 1, z: 2, color: 'lightGray' },
+    { x: 6, y: 1, z: 2, color: 'lightGray' },
+    { x: 1, y: 1, z: 3, color: 'lightGray' },
+    { x: 2, y: 1, z: 3, color: 'lightGray' },
+    { x: 3, y: 1, z: 3, color: 'lightGray' },
+    { x: 4, y: 1, z: 3, color: 'lightGray' },
+    { x: 5, y: 1, z: 3, color: 'lightGray' },
+    { x: 6, y: 1, z: 3, color: 'lightGray' },
+    { x: 1, y: 1, z: 4, color: 'lightGray' },
+    { x: 2, y: 1, z: 4, color: 'lightGray' },
+    { x: 3, y: 1, z: 4, color: 'lightGray' },
+    { x: 4, y: 1, z: 4, color: 'lightGray' },
+    { x: 5, y: 1, z: 4, color: 'lightGray' },
+    { x: 6, y: 1, z: 4, color: 'lightGray' },
+    { x: 1, y: 1, z: 5, color: 'lightGray' },
+    { x: 2, y: 1, z: 5, color: 'lightGray' },
+    { x: 3, y: 1, z: 5, color: 'lightGray' },
+    { x: 4, y: 1, z: 5, color: 'lightGray' },
+    { x: 5, y: 1, z: 5, color: 'lightGray' },
+    { x: 6, y: 1, z: 5, color: 'lightGray' },
+    { x: 1, y: 1, z: 6, color: 'lightGray' },
+    { x: 2, y: 1, z: 6, color: 'lightGray' },
+    { x: 3, y: 1, z: 6, color: 'lightGray' },
+    { x: 4, y: 1, z: 6, color: 'lightGray' },
+    { x: 5, y: 1, z: 6, color: 'lightGray' },
+    { x: 6, y: 1, z: 6, color: 'lightGray' },
+    { x: 2, y: 2, z: 3, color: 'white' },
+    { x: 3, y: 2, z: 3, color: 'white' },
+    { x: 4, y: 2, z: 3, color: 'white' },
+    { x: 5, y: 2, z: 3, color: 'white' },
+    { x: 2, y: 2, z: 4, color: 'white' },
+    { x: 3, y: 2, z: 4, color: 'white' },
+    { x: 4, y: 2, z: 4, color: 'white' },
+    { x: 5, y: 2, z: 4, color: 'white' },
+    { x: 2, y: 2, z: 5, color: 'white' },
+    { x: 3, y: 2, z: 5, color: 'white' },
+    { x: 4, y: 2, z: 5, color: 'white' },
+    { x: 5, y: 2, z: 5, color: 'white' },
+    { x: 2, y: 2, z: 6, color: 'white' },
+    { x: 3, y: 2, z: 6, color: 'white' },
+    { x: 4, y: 2, z: 6, color: 'white' },
+    { x: 5, y: 2, z: 6, color: 'white' },
+    { x: 2, y: 3, z: 3, color: 'white' },
+    { x: 3, y: 3, z: 3, color: 'yellow' },
+    { x: 4, y: 3, z: 3, color: 'yellow' },
+    { x: 5, y: 3, z: 3, color: 'white' },
+    { x: 2, y: 3, z: 4, color: 'white' },
+    { x: 3, y: 3, z: 4, color: 'yellow' },
+    { x: 4, y: 3, z: 4, color: 'yellow' },
+    { x: 5, y: 3, z: 4, color: 'white' },
+    { x: 2, y: 3, z: 5, color: 'white' },
+    { x: 3, y: 3, z: 5, color: 'yellow' },
+    { x: 4, y: 3, z: 5, color: 'yellow' },
+    { x: 5, y: 3, z: 5, color: 'white' },
+    { x: 2, y: 3, z: 6, color: 'white' },
+    { x: 3, y: 3, z: 6, color: 'yellow' },
+    { x: 4, y: 3, z: 6, color: 'yellow' },
+    { x: 5, y: 3, z: 6, color: 'white' },
+    { x: 2, y: 4, z: 3, color: 'white' },
+    { x: 3, y: 4, z: 3, color: 'yellow' },
+    { x: 4, y: 4, z: 3, color: 'yellow' },
+    { x: 5, y: 4, z: 3, color: 'white' },
+    { x: 2, y: 4, z: 4, color: 'white' },
+    { x: 3, y: 4, z: 4, color: 'yellow' },
+    { x: 4, y: 4, z: 4, color: 'yellow' },
+    { x: 5, y: 4, z: 4, color: 'white' },
+    { x: 2, y: 4, z: 5, color: 'white' },
+    { x: 3, y: 4, z: 5, color: 'yellow' },
+    { x: 4, y: 4, z: 5, color: 'yellow' },
+    { x: 5, y: 4, z: 5, color: 'white' },
+    { x: 2, y: 4, z: 6, color: 'white' },
+    { x: 3, y: 4, z: 6, color: 'yellow' },
+    { x: 4, y: 4, z: 6, color: 'yellow' },
+    { x: 5, y: 4, z: 6, color: 'white' },
+    { x: 3, y: 5, z: 3, color: 'white' },
+    { x: 4, y: 5, z: 3, color: 'white' },
+    { x: 3, y: 5, z: 4, color: 'white' },
+    { x: 4, y: 5, z: 4, color: 'white' },
+    { x: 3, y: 5, z: 5, color: 'white' },
+    { x: 4, y: 5, z: 5, color: 'white' },
+    { x: 3, y: 5, z: 6, color: 'white' },
+    { x: 4, y: 5, z: 6, color: 'white' },
     { x: 3, y: 6, z: 3, color: 'red' },
     { x: 4, y: 6, z: 3, color: 'red' },
     { x: 3, y: 6, z: 4, color: 'red' },
     { x: 4, y: 6, z: 4, color: 'red' },
-    { x: 3, y: 7, z: 3, color: 'red' },
-    { x: 4, y: 7, z: 3, color: 'red' },
-    { x: 3, y: 7, z: 4, color: 'red' },
-    { x: 4, y: 7, z: 4, color: 'red' },
+    { x: 3, y: 6, z: 5, color: 'red' },
+    { x: 4, y: 6, z: 5, color: 'red' },
+    { x: 3, y: 6, z: 6, color: 'red' },
+    { x: 4, y: 6, z: 6, color: 'red' },
+    { x: 3, y: 7, z: 3, color: 'white' },
+    { x: 4, y: 7, z: 3, color: 'white' },
+    { x: 3, y: 7, z: 4, color: 'white' },
+    { x: 4, y: 7, z: 4, color: 'white' },
+    { x: 3, y: 7, z: 5, color: 'white' },
+    { x: 4, y: 7, z: 5, color: 'white' },
+    { x: 3, y: 7, z: 6, color: 'white' },
+    { x: 4, y: 7, z: 6, color: 'white' },
   ],
 };
 
@@ -70,107 +158,114 @@ export default grid;
 
 /* pass 1 — silhouettes:
 front:
-...RR...
-...RR...
-...YY...
-..LLLL..
 ...WW...
 ...RR...
 ...WW...
-..LLLL..
+..WYYW..
+..WYYW..
+..WWWW..
+.LLLLLL.
+.LLLLLL.
 
 side:
-...RR...
-...RR...
-...YY...
-..LLLL..
 ...WW...
 ...RR...
 ...WW...
-..LLLL..
+..WYYW..
+..WYYW..
+..WWWW..
+.LLLLLL.
+.LLLLLL.
 
 top:
 ........
-........
-..LLLL..
-..LRRL..
-..LRRL..
-..LLLL..
-........
+.LLLLLL.
+.LLLLLL.
+.LLWWLL.
+.LLWWLL.
+.LLLLLL.
+.LLLLLL.
 ........
 */
 
 /* pass 2 — voxel layers:
 y=0
 ........
+.LLLLLL.
+.LLLLLL.
+.LLLLLL.
+.LLLLLL.
+.LLLLLL.
+.LLLLLL.
 ........
-..LLLL..
-..LLLL..
-..LLLL..
-..LLLL..
-........
-........
+
 y=1
 ........
+.LLLLLL.
+.LLLLLL.
+.LLLLLL.
+.LLLLLL.
+.LLLLLL.
+.LLLLLL.
 ........
-........
-...WW...
-...WW...
-........
-........
-........
+
 y=2
 ........
 ........
 ........
-...RR...
-...RR...
+..WWWW..
+..WWWW..
+..WWWW..
+..WWWW..
 ........
-........
-........
+
 y=3
 ........
 ........
 ........
-...WW...
-...WW...
+..WYYW..
+..WYYW..
+..WYYW..
+..WYYW..
 ........
-........
-........
+
 y=4
 ........
 ........
-..LLLL..
-..LLLL..
-..LLLL..
-..LLLL..
 ........
+..WYYW..
+..WYYW..
+..WYYW..
+..WYYW..
 ........
+
 y=5
 ........
 ........
 ........
-...YY...
-...YY...
+...WW...
+...WW...
+...WW...
+...WW...
 ........
-........
-........
+
 y=6
 ........
 ........
 ........
 ...RR...
 ...RR...
+...RR...
+...RR...
 ........
-........
-........
+
 y=7
 ........
 ........
 ........
-...RR...
-...RR...
-........
-........
+...WW...
+...WW...
+...WW...
+...WW...
 ........
 */
