@@ -23,6 +23,15 @@ recognizable LEGO-instruction aesthetic wrapped around voxel slop — is
 itself a portfolio of how the craftwork holds up while the spatial-AI
 craftwork catches up.
 
+The 15 LLM-only outputs from the previous phase are preserved as a
+snapshot at `src/voxel/generated/baseline-llm/`. The gallery's
+"Baseline" section shows them so the new pipeline's outputs can be
+compared side-by-side. **Don't delete this folder** — it's the
+visual reference for how much (or how little) the new approach
+improves on prompt-engineering-only generation. See
+[CLAUDE.md § Snapshots of past approaches](CLAUDE.md#snapshots-of-past-approaches)
+for the snapshot convention to follow when the next approach ships.
+
 ## What we already have
 
 | Stage | Status |

@@ -55,7 +55,8 @@ src/
     projections.ts      # voxel grid → 3 orthographic silhouettes + layer ASCII
     transform.ts        # rotateGrid (90° axis swap), shiftToGround
     analyze.ts          # BFS connectivity, ground-touch, unsupported-voxel count
-    generated/          # CLI output dir (one .ts file per generated model)
+    generated/          # CLI output dir (current pipeline writes flat .ts files here)
+    generated/baseline-llm/   # frozen snapshot of the LLM-only draft+revise outputs
   render/
     iso.ts              # 30° isometric projection math + render constants
     palette.ts          # 8-color palette, desaturation, face-darken rules
@@ -148,11 +149,12 @@ npm test            # unit tests (parser, packer, step splitter, iso math, etc.)
 Two views, toggled by query string:
 
 - `http://localhost:5195/` — booklet view (hand-authored duck)
-- `http://localhost:5195/?gallery=1` — gallery: 3-column grid of every
-  model in `src/voxel/generated/` plus the three reference models
-  (duck, tree, house). Click a tile to rotate the view 90°. Tiles
-  display a connectivity badge (solid / N unsupported / broken multi-part
-  or floating).
+- `http://localhost:5195/?gallery=1` — gallery, split into sections:
+  **Current pipeline** (`src/voxel/generated/*.ts`), **Baseline — LLM-only**
+  (`src/voxel/generated/baseline-llm/*.ts`, a frozen snapshot), and
+  **Hand-authored references** (duck, tree, house). Click a tile to
+  rotate the view 90°. Tiles display a connectivity badge
+  (solid / N unsupported / broken).
 
 ## Generation CLI
 
@@ -249,3 +251,18 @@ have the spatial vocabulary to add them back convincingly.
   visual snapshots.
 - Files stay small. The render layer is a few hundred lines total;
   keep it that way.
+
+### Snapshots of past approaches
+
+When swapping the generation approach (e.g. moving from the LLM-only
+pipeline to a text-to-3D pipeline), freeze the previous batch of
+outputs into `src/voxel/generated/<name>/` rather than overwriting
+them. The Gallery picks up named subfolders as separate sections so
+the new approach is comparable against the old one visually.
+
+Naming convention: `baseline-<approach>` (e.g. `baseline-llm`,
+`baseline-trellis`). Each snapshot is a flat folder of `.ts` files
+with the same structure as the current pipeline output, but with
+`import type { VoxelGrid } from '../../types.ts'` (one extra `..`
+because of the deeper nesting). Glob the snapshot into `Gallery.tsx`
+and add a section header naming the approach.
