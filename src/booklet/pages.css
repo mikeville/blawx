@@ -169,3 +169,148 @@
   width: 100%;
   height: 100%;
 }
+
+.gallery {
+  min-height: 100vh;
+  background: #f4f4f1;
+  padding: 48px 32px 96px;
+  font-family: 'Helvetica Neue', Helvetica, Arial, 'Univers', sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+.gallery__header {
+  max-width: 1200px;
+  margin: 0 auto 32px;
+}
+
+.gallery__header h1 {
+  font-weight: 900;
+  font-size: 28px;
+  letter-spacing: -0.02em;
+  margin: 0 0 6px;
+}
+
+.gallery__header p {
+  font-size: 14px;
+  color: #555;
+  margin: 0;
+}
+
+.gallery__grid {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 28px;
+}
+
+.gallery__tile {
+  background: #ffffff;
+  border: 1px solid #d0d0cc;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.gallery__scene {
+  position: relative;
+  aspect-ratio: 1 / 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 18px;
+  border-bottom: 1px solid #ececea;
+  background: none;
+  border-left: none;
+  border-right: none;
+  border-top: none;
+  width: 100%;
+  cursor: pointer;
+  font: inherit;
+  color: inherit;
+  transition: background-color 0.12s ease;
+}
+
+.gallery__scene:hover {
+  background-color: #fafaf8;
+}
+
+.gallery__rotation {
+  position: absolute;
+  bottom: 8px;
+  right: 12px;
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  color: #aaa;
+  font-variant-numeric: tabular-nums;
+  text-transform: uppercase;
+}
+
+.gallery__scene svg {
+  width: 100%;
+  height: 100%;
+}
+
+.gallery__tile figcaption {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 8px;
+  padding: 12px 16px 14px;
+  font-variant-numeric: tabular-nums;
+}
+
+.gallery__tile--broken {
+  outline: 2px solid #c8102e;
+  outline-offset: -1px;
+}
+
+.gallery__badge {
+  font-size: 11px;
+  letter-spacing: 0.02em;
+  padding: 2px 7px;
+  border-radius: 2px;
+  text-transform: lowercase;
+  font-weight: 600;
+  flex: 0 0 auto;
+}
+
+.gallery__badge--ok {
+  background: #e7f1e8;
+  color: #2e7d32;
+}
+
+.gallery__badge--warn {
+  background: #fff4d6;
+  color: #8a6300;
+}
+
+.gallery__badge--broken {
+  background: #ffe1e6;
+  color: #c8102e;
+}
+
+.gallery__term {
+  font-weight: 700;
+  font-size: 16px;
+  letter-spacing: -0.01em;
+  text-transform: lowercase;
+}
+
+.gallery__count {
+  font-size: 12px;
+  color: #888;
+  letter-spacing: 0.04em;
+}
+
+@media (max-width: 900px) {
+  .gallery__grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 600px) {
+  .gallery__grid {
+    grid-template-columns: 1fr;
+  }
+}

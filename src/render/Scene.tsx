@@ -1,6 +1,6 @@
 import type { Brick } from '../voxel/types.ts';
 import { project, UNIT, PLATE_HEIGHT_RATIO } from './iso.ts';
-import { BrickShape } from './Brick.tsx';
+import { BrickShape, type BrickStyle } from './Brick.tsx';
 
 type Props = {
   cumulative: Brick[];
@@ -9,6 +9,12 @@ type Props = {
   margin?: number;
   width?: number;
   height?: number;
+  style?: BrickStyle;
+};
+
+const HEIGHT_RATIO: Record<BrickStyle, number> = {
+  plate: PLATE_HEIGHT_RATIO,
+  cube: 1.0,
 };
 
 type Sortable = { brick: Brick; desaturated: boolean };
@@ -17,15 +23,15 @@ function depthKey(b: Brick): number {
   return b.y * 1000 + (b.x + b.z);
 }
 
-function computeExtents(bricks: Brick[], unit: number) {
+function computeExtents(bricks: Brick[], unit: number, heightRatio: number) {
   if (bricks.length === 0) return { minX: 0, maxX: 0, minY: 0, maxY: 0 };
   let minX = Infinity;
   let maxX = -Infinity;
   let minY = Infinity;
   let maxY = -Infinity;
   for (const b of bricks) {
-    const yBot = b.y * PLATE_HEIGHT_RATIO;
-    const yTop = (b.y + 1) * PLATE_HEIGHT_RATIO;
+    const yBot = b.y * heightRatio;
+    const yTop = (b.y + 1) * heightRatio;
     const corners = [
       project(b.x,         yBot, b.z,         unit),
       project(b.x + b.w,   yBot, b.z,         unit),
@@ -53,6 +59,7 @@ export function Scene({
   margin = 28,
   width,
   height,
+  style = 'plate',
 }: Props) {
   const items: Sortable[] = [
     ...cumulative.map(brick => ({ brick, desaturated: true })),
@@ -61,7 +68,7 @@ export function Scene({
   items.sort((a, b) => depthKey(a.brick) - depthKey(b.brick));
 
   const allBricks = items.map(i => i.brick);
-  const ext = computeExtents(allBricks, unit);
+  const ext = computeExtents(allBricks, unit, HEIGHT_RATIO[style]);
   const vbX = ext.minX - margin;
   const vbY = ext.minY - margin;
   const vbW = ext.maxX - ext.minX + margin * 2;
@@ -77,7 +84,7 @@ export function Scene({
       shapeRendering="geometricPrecision"
     >
       {items.map(({ brick, desaturated }, i) => (
-        <BrickShape key={i} brick={brick} desaturated={desaturated} unit={unit} />
+        <BrickShape key={i} brick={brick} desaturated={desaturated} unit={unit} style={style} />
       ))}
     </svg>
   );

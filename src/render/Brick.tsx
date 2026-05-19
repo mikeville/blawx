@@ -2,22 +2,32 @@ import type { Brick } from '../voxel/types.ts';
 import { project, UNIT, PLATE_HEIGHT_RATIO, STUD_RADIUS_RATIO, STUD_HEIGHT_RATIO } from './iso.ts';
 import { fillFor, OUTLINE } from './palette.ts';
 
+export type BrickStyle = 'plate' | 'cube';
+
 type Props = {
   brick: Brick;
   desaturated: boolean;
   unit?: number;
+  style?: BrickStyle;
 };
 
 const STROKE = 1.5;
+
+const HEIGHT_RATIO: Record<BrickStyle, number> = {
+  plate: PLATE_HEIGHT_RATIO,
+  cube: 1.0,
+};
 
 function poly(points: Array<{ x: number; y: number }>): string {
   return points.map(p => `${p.x.toFixed(3)},${p.y.toFixed(3)}`).join(' ');
 }
 
-export function BrickShape({ brick, desaturated, unit = UNIT }: Props) {
+export function BrickShape({ brick, desaturated, unit = UNIT, style = 'plate' }: Props) {
   const { x: bx, y: by, z: bz, w, d, color } = brick;
-  const yBot = by * PLATE_HEIGHT_RATIO;
-  const yTop = (by + 1) * PLATE_HEIGHT_RATIO;
+  const heightRatio = HEIGHT_RATIO[style];
+  const yBot = by * heightRatio;
+  const yTop = (by + 1) * heightRatio;
+  const showStuds = style === 'plate';
 
   const TBL = project(bx,     yTop, bz,     unit);
   const TBR = project(bx + w, yTop, bz,     unit);
@@ -53,7 +63,7 @@ export function BrickShape({ brick, desaturated, unit = UNIT }: Props) {
       <polygon points={poly([TBR, TFR, BFR, BBR])} fill={rightFill} vectorEffect="non-scaling-stroke" />
       <polygon points={poly([TFL, TFR, BFR, BFL])} fill={leftFill} vectorEffect="non-scaling-stroke" />
       <polygon points={poly([TBL, TBR, TFR, TFL])} fill={topFill} vectorEffect="non-scaling-stroke" />
-      {studs.map((s, i) => {
+      {showStuds && studs.map((s, i) => {
         const sideLeftX = s.cx - studR;
         const sideRightX = s.cx + studR;
         return (
