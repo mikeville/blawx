@@ -6,6 +6,29 @@ Panter-era LEGO instructions — flat color, hard black outline, no shading,
 no gradients, no logos on studs, no wordmarks. Single-page, single-step
 booklets with a parts inventory and bare-numeral steps.
 
+## Status (read this before iterating)
+
+**The instruction-rendering half of the project is solid.** The voxel
+booklet renderer, brick packer, step pagination, palette grammar, and
+validation gallery are all working. The visual aesthetic reads as
+period-correct LEGO instructions.
+
+**The voxel-form-generation half hit a ceiling.** Asking Claude to design
+a voxel object from a search term at 8³ resolution produces recognizable
+results for cubic stacks (chair, hat, house) and fails consistently on
+anything with protrusions (animals, tools with thin features, vessels
+with handles). We tried four iterations of prompt design — see "What we
+tried" below. The honest score on the strict bar ("would a stranger
+guess this without the label?") is roughly 5/15 strong outputs.
+
+**Next direction (see [NEXT-DIRECTION.md](NEXT-DIRECTION.md))**: reframe
+the project as a pipeline where each stage can be swapped or improved
+independently. Replace the LLM-only form-generation step with an
+external text-to-3D model + voxelization, and keep our existing
+instruction-rendering stack downstream. The current 15 generated models
+stay in `src/voxel/generated/` as a baseline for future approaches to
+improve over.
+
 ## Stack
 
 - Vite 8 + React 19 + TypeScript 6, strict mode (`noUnusedLocals`,
@@ -24,9 +47,14 @@ booklets with a parts inventory and bare-numeral steps.
 src/
   voxel/
     types.ts            # VoxelGrid, Voxel, Brick — 8³ world
-    sampleDuck.ts       # hand-authored reference duck
+    sampleDuck.ts       # hand-authored reference duck (used in prompts + gallery)
+    sampleTree.ts       # hand-authored reference tree
+    sampleHouse.ts      # hand-authored reference house
     pack.ts             # greedy 2×2 plate packer (deterministic top-left scan)
     steps.ts            # layer → step pagination
+    projections.ts      # voxel grid → 3 orthographic silhouettes + layer ASCII
+    transform.ts        # rotateGrid (90° axis swap), shiftToGround
+    analyze.ts          # BFS connectivity, ground-touch, unsupported-voxel count
     generated/          # CLI output dir (one .ts file per generated model)
   render/
     iso.ts              # 30° isometric projection math + render constants
@@ -43,8 +71,14 @@ src/
     pages.css
 scripts/
   generate.ts           # CLI: term → Anthropic API → VoxelGrid → .ts file
-  promptSystem.ts       # the cached system prompt for the generator
+  promptDraft.ts        # current first-pass system prompt (draft layers)
+  promptRevise.ts       # current second-pass system prompt (critique + revise)
+  promptPass1.ts        # earlier silhouette-planning prompt (kept for diffing)
+  promptPass2.ts        # earlier silhouette-realization prompt (kept for diffing)
+  promptSystem.ts       # earliest single-shot prompt (kept for diffing)
   parseAsciiLayers.ts   # parser: layered-ASCII model output → VoxelGrid
+  parseSilhouettes.ts   # parser for the silhouette-pass format (unused now)
+  extractRevised.ts     # splits critique:/revised: blocks in pass-2 response
 ```
 
 ## Voxel and brick rules
@@ -67,9 +101,10 @@ scripts/
 
   Color hex values are defined in [src/render/palette.ts](src/render/palette.ts).
 
-- **Connectivity**: every voxel must be face-adjacent to at least one
-  other voxel in the model. The model is a single connected piece that
-  touches the ground (some voxel at y=0).
+- **Connectivity rule**: every voxel must be face-adjacent to at least
+  one other voxel in the model. The model is a single connected piece
+  that touches the ground (some voxel at y=0). [analyze.ts](src/voxel/analyze.ts)
+  enforces this via BFS.
 
 - **Voxel → brick packing**: `pack.ts` runs per Y-layer, scanning in
   row-major order (z ascending, then x ascending). At each unconsumed
@@ -107,51 +142,102 @@ scripts/
 ```
 npm install
 npm run dev         # http://localhost:5195
-npm test            # unit tests (parser, packer, step splitter, iso math)
+npm test            # unit tests (parser, packer, step splitter, iso math, etc.)
 ```
 
 Two views, toggled by query string:
 
-- `http://localhost:5195/` — booklet view (Phase 1 hand-authored duck)
-- `http://localhost:5195/?gallery=1` — gallery: 3-column grid of
-  finished bare-cube isometric views of every model in
-  `src/voxel/generated/` (plus the reference duck). Used to validate
-  generated voxel forms before they go through the booklet pipeline.
+- `http://localhost:5195/` — booklet view (hand-authored duck)
+- `http://localhost:5195/?gallery=1` — gallery: 3-column grid of every
+  model in `src/voxel/generated/` plus the three reference models
+  (duck, tree, house). Click a tile to rotate the view 90°. Tiles
+  display a connectivity badge (solid / N unsupported / broken multi-part
+  or floating).
 
 ## Generation CLI
 
-The booklet renders any `VoxelGrid`. The generator produces those grids
-from a search term.
-
 ```
-# one-time setup: put your API key in .env.local
+# one-time setup
 echo 'ANTHROPIC_API_KEY=sk-ant-...' > .env.local
 
-# generate a single model
-npm run generate -- "mushroom"
-
-# generate several in one batch
-npm run generate -- "duck" "chair" "lighthouse" "cat"
+# generate one or more models
+npm run generate -- "mushroom" "lighthouse"
 ```
 
-Output goes to `src/voxel/generated/<slug>.ts` as a default-exported
-`VoxelGrid` plus a `term` constant. The raw model output is preserved
-as a trailing block comment for debugging.
+Output goes to `src/voxel/generated/<slug>.ts`. The file embeds the
+raw draft, critique, and revised model output as trailing block
+comments for debugging.
 
-Under the hood:
+Pipeline:
 
-1. `scripts/generate.ts` loads `.env.local`, calls
-   `claude-opus-4-7` with extended thinking enabled.
-2. The system prompt (cached via `cache_control: ephemeral`) describes
-   the 8³ grid, the palette letters, the hard rules, the output format,
-   and gives the hand-authored duck as a worked example. See
-   [scripts/promptSystem.ts](scripts/promptSystem.ts).
-3. The model returns 8 layers (`y=0` to `y=7`) of 8×8 ASCII grids.
-4. `parseAsciiLayers` (defensive — handles markdown fences,
-   space-separated cells, lowercase letters, missing headers, prose
-   between rows) converts the ASCII to a `VoxelGrid`.
-5. The grid is written to disk and shows up in the gallery on next
-   reload.
+1. `scripts/generate.ts` loads `.env.local` and calls `claude-opus-4-7`.
+2. **Draft pass** — system prompt is
+   [promptDraft.ts](scripts/promptDraft.ts) (single-shot voxel layers
+   with three worked examples: duck, tree, house, derived from the
+   `sampleX.ts` reference grids via [projections.ts](src/voxel/projections.ts)).
+3. Parse + auto-fix (shift to ground if floating). Compute objective
+   metrics via [analyze.ts](src/voxel/analyze.ts).
+4. **Revise pass** — system prompt is
+   [promptRevise.ts](scripts/promptRevise.ts). User message includes
+   the draft + metrics ("84 voxels, 1 component, touches ground, 17
+   unsupported"). Model responds with `critique:` + `revised:` blocks.
+5. Parse revised layers, validate, write the `.ts` file.
+
+## What we tried for voxel-form generation (and what we learned)
+
+This section is here so future sessions don't redo work that didn't
+help. **Calibrate down from anything that sounds like a win** —
+self-reported "improvements" in this session were sometimes generous;
+the strict-bar scoring is what matters.
+
+Four levers, in chronological order:
+
+1. **Single-shot with one duck example.** Baseline. ~1/15 strong on
+   the strict bar (chair). Most outputs are cubic blobs with thematic
+   colors but no form discrimination. 8/15 unrecognizable.
+
+2. **Two-pass: silhouettes → voxel layers.** Pass 1 produced front,
+   side, and top orthographic projections; pass 2 realized them as
+   voxels. Marginal improvement (~2/15). Failure mode: pass 2 over-fills
+   interiors to satisfy three independent 2D projections, producing
+   denser blobs than pass 1's silhouettes suggested. Also, pass 1's
+   three views are often mutually inconsistent (different shapes from
+   each angle). Files: [promptPass1.ts](scripts/promptPass1.ts),
+   [promptPass2.ts](scripts/promptPass2.ts), [parseSilhouettes.ts](scripts/parseSilhouettes.ts),
+   [projections.ts](src/voxel/projections.ts).
+
+3. **Multi-example anchoring (3 reference grids).** Single-shot but
+   with duck + tree + house as worked examples instead of just duck.
+   This was the biggest real jump — broke a strong "duck-shape bias"
+   we'd been inducing. ~5/15 strong on strict scoring. The 3-reference
+   approach is worth keeping in any future LLM-as-designer pipeline.
+   Files: [sampleTree.ts](src/voxel/sampleTree.ts),
+   [sampleHouse.ts](src/voxel/sampleHouse.ts).
+
+4. **Draft + revise (current).** Pass 1 produces a draft; pass 2 is
+   shown its own draft + objective metrics and asked to self-critique
+   then produce revised layers. The critiques are often surgical
+   ("the head sits awkwardly with no neck connection, no ears or tail
+   visible"). The revisions partially follow them. ~5/15 strong on
+   strict scoring — small lift over multi-example alone. Hit the
+   ceiling here. Files: [promptDraft.ts](scripts/promptDraft.ts),
+   [promptRevise.ts](scripts/promptRevise.ts),
+   [extractRevised.ts](scripts/extractRevised.ts).
+
+**Failure pattern that explains all of the above**: Claude composes
+cubic objects (chair, hat, house, lighthouse) reasonably well because
+each is a small stack of rectangular masses. Claude fails on objects
+needing **protrusions** (animal legs, mug handles, fish fins, fox
+ears) because at 8³ each protrusion costs 1–3 voxels out of a
+60-voxel budget and Claude doesn't have a strong prior for how to
+spend that budget. This is a resolution ceiling on a non-spatial
+reasoner. More prompt engineering will not break it. Adding more
+self-critique iterations probably wouldn't help either — Claude
+correctly identifies missing features in its critiques but doesn't
+have the spatial vocabulary to add them back convincingly.
+
+**Honest takeaway**: the LLM-only path is exhausted for now. See
+[NEXT-DIRECTION.md](NEXT-DIRECTION.md).
 
 ## Conventions
 
