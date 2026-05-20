@@ -106,12 +106,6 @@ function Tile({ term, grid, conn }: TileProps) {
   );
 }
 
-type Section = {
-  title: string;
-  subtitle: string;
-  entries: Entry[];
-};
-
 function withConn(entries: Entry[]): Array<Entry & { conn: Connectivity }> {
   return entries.map(e => ({ ...e, conn: analyze(e.grid) }));
 }

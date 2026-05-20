@@ -16,12 +16,20 @@ export function Booklet({ grid, setNumber }: Props) {
   const finalBricks = allBricks(steps);
   return (
     <div className="booklet">
-      <TitlePage bricks={finalBricks} setNumber={setNumber} />
-      <InventoryPage bricks={finalBricks} />
+      <div className="page-wrap page-wrap--span">
+        <TitlePage bricks={finalBricks} setNumber={setNumber} />
+      </div>
+      <div className="page-wrap">
+        <InventoryPage bricks={finalBricks} />
+      </div>
       {steps.map((step, i) => (
-        <StepPage key={i} step={step} number={i + 1} />
+        <div key={i} className="page-wrap">
+          <StepPage step={step} number={i + 1} />
+        </div>
       ))}
-      <FinalPage bricks={finalBricks} setNumber={setNumber} />
+      <div className="page-wrap page-wrap--span">
+        <FinalPage bricks={finalBricks} setNumber={setNumber} />
+      </div>
     </div>
   );
 }
