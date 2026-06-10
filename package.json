@@ -8,7 +8,8 @@
     "build": "tsc -b && vite build",
     "preview": "vite preview --host",
     "test": "tsx --test 'src/**/*.test.ts' 'scripts/**/*.test.ts'",
-    "generate": "tsx scripts/generate.ts"
+    "generate": "tsx scripts/generate.ts",
+    "generate3d": "tsx scripts/generate3d.ts"
   },
   "dependencies": {
     "react": "^19.2.6",
