@@ -85,7 +85,8 @@ async function createPrediction(term: string): Promise<Prediction> {
   const res = await fetch(`${API}/models/${MODEL}/predictions`, {
     method: 'POST',
     headers: { ...authHeaders(), Prefer: 'wait=60' },
-    body: JSON.stringify({ input: { prompt: term } }),
+    // face_count: schema minimum — we downsample to 8³, detail is wasted.
+    body: JSON.stringify({ input: { prompt: term, face_count: 40000 } }),
   });
   if (!res.ok) {
     throw new Error(
