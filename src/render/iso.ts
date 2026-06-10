@@ -1,5 +1,5 @@
 export const UNIT = 22;
-export const PLATE_HEIGHT_RATIO = 0.4;
+export const PLATE_HEIGHT_RATIO = 0.8;
 export const STUD_RADIUS_RATIO = 0.28;
 export const STUD_HEIGHT_RATIO = 0.16;
 

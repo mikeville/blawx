@@ -143,7 +143,7 @@ export function Gallery() {
     const broken = brokenIn(baselineLlmEntries);
     sections.push({
       title: 'Baseline — LLM-only (draft + revise)',
-      subtitle: `${baselineLlmEntries.length} models, saved snapshot. ${broken > 0 ? `${broken} broken. ` : ''}See NEXT-DIRECTION.md for why this is preserved.`,
+      subtitle: `${baselineLlmEntries.length} models, saved snapshot. ${broken > 0 ? `${broken} broken. ` : ''}`,
       entries: baselineLlmEntries,
     });
   }
