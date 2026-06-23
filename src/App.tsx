@@ -1,6 +1,7 @@
 import { useEffect, useState, type ReactNode } from 'react';
 import { Booklet } from './booklet/Booklet.tsx';
 import { Gallery } from './booklet/Gallery.tsx';
+import { Comparison } from './booklet/Comparison.tsx';
 import { SearchLanding } from './search/SearchLanding.tsx';
 import { generateBooklet, type ProgressEvent } from './api/generateClient.ts';
 import { setNumberFor, slug } from './api/slug.ts';
@@ -23,6 +24,7 @@ function readQuery(): string | null {
 
 export default function App() {
   const params = new URLSearchParams(window.location.search);
+  if (params.has('compare')) return <Comparison />;
   if (params.has('gallery')) return <Gallery />;
   return <AppMain />;
 }
