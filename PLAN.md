@@ -23,7 +23,7 @@ Concrete sources for Phase 4: Sketchfab `#voxel` / `#magicavoxel` tags
 (native `.vox`, searchable by noun, CC-BY), `enkisoftware/voxel-models`
 on GitHub (CC-BY 4.0, hand-authored by pro voxel artists), and
 hand-authoring in MagicaVoxel to fill body-plan gaps. Per
-`notes/research-voxel-sources/Isometric Sprite Ecosystem Topology.md`.
+`../notes/research-voxel-sources/Isometric Sprite Ecosystem Topology.md`.
 
 ## Core framing (working hypotheses — plausible lenses, not verified facts;
 ## the Phase 1 benchmark is what tests them)
@@ -87,8 +87,9 @@ Specific questions the repo must answer before implementation:
   (fox, bird, fish, flower, tree), hard (octopus, dragon, "love",
   multi-word phrases).
 - Neutral iso renderer for eval (decoupled from LEGO skin; small
-  in-house projector sharing `iso.ts`'s projection constants). Primary
-  render is **monotone** so form quality isn't confounded by palette; a
+  in-house projector sharing `iso.ts`'s projection constants). **Scope
+  cap: ≤ ~150 lines, single file, monotone SVG, no deps.** Primary
+  render is monotone so form quality isn't confounded by palette; a
   flat-color variant is available for secondary comparison but doesn't
   feed the score.
 - Auto contact sheet per pipeline version + blind-name scoring via cheap
