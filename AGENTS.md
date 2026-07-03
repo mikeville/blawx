@@ -12,10 +12,30 @@ per run.
 
 ## Spend guardrail (load-bearing)
 
-Every API sweep gets a per-run cost estimate and explicit confirmation
-before executing. No batch runs without sign-off. Approval for one run
-does not carry to re-runs or larger variants. Target per unique term:
-**$0.01–0.02**, ≤ ~10 s per cache-miss.
+**No direct Anthropic API calls during R&D.** All model interactions
+during Phases 1–4 go through Mike's Claude subscription — this Claude
+Code session or fresh chats on claude.ai. Do NOT:
+
+- Add `ANTHROPIC_API_KEY` to `.env` / `.dev.vars`
+- Import `@anthropic-ai/sdk` or `fetch('https://api.anthropic.com/…')`
+  from harness code
+- Run dev servers that proxy to Anthropic on request (this includes
+  `netlify dev` / `wrangler dev` if they'd hit the model)
+- Wire the harness's generator or scorer to any live API
+
+The harness is a **human-in-loop scaffold**. It stages prompts and
+renders outputs; the model response comes from Mike's active Claude
+session, pasted into a results file the harness reads. Phase 1b sweeps
+run one noun × one model at a time. Cost is tracked as *hypothetical*
+per-token math (what the call would cost at API prices) — nothing is
+actually billed.
+
+This holds through Phases 1–4. The shipped public toy will call
+`../api/` (already has `ANTHROPIC_API_KEY` wired as a Wrangler secret),
+but that's a post-R&D concern.
+
+Target per unique term when shipped: **$0.01–0.02**, ≤ ~10 s per
+cache-miss.
 
 ## Stack
 
