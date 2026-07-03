@@ -83,6 +83,10 @@ Specific questions the repo must answer before implementation:
    the critic and benchmark scoring to his bar.
 
 ### Phase 1 — Benchmark harness (before touching generation)
+
+> Operational note: harness runs human-in-loop during R&D, not against a
+> live API. See `AGENTS.md` § "Spend guardrail" for the how.
+
 - Fixed ~30-noun list: easy-structural (mug, chair, house), organic
   (fox, bird, fish, flower, tree), hard (octopus, dragon, "love",
   multi-word phrases).
