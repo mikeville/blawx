@@ -8,19 +8,22 @@ is not — structural nouns work, organic nouns (fox, bird, flower) don't.
 Deployment is a public toy linked from Twitter/X: cost and latency per term
 must survive a public link (~$0.01/unique term, seconds not minutes).
 
-Two reframes from this planning session:
+The core product is a **semantic voxel model** — occupancy plus semantic
+color roles plus optional part labels. LEGO booklet rendering is one
+downstream skin; Minecraft or other skins can come later. Evaluation runs
+on a neutral iso render so form quality isn't confounded by skin, and the
+primary scoring metric is **monotone** (silhouette + depth articulation
+only). Color rules come after form is proven.
 
-1. **Decouple generation from the LEGO skin.** The core product is a
-   *semantic voxel model* (occupancy + semantic color roles + optional part
-   labels). LEGO booklet rendering is one downstream skin; Minecraft etc.
-   can come later. Evaluation runs on a neutral flat-color iso render so
-   form quality isn't confounded by skin.
-2. **The isometric-sprite / MagicaVoxel ecosystem is a resource** (per
-   `notes/research-voxel-sources/Isometric Sprite Ecosystem Topology.md`):
-   not as runtime retrieval (best corpora legally encumbered, open ones
-   fragmented) and not via 2D→3D reverse projection (unsolved), but as
-   (a) a curated few-shot **exemplar library** sourced from CC0/CC-BY .vox
-   models, and (b) stylistic calibration language for prompts and critics.
+The isometric-sprite / MagicaVoxel ecosystem is a resource — not as
+runtime retrieval (best corpora legally encumbered, open ones fragmented)
+and not via 2D→3D reverse projection (unsolved), but as a curated
+few-shot **exemplar library** sourced from CC0/CC-BY `.vox` models.
+Concrete sources for Phase 4: Sketchfab `#voxel` / `#magicavoxel` tags
+(native `.vox`, searchable by noun, CC-BY), `enkisoftware/voxel-models`
+on GitHub (CC-BY 4.0, hand-authored by pro voxel artists), and
+hand-authoring in MagicaVoxel to fill body-plan gaps. Per
+`notes/research-voxel-sources/Isometric Sprite Ecosystem Topology.md`.
 
 ## Core framing (working hypotheses — plausible lenses, not verified facts;
 ## the Phase 1 benchmark is what tests them)
@@ -83,11 +86,14 @@ Specific questions the repo must answer before implementation:
 - Fixed ~30-noun list: easy-structural (mug, chair, house), organic
   (fox, bird, fish, flower, tree), hard (octopus, dragon, "love",
   multi-word phrases).
-- Neutral flat-color iso renderer for eval (decoupled from LEGO skin;
-  consider IsoVoxel/SpotVox or a small in-house projector).
+- Neutral iso renderer for eval (decoupled from LEGO skin; small
+  in-house projector sharing `iso.ts`'s projection constants). Primary
+  render is **monotone** so form quality isn't confounded by palette; a
+  flat-color variant is available for secondary comparison but doesn't
+  feed the score.
 - Auto contact sheet per pipeline version + blind-name scoring via cheap
-  vision model ("what is this?" with no context). Every generation change
-  reruns the sheet.
+  vision model ("what is this?" with no context) on the monotone render.
+  Every generation change reruns the sheet.
 - Harness logs per-term cost and latency alongside scores, so every
   quality/cost tradeoff (grid size, encoding, model tier, critic on/off)
   is decided from data rather than priors.
@@ -110,9 +116,13 @@ Specific questions the repo must answer before implementation:
 
 ### Phase 4 — Exemplar library (first measured intervention)
 - Curate ~20–50 objects across body plans (quadruped, biped, bird, fish,
-  plant, vehicle, furniture, blob) from CC0/CC-BY sources (Kenney,
-  enkisoftware voxel-models, hand-authored in MagicaVoxel), hand-reduced
-  to 8³/16³, converted to the exact structured text format the LLM emits.
+  plant, vehicle, furniture, blob) from CC0/CC-BY sources: Sketchfab
+  `#voxel` and `#magicavoxel` tags (native `.vox` files, searchable by
+  noun), `enkisoftware/voxel-models` on GitHub (CC-BY 4.0), and
+  hand-authoring in MagicaVoxel for gaps. Kenney.nl CC0 is a partial fit
+  for structural/vehicle/furniture body plans only (mostly 2D sprites;
+  extrusion clean only for icons and side-profiles). Hand-reduced to
+  8³/16³, converted to the exact structured text format the LLM emits.
 - Runtime: body-plan-matched exemplar selection injected as few-shot
   context ("fox" → wolf/cat exemplar). Static, cacheable prompt content.
 - Measure delta on the benchmark, organic subset especially.
