@@ -122,6 +122,19 @@ function Tile({
     result.meta?.model && result.meta.tokensIn != null && result.meta.tokensOut != null
       ? hypotheticalCostUSD(result.meta.model, result.meta.tokensIn, result.meta.tokensOut)
       : null;
+  const hull = result.meta?.hull;
+  const maxLoss = hull
+    ? Math.max(hull.reprojectionLoss.front, hull.reprojectionLoss.side, hull.reprojectionLoss.top)
+    : 0;
+  const hullWarn =
+    hull && (hull.malformedRows > 0 || maxLoss > 0.05)
+      ? [
+          hull.malformedRows > 0 ? `${hull.malformedRows} bad rows` : null,
+          maxLoss > 0.05 ? `loss ${Math.round(maxLoss * 100)}%` : null,
+        ]
+          .filter(Boolean)
+          .join(' · ')
+      : null;
   return (
     <figure className="tile">
       <div className="tile-render" dangerouslySetInnerHTML={{ __html: svg }} />
@@ -137,6 +150,7 @@ function Tile({
         <span>
           {result.size}³ · {result.voxels.length}vx
           {dropped > 0 && <em className="warn"> · {dropped} dropped</em>}
+          {hullWarn && <em className="warn"> · {hullWarn}</em>}
         </span>
         {cost != null && <span>${cost.toFixed(4)}</span>}
         <button
