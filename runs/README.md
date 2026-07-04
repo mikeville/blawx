@@ -89,9 +89,22 @@ response is one paste in a fresh Claude chat.
    (`sweep1-{8,16,32}-{char,rle}`), each with `prompts/<noun>.md` and an
    empty `responses/`. Default is a 12-noun stratified subset; `--all`
    for the full 30.
-2. For each prompt: paste into a **fresh** chat, save the raw response
-   verbatim to `responses/<noun>.txt` (same basename as the prompt).
-   Note which model the chat used and put it in the run's `run.json`
+2. For each prompt: get the response into `responses/<noun>.txt` (same
+   basename as the prompt), verbatim.
+
+   Two paths — pick one, don't mix them within a single sweep:
+
+   - **Manual:** paste into a fresh claude.ai chat, save the response.
+     Zero automation confounds but 72 hand-pastes.
+   - **Automated (used for sweep1):** fan out N Claude Code Haiku
+     subagents, one per prompt. Uses the Claude Code subscription (not
+     `ANTHROPIC_API_KEY`) so the spend guardrail holds. The subagent
+     runs under Claude Code's system prompt rather than claude.ai's —
+     a constant offset across all cells, so the grid×encoding ranking
+     is preserved even though absolute scores aren't directly
+     comparable to a claude.ai chat.
+
+   Either way, record the model in the run's `run.json`
    `conditions.model` (once per run folder).
 3. `npx tsx scripts/convert-response.ts runs/<run-id>/responses/<noun>.txt`
    — parses the three masks, lifts the strict visual hull, writes

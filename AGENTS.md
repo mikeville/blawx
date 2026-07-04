@@ -119,8 +119,17 @@ stratified subset; `--all` regenerates for 30). Workflow in
 of the full 72-paste sweep: ~$0.13 at Haiku 4.5 prices, ~$0.63 at Opus
 prices — $0 actual (subscription pastes).
 
-**Next action:** run the sweep — paste `runs/sweep1-*/prompts/*.md` into
-fresh Claude chats (one per prompt), save responses to
-`responses/<noun>.txt`, convert, blind-score. This step is Mike-driven
-(pasting); a session can then aggregate the six conditions and make the
-grid/encoding call from the data.
+**Next action:** run the sweep via automated subagent fan-out (72 fresh
+Claude Code Haiku subagents, one per prompt), saving raw responses to
+`runs/sweep1-*/responses/<noun>.txt`. Convert with
+`scripts/convert-response.ts`, then blind-score. A follow-up session
+aggregates the six conditions and makes the grid/encoding call.
+
+**Why automated instead of manual pasting:** Mike doesn't have time for
+72 hand-pastes. Subagent fan-out uses the Claude Code subscription (not
+`ANTHROPIC_API_KEY`), so the spend guardrail is honored. The only
+confound vs. a claude.ai chat is the Claude Code system prompt wrapping
+the subagent — that's a constant across all 6 cells, so it shifts
+absolute scores but preserves the grid×encoding ranking Phase 1b needs
+to output. All six `run.json` files record `conditions.model` as the
+actual Haiku 4.5 subagent model used.

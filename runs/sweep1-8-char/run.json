@@ -6,6 +6,6 @@
   "conditions": {
     "grid": "8",
     "encoding": "char",
-    "model": "FILL IN: chat model used for the pastes"
+    "model": "claude-haiku-4-5"
   }
 }
