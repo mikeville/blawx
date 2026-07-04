@@ -17,7 +17,15 @@ export type BenchMeta = {
   hull?: {
     malformedRows: number;
     reprojectionLoss: { front: number; side: number; top: number };
+    /** Which lift variant produced this result (see maskOps.ts): strict/fill/bbox/vote. */
+    variant?: string;
+    /** Cells fillInterior added, per view (diagnostic: high = model drew an outline). */
+    filledCells?: { front: number; side: number; top: number };
+    /** Per view, which shared axes bbox-alignment remapped. */
+    alignment?: Record<'front' | 'side' | 'top', Partial<Record<'x' | 'y' | 'z', boolean>>>;
   };
+  /** Parsed masks (post-repair, pre-fill), row-major '#'/'.' strings — lets the viewer show which stage failed. */
+  masks?: { front: string[]; side: string[]; top: string[] };
 };
 
 export type BenchResult = {

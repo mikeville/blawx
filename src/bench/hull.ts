@@ -19,7 +19,29 @@ export type HullResult = {
   reprojectionLoss: { front: number; side: number; top: number };
 };
 
-export function liftHull(front: Mask, side: Mask, top: Mask, size: number): HullResult {
+/** Fraction of `mask`'s filled cells that `hit` never marked. */
+export function reprojectionLoss(mask: Mask, hit: boolean[][], size: number): number {
+  let set = 0;
+  let missed = 0;
+  for (let r = 0; r < size; r++) {
+    for (let c = 0; c < size; c++) {
+      if (mask[r][c]) {
+        set += 1;
+        if (!hit[r][c]) missed += 1;
+      }
+    }
+  }
+  return set === 0 ? 0 : missed / set;
+}
+
+/**
+ * Lift three views into voxels using a per-voxel vote threshold: `minVotes`
+ * of the three views must claim a voxel's projection for it to lift. Strict
+ * intersection (liftHull) is minVotes=3; 2-of-3 voting (liftVote in
+ * maskOps.ts) is minVotes=2. Shared here so both stay in sync on the
+ * projection/axis conventions.
+ */
+export function liftByVote(front: Mask, side: Mask, top: Mask, size: number, minVotes: number): HullResult {
   const voxels: Vec3[] = [];
   const hitF: boolean[][] = front.map((r) => r.map(() => false));
   const hitS: boolean[][] = side.map((r) => r.map(() => false));
@@ -30,36 +52,30 @@ export function liftHull(front: Mask, side: Mask, top: Mask, size: number): Hull
       for (let z = 0; z < size; z++) {
         const fr = size - 1 - y;
         const tr = size - 1 - z;
-        if (front[fr][x] && side[fr][z] && top[tr][x]) {
+        const fHit = front[fr][x];
+        const sHit = side[fr][z];
+        const tHit = top[tr][x];
+        const votes = (fHit ? 1 : 0) + (sHit ? 1 : 0) + (tHit ? 1 : 0);
+        if (votes >= minVotes) {
           voxels.push([x, y, z]);
-          hitF[fr][x] = true;
-          hitS[fr][z] = true;
-          hitT[tr][x] = true;
+          if (fHit) hitF[fr][x] = true;
+          if (sHit) hitS[fr][z] = true;
+          if (tHit) hitT[tr][x] = true;
         }
       }
     }
   }
 
-  const loss = (mask: Mask, hit: boolean[][]): number => {
-    let set = 0;
-    let missed = 0;
-    for (let r = 0; r < size; r++) {
-      for (let c = 0; c < size; c++) {
-        if (mask[r][c]) {
-          set += 1;
-          if (!hit[r][c]) missed += 1;
-        }
-      }
-    }
-    return set === 0 ? 0 : missed / set;
-  };
-
   return {
     voxels,
     reprojectionLoss: {
-      front: loss(front, hitF),
-      side: loss(side, hitS),
-      top: loss(top, hitT),
+      front: reprojectionLoss(front, hitF, size),
+      side: reprojectionLoss(side, hitS, size),
+      top: reprojectionLoss(top, hitT, size),
     },
   };
+}
+
+export function liftHull(front: Mask, side: Mask, top: Mask, size: number): HullResult {
+  return liftByVote(front, side, top, size, 3);
 }
