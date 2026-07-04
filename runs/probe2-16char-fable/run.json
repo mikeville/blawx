@@ -1,0 +1,13 @@
+{
+  "id": "probe2-16char-fable",
+  "label": "probe2 16³ char fable (plan-matched exemplar)",
+  "date": "2026-07-04",
+  "pipeline": "probe: hardened prompt + body-plan-matched worked exemplar, three-view mask emission + strict hull lift",
+  "conditions": {
+    "grid": "16",
+    "encoding": "char",
+    "model": "claude-fable-5",
+    "prompt": "hardened-v2-planmatched",
+    "exemplar": "bird→sparrow, fish→carp"
+  }
+}

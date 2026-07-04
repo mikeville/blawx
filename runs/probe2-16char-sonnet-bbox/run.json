@@ -1,0 +1,15 @@
+{
+  "id": "probe2-16char-sonnet-bbox",
+  "label": "relift1 probe2-16char-sonnet · bbox",
+  "date": "2026-07-04",
+  "pipeline": "relift: bbox repair + strict intersection lift",
+  "conditions": {
+    "grid": "16",
+    "encoding": "char",
+    "model": "claude-sonnet-5",
+    "prompt": "hardened-v2-planmatched",
+    "exemplar": "bird→sparrow, fish→carp",
+    "sourceCell": "probe2-16char-sonnet",
+    "variant": "bbox"
+  }
+}

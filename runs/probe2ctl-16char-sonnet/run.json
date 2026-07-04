@@ -1,0 +1,13 @@
+{
+  "id": "probe2ctl-16char-sonnet",
+  "label": "probe2 control · sonnet single-shot (probe1 prompts)",
+  "date": "2026-07-04",
+  "pipeline": "control: probe1 hardened-v2 prompts (dog exemplar) re-run at Sonnet WITHOUT tool-assisted self-verification, to separate single-shot emission reliability from the probe2 exemplar change",
+  "conditions": {
+    "grid": "16",
+    "encoding": "char",
+    "model": "claude-sonnet-5",
+    "prompt": "hardened-v2",
+    "method": "single-shot (no tools)"
+  }
+}
