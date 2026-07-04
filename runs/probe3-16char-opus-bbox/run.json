@@ -1,0 +1,15 @@
+{
+  "id": "probe3-16char-opus-bbox",
+  "label": "relift1 probe3-16char-opus · bbox",
+  "date": "2026-07-04",
+  "pipeline": "relift: bbox repair + strict intersection lift",
+  "conditions": {
+    "grid": "16",
+    "encoding": "char",
+    "model": "claude-opus-4-8",
+    "prompt": "hardened-v2 (planmatched for bird/fish)",
+    "method": "single-shot (no tools)",
+    "sourceCell": "probe3-16char-opus",
+    "variant": "bbox"
+  }
+}

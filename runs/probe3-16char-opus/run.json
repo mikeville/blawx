@@ -1,0 +1,13 @@
+{
+  "id": "probe3-16char-opus",
+  "label": "probe3 16³ char opus single-shot",
+  "date": "2026-07-04",
+  "pipeline": "probe: hardened prompt (dog exemplar; plan-matched sparrow/carp for bird/fish), three-view mask emission + strict hull lift, single-shot (no tool-assisted self-verification)",
+  "conditions": {
+    "grid": "16",
+    "encoding": "char",
+    "model": "claude-opus-4-8",
+    "prompt": "hardened-v2 (planmatched for bird/fish)",
+    "method": "single-shot (no tools)"
+  }
+}
