@@ -148,9 +148,30 @@ Diagnostic well-formedness (from `scripts/convert-response.ts` output):
 
 Recognizability (Mike, eyeballing the contact sheet): most hulls are
 not recognizable as their target nouns, **including in the cells that
-are diagnostic-healthy**. Failure spans both organic (fox, fish,
-octopus, bird) and structural (chair confirmed bad) nouns — not a
-clean structural-vs-organic split.
+are diagnostic-healthy**.
+
+Blind-name scoring (Haiku 4.5 vision subagent per run, Haiku
+adjudicator, hit=1 / close=0.5 / miss=0):
+
+```
+run                 hit  close  miss  score
+sweep1-8-char        1     3     8    0.208   ← best
+sweep1-16-rle        1     2     9    0.167
+sweep1-32-char       0     4     8    0.167
+sweep1-32-rle        0     2    10    0.083
+sweep1-16-char       0     1    11    0.042
+sweep1-8-rle         0     0    12    0.000
+```
+
+Scoring PNGs at `runs/<run>/scoring/`, verdicts at
+`runs/<run>/scores.json`. Rendered via
+`scripts/render-scoring-pngs.ts` (uses `@resvg/resvg-js`, added as
+devDep).
+
+Structural-vs-organic pattern in the verdicts: every hit and every
+close is on a structural noun (chair, house, mug, robot, tree). Every
+organic (bird, fish, fox, octopus) is `miss` in all six cells. `love`,
+`rocket ship`, `sailboat` also miss in all six.
 
 **Next action:** Fable to judge from the sweep1 state above. Blind
 scoring the six Haiku cells is on the table but not obviously the right

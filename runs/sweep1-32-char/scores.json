@@ -1,0 +1,50 @@
+{
+  "bird": {
+    "answer": "pyramid",
+    "verdict": "miss"
+  },
+  "chair": {
+    "answer": "shelf",
+    "verdict": "close"
+  },
+  "fish": {
+    "answer": "bars",
+    "verdict": "miss"
+  },
+  "fox": {
+    "answer": "sled",
+    "verdict": "miss"
+  },
+  "house": {
+    "answer": "pyramid",
+    "verdict": "close"
+  },
+  "love": {
+    "answer": "block",
+    "verdict": "miss"
+  },
+  "mug": {
+    "answer": "box",
+    "verdict": "close"
+  },
+  "octopus": {
+    "answer": "noise",
+    "verdict": "miss"
+  },
+  "robot": {
+    "answer": "stack",
+    "verdict": "miss"
+  },
+  "rocket ship": {
+    "answer": "blob",
+    "verdict": "miss"
+  },
+  "sailboat": {
+    "answer": "stairs",
+    "verdict": "miss"
+  },
+  "tree": {
+    "answer": "mushroom",
+    "verdict": "close"
+  }
+}
