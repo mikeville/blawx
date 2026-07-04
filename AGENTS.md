@@ -524,13 +524,105 @@ Depth question settled for Phase 2: **deterministic inflation with a
 per-category profile table**, no model in the depth path. Fable-tier
 three-view design remains the ceiling for seeded library entries.
 
-**Next action:** Phase 2 architecture is now fully de-risked at the
-component level (front sourcing via icon-lift, depth via inflation,
-repairs, strict lift, blind-name QA gate, retry loops). Next build
-steps, roughly in order: (1) add trust-front mode + footprint checks
-to retry-feedback; (2) per-category depth profiles in icon-lift;
-(3) wire the ladder into a single offline pipeline script keyed by
-noun (icon lookup → inflate → lift → QA) and run it over the 30-noun
-benchmark list as the first library seed; (4) scope the text-to-2D
-rung (verify current image-model pricing; no API spend without
-per-run sign-off).
+**Phase 2 build steps 1–3 executed (2026-07-04, $0, subscription
+subagents only).**
+
+- `scripts/retry-feedback.ts` gained the planned checks:
+  `--trust-front=<path>` (accepts a plain mask file or the masks/*.txt
+  multi-view format; cell-for-cell verbatim comparison with the
+  expected mask embedded in the feedback on mismatch; enclosed-hole
+  check exempted for the front view only), `--max-depth=N` (side-mask
+  depth extent > N → "redraw as a depth cross-section, not a second
+  profile" — catches the icon3 dog failure), and an always-on top-slab
+  advisory (top bbox fill ≥ 0.9, width ≥ 12, height ≥ 5 — the probe5
+  footprint diagnosis). Verified byte-identical output on probe4/5
+  call-1 responses when flags are absent.
+- Icon-lift core refactored into `scripts/lib/silhouette.ts` (icon-lift
+  is now a thin CLI; regeneration of icon1/icon2 verified
+  byte-identical). Four depth profiles: `flat(d)` (parametrized
+  extrusion), `inflate` (unchanged), `round(maxDepth)` (revolve
+  approximation — per-column chord depth from a circle fit to the
+  column extent, plus a reproject-repair pass that keeps the strict
+  lift at zero loss), `prone(h)` (icon mask reinterpreted as the TOP
+  view, h-row height on the ground — for top-view icons like spider).
+- `scripts/seed-library.ts`: noun-keyed offline pipeline over the
+  30-noun benchmark with a hardcoded noun → FA icon → profile table.
+  `@fortawesome/fontawesome-free` added as devDep (FA 7.3.0 — note the
+  hand-downloaded icon1 sources were 6.7.2, so crow/fish masks differ
+  from icon2 by a couple of cells; cosmetic). Run:
+  `runs/seed1-16char-fa/` — **18/30 nouns seeded**, zero loss
+  everywhere, no threshold fallbacks. 12 misses in `misses.json`
+  (table, sword, lighthouse, ladder, fox, flower, duck, mushroom,
+  snail, penguin, octopus, palm tree) = the text-to-2D rung backlog.
+
+**Seed1 verdict (Fable eyeball, contact sheet).** The per-category
+profile idea is validated except for `round`:
+
+- **Wins:** sailboat flat(2) (thin hull + triangular sails — instant),
+  house flat(8) (door + roof — instant), car-side flat(6) (window
+  holes read), spider prone(3) (radiating legs from above — instant,
+  best organic in the project), robot flat(6), chair flat(4); bird /
+  horse / cat / frog inflate at icon2 quality. Roughly 6 hits + 5
+  close of 18 by eyeball.
+- **round(10) failed on all five of its nouns** (mug, hat, tree,
+  ice cream cone, rocket ship): the chord-quantized depth rings render
+  as concentric staircase ledges and the maxDepth-10 mass reads as a
+  stepped block — every one degraded vs its icon1 flat(4) counterpart
+  (mug lost its "handle hole + saucer" read). Diagnosis: too many
+  distinct depth levels (2,4,6,8,10) stacked over an already-stepped
+  front silhouette; monotone iso shading turns each level change into
+  a "stair". Likely fixes, untested: quantize round to at most two
+  depth levels (e.g. {4,8} or {2,6}) and/or cap maxDepth at 6; flat(4)
+  remains the acceptable floor for these nouns.
+- The previous session's "depth question settled: inflation +
+  per-category table" stands for animals/flat/prone; **round-object
+  treatment is reopened** until the two-level variant is tried.
+
+**QA-gate calibration (2026-07-04): one-shot LLM blind-naming of the
+neutral monotone renders is not a usable library QA gate below
+Fable tier.** Full 2×2 (model × task format) over the same 18 seed1
+PNGs, plus a known-good control:
+
+- Haiku free-naming: 0/18 (named the whole run
+  stairs/castle/fortress — `scores.json`, kept canonical for
+  comparability with sweep1's protocol).
+- Sonnet free-naming: 3/18 (car, horse, house) but sailboat→"arrow",
+  spider→"snowflake".
+- Haiku multiple-choice over the 30-noun list: degenerate ("house"
+  ×10; called the actual house "ladder").
+- Sonnet multiple-choice: 2/18 with five false-positive "house"
+  answers — format change doesn't rescue it.
+- **Control:** Haiku free-naming on icon2-16char-inflate (the
+  project's best-eyeballed run) scores 0.25 (dog→"llama",
+  mug→"throne") — the instrument *inverts* the quality ordering, so
+  low blind scores on icon-sourced runs are uninformative.
+  All passes in `runs/seed1-16char-fa/scores-calibration.json`.
+- Implication: the production QA gate needs render-side work
+  (color/shading variant, ground shadow, maybe multiple angles or
+  larger tiles) before any cheap-model naming pass means anything;
+  format tweaks alone don't help. Fable-tier eyeball remains the
+  working gate for R&D-time seeding.
+
+**Text-to-2D rung scoped (2026-07-04, research only, no spend).**
+Current API pricing for flat-silhouette generation, verified against
+live pricing pages: FLUX.1 schnell is the clear first test —
+$0.0027/image (Together AI, per-MP) or flat $0.003 (Replicate,
+$3/1,000; fal.ai identical) — 6–30× cheaper than non-Flux options,
+and its fine-detail weaknesses don't survive the 16×16 downsample.
+Runner-up: gpt-image-1-mini at low quality ≈ $0.005/image
+(token-priced; verify with one real call before batching) with native
+transparent-background output. Wildcard: Recraft V4.1 Vector at
+$0.08/image emits true SVG with icon/vector style presets — feeds the
+existing SVG rasterizer directly; only worth it if schnell rasters
+threshold poorly. Skip Imagen 4 Fast ($0.02 — deprecated, shuts down
+2026-08-17). Cost picture for the 12-noun backlog at ~4 candidates
+per noun: **≈ $0.15 total at schnell prices.** Standing rule: no
+image-API spend without per-run sign-off.
+
+**Next action:** three candidate moves, none started: (a) two-level
+`round` variant (quantize chords to two depth levels, cap 6) and
+re-seed the five round nouns for an A/B against seed1; (b) QA-gate
+render legibility experiment (colored/shaded render variant of the
+scoring PNGs, re-run the naming matrix); (c) rung-2 pilot on the
+12-icon-miss backlog via FLUX.1 schnell (~$0.15, needs Mike's
+sign-off per the spend rule).
