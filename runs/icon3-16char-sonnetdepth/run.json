@@ -1,0 +1,14 @@
+{
+  "id": "icon3-16char-sonnetdepth",
+  "label": "icon3 16³ · FA front + sonnet-drawn depth",
+  "date": "2026-07-04",
+  "pipeline": "sourced front mask (FA icon downsample, from icon1) held verbatim; Sonnet draws side/top conditioned on it (shapely, not flat), single-shot + deterministic retry (retry-feedback.ts), strict lift",
+  "conditions": {
+    "grid": "16",
+    "encoding": "char",
+    "model": "claude-sonnet-5",
+    "prompt": "depth-draw-v1 (front given verbatim)",
+    "source": "font-awesome-6-solid (CC BY 4.0)",
+    "method": "2-call: single-shot + 1 deterministic-feedback retry"
+  }
+}

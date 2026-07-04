@@ -1,0 +1,12 @@
+{
+  "id": "icon1-16char-fa",
+  "label": "icon1 16³ · FA silhouette downsample",
+  "date": "2026-07-04",
+  "pipeline": "icon downsample: Font Awesome solid SVG → 480px raster → ink-bbox-fit 16×16 front mask (coverage ≥ 0.35) → deterministic depth-4 extrusion side/top → strict lift. No model calls.",
+  "conditions": {
+    "grid": "16",
+    "encoding": "char",
+    "model": "none",
+    "source": "font-awesome-6-solid (CC BY 4.0)"
+  }
+}

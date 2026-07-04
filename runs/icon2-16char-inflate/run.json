@@ -1,0 +1,13 @@
+{
+  "id": "icon2-16char-inflate",
+  "label": "icon2 16³ · FA silhouette + inflation depth",
+  "date": "2026-07-04",
+  "pipeline": "icon downsample as icon1, but side/top synthesized by per-row inflation: d(r)=clamp(2·round(3·w(r)/16),2,6), side=centered run, top=union of per-row runs per column. No model calls.",
+  "conditions": {
+    "grid": "16",
+    "encoding": "char",
+    "model": "none",
+    "source": "font-awesome-6-solid (CC BY 4.0)",
+    "depth": "inflate"
+  }
+}

@@ -1,0 +1,11 @@
+Your masks have mechanical errors:
+
+- front and top masks disagree on which columns are filled (they share the object's width): front has columns 0-15, top has columns 2-15 — make them identical
+- side mask columns and top mask rows disagree on the object's depth: side has depth cells 4-15, top implies depth cells 1-11 — make them agree
+- declared bounds say y:0-15 but the front mask occupies y 0-14 (y=0 is the bottom row) — make them agree
+- declared bounds say z:0-15 but the side mask occupies depth 4-15 — make them agree
+- the front mask has 1 empty cell enclosed inside the silhouette — masks must be SOLID: fill every cell inside the outline with "#"
+
+Fix every error and re-emit your COMPLETE corrected answer in exactly the
+original format: the bounds line, then exactly three fenced code blocks
+labeled front, side, top. No other text.
