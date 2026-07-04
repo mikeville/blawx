@@ -119,17 +119,31 @@ stratified subset; `--all` regenerates for 30). Workflow in
 of the full 72-paste sweep: ~$0.13 at Haiku 4.5 prices, ~$0.63 at Opus
 prices — $0 actual (subscription pastes).
 
-**Next action:** run the sweep via automated subagent fan-out (72 fresh
-Claude Code Haiku subagents, one per prompt), saving raw responses to
-`runs/sweep1-*/responses/<noun>.txt`. Convert with
-`scripts/convert-response.ts`, then blind-score. A follow-up session
-aggregates the six conditions and makes the grid/encoding call.
+**Phase 1b sweep1 executed (2026-07-04, Haiku 4.5 subagent fan-out).**
+All 72 responses at `runs/sweep1-*/responses/<noun>.txt`, all 72
+converted hulls at `runs/sweep1-*/<noun>.json`. Contact sheet at
+`npm run dev` renders them. No blind scoring run.
 
-**Why automated instead of manual pasting:** Mike doesn't have time for
-72 hand-pastes. Subagent fan-out uses the Claude Code subscription (not
-`ANTHROPIC_API_KEY`), so the spend guardrail is honored. The only
-confound vs. a claude.ai chat is the Claude Code system prompt wrapping
-the subagent — that's a constant across all 6 cells, so it shifts
-absolute scores but preserves the grid×encoding ranking Phase 1b needs
-to output. All six `run.json` files record `conditions.model` as the
-actual Haiku 4.5 subagent model used.
+**Execution method:** Claude Code Haiku 4.5 subagents (subscription,
+no `ANTHROPIC_API_KEY`). Manual pasting rejected on time grounds. The
+Claude Code system prompt wraps the subagent — constant across all 6
+cells, so it preserves grid×encoding ranking but leaves absolute scores
+not directly comparable to a claude.ai chat. `conditions.model` =
+`claude-haiku-4-5` in all 6 `run.json`.
+
+**Findings.** Quantitative diagnostics from
+`scripts/convert-response.ts`:
+
+- `sweep1-32-rle`: 4 hull collapses to zero voxels (fish, fox, love, tree)
+- `sweep1-32-char`: heavy malformed-row counts (~70–98) across most nouns
+- `sweep1-8-rle`: severe resolution loss (chair=6vx, fish=2vx)
+- `sweep1-16-*` and `sweep1-8-char`: healthiest on diagnostics
+
+Qualitative (Mike, eyeballing the contact sheet): most hulls are not
+recognizable as their target nouns, including in the healthy-diagnostics
+cells. Not yet checked: whether failure is uniform vs. worse on organics
+(fox/fish/octopus/bird) than on structural (house/mug/robot/chair).
+
+**Next action:** Fable to judge from the sweep1 state above. Blind
+scoring the six Haiku cells is on the table but not obviously the right
+move given the qualitative finding.
