@@ -1,0 +1,13 @@
+{
+  "id": "probe4-16char-sonnet",
+  "label": "probe4 16³ char sonnet · single-shot + deterministic retry",
+  "date": "2026-07-04",
+  "pipeline": "probe: hardened prompt + body-plan-matched exemplar, single-shot emission, deterministic mechanical validation (scripts/retry-feedback.ts) fed back for ONE retry call, then strict lift (fill/bbox variant alongside). Call-1 responses in responses-call1/, feedback in feedback/, final responses in responses/.",
+  "conditions": {
+    "grid": "16",
+    "encoding": "char",
+    "model": "claude-sonnet-5",
+    "prompt": "hardened-v2-planmatched",
+    "method": "2-call: single-shot + 1 deterministic-feedback retry"
+  }
+}
