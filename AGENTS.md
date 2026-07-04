@@ -186,6 +186,80 @@ producing a recognizable hull of any target noun.** Raw `scores.json`
 files preserved as-is for auditability; this note is the load-bearing
 interpretation.
 
-**Next action:** Fable to judge from the sweep1 state above. Blind
-scoring the six Haiku cells is on the table but not obviously the right
-move given the qualitative finding.
+**Fable's diagnosis (2026-07-04, from reading raw responses + hull
+meta in `sweep1-16-char`, the diagnostic-healthiest cell):** the 0/72
+failure localizes **upstream of grid size and encoding** — the sweep's
+two axes were never the binding constraint. Three stacked causes, in
+order of severity:
+
+1. **The 2D masks themselves are unrecognizable.** Haiku's masks are
+   generic blobs/triangles (mug = two stacked rectangles, no handle;
+   bird = notched triangle; fish = oval), and for some nouns it drew
+   **hollow outlines instead of filled silhouettes** (fox: `#` border,
+   empty interior) despite the prompt saying "silhouette" and showing a
+   filled sphere example. Recognizability was lost before the lift ever
+   ran.
+2. **Cross-view misalignment, amplified by the strict lift.** Per-view
+   reprojection losses in the healthy cell run up to 0.67 (chair:
+   0.39/0.59/0.67 — its front mask was actually chair-like in 2D, but
+   the top view placed the object in a different footprint, so the
+   intersection ate the legs). The one-paragraph consistency rule in
+   the prompt is not enough at Haiku tier.
+3. **Row-width drift even in "clean" cells** (fox emitted 18-char rows
+   on a 16 grid → 48 repaired rows), so "16-char parses cleanly" in the
+   earlier findings overstated health — the tolerant parser was doing
+   silent work.
+
+Consequences for the plan: the caricature/icon hypothesis is
+**untested, not falsified** — Haiku never produced masks good enough to
+test whether the three-view-hull architecture preserves a good mask.
+The sweep DID settle its designed question (8-rle and 32-anything are
+emission-unreliable; 16-char/8-char are the viable envelopes). Blind
+scoring of the six Haiku cells is dead — nothing recognizable to score,
+and the Haiku adjudicator is separately too lenient (defer fixing the
+judge until there's signal worth judging).
+
+**Re-lift experiment executed (2026-07-04, $0, no model calls).**
+`src/bench/maskOps.ts` (interior flood fill, per-shared-axis bbox
+alignment, 2-of-3 vote lift sharing hull.ts projection code),
+`npm run relift` → 9 variant dirs `runs/relift1-{16char,8char,16rle}-
+{fill,bbox,vote}/`. Source sweep1 cells regenerated in place with
+`meta.masks` added (voxel equality asserted, 36/36). Contact sheet now
+renders per-view 2D mask thumbnails (toggle). 27 tests, build + lint
+clean. Docs: `runs/README.md` § Re-lift experiments.
+
+Relift1 findings (Fable, eyeballing rendered PNGs at
+`runs/relift1-*/scoring/`):
+
+- **Bbox misalignment was the dominant mechanical failure**, not
+  hollow outlines: alignment cuts mean max-reprojection-loss 5–10×
+  (16-char: 0.36 → 0.08), and flood fill found almost nothing to fill
+  — though partly because outline-drawn masks (fox) have truncation
+  gaps that leak the fill, so `filledCells` understates outline-ness.
+- **`bbox` recovers real structure from the same Haiku outputs**:
+  robot went from blob to a readable head+body+legs figure (best
+  output of the project so far), chair recovered its legs, tree reads
+  as trunk+stepped canopy, sailboat as a triangular sail. Still
+  borderline — plausibly "close" under honest blind naming, not clean
+  hits.
+- **`vote` is a regression** — 2-of-3 blobs everything toward the box
+  union (mean voxels ~3.4× strict); drop it as a candidate.
+- **Organics unchanged**: fish/bird/octopus/fox masks were never
+  animal-shaped, so no lift repair can rescue them. The mask content
+  ceiling is binding, exactly as diagnosed.
+
+Conclusion: deterministic repair (fill + bbox alignment) belongs in
+the Phase 2 pipeline as a permanent stage — it's free quality. But
+recognizability is still mask-bound, so the model/prompt is the next
+lever.
+
+**Next action:** the model-tier probe — same 16-char prompts hardened
+("solid filled silhouette, not an outline"; animal-shaped filled
+worked example instead of the sphere; emit a shared bounding box
+before the three views), ~6 nouns (fox, bird, mug, chair, fish,
+rocket ship) through a Sonnet/Fable-class session, subscription-only,
+then relift + eyeball. If strong-model masks are recognizable in 2D,
+the architecture stands and model tier is the lever; if not, pull
+Phase 4 (exemplar few-shot) forward. Optional cheap add-on while
+there: span-fill (per-row/column first-to-last fill) as a
+gap-tolerant alternative to flood fill for outline masks.

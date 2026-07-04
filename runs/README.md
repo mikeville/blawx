@@ -114,6 +114,29 @@ response is one paste in a fresh Claude chat.
 4. Score each run via the blind-name workflow above; compare score,
    failure diagnostics, and hypothetical cost across the six conditions.
 
+## Re-lift experiments (`relift1-*`)
+
+`npm run relift` re-parses the responses of an existing sweep cell and
+re-lifts them under repaired conditions — no model calls, pure code over
+data already on disk. Per source cell it writes three variant run dirs:
+
+- `-fill` — flood-fill closure of enclosed mask interiors, then the
+  same strict intersection. Note: flood fill only closes topologically
+  sealed outlines; an outline with a gap (e.g. from row-width repair
+  truncating the ring) leaks and is left as-is.
+- `-bbox` — fill, then per-shared-axis bounding-box alignment across
+  views (nearest-neighbor resample onto the union range), then strict
+  intersection. Repairs cross-view footprint disagreements.
+- `-vote` — fill + align, then a 2-of-3 vote lift instead of strict
+  3-of-3 intersection.
+
+Variant, per-view filled-cell counts, and alignment info land in
+`meta.hull`; the parsed (post-repair, pre-fill) masks land in
+`meta.masks`, which the contact-sheet viewer renders as 2D thumbnails
+(toggle in the header) so mask-stage failures are distinguishable from
+lift-stage failures. The source `sweep1-*` result files also carry
+`meta.masks` (regenerated in place; voxel data verified unchanged).
+
 ## Reference runs
 
 `baseline-*` folders are imported prior-attempt outputs (via
