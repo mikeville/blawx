@@ -1,0 +1,128 @@
+{
+  "note": "QA-instrument calibration passes over the same 18 scoring PNGs; canonical scores.json is the Haiku free-naming pass per the runs/README protocol (comparable with sweep1). See AGENTS.md seed1 findings.",
+  "sonnetFreeNaming": {
+    "answers": [
+      "unclear, dog",
+      "car",
+      "unclear, dragon",
+      "castle",
+      "robot",
+      "house",
+      "castle",
+      "staircase",
+      "horse",
+      "house",
+      "staircase",
+      "crown",
+      "chair",
+      "skull",
+      "tree",
+      "arrow",
+      "snowflake",
+      "staircase"
+    ],
+    "hits": [
+      "car",
+      "horse",
+      "house"
+    ],
+    "score": 0.167
+  },
+  "haikuMultipleChoice": {
+    "answers": [
+      "house",
+      "house",
+      "house",
+      "house",
+      "house",
+      "mug",
+      "house",
+      "house",
+      "horse",
+      "ladder",
+      "ladder",
+      "mug",
+      "mug",
+      "house",
+      "house",
+      "house",
+      "ladder",
+      "ladder"
+    ],
+    "hits": [
+      "horse"
+    ],
+    "score": 0.056,
+    "note": "degenerate — house x10; even the actual house was called ladder"
+  },
+  "haikuOnIcon2KnownGood": {
+    "run": "icon2-16char-inflate",
+    "answers": {
+      "chair": "throne",
+      "crow": "llama",
+      "dog": "llama",
+      "fish": "toilet",
+      "horse": "llama",
+      "mug": "throne"
+    },
+    "score": 0.25,
+    "note": "known-good run (top eyeball verdicts in project history) scores 0.25 — instrument inverts quality ordering"
+  },
+  "itemOrder": [
+    "bird",
+    "car",
+    "cat",
+    "chair",
+    "dragon",
+    "fish",
+    "frog",
+    "hat",
+    "horse",
+    "house",
+    "ice cream cone",
+    "love",
+    "mug",
+    "robot",
+    "rocket ship",
+    "sailboat",
+    "spider",
+    "tree"
+  ],
+  "sonnetMultipleChoice": {
+    "answers": [
+      "none",
+      "car",
+      "none",
+      "house",
+      "none",
+      "none",
+      "none",
+      "house",
+      "none",
+      "house",
+      "house",
+      "none",
+      "none",
+      "house",
+      "none",
+      "none",
+      "none",
+      "house"
+    ],
+    "hits": [
+      "car",
+      "house"
+    ],
+    "falsePositives": {
+      "house": [
+        "chair",
+        "hat",
+        "ice cream cone",
+        "robot",
+        "tree"
+      ]
+    },
+    "score": 0.111,
+    "note": "also violated the list-only output contract with a preamble"
+  }
+}

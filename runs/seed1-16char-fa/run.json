@@ -1,0 +1,13 @@
+{
+  "id": "seed1-16char-fa",
+  "label": "seed1 16³ · FA silhouette, per-noun depth profile",
+  "date": "2026-07-04",
+  "pipeline": "noun-keyed library seed: Font Awesome 6 solid icon (hardcoded per-noun lookup table) → 480px raster → ink-bbox-fit 16×16 front mask → per-noun depth profile (flat(d) | inflate | round(maxDepth) | prone(h), see scripts/lib/silhouette.ts) → strict lift. Nouns with no suitable icon are recorded in misses.json. No model calls.",
+  "conditions": {
+    "grid": "16",
+    "encoding": "char",
+    "model": "none",
+    "source": "font-awesome-6-solid (CC BY 4.0)",
+    "depth": "per-noun profile"
+  }
+}

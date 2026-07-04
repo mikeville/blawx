@@ -1,0 +1,74 @@
+{
+  "bird": {
+    "answer": "dragon",
+    "verdict": "miss"
+  },
+  "car": {
+    "answer": "castle",
+    "verdict": "miss"
+  },
+  "cat": {
+    "answer": "church",
+    "verdict": "miss"
+  },
+  "chair": {
+    "answer": "tower",
+    "verdict": "miss"
+  },
+  "dragon": {
+    "answer": "stairs",
+    "verdict": "miss"
+  },
+  "fish": {
+    "answer": "gate",
+    "verdict": "miss"
+  },
+  "frog": {
+    "answer": "house",
+    "verdict": "miss"
+  },
+  "hat": {
+    "answer": "arch",
+    "verdict": "miss"
+  },
+  "horse": {
+    "answer": "bridge",
+    "verdict": "miss"
+  },
+  "house": {
+    "answer": "stairs",
+    "verdict": "miss"
+  },
+  "ice cream cone": {
+    "answer": "building",
+    "verdict": "miss"
+  },
+  "love": {
+    "answer": "fortress",
+    "verdict": "miss"
+  },
+  "mug": {
+    "answer": "amphitheater",
+    "verdict": "miss"
+  },
+  "robot": {
+    "answer": "monument",
+    "verdict": "miss"
+  },
+  "rocket ship": {
+    "answer": "structure",
+    "verdict": "miss"
+  },
+  "sailboat": {
+    "answer": "pagoda",
+    "verdict": "miss"
+  },
+  "spider": {
+    "answer": "stairs",
+    "verdict": "miss"
+  },
+  "tree": {
+    "answer": "staircase",
+    "verdict": "miss"
+  }
+}
