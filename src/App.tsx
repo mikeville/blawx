@@ -82,6 +82,40 @@ function downloadPng(svg: string, filename: string, scale = 2): void {
 
 const itemId = (i: number) => `item${String(i + 1).padStart(2, '0')}`;
 
+/** Tiny monotone pixel grid for a single view's mask rows ('#'/'.'). */
+function maskThumbSVG(rows: string[]): string {
+  const size = rows.length;
+  const cell = 4;
+  const dim = size * cell;
+  const rects: string[] = [];
+  for (let r = 0; r < size; r++) {
+    for (let c = 0; c < rows[r].length; c++) {
+      if (rows[r][c] === '#') {
+        rects.push(`<rect x="${c * cell}" y="${r * cell}" width="${cell}" height="${cell}"/>`);
+      }
+    }
+  }
+  return (
+    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${dim} ${dim}" width="${dim}" height="${dim}">` +
+    `<rect x="0" y="0" width="${dim}" height="${dim}" fill="#f0f0ea"/>` +
+    `<g fill="#1c1c1a">${rects.join('')}</g></svg>`
+  );
+}
+
+function MaskThumbs({ masks }: { masks: NonNullable<BenchResult['meta']>['masks'] }) {
+  if (!masks) return null;
+  return (
+    <div className="tile-masks">
+      {(['front', 'side', 'top'] as const).map((v) => (
+        <div key={v} className="tile-mask" title={v}>
+          <div dangerouslySetInnerHTML={{ __html: maskThumbSVG(masks[v]) }} />
+          <span>{v}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 async function exportRunPngs(run: Run): Promise<void> {
   // Filenames are opaque on purpose: a noun in the filename would leak the
   // answer to the blind namer. Mapping is visible in the UI (blind off).
@@ -100,6 +134,7 @@ function Tile({
   runId,
   blind,
   color,
+  showMasks,
   score,
 }: {
   item: Item;
@@ -107,6 +142,7 @@ function Tile({
   runId: string;
   blind: boolean;
   color: boolean;
+  showMasks: boolean;
   score?: RunScores[string];
 }) {
   const { result, dropped } = item;
@@ -138,6 +174,7 @@ function Tile({
   return (
     <figure className="tile">
       <div className="tile-render" dangerouslySetInnerHTML={{ __html: svg }} />
+      {showMasks && <MaskThumbs masks={result.meta?.masks} />}
       <figcaption>
         <span className="tile-name">{blind ? itemId(index) : result.noun}</span>
         {!blind && score && (
@@ -164,7 +201,17 @@ function Tile({
   );
 }
 
-function RunSection({ run, blind, color }: { run: Run; blind: boolean; color: boolean }) {
+function RunSection({
+  run,
+  blind,
+  color,
+  showMasks,
+}: {
+  run: Run;
+  blind: boolean;
+  color: boolean;
+  showMasks: boolean;
+}) {
   const scored = run.scores
     ? run.items.filter((i) => run.scores![i.result.noun])
     : [];
@@ -199,6 +246,7 @@ function RunSection({ run, blind, color }: { run: Run; blind: boolean; color: bo
             runId={run.id}
             blind={blind}
             color={color}
+            showMasks={showMasks}
             score={run.scores?.[item.result.noun]}
           />
         ))}
@@ -209,8 +257,13 @@ function RunSection({ run, blind, color }: { run: Run; blind: boolean; color: bo
 
 export default function App() {
   const runs = useMemo(loadRuns, []);
+  const hasMasks = useMemo(
+    () => runs.some((run) => run.items.some((i) => i.result.meta?.masks)),
+    [runs],
+  );
   const [blind, setBlind] = useState(false);
   const [color, setColor] = useState(false);
+  const [showMasks, setShowMasks] = useState(hasMasks);
   return (
     <main>
       <header className="page-header">
@@ -224,6 +277,16 @@ export default function App() {
             <input type="checkbox" checked={color} onChange={(e) => setColor(e.target.checked)} />
             color (secondary)
           </label>
+          {hasMasks && (
+            <label>
+              <input
+                type="checkbox"
+                checked={showMasks}
+                onChange={(e) => setShowMasks(e.target.checked)}
+              />
+              masks
+            </label>
+          )}
         </div>
       </header>
       {runs.length === 0 && (
@@ -233,7 +296,7 @@ export default function App() {
         </p>
       )}
       {runs.map((run) => (
-        <RunSection key={run.id} run={run} blind={blind} color={color} />
+        <RunSection key={run.id} run={run} blind={blind} color={color} showMasks={showMasks} />
       ))}
     </main>
   );

@@ -119,6 +119,30 @@ button:hover {
   height: auto;
 }
 
+.tile-masks {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+
+.tile-mask {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.tile-mask svg {
+  image-rendering: pixelated;
+  border: 1px solid #e2e2da;
+}
+
+.tile-mask span {
+  color: #9a9a90;
+  font-size: 9px;
+  letter-spacing: 0.02em;
+}
+
 .tile figcaption {
   display: flex;
   justify-content: space-between;
