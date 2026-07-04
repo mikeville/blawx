@@ -13,6 +13,11 @@ export type BenchMeta = {
   tokensOut?: number;
   latencyMs?: number;
   notes?: string;
+  /** Sweep diagnostics from the three-view lift (see hull.ts). */
+  hull?: {
+    malformedRows: number;
+    reprojectionLoss: { front: number; side: number; top: number };
+  };
 };
 
 export type BenchResult = {
