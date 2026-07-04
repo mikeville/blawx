@@ -86,3 +86,30 @@ choice.
 
 None as a labeled dataset. The `baseline-*` snapshots above are the
 visual reference set — treat them as "this is what bad looks like."
+
+## Status
+
+**Phase 1a benchmark harness: built and verified (2026-07-03).**
+
+- `src/bench/isoRender.ts` — neutral eval renderer (monotone SVG,
+  true-30° projection sharing `iso.ts` constants, hidden-face culling,
+  painter's algorithm; optional flat-color variant). ~130 lines, no deps.
+- `src/bench/nouns.ts` — fixed 30-noun list (10 structural / 12 organic /
+  8 hard incl. multi-word + abstract).
+- `src/bench/types.ts` — result interchange format + validating parser
+  (out-of-range/duplicate voxels dropped and *counted* as a signal).
+- `src/bench/cost.ts` — hypothetical per-token cost math (list prices,
+  no live calls anywhere in the harness).
+- `src/App.tsx` — contact-sheet viewer over `runs/*/*.json`: blind mode,
+  per-run mean blind-name score, opaque-filename PNG export for scoring.
+- `runs/README.md` — the human-in-loop run/paste/score workflow.
+- `runs/baseline-llm/` — prior-attempt outputs imported as failure
+  reference (voxel data only, via `scripts/import-baselines.ts`);
+  `runs/fixtures/` — hand-made geometry validating the renderer.
+- Tests: `npm test` (tsx --test, 8 passing). Build + lint clean.
+
+**Next action:** Phase 1b — design the grid-size × encoding sweep
+(8/16/32 × char-grid/run-length) prompt formats and their paste
+converters. This is model-shaped work: stopped here per the spend
+guardrail; each sweep run gets a per-run cost estimate and explicit
+sign-off before any Claude session is used to generate.
