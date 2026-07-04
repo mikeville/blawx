@@ -1,0 +1,18 @@
+Your masks have mechanical errors:
+
+- the front mask has 14 rows — it must have exactly 16 rows
+- front mask rows 1-14: every row must be exactly 16 characters, using only "#" and "." — count the characters in each row
+- the side mask has 14 rows — it must have exactly 16 rows
+- side mask rows 1-14: every row must be exactly 16 characters, using only "#" and "." — count the characters in each row
+- the top mask has 14 rows — it must have exactly 16 rows
+- top mask rows 1-14: every row must be exactly 16 characters, using only "#" and "." — count the characters in each row
+- front and top masks disagree on which columns are filled (they share the object's width): front has columns 1-13, top has columns 0-13 — make them identical
+- side mask columns and top mask rows disagree on the object's depth: side has depth cells 0-12, top implies depth cells 5-12 — make them agree
+- declared bounds say x:1-14 but the front mask occupies columns 1-13 — make them agree
+- declared bounds say y:0-9 but the front mask occupies y 6-13 (y=0 is the bottom row) — make them agree
+- declared bounds say z:2-13 but the side mask occupies depth 0-12 — make them agree
+- the front mask has 32 empty cells enclosed inside the silhouette — masks must be SOLID: fill every cell inside the outline with "#"
+
+Fix every error and re-emit your COMPLETE corrected answer in exactly the
+original format: the bounds line, then exactly three fenced code blocks
+labeled front, side, top. No other text.

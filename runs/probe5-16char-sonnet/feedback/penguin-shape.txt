@@ -1,0 +1,17 @@
+Your masks are mechanically valid now, but the icon fails blind recognition:
+a viewer who did not know the target read it as "duck", not a penguin.
+Redesign the silhouette so the penguin's signature features dominate:
+
+- Compact, almost neckless profile: thicken the vertical center mass so head
+  flows straight into body.
+- Broader, rounder head; keep a short pointed beak sticking out — the
+  current top tapers like a bill-forward waterfowl.
+- Pronounced belly bulge below center: the side profile should be a clear
+  pear shape with the weight low, not an even rectangle. Small feet at the
+  bottom, flipper hinted at the side of the body.
+
+Keep every mechanical rule satisfied: 16 rows of exactly 16 characters per
+mask, solid fill, all three cross-view consistency rules, and a bounds line
+that agrees with the masks. Re-emit your COMPLETE corrected answer: the
+bounds line, then exactly three fenced code blocks labeled front, side, top.
+No other text.

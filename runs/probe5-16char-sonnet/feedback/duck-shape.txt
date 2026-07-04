@@ -1,0 +1,17 @@
+Your masks are mechanically valid now, but the icon fails blind recognition:
+a viewer who did not know the target read it as "deer", not a duck. Redesign
+the silhouette so the duck's signature features dominate:
+
+- Replace the tall vertical head/neck block with a lower head and a FLAT,
+  HORIZONTAL BILL extending forward — ducks read by the flat bill profile,
+  not an upright neck.
+- Round the head-body junction into a gentle curve; the sharp vertical edge
+  reads as a deer.
+- Lower the front mass so the profile slopes down toward the bill; the body,
+  not the head, should be the dominant mass.
+
+Keep every mechanical rule satisfied: 16 rows of exactly 16 characters per
+mask, solid fill, all three cross-view consistency rules, and a bounds line
+that agrees with the masks. Re-emit your COMPLETE corrected answer: the
+bounds line, then exactly three fenced code blocks labeled front, side, top.
+No other text.

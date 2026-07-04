@@ -1,0 +1,14 @@
+{
+  "id": "probe5-16char-sonnet",
+  "label": "probe5 16³ char sonnet · full-res exemplar + retry",
+  "date": "2026-07-04",
+  "pipeline": "probe: full-resolution 16×16 worked exemplars from validated Fable outputs (library-as-exemplar), neighboring nouns in the same body plan, single-shot + deterministic retry (retry-feedback.ts) + optional shape retry, strict lift",
+  "conditions": {
+    "grid": "16",
+    "encoding": "char",
+    "model": "claude-sonnet-5",
+    "prompt": "hardened-v2-fullres-exemplar",
+    "exemplar": "penguin/duck→fable-bird, shark→fable-fish",
+    "method": "2-call: single-shot + deterministic retry (+1 shape retry if blind-name misses)"
+  }
+}

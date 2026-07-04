@@ -1,0 +1,16 @@
+Your masks are mechanically valid now, but the icon fails blind recognition:
+a viewer who did not know the target read it as "elephant", not a shark.
+Redesign the silhouette so the shark's signature features dominate:
+
+- Taper the front end to a point: reduce the nose height progressively into
+  a wedge-shaped snout — the current blunt head is too massive.
+- Enlarge the dorsal fin into a clear tall triangle rising from the middle
+  of the back.
+- Thin the tail end and finish it with a connected vertical crescent/fork —
+  make sure the tail is solidly attached to the body, not floating blocks.
+
+Keep every mechanical rule satisfied: 16 rows of exactly 16 characters per
+mask, solid fill, all three cross-view consistency rules, and a bounds line
+that agrees with the masks. Re-emit your COMPLETE corrected answer: the
+bounds line, then exactly three fenced code blocks labeled front, side, top.
+No other text.

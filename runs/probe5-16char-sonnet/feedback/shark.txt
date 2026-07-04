@@ -1,0 +1,12 @@
+Your masks have mechanical errors:
+
+- side mask rows 9-16: every row must be exactly 16 characters, using only "#" and "." — count the characters in each row
+- front and side masks disagree on which rows are filled (they share the object's height): front has rows 6-15, side has rows 3-15 — make them identical
+- front and top masks disagree on which columns are filled (they share the object's width): front has columns 0-14, top has columns 1-14 — make them identical
+- side mask columns and top mask rows disagree on the object's depth: side has depth cells 1-15, top implies depth cells 4-11 — make them agree
+- declared bounds say x:1-14 but the front mask occupies columns 0-14 — make them agree
+- declared bounds say z:4-11 but the side mask occupies depth 1-15 — make them agree
+
+Fix every error and re-emit your COMPLETE corrected answer in exactly the
+original format: the bounds line, then exactly three fenced code blocks
+labeled front, side, top. No other text.
