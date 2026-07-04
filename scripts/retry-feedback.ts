@@ -6,22 +6,38 @@
 // shape looks like its noun.
 //
 // Usage: npx tsx scripts/retry-feedback.ts runs/<run>/responses-call1/<noun>.txt [--size=16]
+//                                           [--trust-front=<path>] [--max-depth=N]
+//
+// --trust-front=<path>  Path to a sourced (given, authoritative) front mask —
+//                        either a plain <size>-row #/. mask file, or the
+//                        multi-view masks/*.txt format (front/side/top
+//                        labeled sections; only the front section is used).
+//                        The response's front mask is compared cell-for-cell
+//                        against it, and the front view's enclosed-hole
+//                        check is skipped (sourced fronts may have
+//                        intentional holes — an eye, a handle opening).
+// --max-depth=N          Flags a side mask whose depth extent (max filled
+//                        column - min filled column + 1) exceeds N cells.
 //
 // Prints "OK" when the response is mechanically clean (no retry needed);
 // otherwise prints the full feedback message to send as the retry prompt.
 
 import { readFileSync } from 'node:fs';
 import { extractViews, parseMaskText, VIEWS, type Mask, type View } from '../src/bench/encodings.ts';
-import { fillInterior } from '../src/bench/maskOps.ts';
+import { fillInterior, maskToRows } from '../src/bench/maskOps.ts';
 
 const path = process.argv[2];
 if (!path) {
-  console.error('usage: npx tsx scripts/retry-feedback.ts <response.txt> [--size=16]');
+  console.error('usage: npx tsx scripts/retry-feedback.ts <response.txt> [--size=16] [--trust-front=<path>] [--max-depth=N]');
   process.exit(1);
 }
 let size = 16;
+let trustFrontPath: string | undefined;
+let maxDepth: number | undefined;
 for (const a of process.argv.slice(3)) {
   if (a.startsWith('--size=')) size = Number(a.slice('--size='.length));
+  else if (a.startsWith('--trust-front=')) trustFrontPath = a.slice('--trust-front='.length);
+  else if (a.startsWith('--max-depth=')) maxDepth = Number(a.slice('--max-depth='.length));
 }
 
 /** Compact "3-9,12" rendering of a set of numbers. */
@@ -58,6 +74,44 @@ const filledCols = (m: Mask) => {
   return out;
 };
 
+/**
+ * Load a trusted front mask from either a plain <size>-row #/. mask file, or
+ * the multi-view masks/*.txt format (front/side/top labeled sections
+ * separated by blank lines, each label line followed by mask rows). Only the
+ * front section is used in the latter case.
+ */
+function loadTrustFront(trustPath: string, expectedSize: number): Mask {
+  const raw = readFileSync(trustPath, 'utf8');
+  const allLines = raw.split('\n').map((l) => l.trim());
+  const labelIdx = allLines.findIndex((l) => /^(front|side|top)$/i.test(l));
+  let rows: string[];
+  if (labelIdx === -1) {
+    // Plain mask file: every non-blank line is a mask row.
+    rows = allLines.filter((l) => l.length > 0);
+  } else {
+    // Multi-view format: take rows following the "front" label line, up to
+    // the next blank line or next label line.
+    const frontIdx = allLines.findIndex((l) => /^front$/i.test(l));
+    if (frontIdx === -1) {
+      throw new Error(`--trust-front file ${trustPath} has labeled sections but no "front" section`);
+    }
+    rows = [];
+    for (let i = frontIdx + 1; i < allLines.length; i++) {
+      const l = allLines[i];
+      if (l.length === 0 || /^(front|side|top)$/i.test(l)) break;
+      rows.push(l);
+    }
+  }
+  return parseMaskText(rows.join('\n'), expectedSize, 'char').mask;
+}
+
+/** Inclusive [min, max] filled-column extent across all rows, or null if empty. */
+function colExtent(m: Mask): [number, number] | null {
+  const cols = filledCols(m);
+  if (cols.size === 0) return null;
+  return [Math.min(...cols), Math.max(...cols)];
+}
+
 const text = readFileSync(path, 'utf8');
 const issues: string[] = [];
 const views = extractViews(text);
@@ -90,6 +144,27 @@ for (const v of VIEWS) {
 }
 
 const { front, side, top } = masks;
+
+const trustFront: Mask | undefined = trustFrontPath ? loadTrustFront(trustFrontPath, size) : undefined;
+
+if (trustFront && front) {
+  const mismatches: number[] = [];
+  for (let r = 0; r < size; r++) {
+    for (let c = 0; c < size; c++) {
+      if (front[r]?.[c] !== trustFront[r]?.[c]) {
+        mismatches.push(r + 1);
+        break;
+      }
+    }
+  }
+  if (mismatches.length > 0) {
+    issues.push(
+      `the front silhouette was provided and must be reproduced exactly — front mask row${mismatches.length > 1 ? 's' : ''} ` +
+        `${fmtSet(mismatches)} do not match the given front mask. Copy this exact front mask into your answer:\n` +
+        '```\n' + maskToRows(trustFront).join('\n') + '\n```',
+    );
+  }
+}
 
 if (front && side && !sameSet(filledRows(front), filledRows(side))) {
   issues.push(
@@ -139,6 +214,7 @@ if (!boundsMatch) {
 }
 
 for (const v of VIEWS) {
+  if (v === 'front' && trustFront) continue; // sourced fronts may have intentional holes
   const m = masks[v];
   if (!m) continue;
   const holes = fillInterior(m).filled;
@@ -147,6 +223,45 @@ for (const v of VIEWS) {
       `the ${v} mask has ${holes} empty cell${holes > 1 ? 's' : ''} enclosed inside the silhouette — ` +
         `masks must be SOLID: fill every cell inside the outline with "#"`,
     );
+  }
+}
+
+if (side && maxDepth !== undefined) {
+  const extent = colExtent(side);
+  if (extent) {
+    const depth = extent[1] - extent[0] + 1;
+    if (depth > maxDepth) {
+      issues.push(
+        `the object should be at most ${maxDepth} cells deep front-to-back, but the side mask currently ` +
+          `spans ${depth} depth cells — redraw the side view as a depth cross-section, not a second profile of the object`,
+      );
+    }
+  }
+}
+
+if (top) {
+  const tRows = filledRows(top);
+  const tCols = filledCols(top);
+  if (tRows.size > 0 && tCols.size > 0) {
+    const r0 = Math.min(...tRows);
+    const r1 = Math.max(...tRows);
+    const c0 = Math.min(...tCols);
+    const c1 = Math.max(...tCols);
+    const bboxHeight = r1 - r0 + 1;
+    const bboxWidth = c1 - c0 + 1;
+    let filled = 0;
+    for (let r = r0; r <= r1; r++) {
+      for (let c = c0; c <= c1; c++) {
+        if (top[r]?.[c]) filled += 1;
+      }
+    }
+    const fillRatio = filled / (bboxWidth * bboxHeight);
+    if (fillRatio >= 0.9 && bboxWidth >= 12 && bboxHeight >= 5) {
+      issues.push(
+        `the top view is a near-solid full-width rectangle — unless the object is genuinely box-shaped, ` +
+          `its footprint should taper and round: carve the corners so the top view matches the object's true footprint`,
+      );
+    }
   }
 }
 
