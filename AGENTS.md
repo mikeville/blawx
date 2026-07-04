@@ -408,9 +408,129 @@ than invents), possibly plus Opus-instead-of-Sonnet for the emitting
 call (~$0.016/term two-call, drawing quality between Sonnet and
 Fable — untested with retry).
 
-**Next action:** the runtime-shape decision is now a design
-conversation, not a probe: how far to push the exemplar library
-(coverage, match granularity, whether cache-miss nouns fall back to
-nearest body plan) vs. paying for a stronger emitting model. Facts
-above are sufficient inputs; discuss with Mike before building
-Phase 2.
+**Probe5 executed (2026-07-04): library-as-exemplar at Sonnet, full
+production loop.** Full-resolution 16×16 exemplars taken from Fable's
+own validated probe2 outputs (`scripts/make-probe5-prompts.ts` reads
+meta.masks; prompt builder now sizes the worked example from the
+exemplar), targets = neighboring nouns in the same body plan:
+penguin/duck (bird exemplar), shark (fish exemplar). Runtime shape
+exercised end to end: single-shot draw → deterministic mechanical
+retry (`retry-feedback.ts`) → render → Haiku blind-name → if miss,
+Haiku shape-advice → one shape retry → re-blind-name. Run dir
+`runs/probe5-16char-sonnet/` (responses-call1/, responses-call2/,
+feedback/ incl. *-shape.txt, final responses/).
+
+Probe5 findings:
+
+- **Mechanical retry is now 5/5 across probe4+5** (all call-1s broken,
+  all fixed in one round-trip; the redesigns after shape feedback also
+  stayed validator-clean, 3/3). Machinery is solid.
+- **Full-res exemplars did not rescue Sonnet's drawing.** Blind reads
+  after mechanical retry: duck→"deer", penguin→"duck",
+  shark→"elephant". After the shape retry: penguin→"penguin" (HIT),
+  duck→"turtle" (miss), shark→"llama" (miss). Net: 1/3 through the
+  full ~4-call loop (~$0.02/term hypothetical).
+- **Diagnosed pattern:** Sonnet emits near-rectangular top-view
+  footprints (full-width slabs), and front-profile advice can't fix a
+  footprint problem — the duck's advised "flat bill" became a
+  staircase on a slab. A deterministic footprint check (top-mask fill
+  ratio vs its bounding box → "narrow the top view to an oval")
+  belongs in retry-feedback if the LLM route continues; the current
+  vision-advice loop never noticed it.
+
+**Icon-downsample experiment (icon1, 2026-07-04, $0, no model
+calls).** `scripts/icon-lift.ts`: Font Awesome solid SVG → 480px
+raster → ink-bbox-fit 16×16 front mask (coverage ≥0.35) → grounded →
+deterministic depth-4 extrusion side/top → strict lift (0 loss by
+construction). `runs/icon1-16char-fa/` (6 icons, masks/*.txt for 2D
+eyeballing, sources/*.svg CC BY 4.0).
+
+Icon1 findings (Fable eyeball): **the strongest per-dollar results in
+the project.** fish (forked tail, open mouth, eye hole), mug (handle
+hole + saucer), crow — instantly recognizable, at or above Fable's
+drawn quality; dog and horse read as proper quadrupeds; chair medium
+(FA's slatted back gets busy). Professionally drawn 2D silhouettes
+survive 16×16 downsampling + thin extrusion easily. **The binding
+constraint (2D silhouette quality) can be SOURCED, not generated.**
+
+Where this leaves the architecture: front-silhouette acquisition is
+the whole game, and there's now a quality ladder per noun — (1) icon
+set lookup (free, excellent), (2) text-to-2D image model → same
+downsample pipeline (cheap, untested, needs an image API; style
+keywords like "flat solid silhouette icon, side view" go here —
+Mike's earlier text-to-3D tests improved with exactly this kind of
+prompt styling), (3) LLM-drawn masks (works clean only at Fable
+tier; Sonnet ~1/3 even with library exemplar + full retry loop).
+Depth/side/top is deterministic extrusion either way. Offline
+library seeding from icon sets + Fable-quality generations stays the
+economic core; per-request LLM drawing is the fallback of last
+resort, not the engine.
+
+**Mike's decisions (2026-07-04):** laddered approach approved. Image
+model dependency OK (wants the cheapest option that can do flat
+silhouettes — no photorealism needed). Icon-set licensing (CC BY 4.0
+attribution) fine. Fable-on-subscription seeding during R&D fine;
+possible paid brute-force seeding later needs a token-spend estimate
+first. Standing constraint: Fable is assumed unaffordable per-request
+in production — the runtime path must never depend on it.
+
+**Depth is NOT meant to stay flat extrusion (Mike, 2026-07-04).** The
+icon1 depth-4 slab extrusion is a near-term compromise, not the goal:
+the project's bar is the "3D-native" character of real isometric
+sprites (Fable's probe outputs show it — the bird's side view shapes
+head 4-deep / body 6-deep / legs 2-deep; probe1's mug is a cylinder,
+not an extruded rectangle). The open design question for sourced-front
+routes is who authors the side/top masks: (a) deterministic
+"inflation" (depth profile derived from front-mask local widths —
+rounded, not flat, still $0), (b) a cheap LLM drawing side/top
+CONDITIONED on the sourced front mask (a far easier task than
+designing from scratch — untested), (c) Fable-tier full three-view
+design for library seeds.
+
+**Depth-ladder comparison executed (2026-07-04, $0).** Three depth
+treatments over the same FA-sourced fronts:
+
+- `runs/icon2-16char-inflate` — deterministic per-row inflation
+  (`icon-lift.ts --depth=inflate`: d(r)=clamp(2·round(3·w(r)/16),2,6),
+  side = centered run, top = per-column union of row runs; masks/*.txt
+  now dumps all three views). All 6 icons, zero loss by construction.
+- `runs/icon3-16char-sonnetdepth` — Sonnet draws side/top conditioned
+  on the verbatim front (fish + dog), single-shot + deterministic
+  retry. Both call-1s broken (dog drew a second profile as its side
+  view — a new failure mode), both clean after one retry. Pipeline
+  learning: retry-feedback's enclosed-hole check must EXEMPT sourced
+  fronts (the fish's eye hole is intentional) — needs a trust-front
+  mode before this becomes a real stage.
+
+Verdict (Fable eyeball):
+
+- **Inflation is the winner on animals.** The inflated dog is a real
+  isometric sprite — 2-deep legs, fat body, stepped ears — clearly
+  better than flat and at least as good as Sonnet's version, for $0
+  and no failure modes. Inflated fish stays thin (mean 4.8) and keeps
+  its features.
+- **Sonnet depth-drawing is capable but unreliable and dominated:**
+  its dog matched inflation (shaped cross-section like Fable's bird);
+  its fish over-inflated to 10 deep, and the lens top mask carved the
+  front's features into terraced rings — worse than flat. 2 calls for
+  results no better than the free heuristic.
+- **Width-proportional inflation is the wrong prior for man-made
+  objects:** the mug/chair want round-in-top-view or flat treatment,
+  not row-width depth (saucer became a 6-deep slab). A small
+  per-category depth-profile table (animal-profile / round-object /
+  flat-object) is the likely fix; flat remains an acceptable floor.
+
+Depth question settled for Phase 2: **deterministic inflation with a
+per-category profile table**, no model in the depth path. Fable-tier
+three-view design remains the ceiling for seeded library entries.
+
+**Next action:** Phase 2 architecture is now fully de-risked at the
+component level (front sourcing via icon-lift, depth via inflation,
+repairs, strict lift, blind-name QA gate, retry loops). Next build
+steps, roughly in order: (1) add trust-front mode + footprint checks
+to retry-feedback; (2) per-category depth profiles in icon-lift;
+(3) wire the ladder into a single offline pipeline script keyed by
+noun (icon lookup → inflate → lift → QA) and run it over the 30-noun
+benchmark list as the first library seed; (4) scope the text-to-2D
+rung (verify current image-model pricing; no API spend without
+per-run sign-off).
