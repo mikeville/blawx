@@ -1,15 +1,21 @@
-// Re-lift the sweep1 responses under three repair variants (fill/bbox/vote)
-// and regenerate the original strict-lift cells with meta.masks added.
+// Re-lift responses under three repair variants (fill/bbox/vote)
+// and regenerate original strict-lift cells with meta.masks added.
 //
-// For each of sweep1-{16-char,8-char,16-rle}:
-//   1. Re-parse responses/*.txt, re-run the ORIGINAL strict lift, and assert
-//      the voxel set matches what's already on disk before overwriting (adds
-//      meta.masks only — never changes the lifted voxels for the original
-//      cell).
-//   2. Write three new run dirs (relift1-<cell>-<variant>/) with the
-//      fill / bbox / vote variants applied.
+// By default (no args), process sweep1-{16-char,8-char,16-rle} and write
+// relift1-<slug>-<variant>/ dirs (slug = "16char", "8char", "16rle").
 //
-// Usage: npx tsx scripts/relift.ts
+// With positional args, process those run dirs instead (e.g. probe1-16char-sonnet)
+// and write <dir>-<variant>/ (e.g. probe1-16char-sonnet-bbox).
+//
+// --variants=<a,b> restricts which variants (fill/bbox/vote) to produce.
+// Default: all three. Rejects unknown variants with non-zero exit.
+//
+// For each dir:
+//   1. Re-parse responses/*.txt, re-run the ORIGINAL strict lift, assert
+//      voxel set matches disk (adds meta.masks only).
+//   2. Write variant run dirs with fill/bbox/vote applied.
+//
+// Usage: npx tsx scripts/relift.ts [<run-dir> ...] [--variants=<a,b>]
 
 import { readFileSync, writeFileSync, existsSync, readdirSync, mkdirSync } from 'node:fs';
 import { basename, join } from 'node:path';
@@ -22,13 +28,41 @@ import type { BenchResult, BenchMeta, RunManifest, Vec3 } from '../src/bench/typ
 
 const RUNS_DIR = join(import.meta.dirname, '..', 'runs');
 
-const CELLS: { dir: string; slug: string }[] = [
+const DEFAULT_CELLS: { dir: string; slug: string }[] = [
   { dir: 'sweep1-16-char', slug: '16char' },
   { dir: 'sweep1-8-char', slug: '8char' },
   { dir: 'sweep1-16-rle', slug: '16rle' },
 ];
 
-const VARIANTS = ['fill', 'bbox', 'vote'] as const;
+const ALL_VARIANTS = ['fill', 'bbox', 'vote'] as const;
+type Variant = typeof ALL_VARIANTS[number];
+
+// Parse CLI args: positional run dirs and --variants flag.
+const args = process.argv.slice(2);
+let requestedDirs: string[] = [];
+let requestedVariants: Variant[] = [...ALL_VARIANTS];
+
+for (const arg of args) {
+  if (arg.startsWith('--variants=')) {
+    const varStr = arg.slice('--variants='.length);
+    const vars = varStr.split(',').map((v) => v.trim()) as Variant[];
+    for (const v of vars) {
+      if (!ALL_VARIANTS.includes(v)) {
+        console.error(`unknown variant: ${v} (must be one of ${ALL_VARIANTS.join(', ')})`);
+        process.exit(1);
+      }
+    }
+    requestedVariants = vars;
+  } else if (!arg.startsWith('--')) {
+    requestedDirs.push(arg);
+  }
+}
+
+const CELLS = requestedDirs.length > 0
+  ? requestedDirs.map((dir) => ({ dir, slug: '' })) // slug unused for arg-supplied dirs
+  : DEFAULT_CELLS;
+
+const VARIANTS = requestedVariants;
 
 const voxelKey = (v: Vec3) => v.join(',');
 function sameVoxelSet(a: Vec3[], b: Vec3[]): boolean {
@@ -112,7 +146,9 @@ const cellVariantStats: {
   totalFilled: number;
 }[] = [];
 
-for (const { dir, slug } of CELLS) {
+for (const cellEntry of CELLS) {
+  const dir = cellEntry.dir;
+  const slug = cellEntry.slug || dir; // use dir as fallback if slug is empty (arg-supplied mode)
   const runDir = join(RUNS_DIR, dir);
   const manifest = JSON.parse(readFileSync(join(runDir, 'run.json'), 'utf8')) as RunManifest;
   const size = Number(manifest.conditions?.grid);
@@ -165,9 +201,10 @@ for (const { dir, slug } of CELLS) {
     writeFileSync(existingPath, JSON.stringify(result));
   }
 
-  // --- Step 2: write the three variant run dirs.
+  // --- Step 2: write the variant run dirs.
   for (const variant of VARIANTS) {
-    const outId = `relift1-${slug}-${variant}`;
+    const isArgSupplied = requestedDirs.length > 0;
+    const outId = isArgSupplied ? `${dir}-${variant}` : `relift1-${slug}-${variant}`;
     const outDir = join(RUNS_DIR, outId);
     mkdirSync(outDir, { recursive: true });
 
