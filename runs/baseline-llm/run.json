@@ -1,0 +1,6 @@
+{
+  "id": "baseline-llm",
+  "label": "baseline-llm (failure reference)",
+  "date": "2026-07-03",
+  "pipeline": "prior-attempt import — reference only, not a pipeline under test"
+}

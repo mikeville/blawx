@@ -1,0 +1,6 @@
+{
+  "id": "fixtures",
+  "label": "renderer fixtures (hand-made)",
+  "date": "2026-07-03",
+  "pipeline": "hand-authored geometry — validates the eval renderer, not a pipeline"
+}
