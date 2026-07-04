@@ -1,0 +1,12 @@
+{
+  "id": "probe1-16char-sonnet",
+  "label": "probe1 16³ char sonnet",
+  "date": "2026-07-04",
+  "pipeline": "probe: hardened prompt (solid fill + bounds + per-axis consistency + worked example), three-view mask emission + strict hull lift",
+  "conditions": {
+    "grid": "16",
+    "encoding": "char",
+    "model": "claude-sonnet-5",
+    "prompt": "hardened-v2"
+  }
+}

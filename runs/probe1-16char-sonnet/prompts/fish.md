@@ -1,0 +1,70 @@
+Design a tiny voxel icon of: "fish"
+
+Think of it as an isometric game icon, not a 3D model: one instantly
+recognizable silhouette. Choose the object's most recognizable orientation
+(animals: side profile). Ground it at the bottom of the grid and make it
+fill most of the grid.
+
+Output three orthographic silhouette masks of that one solid object on a
+16x16 grid:
+
+- front — columns run left to right; rows run top to bottom (first row = top of the object).
+- side — seen from the object's right; columns run front to back; rows top to bottom.
+- top — seen from above; columns run left to right; rows run back to front (first row = the back).
+
+Masks are SOLID silhouettes: every cell inside the object's outline is "#",
+not just the border. Never draw a hollow outline.
+
+Consistency rules — all three masks are projections of the same solid:
+- Every row filled in the front mask is filled in the same row of the side mask, and vice versa (they share the object's height).
+- Every column filled in the front mask is filled in the same column of the top mask, and vice versa (they share the object's width).
+- Every column filled in the side mask corresponds to a filled row of the top mask (they share the object's depth).
+
+Before the masks, output one line declaring the object's occupied extents:
+bounds x:<min>-<max> y:<min>-<max> z:<min>-<max>
+(x = width columns, y = height with 0 at the bottom, z = depth). Then make
+every mask agree exactly with those extents.
+
+Each row is exactly 16 characters: "#" = filled, "." = empty. Count them.
+Each mask has exactly 16 rows.
+
+Worked example on an 8x8 grid — a dog: solid, grounded, side profile
+(body along x, so the front mask shows the profile):
+
+bounds x:0-7 y:0-7 z:2-5
+
+```front
+##......
+##.....#
+########
+########
+.#....#.
+.#....#.
+.#....#.
+.#....#.
+```
+
+```side
+..##....
+..##....
+..####..
+..####..
+..#..#..
+..#..#..
+..#..#..
+..#..#..
+```
+
+```top
+........
+........
+########
+########
+########
+########
+........
+........
+```
+
+Output the bounds line, then exactly three fenced code blocks labeled
+front, side, top. No other text.

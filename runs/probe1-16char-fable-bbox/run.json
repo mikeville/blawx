@@ -1,0 +1,14 @@
+{
+  "id": "probe1-16char-fable-bbox",
+  "label": "relift1 probe1-16char-fable · bbox",
+  "date": "2026-07-04",
+  "pipeline": "relift: bbox repair + strict intersection lift",
+  "conditions": {
+    "grid": "16",
+    "encoding": "char",
+    "model": "claude-fable-5",
+    "prompt": "hardened-v2",
+    "sourceCell": "probe1-16char-fable",
+    "variant": "bbox"
+  }
+}
