@@ -253,13 +253,164 @@ the Phase 2 pipeline as a permanent stage — it's free quality. But
 recognizability is still mask-bound, so the model/prompt is the next
 lever.
 
-**Next action:** the model-tier probe — same 16-char prompts hardened
-("solid filled silhouette, not an outline"; animal-shaped filled
-worked example instead of the sphere; emit a shared bounding box
-before the three views), ~6 nouns (fox, bird, mug, chair, fish,
-rocket ship) through a Sonnet/Fable-class session, subscription-only,
-then relift + eyeball. If strong-model masks are recognizable in 2D,
-the architecture stands and model tier is the lever; if not, pull
-Phase 4 (exemplar few-shot) forward. Optional cheap add-on while
-there: span-fill (per-row/column first-to-last fill) as a
-gap-tolerant alternative to flood fill for outline masks.
+**Model-tier probe executed (2026-07-04, probe1).** Hardened prompt
+(`scripts/make-probe-prompts.ts`, conditions.prompt=`hardened-v2`):
+solid-fill rule, declared `bounds` line, per-axis consistency rules,
+and a worked 8×8 dog example (hand-authored, validated through the
+real lift — renders as a clean quadruped, zero reprojection loss).
+6 nouns (mug, chair, fox, bird, fish, rocket ship) × 3 tiers
+(Haiku 4.5 / Sonnet 5 / Fable 5), Claude Code subagents as in sweep1,
+$0 actual. `scripts/relift.ts` now takes run-dir args +
+`--variants=`; probe dirs relifted with bbox. Results in
+`runs/probe1-16char-{haiku,sonnet,fable}[-bbox]/`, PNGs under
+`scoring/`.
+
+Probe1 findings (Fable eyeball, harsh read):
+
+- **Mechanical emission is a hard tier cliff.** Haiku under the
+  hardened prompt is still broken (mean 33 malformed rows/noun, chair
+  hull collapsed to zero, losses to 0.93) — prompt hardening does NOT
+  fix Haiku; it is out as the mask-emitting model. Sonnet and Fable:
+  12/12 nouns with zero malformed rows and zero reprojection loss.
+- **Recognizability at Fable: architecture validated.** Chair, mug,
+  rocket ship are clean unambiguous hits (cylinder mug with a real
+  handle hole; finned rocket with nose cone). Fox is a genuine
+  quadruped with ears/legs/tail — the first organic with a correct
+  body plan in this project. Fish borderline-close, bird a miss
+  (over-inflated blob). Roughly 3 hits + 2 close of 6 vs sweep1's
+  0/72.
+- **Sonnet: same mechanics, cruder caricature.** Chair hit; rocket
+  and mug near-hits (boxier); fox again a clear quadruped; fish and
+  bird miss. Usable floor, a tier below Fable on shape design.
+- **The worked example transfers the body plan.** The dog exemplar
+  turned fox into a quadruped at both tiers — direct, cheap
+  confirmation of the Phase 4 exemplar hypothesis. Bird/fish (no
+  matching exemplar in the prompt) are exactly the ones that stayed
+  weak.
+- **Cost does not gate the tier.** ~520 in / ~220 out tokens per term
+  at 16³ char → ≈$0.005 (Sonnet), ≈$0.008 (Opus-class) hypothetical —
+  all inside the $0.01–0.02 target. Caveat: probe agents ran
+  self-verification loops inside the Claude Code wrapper; a
+  single-call runtime would rely on our deterministic repairs
+  (fill/bbox) instead, which is what they're for.
+
+**Probe2 executed (2026-07-04): plan-matched exemplars, single-shot.**
+Exemplar infrastructure: `scripts/exemplars.ts` (hand-authored 8×8
+dog/sparrow/carp, each validated through the strict lift — zero
+reprojection loss, declared bounds match lifted extents; re-check with
+`npx tsx scripts/validate-exemplars.ts`, renders to
+`runs/fixtures/exemplar-*.png`), `scripts/probe-prompt.ts` (prompt
+builder extracted from make-probe-prompts.ts, byte-identical output
+verified against the probe1 packet), `scripts/make-probe2-prompts.ts`.
+Exemplars are deliberately labeled sparrow/carp — different nouns from
+the probed bird/fish — so the probe tests body-plan *transfer* (like
+dog→fox), not copying.
+
+Method change vs probe1, deliberate: probe2 agents were told "do not
+use any tools", so responses are **single-shot emissions** — the shape
+of the production single-call runtime. Probe1 agents had run
+tool-assisted self-verification loops; that difference turns out to be
+load-bearing (control below). Runs: `runs/probe2-16char-{sonnet,fable}
+[-bbox]`, control `runs/probe2ctl-16char-sonnet[-bbox]`.
+
+Probe2 findings (Fable eyeball, harsh read):
+
+- **Fable single-shot: both organics flip to hit.** Zero malformed
+  rows, zero reprojection loss on all six masks. Bird is a real
+  perched bird (head+beak, raised tail, two separate legs with feet);
+  fish has a forked tail + dorsal fin. Both are mirrored and
+  re-proportioned relative to the exemplars — genuine body-plan
+  transfer, not upscaled copies. Cumulative at Fable across probe1+2:
+  5 hits (chair, mug, rocket ship, bird, fish) + 1 close (fox) of 6.
+  The caricature/exemplar hypothesis is confirmed end to end at Fable.
+- **Sonnet single-shot: mechanically broken.** Truncated masks (8–10
+  rows instead of 16), 16 malformed rows per noun, cross-view losses
+  to 0.63; strict lifts are a wedge and a slab, and bbox repair yields
+  striped slabs, not animals. **Control:** probe1's own fox/mug
+  prompts (dog exemplar) re-run at Sonnet single-shot are equally
+  broken — 48 malformed rows each, 15-wide rows, mug emitted as a
+  hollow outline (the sweep1 failure), 8-voxel hull. So the collapse
+  is single-shot Sonnet emission generally, NOT the new exemplars —
+  and probe1's "Sonnet: zero malformed rows" was an artifact of the
+  self-verification loop, valid only for a runtime that includes one.
+
+**Probe3 executed (2026-07-04): Opus 4.8 single-shot, all 6 nouns**
+(probe1 prompts for mug/chair/fox/rocket, plan-matched probe2 prompts
+for bird/fish). `runs/probe3-16char-opus[-bbox]`. Findings:
+
+- Mechanics: between the tiers, closer to unreliable. 4/6 nouns had
+  malformed rows (bird's top mask drifted to 14–18-char rows; rocket's
+  top mask was 10 rows and a duplicate of its front view; chair
+  emitted a wrong-width first attempt then self-corrected mid-response
+  with prose commentary, violating the output contract). Losses to
+  0.56 strict; bbox repair recovers to mean max-loss 0.075.
+- Recognizability after fill+bbox: chair close-to-hit, mug close
+  (boxy, handle a bar not a loop), fish borderline; bird, fox, rocket
+  miss (fox was drawn face-on and floating; bird's footprint was
+  destroyed by the malformed top rows). Roughly 0 hits + 3 close of 6
+  — below tool-assisted Sonnet, far below Fable.
+
+**Tier picture for a single-call runtime** (the production shape —
+one prompt, one response, deterministic fill/bbox repair, strict
+lift): Haiku broken, Sonnet broken, Opus 4.8 marginal, Fable clean.
+Emission discipline AND shape design both improve with tier, and only
+the top tier currently delivers both without a self-check loop.
+Phase 2 runtime options this leaves open: (a) Fable/top-tier single
+call — works end to end, but check Mythos-tier API pricing against
+the $0.01–0.02/term target before committing; (b) Sonnet or Opus +
+one verify/fix round-trip (~2× tokens ≈ $0.01 at Sonnet prices) —
+this is the shape probe1 accidentally validated; (c) prompt/encoding
+changes that make mid-tier single-shot emission reliable (untested).
+Hypothetical single-call cost from probe1 token counts: ≈$0.005
+(Sonnet), ≈$0.008 (Opus-class) per term.
+
+Mike's call on the runtime (2026-07-04): Fable API pricing is assumed
+unaffordable at scale — route (a) is off the table for the public toy.
+The open question was whether (b) survives the drawing-quality
+evidence; probe4 below tests it.
+
+**Probe4 executed (2026-07-04): Sonnet 2-call runtime (single-shot +
+one deterministic-feedback retry), bird + fish, plan-matched
+exemplars.** `scripts/retry-feedback.ts` is the deterministic
+validator: view presence, row count/width/charset, cross-view
+consistency (shared height/width/depth as filled-set comparisons),
+declared-vs-actual bounds, enclosed-hole (hollow silhouette)
+detection — no model calls, emits the exact feedback text the retry
+call receives. Run layout: `runs/probe4-16char-sonnet/` with
+`responses-call1/`, `feedback/`, final `responses/`. Subagent
+conversations were resumed with the feedback message, so the retry
+had call-1 context — the true production 2-call shape.
+
+Probe4 findings:
+
+- **The retry loop fixes mechanics completely, 2/2.** Call 1 was
+  broken as expected (bird: 14-wide × 10-row masks; fish: 7-row
+  masks plus a mid-response self-correction). After one feedback
+  round-trip both nouns came back 16×16, zero malformed rows, zero
+  reprojection loss, bounds agreeing — validator-clean with no
+  tolerant-parser help. Mechanical emission is a SOLVED problem at
+  Sonnet tier for ~2× tokens (~$0.01/term).
+- **Drawing quality only partially follows.** Bird: right body plan
+  (head with stepped beak, long body, two blocky legs) — close,
+  maybe a weak hit; visibly cruder than Fable's. Fish: kept the
+  carp exemplar's dorsal fin and oval body but DROPPED THE FORKED
+  TAIL — the one feature that sells "fish"; renders as a finned
+  loaf. Miss-to-borderline. n=1 per noun; variance unmeasured.
+
+Where this leaves the tier question: mechanics are cheap to buy at
+any tier (deterministic retry), but shape design remains the binding
+constraint below Fable. The evidence pattern across probes 1–4 says
+the exemplar carries the body plan and the model fumbles the details
+— which points at the next affordable lever being a **heavier
+exemplar prior** (larger library, closer body-plan match — when the
+target noun IS the exemplar's noun the model mostly adapts rather
+than invents), possibly plus Opus-instead-of-Sonnet for the emitting
+call (~$0.016/term two-call, drawing quality between Sonnet and
+Fable — untested with retry).
+
+**Next action:** the runtime-shape decision is now a design
+conversation, not a probe: how far to push the exemplar library
+(coverage, match granularity, whether cache-miss nouns fall back to
+nearest body plan) vs. paying for a stronger emitting model. Facts
+above are sufficient inputs; discuss with Mike before building
+Phase 2.
