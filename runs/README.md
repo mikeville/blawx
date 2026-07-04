@@ -80,6 +80,27 @@ Verdicts: `hit` = names the noun or an exact synonym; `close` = right
 body-plan family or near-synonym (fox→dog); `miss` = anything else.
 Score = mean of hit=1 / close=0.5 / miss=0, shown per run on the sheet.
 
+## Sweep workflow (Phase 1b)
+
+The grid-size × encoding sweep stages everything as files; each model
+response is one paste in a fresh Claude chat.
+
+1. `npx tsx scripts/make-prompts.ts` — writes six run folders
+   (`sweep1-{8,16,32}-{char,rle}`), each with `prompts/<noun>.md` and an
+   empty `responses/`. Default is a 12-noun stratified subset; `--all`
+   for the full 30.
+2. For each prompt: paste into a **fresh** chat, save the raw response
+   verbatim to `responses/<noun>.txt` (same basename as the prompt).
+   Note which model the chat used and put it in the run's `run.json`
+   `conditions.model` (once per run folder).
+3. `npx tsx scripts/convert-response.ts runs/<run-id>/responses/<noun>.txt`
+   — parses the three masks, lifts the strict visual hull, writes
+   `<noun>.json` with diagnostics: malformed-row count (row drift) and
+   per-view reprojection loss (cross-view inconsistency). Zero-voxel
+   results are written too — failures must stay visible.
+4. Score each run via the blind-name workflow above; compare score,
+   failure diagnostics, and hypothetical cost across the six conditions.
+
 ## Reference runs
 
 `baseline-*` folders are imported prior-attempt outputs (via
