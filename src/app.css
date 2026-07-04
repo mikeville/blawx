@@ -1,0 +1,179 @@
+/* Internal instrument. Neutral on purpose: the renders are the only color
+   on the page, so nothing competes with the thing being judged. */
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: #fcfcfa;
+  color: #1c1c1a;
+  font: 13px/1.5 ui-monospace, 'SF Mono', Menlo, monospace;
+}
+
+main {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 28px 32px 96px;
+}
+
+h1 {
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  margin: 0;
+}
+
+h2 {
+  font-size: 13px;
+  font-weight: 600;
+  margin: 0;
+}
+
+.page-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  border-bottom: 1px solid #1c1c1a;
+  padding-bottom: 12px;
+  margin-bottom: 8px;
+}
+
+.controls {
+  display: flex;
+  gap: 18px;
+}
+
+.controls label {
+  display: inline-flex;
+  gap: 6px;
+  align-items: center;
+  cursor: pointer;
+  user-select: none;
+}
+
+.run {
+  margin-top: 36px;
+}
+
+.run > header {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  margin-bottom: 14px;
+}
+
+.run-info {
+  color: #6f6f68;
+  flex: 1;
+}
+
+.run-info strong {
+  color: #1c1c1a;
+}
+
+button {
+  font: inherit;
+  font-size: 11px;
+  background: none;
+  border: 1px solid #c9c9c2;
+  border-radius: 2px;
+  padding: 2px 8px;
+  color: #6f6f68;
+  cursor: pointer;
+}
+
+button:hover {
+  border-color: #1c1c1a;
+  color: #1c1c1a;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  gap: 1px;
+  background: #e2e2da;
+  border: 1px solid #e2e2da;
+}
+
+.tile {
+  margin: 0;
+  background: #ffffff;
+  padding: 12px 12px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.tile-render {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 150px;
+}
+
+.tile-render svg {
+  max-width: 100%;
+  max-height: 220px;
+  height: auto;
+}
+
+.tile figcaption {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+
+.tile-name {
+  font-weight: 600;
+}
+
+.tile-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 8px;
+  color: #9a9a90;
+  font-size: 11px;
+}
+
+.warn {
+  color: #b04a00;
+  font-style: normal;
+}
+
+.verdict {
+  font-size: 11px;
+  padding: 0 6px;
+  border-radius: 2px;
+  border: 1px solid currentcolor;
+}
+
+.verdict-hit {
+  color: #2e7d32;
+}
+
+.verdict-close {
+  color: #a07400;
+}
+
+.verdict-miss {
+  color: #c8102e;
+}
+
+.errors {
+  color: #c8102e;
+  font-size: 11px;
+}
+
+.empty {
+  color: #6f6f68;
+  margin-top: 48px;
+}
+
+code {
+  background: #f0f0ea;
+  padding: 1px 4px;
+  border-radius: 2px;
+}
