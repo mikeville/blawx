@@ -108,8 +108,19 @@ visual reference set — treat them as "this is what bad looks like."
   `runs/fixtures/` — hand-made geometry validating the renderer.
 - Tests: `npm test` (tsx --test, 8 passing). Build + lint clean.
 
-**Next action:** Phase 1b — design the grid-size × encoding sweep
-(8/16/32 × char-grid/run-length) prompt formats and their paste
-converters. This is model-shaped work: stopped here per the spend
-guardrail; each sweep run gets a per-run cost estimate and explicit
-sign-off before any Claude session is used to generate.
+**Phase 1b sweep harness: built (2026-07-04).** Mask encodings + tolerant
+parsers (`src/bench/encodings.ts` — malformed rows repaired and counted),
+strict three-view hull lift with per-view reprojection loss
+(`src/bench/hull.ts`), prompt packet generator (`scripts/make-prompts.ts`)
+and paste converter (`scripts/convert-response.ts`). Packet generated:
+72 prompts across `runs/sweep1-{8,16,32}-{char,rle}/prompts/` (12-noun
+stratified subset; `--all` regenerates for 30). Workflow in
+`runs/README.md` § Sweep workflow. 19 tests passing. Hypothetical cost
+of the full 72-paste sweep: ~$0.13 at Haiku 4.5 prices, ~$0.63 at Opus
+prices — $0 actual (subscription pastes).
+
+**Next action:** run the sweep — paste `runs/sweep1-*/prompts/*.md` into
+fresh Claude chats (one per prompt), save responses to
+`responses/<noun>.txt`, convert, blind-score. This step is Mike-driven
+(pasting); a session can then aggregate the six conditions and make the
+grid/encoding call from the data.
