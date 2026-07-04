@@ -1,0 +1,11 @@
+{
+  "id": "sweep1-32-char",
+  "label": "sweep1 32³ char-grid",
+  "date": "2026-07-04",
+  "pipeline": "sweep: direct three-view mask emission + strict hull lift",
+  "conditions": {
+    "grid": "32",
+    "encoding": "char",
+    "model": "FILL IN: chat model used for the pastes"
+  }
+}
