@@ -1,0 +1,13 @@
+{
+  "id": "relift1-8char-vote",
+  "label": "relift1 8char · vote",
+  "date": "2026-07-04",
+  "pipeline": "relift: vote repair + 2-of-3 vote lift",
+  "conditions": {
+    "grid": "8",
+    "encoding": "char",
+    "model": "claude-haiku-4-5",
+    "sourceCell": "sweep1-8-char",
+    "variant": "vote"
+  }
+}

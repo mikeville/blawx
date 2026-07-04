@@ -1,0 +1,13 @@
+{
+  "id": "relift1-16char-vote",
+  "label": "relift1 16char · vote",
+  "date": "2026-07-04",
+  "pipeline": "relift: vote repair + 2-of-3 vote lift",
+  "conditions": {
+    "grid": "16",
+    "encoding": "char",
+    "model": "claude-haiku-4-5",
+    "sourceCell": "sweep1-16-char",
+    "variant": "vote"
+  }
+}

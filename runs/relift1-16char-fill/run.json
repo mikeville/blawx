@@ -1,0 +1,13 @@
+{
+  "id": "relift1-16char-fill",
+  "label": "relift1 16char · fill",
+  "date": "2026-07-04",
+  "pipeline": "relift: fill repair + strict intersection lift",
+  "conditions": {
+    "grid": "16",
+    "encoding": "char",
+    "model": "claude-haiku-4-5",
+    "sourceCell": "sweep1-16-char",
+    "variant": "fill"
+  }
+}

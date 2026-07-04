@@ -1,0 +1,13 @@
+{
+  "id": "relift1-16char-bbox",
+  "label": "relift1 16char · bbox",
+  "date": "2026-07-04",
+  "pipeline": "relift: bbox repair + strict intersection lift",
+  "conditions": {
+    "grid": "16",
+    "encoding": "char",
+    "model": "claude-haiku-4-5",
+    "sourceCell": "sweep1-16-char",
+    "variant": "bbox"
+  }
+}
