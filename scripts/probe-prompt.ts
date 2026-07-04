@@ -38,7 +38,7 @@ every mask agree exactly with those extents.
 Each row is exactly ${size} characters: "#" = filled, "." = empty. Count them.
 Each mask has exactly ${size} rows.
 
-Worked example on an 8x8 grid — a ${exemplar.label}: solid, grounded, side profile
+Worked example on an ${exemplar.front.length}x${exemplar.front.length} grid — a ${exemplar.label}: solid, grounded, side profile
 (body along x, so the front mask shows the profile):
 
 ${exemplar.bounds}
