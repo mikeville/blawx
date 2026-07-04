@@ -1,0 +1,1 @@
+{"noun":"chair","size":8,"voxels":[[0,0,2],[0,1,2],[1,0,2],[1,1,2],[1,2,2],[1,3,2]],"meta":{"model":"claude-haiku-4-5","encoding":"rle","tokensIn":300,"tokensOut":55,"hull":{"malformedRows":4,"reprojectionLoss":{"front":0.75,"side":0.75,"top":0.8}}}}

@@ -1,0 +1,1 @@
+{"noun":"fish","size":8,"voxels":[[0,3,1],[0,4,1]],"meta":{"model":"claude-haiku-4-5","encoding":"rle","tokensIn":300,"tokensOut":50,"hull":{"malformedRows":0,"reprojectionLoss":{"front":0.8571428571428571,"side":0.8333333333333334,"top":0.8888888888888888}}}}

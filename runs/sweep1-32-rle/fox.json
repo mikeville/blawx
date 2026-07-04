@@ -1,0 +1,1 @@
+{"noun":"fox","size":32,"voxels":[],"meta":{"model":"claude-haiku-4-5","encoding":"rle","tokensIn":301,"tokensOut":147,"hull":{"malformedRows":0,"reprojectionLoss":{"front":1,"side":1,"top":1}},"notes":"hull collapsed to zero voxels"}}
