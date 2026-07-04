@@ -131,18 +131,26 @@ cells, so it preserves grid×encoding ranking but leaves absolute scores
 not directly comparable to a claude.ai chat. `conditions.model` =
 `claude-haiku-4-5` in all 6 `run.json`.
 
-**Findings.** Quantitative diagnostics from
-`scripts/convert-response.ts`:
+**Findings.** Two independent axes: (1) diagnostic well-formedness —
+whether the model produced parseable masks that lifted to a non-empty
+hull, tracked mechanically by the harness; (2) recognizability —
+whether the rendered hull looks like its noun to a human, only visible
+by eyeballing the contact sheet or via blind scoring.
+
+Diagnostic well-formedness (from `scripts/convert-response.ts` output):
 
 - `sweep1-32-rle`: 4 hull collapses to zero voxels (fish, fox, love, tree)
 - `sweep1-32-char`: heavy malformed-row counts (~70–98) across most nouns
 - `sweep1-8-rle`: severe resolution loss (chair=6vx, fish=2vx)
-- `sweep1-16-*` and `sweep1-8-char`: healthiest on diagnostics
+- `sweep1-16-*` and `sweep1-8-char`: masks parse cleanly and hulls are
+  non-empty (this is a mechanical claim about output structure, NOT
+  about recognizability)
 
-Qualitative (Mike, eyeballing the contact sheet): most hulls are not
-recognizable as their target nouns, including in the healthy-diagnostics
-cells. Not yet checked: whether failure is uniform vs. worse on organics
-(fox/fish/octopus/bird) than on structural (house/mug/robot/chair).
+Recognizability (Mike, eyeballing the contact sheet): most hulls are
+not recognizable as their target nouns, **including in the cells that
+are diagnostic-healthy**. Failure spans both organic (fox, fish,
+octopus, bird) and structural (chair confirmed bad) nouns — not a
+clean structural-vs-organic split.
 
 **Next action:** Fable to judge from the sweep1 state above. Blind
 scoring the six Haiku cells is on the table but not obviously the right
