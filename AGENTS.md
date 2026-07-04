@@ -173,6 +173,19 @@ close is on a structural noun (chair, house, mug, robot, tree). Every
 organic (bird, fish, fox, octopus) is `miss` in all six cells. `love`,
 `rocket ship`, `sailboat` also miss in all six.
 
+**Mike's audit of the `close` verdicts (2026-07-04):** all `close`
+verdicts should be read as effective misses. The Haiku adjudicator was
+generous — it accepted answers like `mug="Cube"`, `robot="Platform"`,
+`house="Pyramid"` as close because they share generic "boxy shape"
+vocabulary, but eyeballing the hulls confirms none of these actually
+resemble their nouns. Under a stricter read (closes → misses), only 2
+of 72 items land: `sweep1-8-char/chair="Chair"` and
+`sweep1-16-rle/house="box"`. That's 2 hits across the full sweep, both
+on structural nouns, one at 8-char and one at 16-rle — well within
+"lucky guess" range and not a signal of the pipeline working. Raw
+`scores.json` files preserved as-is for auditability; this note is the
+load-bearing interpretation.
+
 **Next action:** Fable to judge from the sweep1 state above. Blind
 scoring the six Haiku cells is on the table but not obviously the right
 move given the qualitative finding.
