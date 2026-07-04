@@ -25,7 +25,7 @@ let total = 0;
 for (const runId of runIds) {
   const runDir = join(RUNS_DIR, runId);
   const jsons = readdirSync(runDir)
-    .filter((f) => f.endsWith('.json') && f !== 'run.json' && f !== 'scores.json')
+    .filter((f) => f.endsWith('.json') && f !== 'run.json' && f !== 'scores.json' && f !== 'misses.json')
     .sort();
 
   const items: { noun: string; voxels: BenchResult['voxels'] }[] = [];
