@@ -654,9 +654,27 @@ marginal. Open question for Mike: demote those 3–4 to misses, which
 would put them on the text-to-2D rung backlog (12 → 15–16 nouns) and
 shrink the icon-seeded set to 14–15 solid entries.
 
-**Next action:** two candidate moves, none started: (a) QA-gate
-render legibility experiment (colored/shaded render variant of the
-scoring PNGs, re-run the naming matrix); (b) rung-2 pilot on the
-icon-miss backlog via FLUX.1 schnell (~$0.15–0.20, needs Mike's
-sign-off per the spend rule; scope also depends on the demote
-question above — 12 vs 15–16 nouns).
+**Rung-2 pipeline built (2026-07-05, $0 so far — no API calls yet).**
+Mike approved the FLUX.1 schnell pilot and deferred the QA-gate
+render experiment (non-crucial; he still wants a higher floor/ceiling
+for monotone rendering, which better fronts address directly).
+`scripts/gen-silhouettes.ts`: Together AI (preferred,
+~$0.0007/img at 512²) or Replicate ($0.003/img) auto-selected from
+`TOGETHER_API_KEY` / `REPLICATE_API_TOKEN` (env or project-root
+`.env`, now gitignored); 16-noun prompt table = 12 icon misses + 4
+weak-icon retries (hat, tree, ice cream cone, rocket ship — prompts
+target the FA-glyph failures: single canopy, one scoop, upright
+rocket); 4 candidates/noun at seeds 1–4; downsample via new
+`isInkDark` luminance predicate + `pixelsToFrontMask` (silhouette.ts
+refactor, byte-identical for the SVG path); writes raw/, masks/,
+previews/ (mask upscaled to 512²), gen.json. `--dry-run` verified:
+64 images, ~$0.045 Together / ~$0.19 Replicate.
+
+**Next action:** run the pilot — needs Mike to drop TOGETHER_API_KEY
+or REPLICATE_API_TOKEN into `<repo>/.env`, then:
+`npx tsx scripts/gen-silhouettes.ts` (spend re-confirmed at run time
+per the standing rule). After generation: Fable eyeball of
+previews/*.png picks the best candidate per noun, winners get
+SEED_TABLE entries sourced from local PNGs (seed-library extension
+still to be written) and depth profiles, then a seed4 full-library
+run.
