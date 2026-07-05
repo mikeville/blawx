@@ -1,0 +1,549 @@
+{
+  "id": "gen1-16char-flux",
+  "date": "2026-07-05",
+  "provider": "replicate",
+  "model": "black-forest-labs/FLUX.1-schnell",
+  "candidates": [
+    {
+      "noun": "table",
+      "seed": 1,
+      "prompt": "flat solid black silhouette of a four-legged dining table, side view, minimal flat icon style, pure white background, centered, no outline, no gradient, no text, no shading",
+      "ok": true,
+      "note": "reused existing raw (skip-existing)",
+      "thresholdUsed": 0.35,
+      "filledCells": 38
+    },
+    {
+      "noun": "table",
+      "seed": 2,
+      "prompt": "flat solid black silhouette of a four-legged dining table, side view, minimal flat icon style, pure white background, centered, no outline, no gradient, no text, no shading",
+      "ok": true,
+      "note": "reused existing raw (skip-existing)",
+      "thresholdUsed": 0.35,
+      "filledCells": 84
+    },
+    {
+      "noun": "table",
+      "seed": 3,
+      "prompt": "flat solid black silhouette of a four-legged dining table, side view, minimal flat icon style, pure white background, centered, no outline, no gradient, no text, no shading",
+      "ok": true,
+      "note": "reused existing raw (skip-existing)",
+      "thresholdUsed": 0.35,
+      "filledCells": 71
+    },
+    {
+      "noun": "table",
+      "seed": 4,
+      "prompt": "flat solid black silhouette of a four-legged dining table, side view, minimal flat icon style, pure white background, centered, no outline, no gradient, no text, no shading",
+      "ok": true,
+      "note": "reused existing raw (skip-existing)",
+      "thresholdUsed": 0.35,
+      "filledCells": 49
+    },
+    {
+      "noun": "sword",
+      "seed": 1,
+      "prompt": "flat solid black silhouette of a sword pointing straight up, front view, vertical, minimal flat icon style, pure white background, centered, no outline, no gradient, no text, no shading",
+      "ok": true,
+      "note": "reused existing raw (skip-existing)",
+      "thresholdUsed": 0.35,
+      "filledCells": 28
+    },
+    {
+      "noun": "sword",
+      "seed": 2,
+      "prompt": "flat solid black silhouette of a sword pointing straight up, front view, vertical, minimal flat icon style, pure white background, centered, no outline, no gradient, no text, no shading",
+      "ok": true,
+      "note": "reused existing raw (skip-existing); low coverage at threshold 0.35; retried at 0.25",
+      "thresholdUsed": 0.25,
+      "filledCells": 16
+    },
+    {
+      "noun": "sword",
+      "seed": 3,
+      "prompt": "flat solid black silhouette of a sword pointing straight up, front view, vertical, minimal flat icon style, pure white background, centered, no outline, no gradient, no text, no shading",
+      "ok": true,
+      "note": "reused existing raw (skip-existing)",
+      "thresholdUsed": 0.35,
+      "filledCells": 71
+    },
+    {
+      "noun": "sword",
+      "seed": 4,
+      "prompt": "flat solid black silhouette of a sword pointing straight up, front view, vertical, minimal flat icon style, pure white background, centered, no outline, no gradient, no text, no shading",
+      "ok": true,
+      "note": "reused existing raw (skip-existing)",
+      "thresholdUsed": 0.35,
+      "filledCells": 29
+    },
+    {
+      "noun": "lighthouse",
+      "seed": 1,
+      "prompt": "flat solid black silhouette of a lighthouse tower, side view, vertical, minimal flat icon style, pure white background, centered, no outline, no gradient, no text, no shading",
+      "ok": true,
+      "note": "reused existing raw (skip-existing)",
+      "thresholdUsed": 0.35,
+      "filledCells": 41
+    },
+    {
+      "noun": "lighthouse",
+      "seed": 2,
+      "prompt": "flat solid black silhouette of a lighthouse tower, side view, vertical, minimal flat icon style, pure white background, centered, no outline, no gradient, no text, no shading",
+      "ok": true,
+      "note": "reused existing raw (skip-existing)",
+      "thresholdUsed": 0.35,
+      "filledCells": 80
+    },
+    {
+      "noun": "lighthouse",
+      "seed": 3,
+      "prompt": "flat solid black silhouette of a lighthouse tower, side view, vertical, minimal flat icon style, pure white background, centered, no outline, no gradient, no text, no shading",
+      "ok": true,
+      "note": "reused existing raw (skip-existing)",
+      "thresholdUsed": 0.35,
+      "filledCells": 58
+    },
+    {
+      "noun": "lighthouse",
+      "seed": 4,
+      "prompt": "flat solid black silhouette of a lighthouse tower, side view, vertical, minimal flat icon style, pure white background, centered, no outline, no gradient, no text, no shading",
+      "ok": true,
+      "note": "reused existing raw (skip-existing)",
+      "thresholdUsed": 0.35,
+      "filledCells": 63
+    },
+    {
+      "noun": "ladder",
+      "seed": 1,
+      "prompt": "flat solid black silhouette of a straight ladder standing upright, front view, vertical, minimal flat icon style, pure white background, centered, no outline, no gradient, no text, no shading",
+      "ok": true,
+      "note": "reused existing raw (skip-existing); low coverage at threshold 0.35; retried at 0.25",
+      "thresholdUsed": 0.25,
+      "filledCells": 42
+    },
+    {
+      "noun": "ladder",
+      "seed": 2,
+      "prompt": "flat solid black silhouette of a straight ladder standing upright, front view, vertical, minimal flat icon style, pure white background, centered, no outline, no gradient, no text, no shading",
+      "ok": true,
+      "note": "reused existing raw (skip-existing); low coverage at threshold 0.35; retried at 0.25",
+      "thresholdUsed": 0.25,
+      "filledCells": 32
+    },
+    {
+      "noun": "ladder",
+      "seed": 3,
+      "prompt": "flat solid black silhouette of a straight ladder standing upright, front view, vertical, minimal flat icon style, pure white background, centered, no outline, no gradient, no text, no shading",
+      "ok": true,
+      "note": "reused existing raw (skip-existing); low coverage at threshold 0.35; retried at 0.25",
+      "thresholdUsed": 0.25,
+      "filledCells": 32
+    },
+    {
+      "noun": "ladder",
+      "seed": 4,
+      "prompt": "flat solid black silhouette of a straight ladder standing upright, front view, vertical, minimal flat icon style, pure white background, centered, no outline, no gradient, no text, no shading",
+      "ok": true,
+      "thresholdUsed": 0.25,
+      "filledCells": 39,
+      "note": "low coverage at threshold 0.35; retried at 0.25"
+    },
+    {
+      "noun": "fox",
+      "seed": 1,
+      "prompt": "flat solid black silhouette of a fox standing, side profile view, minimal flat icon style, pure white background, centered, no outline, no gradient, no text, no shading",
+      "ok": true,
+      "thresholdUsed": 0.35,
+      "filledCells": 122
+    },
+    {
+      "noun": "fox",
+      "seed": 2,
+      "prompt": "flat solid black silhouette of a fox standing, side profile view, minimal flat icon style, pure white background, centered, no outline, no gradient, no text, no shading",
+      "ok": true,
+      "thresholdUsed": 0.35,
+      "filledCells": 106
+    },
+    {
+      "noun": "fox",
+      "seed": 3,
+      "prompt": "flat solid black silhouette of a fox standing, side profile view, minimal flat icon style, pure white background, centered, no outline, no gradient, no text, no shading",
+      "ok": true,
+      "thresholdUsed": 0.35,
+      "filledCells": 120
+    },
+    {
+      "noun": "fox",
+      "seed": 4,
+      "prompt": "flat solid black silhouette of a fox standing, side profile view, minimal flat icon style, pure white background, centered, no outline, no gradient, no text, no shading",
+      "ok": true,
+      "note": "reused existing raw (skip-existing)",
+      "thresholdUsed": 0.35,
+      "filledCells": 94
+    },
+    {
+      "noun": "flower",
+      "seed": 1,
+      "prompt": "flat solid black silhouette of a single flower with petals and stem, front view, minimal flat icon style, pure white background, centered, no outline, no gradient, no text, no shading",
+      "ok": true,
+      "thresholdUsed": 0.35,
+      "filledCells": 43
+    },
+    {
+      "noun": "flower",
+      "seed": 2,
+      "prompt": "flat solid black silhouette of a single flower with petals and stem, front view, minimal flat icon style, pure white background, centered, no outline, no gradient, no text, no shading",
+      "ok": true,
+      "thresholdUsed": 0.35,
+      "filledCells": 80
+    },
+    {
+      "noun": "flower",
+      "seed": 3,
+      "prompt": "flat solid black silhouette of a single flower with petals and stem, front view, minimal flat icon style, pure white background, centered, no outline, no gradient, no text, no shading",
+      "ok": true,
+      "note": "reused existing raw (skip-existing)",
+      "thresholdUsed": 0.35,
+      "filledCells": 72
+    },
+    {
+      "noun": "flower",
+      "seed": 4,
+      "prompt": "flat solid black silhouette of a single flower with petals and stem, front view, minimal flat icon style, pure white background, centered, no outline, no gradient, no text, no shading",
+      "ok": true,
+      "thresholdUsed": 0.35,
+      "filledCells": 96
+    },
+    {
+      "noun": "duck",
+      "seed": 1,
+      "prompt": "flat solid black silhouette of a duck standing, side profile view, minimal flat icon style, pure white background, centered, no outline, no gradient, no text, no shading",
+      "ok": true,
+      "note": "reused existing raw (skip-existing)",
+      "thresholdUsed": 0.35,
+      "filledCells": 86
+    },
+    {
+      "noun": "duck",
+      "seed": 2,
+      "prompt": "flat solid black silhouette of a duck standing, side profile view, minimal flat icon style, pure white background, centered, no outline, no gradient, no text, no shading",
+      "ok": true,
+      "note": "reused existing raw (skip-existing)",
+      "thresholdUsed": 0.35,
+      "filledCells": 75
+    },
+    {
+      "noun": "duck",
+      "seed": 3,
+      "prompt": "flat solid black silhouette of a duck standing, side profile view, minimal flat icon style, pure white background, centered, no outline, no gradient, no text, no shading",
+      "ok": true,
+      "note": "reused existing raw (skip-existing)",
+      "thresholdUsed": 0.35,
+      "filledCells": 88
+    },
+    {
+      "noun": "duck",
+      "seed": 4,
+      "prompt": "flat solid black silhouette of a duck standing, side profile view, minimal flat icon style, pure white background, centered, no outline, no gradient, no text, no shading",
+      "ok": true,
+      "note": "reused existing raw (skip-existing)",
+      "thresholdUsed": 0.35,
+      "filledCells": 81
+    },
+    {
+      "noun": "mushroom",
+      "seed": 1,
+      "prompt": "flat solid black silhouette of a mushroom with a wide cap and thick stem, side view, minimal flat icon style, pure white background, centered, no outline, no gradient, no text, no shading",
+      "ok": true,
+      "note": "reused existing raw (skip-existing)",
+      "thresholdUsed": 0.35,
+      "filledCells": 105
+    },
+    {
+      "noun": "mushroom",
+      "seed": 2,
+      "prompt": "flat solid black silhouette of a mushroom with a wide cap and thick stem, side view, minimal flat icon style, pure white background, centered, no outline, no gradient, no text, no shading",
+      "ok": true,
+      "thresholdUsed": 0.35,
+      "filledCells": 107
+    },
+    {
+      "noun": "mushroom",
+      "seed": 3,
+      "prompt": "flat solid black silhouette of a mushroom with a wide cap and thick stem, side view, minimal flat icon style, pure white background, centered, no outline, no gradient, no text, no shading",
+      "ok": true,
+      "thresholdUsed": 0.35,
+      "filledCells": 69
+    },
+    {
+      "noun": "mushroom",
+      "seed": 4,
+      "prompt": "flat solid black silhouette of a mushroom with a wide cap and thick stem, side view, minimal flat icon style, pure white background, centered, no outline, no gradient, no text, no shading",
+      "ok": true,
+      "thresholdUsed": 0.35,
+      "filledCells": 153
+    },
+    {
+      "noun": "snail",
+      "seed": 1,
+      "prompt": "flat solid black silhouette of a snail with a spiral shell, side profile view, minimal flat icon style, pure white background, centered, no outline, no gradient, no text, no shading",
+      "ok": true,
+      "thresholdUsed": 0.35,
+      "filledCells": 100
+    },
+    {
+      "noun": "snail",
+      "seed": 2,
+      "prompt": "flat solid black silhouette of a snail with a spiral shell, side profile view, minimal flat icon style, pure white background, centered, no outline, no gradient, no text, no shading",
+      "ok": true,
+      "note": "reused existing raw (skip-existing)",
+      "thresholdUsed": 0.35,
+      "filledCells": 113
+    },
+    {
+      "noun": "snail",
+      "seed": 3,
+      "prompt": "flat solid black silhouette of a snail with a spiral shell, side profile view, minimal flat icon style, pure white background, centered, no outline, no gradient, no text, no shading",
+      "ok": true,
+      "note": "reused existing raw (skip-existing)",
+      "thresholdUsed": 0.35,
+      "filledCells": 29
+    },
+    {
+      "noun": "snail",
+      "seed": 4,
+      "prompt": "flat solid black silhouette of a snail with a spiral shell, side profile view, minimal flat icon style, pure white background, centered, no outline, no gradient, no text, no shading",
+      "ok": true,
+      "thresholdUsed": 0.35,
+      "filledCells": 140
+    },
+    {
+      "noun": "penguin",
+      "seed": 1,
+      "prompt": "flat solid black silhouette of a penguin standing, side profile view, minimal flat icon style, pure white background, centered, no outline, no gradient, no text, no shading",
+      "ok": true,
+      "thresholdUsed": 0.35,
+      "filledCells": 52
+    },
+    {
+      "noun": "penguin",
+      "seed": 2,
+      "prompt": "flat solid black silhouette of a penguin standing, side profile view, minimal flat icon style, pure white background, centered, no outline, no gradient, no text, no shading",
+      "ok": true,
+      "thresholdUsed": 0.35,
+      "filledCells": 51
+    },
+    {
+      "noun": "penguin",
+      "seed": 3,
+      "prompt": "flat solid black silhouette of a penguin standing, side profile view, minimal flat icon style, pure white background, centered, no outline, no gradient, no text, no shading",
+      "ok": true,
+      "thresholdUsed": 0.35,
+      "filledCells": 65
+    },
+    {
+      "noun": "penguin",
+      "seed": 4,
+      "prompt": "flat solid black silhouette of a penguin standing, side profile view, minimal flat icon style, pure white background, centered, no outline, no gradient, no text, no shading",
+      "ok": true,
+      "note": "reused existing raw (skip-existing)",
+      "thresholdUsed": 0.35,
+      "filledCells": 99
+    },
+    {
+      "noun": "octopus",
+      "seed": 1,
+      "prompt": "flat solid black silhouette of an octopus with hanging tentacles, front view, minimal flat icon style, pure white background, centered, no outline, no gradient, no text, no shading",
+      "ok": true,
+      "note": "reused existing raw (skip-existing)",
+      "thresholdUsed": 0.35,
+      "filledCells": 82
+    },
+    {
+      "noun": "octopus",
+      "seed": 2,
+      "prompt": "flat solid black silhouette of an octopus with hanging tentacles, front view, minimal flat icon style, pure white background, centered, no outline, no gradient, no text, no shading",
+      "ok": true,
+      "thresholdUsed": 0.35,
+      "filledCells": 95
+    },
+    {
+      "noun": "octopus",
+      "seed": 3,
+      "prompt": "flat solid black silhouette of an octopus with hanging tentacles, front view, minimal flat icon style, pure white background, centered, no outline, no gradient, no text, no shading",
+      "ok": true,
+      "thresholdUsed": 0.35,
+      "filledCells": 136
+    },
+    {
+      "noun": "octopus",
+      "seed": 4,
+      "prompt": "flat solid black silhouette of an octopus with hanging tentacles, front view, minimal flat icon style, pure white background, centered, no outline, no gradient, no text, no shading",
+      "ok": true,
+      "thresholdUsed": 0.35,
+      "filledCells": 84
+    },
+    {
+      "noun": "palm tree",
+      "seed": 1,
+      "prompt": "flat solid black silhouette of a palm tree, side view, minimal flat icon style, pure white background, centered, no outline, no gradient, no text, no shading",
+      "ok": true,
+      "thresholdUsed": 0.35,
+      "filledCells": 62
+    },
+    {
+      "noun": "palm tree",
+      "seed": 2,
+      "prompt": "flat solid black silhouette of a palm tree, side view, minimal flat icon style, pure white background, centered, no outline, no gradient, no text, no shading",
+      "ok": true,
+      "note": "reused existing raw (skip-existing)",
+      "thresholdUsed": 0.35,
+      "filledCells": 78
+    },
+    {
+      "noun": "palm tree",
+      "seed": 3,
+      "prompt": "flat solid black silhouette of a palm tree, side view, minimal flat icon style, pure white background, centered, no outline, no gradient, no text, no shading",
+      "ok": true,
+      "thresholdUsed": 0.35,
+      "filledCells": 109
+    },
+    {
+      "noun": "palm tree",
+      "seed": 4,
+      "prompt": "flat solid black silhouette of a palm tree, side view, minimal flat icon style, pure white background, centered, no outline, no gradient, no text, no shading",
+      "ok": true,
+      "thresholdUsed": 0.35,
+      "filledCells": 84
+    },
+    {
+      "noun": "hat",
+      "seed": 1,
+      "prompt": "flat solid black silhouette of a cowboy hat, side view, minimal flat icon style, pure white background, centered, no outline, no gradient, no text, no shading",
+      "ok": true,
+      "thresholdUsed": 0.35,
+      "filledCells": 98
+    },
+    {
+      "noun": "hat",
+      "seed": 2,
+      "prompt": "flat solid black silhouette of a cowboy hat, side view, minimal flat icon style, pure white background, centered, no outline, no gradient, no text, no shading",
+      "ok": true,
+      "thresholdUsed": 0.35,
+      "filledCells": 111
+    },
+    {
+      "noun": "hat",
+      "seed": 3,
+      "prompt": "flat solid black silhouette of a cowboy hat, side view, minimal flat icon style, pure white background, centered, no outline, no gradient, no text, no shading",
+      "ok": true,
+      "thresholdUsed": 0.35,
+      "filledCells": 71
+    },
+    {
+      "noun": "hat",
+      "seed": 4,
+      "prompt": "flat solid black silhouette of a cowboy hat, side view, minimal flat icon style, pure white background, centered, no outline, no gradient, no text, no shading",
+      "ok": true,
+      "thresholdUsed": 0.35,
+      "filledCells": 68
+    },
+    {
+      "noun": "tree",
+      "seed": 1,
+      "prompt": "flat solid black silhouette of a tree with a single rounded canopy and visible trunk, side view, minimal flat icon style, pure white background, centered, no outline, no gradient, no text, no shading",
+      "ok": true,
+      "thresholdUsed": 0.35,
+      "filledCells": 84
+    },
+    {
+      "noun": "tree",
+      "seed": 2,
+      "prompt": "flat solid black silhouette of a tree with a single rounded canopy and visible trunk, side view, minimal flat icon style, pure white background, centered, no outline, no gradient, no text, no shading",
+      "ok": true,
+      "thresholdUsed": 0.35,
+      "filledCells": 139
+    },
+    {
+      "noun": "tree",
+      "seed": 3,
+      "prompt": "flat solid black silhouette of a tree with a single rounded canopy and visible trunk, side view, minimal flat icon style, pure white background, centered, no outline, no gradient, no text, no shading",
+      "ok": true,
+      "thresholdUsed": 0.35,
+      "filledCells": 83
+    },
+    {
+      "noun": "tree",
+      "seed": 4,
+      "prompt": "flat solid black silhouette of a tree with a single rounded canopy and visible trunk, side view, minimal flat icon style, pure white background, centered, no outline, no gradient, no text, no shading",
+      "ok": true,
+      "note": "reused existing raw (skip-existing)",
+      "thresholdUsed": 0.35,
+      "filledCells": 131
+    },
+    {
+      "noun": "ice cream cone",
+      "seed": 1,
+      "prompt": "flat solid black silhouette of an ice cream cone with one round scoop, front view, vertical, minimal flat icon style, pure white background, centered, no outline, no gradient, no text, no shading",
+      "ok": true,
+      "thresholdUsed": 0.35,
+      "filledCells": 48
+    },
+    {
+      "noun": "ice cream cone",
+      "seed": 2,
+      "prompt": "flat solid black silhouette of an ice cream cone with one round scoop, front view, vertical, minimal flat icon style, pure white background, centered, no outline, no gradient, no text, no shading",
+      "ok": true,
+      "thresholdUsed": 0.35,
+      "filledCells": 52
+    },
+    {
+      "noun": "ice cream cone",
+      "seed": 3,
+      "prompt": "flat solid black silhouette of an ice cream cone with one round scoop, front view, vertical, minimal flat icon style, pure white background, centered, no outline, no gradient, no text, no shading",
+      "ok": true,
+      "thresholdUsed": 0.35,
+      "filledCells": 45
+    },
+    {
+      "noun": "ice cream cone",
+      "seed": 4,
+      "prompt": "flat solid black silhouette of an ice cream cone with one round scoop, front view, vertical, minimal flat icon style, pure white background, centered, no outline, no gradient, no text, no shading",
+      "ok": true,
+      "thresholdUsed": 0.35,
+      "filledCells": 63
+    },
+    {
+      "noun": "rocket ship",
+      "seed": 1,
+      "prompt": "flat solid black silhouette of a rocket ship pointing straight up, front view, vertical, minimal flat icon style, pure white background, centered, no outline, no gradient, no text, no shading",
+      "ok": true,
+      "thresholdUsed": 0.35,
+      "filledCells": 68
+    },
+    {
+      "noun": "rocket ship",
+      "seed": 2,
+      "prompt": "flat solid black silhouette of a rocket ship pointing straight up, front view, vertical, minimal flat icon style, pure white background, centered, no outline, no gradient, no text, no shading",
+      "ok": true,
+      "thresholdUsed": 0.35,
+      "filledCells": 64
+    },
+    {
+      "noun": "rocket ship",
+      "seed": 3,
+      "prompt": "flat solid black silhouette of a rocket ship pointing straight up, front view, vertical, minimal flat icon style, pure white background, centered, no outline, no gradient, no text, no shading",
+      "ok": true,
+      "thresholdUsed": 0.35,
+      "filledCells": 81
+    },
+    {
+      "noun": "rocket ship",
+      "seed": 4,
+      "prompt": "flat solid black silhouette of a rocket ship pointing straight up, front view, vertical, minimal flat icon style, pure white background, centered, no outline, no gradient, no text, no shading",
+      "ok": true,
+      "thresholdUsed": 0.35,
+      "filledCells": 40
+    }
+  ]
+}
