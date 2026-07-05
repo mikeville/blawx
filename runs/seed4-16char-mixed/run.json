@@ -1,0 +1,13 @@
+{
+  "id": "seed4-16char-mixed",
+  "label": "seed4 16³ · FA + FLUX silhouette, per-noun depth profile",
+  "date": "2026-07-05",
+  "pipeline": "noun-keyed library seed: Font Awesome 6 solid icon or gen1 FLUX.1 schnell silhouette PNG (hardcoded per-noun lookup table, mixed sourcing) → 480px raster or decoded PNG → ink-bbox-fit 16×16 front mask → per-noun depth profile (flat(d) | inflate | round(maxDepth) | prone(h), see scripts/lib/silhouette.ts) → strict lift. Nouns with no suitable source are recorded in misses.json. No model calls (FLUX PNGs were generated once by scripts/gen-silhouettes.ts).",
+  "conditions": {
+    "grid": "16",
+    "encoding": "char",
+    "model": "none",
+    "source": "font-awesome-6-solid (CC BY 4.0) + gen1 FLUX.1 schnell silhouettes (runs/gen1-16char-flux)",
+    "depth": "per-noun profile"
+  }
+}
