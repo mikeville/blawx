@@ -1,12 +1,14 @@
 // Offline library-seeding pipeline: for each noun in the 30-noun benchmark
-// list (src/bench/nouns.ts) with a hardcoded Font Awesome 6 Free solid icon
-// match, rasterize the icon and apply a per-category depth profile (see
-// scripts/lib/silhouette.ts). No model/API calls anywhere. Nouns with no
-// suitable icon are recorded as MISSes for the next rung of the ladder
-// (text-to-2D or LLM drawing).
+// list (src/bench/nouns.ts), seed from either a hardcoded Font Awesome 6
+// Free solid icon match or a Fable-picked FLUX.1 schnell silhouette PNG
+// (runs/gen1-16char-flux/raw/*.png), then apply a per-category depth
+// profile (see scripts/lib/silhouette.ts). No model/API calls anywhere —
+// the PNGs were generated once by scripts/gen-silhouettes.ts and are read
+// from disk. Nouns with no suitable source are recorded as MISSes for the
+// next rung of the ladder (text-to-2D retry or LLM drawing).
 //
 // Usage: npx tsx scripts/seed-library.ts [flags]
-//   --out=<runId>       output run id (default seed3-16char-fa)
+//   --out=<runId>       output run id (default seed4-16char-mixed)
 //   --round2=<lo>,<hi>  override every SEED_TABLE `round` entry with the
 //                       two-level round2(lo,hi) profile (see silhouette.ts)
 //   --only=round        process only nouns whose ORIGINAL profile kind is
@@ -14,21 +16,26 @@
 //                       recorded as a miss, and misses.json is not written)
 //   --date=<YYYY-MM-DD> manifest date (default 2026-07-05)
 //   Reads:  node_modules/@fortawesome/fontawesome-free/svgs/solid/<icon>.svg
+//           <repo>/<png source path>, e.g. runs/gen1-16char-flux/raw/*.png
 //   Writes: runs/<runId>/<noun>.json        (BenchResult)
 //           runs/<runId>/masks/<noun>.txt    (front/side/top, icon2 format)
-//           runs/<runId>/sources/<icon>.svg  (provenance copy, CC BY 4.0)
+//           runs/<runId>/sources/<icon>.svg  (fa provenance copy, CC BY 4.0)
+//           runs/<runId>/sources/<basename>.png (png provenance copy)
 //           runs/<runId>/run.json            (RunManifest)
-//           runs/<runId>/misses.json         (nouns with no icon match;
+//           runs/<runId>/misses.json         (nouns with no source match;
 //                                              omitted when --only is set)
 
-import { copyFileSync, existsSync, mkdirSync, writeFileSync } from 'node:fs';
-import { join } from 'node:path';
+import { copyFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { basename, join } from 'node:path';
 import { liftHull } from '../src/bench/hull.ts';
 import { maskToRows } from '../src/bench/maskOps.ts';
 import { NOUNS } from '../src/bench/nouns.ts';
 import type { BenchResult, RunManifest } from '../src/bench/types.ts';
 import {
   applyDepthProfile,
+  decodePng,
+  isInkDark,
+  pixelsToFrontMask,
   rasterToFrontMask,
   readSvgFile,
   depthProfileLabel,
@@ -44,7 +51,7 @@ function parseFlag(name: string): string | undefined {
   return arg?.slice(prefix.length);
 }
 
-const OUT_RUN_ID = parseFlag('out') ?? 'seed3-16char-fa';
+const OUT_RUN_ID = parseFlag('out') ?? 'seed4-16char-mixed';
 const ONLY = parseFlag('only'); // e.g. 'round'
 const MANIFEST_DATE = parseFlag('date') ?? '2026-07-05';
 const ROUND2_RAW = parseFlag('round2'); // e.g. '2,6'
@@ -68,7 +75,11 @@ const FA_SOLID_DIR = join(
   'solid',
 );
 
-type SeedEntry = { icon: string; profile: DepthProfile };
+// A seed source is either a Font Awesome 6 Free solid icon (rasterized
+// from the vendored SVG) or a pre-generated FLUX.1 schnell silhouette PNG
+// (path repo-relative, e.g. "runs/gen1-16char-flux/raw/table-c1.png").
+type SeedSource = { kind: 'fa'; icon: string } | { kind: 'png'; path: string };
+type SeedEntry = { source: SeedSource; profile: DepthProfile };
 
 /**
  * Resolve a SEED_TABLE entry's effective profile for this run: when
@@ -78,49 +89,69 @@ type SeedEntry = { icon: string; profile: DepthProfile };
  */
 function resolveEntry(entry: SeedEntry): SeedEntry {
   if (ROUND2 && entry.profile.kind === 'round') {
-    return { icon: entry.icon, profile: { kind: 'round2', lo: ROUND2.lo, hi: ROUND2.hi } };
+    return { source: entry.source, profile: { kind: 'round2', lo: ROUND2.lo, hi: ROUND2.hi } };
   }
   return entry;
 }
 
-// noun -> Font Awesome 6 Free solid icon name -> depth profile. `null`
-// means no suitable FA icon exists for this noun (recorded as a miss).
-// The five former `round` nouns (mug, hat, tree, ice cream cone, rocket
-// ship) sit at flat(4): round(10) in seed1 and both round2 level-sets in
-// the seed2 A/B rendered as stepped blocks — any depth >= 6 on these
-// grid-filling silhouettes kills punch-through features and reads as a
-// building. flat(4) is the settled treatment.
+/** Shorthand for a Font Awesome solid-icon source. */
+function fa(icon: string): SeedSource {
+  return { kind: 'fa', icon };
+}
+
+/** Shorthand for a gen1 FLUX silhouette PNG source (path repo-relative). */
+function png(path: string): SeedSource {
+  return { kind: 'png', path: `runs/gen1-16char-flux/raw/${path}` };
+}
+
+// noun -> seed source (Font Awesome solid icon or gen1 FLUX PNG) -> depth
+// profile. `null` means no suitable source exists for this noun (recorded
+// as a miss). The five former `round` nouns (mug, hat, tree, ice cream
+// cone, rocket ship) sit at flat(4): round(10) in seed1 and both round2
+// level-sets in the seed2 A/B rendered as stepped blocks — any depth >= 6
+// on these grid-filling silhouettes kills punch-through features and reads
+// as a building. flat(4) is the settled treatment.
+//
+// seed4: 10 gen1 misses filled from Fable-eyeballed FLUX candidates
+// (runs/gen1-16char-flux), plus 3 weak-FA nouns (hat, tree, rocket ship)
+// upgraded to their gen1 winners at the same flat(4). Still misses:
+// ladder (gen1 candidates' rungs are sub-cell-width — masks broke into
+// disconnected pieces) and flower (petal head survives downsampling but
+// the thin stem fragments; retry with a thicker-stem prompt).
 const SEED_TABLE: Record<string, SeedEntry | null> = {
-  mug: { icon: 'mug-saucer', profile: { kind: 'flat', depth: 4 } },
-  chair: { icon: 'chair', profile: { kind: 'flat', depth: 4 } },
-  house: { icon: 'house', profile: { kind: 'flat', depth: 8 } },
-  table: null, // FA "table" is a data-grid glyph, not furniture
-  sword: null,
-  sailboat: { icon: 'sailboat', profile: { kind: 'flat', depth: 2 } },
-  lighthouse: null,
-  ladder: null,
-  car: { icon: 'car-side', profile: { kind: 'flat', depth: 6 } },
-  hat: { icon: 'hat-cowboy', profile: { kind: 'flat', depth: 4 } },
-  fox: null,
-  bird: { icon: 'crow', profile: { kind: 'inflate' } },
-  fish: { icon: 'fish', profile: { kind: 'inflate' } },
-  flower: null,
-  tree: { icon: 'tree', profile: { kind: 'flat', depth: 4 } },
-  cat: { icon: 'cat', profile: { kind: 'inflate' } },
-  duck: null,
-  mushroom: null,
-  frog: { icon: 'frog', profile: { kind: 'inflate' } },
-  snail: null,
-  horse: { icon: 'horse', profile: { kind: 'inflate' } },
-  penguin: null,
-  octopus: null,
-  dragon: { icon: 'dragon', profile: { kind: 'inflate' } },
-  robot: { icon: 'robot', profile: { kind: 'flat', depth: 6 } },
-  spider: { icon: 'spider', profile: { kind: 'prone', height: 3 } },
-  love: { icon: 'heart', profile: { kind: 'inflate' } },
-  'palm tree': null,
-  'ice cream cone': { icon: 'ice-cream', profile: { kind: 'flat', depth: 4 } },
-  'rocket ship': { icon: 'rocket', profile: { kind: 'flat', depth: 4 } },
+  mug: { source: fa('mug-saucer'), profile: { kind: 'flat', depth: 4 } },
+  chair: { source: fa('chair'), profile: { kind: 'flat', depth: 4 } },
+  house: { source: fa('house'), profile: { kind: 'flat', depth: 8 } },
+  table: { source: png('table-c1.png'), profile: { kind: 'flat', depth: 6 } },
+  sword: { source: png('sword-c4.png'), profile: { kind: 'flat', depth: 2 } },
+  sailboat: { source: fa('sailboat'), profile: { kind: 'flat', depth: 2 } },
+  lighthouse: { source: png('lighthouse-c4.png'), profile: { kind: 'flat', depth: 4 } },
+  ladder: null, // gen1 candidates: rungs are sub-cell-width, masks broke into disconnected pieces
+  car: { source: fa('car-side'), profile: { kind: 'flat', depth: 6 } },
+  hat: { source: png('hat-c1.png'), profile: { kind: 'flat', depth: 4 } },
+  fox: { source: png('fox-c2.png'), profile: { kind: 'inflate' } },
+  bird: { source: fa('crow'), profile: { kind: 'inflate' } },
+  fish: { source: fa('fish'), profile: { kind: 'inflate' } },
+  flower: null, // petal head survives but the thin stem fragments — retry with a thicker-stem prompt
+  tree: { source: png('tree-c2.png'), profile: { kind: 'flat', depth: 4 } },
+  cat: { source: fa('cat'), profile: { kind: 'inflate' } },
+  duck: { source: png('duck-c2.png'), profile: { kind: 'inflate' } },
+  // mushroom-c2's tiered cap extrudes to stairs under any profile; c4's
+  // rounder cap survives extrusion better (seed4 eyeball).
+  mushroom: { source: png('mushroom-c4.png'), profile: { kind: 'flat', depth: 4 } },
+  frog: { source: fa('frog'), profile: { kind: 'inflate' } },
+  snail: { source: png('snail-c1.png'), profile: { kind: 'flat', depth: 4 } },
+  horse: { source: fa('horse'), profile: { kind: 'inflate' } },
+  penguin: { source: png('penguin-c4.png'), profile: { kind: 'inflate' } },
+  octopus: { source: png('octopus-c1.png'), profile: { kind: 'inflate' } },
+  dragon: { source: fa('dragon'), profile: { kind: 'inflate' } },
+  robot: { source: fa('robot'), profile: { kind: 'flat', depth: 6 } },
+  spider: { source: fa('spider'), profile: { kind: 'prone', height: 3 } },
+  love: { source: fa('heart'), profile: { kind: 'inflate' } },
+  'palm tree': { source: png('palm-tree-c1.png'), profile: { kind: 'flat', depth: 4 } },
+  // gen1 candidates all read as popsicles (no cone taper); fa remains the placeholder.
+  'ice cream cone': { source: fa('ice-cream'), profile: { kind: 'flat', depth: 4 } },
+  'rocket ship': { source: png('rocket-ship-c1.png'), profile: { kind: 'flat', depth: 4 } },
 };
 
 /** Filename stem for a noun, matching scripts/make-prompts.ts's convention:
@@ -134,20 +165,58 @@ function seedNoun(noun: string, entry: SeedEntry): {
   filledCells: number;
   voxelCount: number;
   maxDepthUsed: number;
+  sourceLabel: string;
 } {
-  const svgPath = join(FA_SOLID_DIR, `${entry.icon}.svg`);
-  if (!existsSync(svgPath)) {
-    throw new Error(`${noun}: icon file not found: ${svgPath}`);
-  }
-  const svg = readSvgFile(svgPath);
+  const { source } = entry;
+  let groundedFront;
+  let rawMask;
+  let note: string | undefined;
+  let sourceLabel: string;
+  let sourceDescription: string;
+  let model: string;
 
-  const { front: groundedFront, rawMask, note } = rasterToFrontMask(svg, `${noun} (${entry.icon})`);
+  if (source.kind === 'fa') {
+    const svgPath = join(FA_SOLID_DIR, `${source.icon}.svg`);
+    if (!existsSync(svgPath)) {
+      throw new Error(`${noun}: icon file not found: ${svgPath}`);
+    }
+    const svg = readSvgFile(svgPath);
+    ({ front: groundedFront, rawMask, note } = rasterToFrontMask(svg, `${noun} (${source.icon})`));
+    sourceLabel = source.icon;
+    sourceDescription = `Font Awesome 6 solid "${source.icon}"`;
+    model = 'none-icon-downsample';
+
+    // Copy the source SVG into this run's sources/ for provenance.
+    mkdirSync(SOURCES_DIR, { recursive: true });
+    copyFileSync(svgPath, join(SOURCES_DIR, `${source.icon}.svg`));
+  } else {
+    const pngPath = join(import.meta.dirname, '..', source.path);
+    if (!existsSync(pngPath)) {
+      throw new Error(`${noun}: png file not found: ${pngPath}`);
+    }
+    const pngBasename = basename(source.path);
+    const { pixels, width, height } = decodePng(readFileSync(pngPath));
+    ({ front: groundedFront, rawMask, note } = pixelsToFrontMask(
+      pixels,
+      width,
+      height,
+      `${noun} (${pngBasename})`,
+      isInkDark,
+    ));
+    sourceLabel = pngBasename;
+    sourceDescription = `FLUX.1 schnell generation "${pngBasename}" (runs/gen1-16char-flux)`;
+    model = 'flux-schnell-downsample';
+
+    // Copy the source PNG into this run's sources/ for provenance.
+    mkdirSync(SOURCES_DIR, { recursive: true });
+    copyFileSync(pngPath, join(SOURCES_DIR, pngBasename));
+  }
 
   const { front, side, top, maxDepthUsed } = applyDepthProfile(
     entry.profile,
     groundedFront,
     rawMask,
-    `${noun} (${entry.icon})`,
+    `${noun} (${sourceLabel})`,
   );
 
   const { voxels } = liftHull(front, side, top, SIZE);
@@ -158,7 +227,7 @@ function seedNoun(noun: string, entry: SeedEntry): {
     size: SIZE,
     voxels,
     meta: {
-      model: 'none-icon-downsample',
+      model,
       encoding: 'char',
       tokensIn: 0,
       tokensOut: 0,
@@ -173,7 +242,7 @@ function seedNoun(noun: string, entry: SeedEntry): {
         top: maskToRows(top),
       },
       notes:
-        `seeded from Font Awesome 6 solid "${entry.icon}", depth profile ${profileLabel}` +
+        `seeded from ${sourceDescription}, depth profile ${profileLabel}` +
         (note ? `; ${note}` : ''),
     },
   };
@@ -183,11 +252,7 @@ function seedNoun(noun: string, entry: SeedEntry): {
     0,
   );
 
-  // Copy the source SVG into this run's sources/ for provenance.
-  mkdirSync(SOURCES_DIR, { recursive: true });
-  copyFileSync(svgPath, join(SOURCES_DIR, `${entry.icon}.svg`));
-
-  return { result, filledCells, voxelCount: voxels.length, maxDepthUsed };
+  return { result, filledCells, voxelCount: voxels.length, maxDepthUsed, sourceLabel };
 }
 
 function main(): void {
@@ -209,12 +274,12 @@ function main(): void {
     }
     if (entry === null) {
       misses.push(noun);
-      console.log(`${noun}: MISS (no suitable Font Awesome icon)`);
+      console.log(`${noun}: MISS (no suitable source)`);
       continue;
     }
 
     const resolved = resolveEntry(entry);
-    const { result, filledCells, voxelCount, maxDepthUsed } = seedNoun(noun, resolved);
+    const { result, filledCells, voxelCount, maxDepthUsed, sourceLabel } = seedNoun(noun, resolved);
     const stem = nounFileStem(noun);
 
     writeFileSync(join(RUN_DIR, `${stem}.json`), JSON.stringify(result));
@@ -230,7 +295,7 @@ function main(): void {
 
     const profileLabel = depthProfileLabel(resolved.profile);
     console.log(
-      `${noun} (${resolved.icon}): profile ${profileLabel}, ${filledCells} filled front cells, ` +
+      `${noun} (${sourceLabel}): profile ${profileLabel}, ${filledCells} filled front cells, ` +
         `${voxelCount} voxels, max depth ${maxDepthUsed}`,
     );
     seeded += 1;
@@ -243,17 +308,20 @@ function main(): void {
   }
 
   const label = ROUND2
-    ? `${OUT_RUN_ID} 16³ · FA silhouette, two-level round2(${ROUND2.lo},${ROUND2.hi})`
-    : `${OUT_RUN_ID.split('-')[0]} 16³ · FA silhouette, per-noun depth profile`;
+    ? `${OUT_RUN_ID} 16³ · FA + FLUX silhouette, two-level round2(${ROUND2.lo},${ROUND2.hi})`
+    : `${OUT_RUN_ID.split('-')[0]} 16³ · FA + FLUX silhouette, per-noun depth profile`;
   const pipeline = ROUND2
-    ? 'noun-keyed library seed: Font Awesome 6 solid icon (hardcoded per-noun lookup table) → ' +
-      '480px raster → ink-bbox-fit 16×16 front mask → per-noun depth profile, with every `round` ' +
-      `entry overridden to the two-level round2(${ROUND2.lo},${ROUND2.hi}) variant ` +
-      '(see scripts/lib/silhouette.ts) → strict lift. No model calls.'
-    : 'noun-keyed library seed: Font Awesome 6 solid icon (hardcoded per-noun lookup table) → ' +
-      '480px raster → ink-bbox-fit 16×16 front mask → per-noun depth profile ' +
+    ? 'noun-keyed library seed: Font Awesome 6 solid icon or gen1 FLUX.1 schnell silhouette PNG ' +
+      '(hardcoded per-noun lookup table, mixed sourcing) → 480px raster or decoded PNG → ' +
+      'ink-bbox-fit 16×16 front mask → per-noun depth profile, with every `round` entry overridden ' +
+      `to the two-level round2(${ROUND2.lo},${ROUND2.hi}) variant (see scripts/lib/silhouette.ts) → ` +
+      'strict lift. No model calls (FLUX PNGs were generated once by scripts/gen-silhouettes.ts).'
+    : 'noun-keyed library seed: Font Awesome 6 solid icon or gen1 FLUX.1 schnell silhouette PNG ' +
+      '(hardcoded per-noun lookup table, mixed sourcing) → 480px raster or decoded PNG → ' +
+      'ink-bbox-fit 16×16 front mask → per-noun depth profile ' +
       '(flat(d) | inflate | round(maxDepth) | prone(h), see scripts/lib/silhouette.ts) → strict lift. ' +
-      'Nouns with no suitable icon are recorded in misses.json. No model calls.';
+      'Nouns with no suitable source are recorded in misses.json. No model calls (FLUX PNGs were ' +
+      'generated once by scripts/gen-silhouettes.ts).';
 
   const manifest: RunManifest = {
     id: OUT_RUN_ID,
@@ -264,7 +332,7 @@ function main(): void {
       grid: '16',
       encoding: 'char',
       model: 'none',
-      source: 'font-awesome-6-solid (CC BY 4.0)',
+      source: 'font-awesome-6-solid (CC BY 4.0) + gen1 FLUX.1 schnell silhouettes (runs/gen1-16char-flux)',
       depth: ROUND2 ? `round2(${ROUND2.lo},${ROUND2.hi})` : 'per-noun profile',
     },
   };
