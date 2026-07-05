@@ -619,10 +619,44 @@ threshold poorly. Skip Imagen 4 Fast ($0.02 — deprecated, shuts down
 per noun: **≈ $0.15 total at schnell prices.** Standing rule: no
 image-API spend without per-run sign-off.
 
-**Next action:** three candidate moves, none started: (a) two-level
-`round` variant (quantize chords to two depth levels, cap 6) and
-re-seed the five round nouns for an A/B against seed1; (b) QA-gate
+**Round-depth A/B executed (2026-07-05, $0): round is retired.**
+`round2(lo,hi)` two-level variant added to `scripts/lib/silhouette.ts`
+(each column's chord snaps to whichever of lo/hi is closer);
+`seed-library.ts` gained `--out` / `--round2=lo,hi` / `--only=round` /
+`--date` flags. A/B runs over the five round nouns:
+`runs/seed2-16char-fa-round26` (levels 2,6) and
+`runs/seed2-16char-fa-round48` (levels 4,8), vs seed1's round(10).
+
+Verdict (Fable eyeball): two-level quantization reduces ledge count
+(tree/ice-cream drop from four terraces to one) but rescues nothing —
+all five still read as stepped blocks. round2(4,8) is nearly
+indistinguishable from round(10): these silhouettes are wide, so most
+chords quantize to hi anyway. **Re-diagnosis: the failure was never
+the number of depth levels — it's total depth on grid-filling
+silhouettes.** Anything ≥6 deep turns a 16-wide silhouette into a
+building, and punch-through features die (the mug's handle hole
+becomes a shallow niche once the body is deeper than ~4). The
+seed1-era hypothesis "quantize to two levels" is falsified; `round` /
+`round2` stay in the code as evidence but are out of the profile
+table.
+
+**seed3-16char-fa (2026-07-05) is the new canonical library run.**
+SEED_TABLE flips the five former round nouns to flat(4); 18/30
+seeded, same 12 misses, zero loss. flat(4) confirmed as the right
+treatment where the front silhouette is sound: mug fully recovers
+(handle hole + saucer read — best of the four treatments tried). But
+the A/B also isolates a second, separate failure mode: **tree, ice
+cream cone, and rocket ship fail at the front-silhouette level, not
+the depth level** — the FA glyph doesn't survive 16×16 downsampling
+as a legible side-view silhouette (tree/ice-cream tiers render as
+staircases at ANY depth; FA's rocket is drawn diagonally). Hat is
+marginal. Open question for Mike: demote those 3–4 to misses, which
+would put them on the text-to-2D rung backlog (12 → 15–16 nouns) and
+shrink the icon-seeded set to 14–15 solid entries.
+
+**Next action:** two candidate moves, none started: (a) QA-gate
 render legibility experiment (colored/shaded render variant of the
-scoring PNGs, re-run the naming matrix); (c) rung-2 pilot on the
-12-icon-miss backlog via FLUX.1 schnell (~$0.15, needs Mike's
-sign-off per the spend rule).
+scoring PNGs, re-run the naming matrix); (b) rung-2 pilot on the
+icon-miss backlog via FLUX.1 schnell (~$0.15–0.20, needs Mike's
+sign-off per the spend rule; scope also depends on the demote
+question above — 12 vs 15–16 nouns).
