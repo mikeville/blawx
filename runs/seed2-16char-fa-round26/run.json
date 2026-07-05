@@ -1,0 +1,13 @@
+{
+  "id": "seed2-16char-fa-round26",
+  "label": "seed2-16char-fa-round26 16³ · FA silhouette, two-level round2(2,6)",
+  "date": "2026-07-05",
+  "pipeline": "noun-keyed library seed: Font Awesome 6 solid icon (hardcoded per-noun lookup table) → 480px raster → ink-bbox-fit 16×16 front mask → per-noun depth profile, with every `round` entry overridden to the two-level round2(2,6) variant (see scripts/lib/silhouette.ts) → strict lift. No model calls.",
+  "conditions": {
+    "grid": "16",
+    "encoding": "char",
+    "model": "none",
+    "source": "font-awesome-6-solid (CC BY 4.0)",
+    "depth": "round2(2,6)"
+  }
+}
