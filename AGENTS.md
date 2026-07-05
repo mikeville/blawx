@@ -670,11 +670,41 @@ refactor, byte-identical for the SVG path); writes raw/, masks/,
 previews/ (mask upscaled to 512²), gen.json. `--dry-run` verified:
 64 images, ~$0.045 Together / ~$0.19 Replicate.
 
-**Next action:** run the pilot — needs Mike to drop TOGETHER_API_KEY
-or REPLICATE_API_TOKEN into `<repo>/.env`, then:
-`npx tsx scripts/gen-silhouettes.ts` (spend re-confirmed at run time
-per the standing rule). After generation: Fable eyeball of
-previews/*.png picks the best candidate per noun, winners get
-SEED_TABLE entries sourced from local PNGs (seed-library extension
-still to be written) and depth profiles, then a seed4 full-library
-run.
+**Rung-2 pilot executed (2026-07-05, ~$0.19, Replicate, Mike-approved).**
+64/64 images (16 nouns × 4 seeds) in `runs/gen1-16char-flux/`. Ops
+learning: low-credit Replicate accounts throttle at 60
+predictions/min (burst 5), which a concurrency-4 pool trips —
+`gen-silhouettes.ts` gained 429 retry-with-backoff and a
+`--skip-existing` resume flag (429s are free; the resume pass only
+paid for the 36 missing images).
+
+Pilot verdict (Fable eyeball of all 64 downsampled masks): **the
+text-to-2D rung works — 13/16 nouns produced usable-to-strong
+fronts on the first batch.** The systematic failure mode is
+features thinner than one grid cell: ladder rungs and the flower
+stem fragment into disconnected pieces; ice cream cone never got a
+cone taper (all four candidates read as popsicles). Confirmation of
+the mug lesson: punch-through holes are load-bearing for reads and
+survive at flat(4) — the snail's shell spiral and the rocket's
+window both read in iso.
+
+**seed4-16char-mixed (2026-07-05) is the new canonical library run:
+28/30 seeded** (misses: ladder, flower). `seed-library.ts` extended
+with `png` sources (gen1 raw PNGs → `isInkDark` luminance downsample)
+alongside `fa`; the table holds the Fable-picked winner + profile per
+noun. Iso-render eyeball of the 13 gen-sourced nouns: strong — table
+(best object in the project), fox, duck, sword, rocket ship, tree,
+penguin, snail; decent — octopus, palm tree, lighthouse; marginal —
+hat, mushroom (mushroom-c2's tiered cap extruded to stairs under
+both inflate and flat; the rounder c4 at flat(4) was the best of
+the three treatments tried). Monotone-ceiling learning, echoing the
+round-depth verdict: front-edge smoothness matters more than depth
+profile — tiered front edges (tree canopy, mushroom cap) always
+extrude to staircase ledges.
+
+**Next action:** none started; candidates, not prescriptions:
+(a) mini retry batch for the remaining weak/missing fronts (flower
+thicker-stem prompt, ladder, ice-cream cone taper, hat/mushroom
+upgrades — ~$0.05–0.15, needs sign-off per the spend rule); (b) the
+deferred QA-gate render-legibility experiment; (c) declare seeding
+done at 28/30 and move to the next phase of the product build.
