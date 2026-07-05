@@ -5,13 +5,19 @@
 //
 // Depth profiles (all centered, even runs on the z axis — a depth-d run
 // covers z = (8 - d/2) .. (7 + d/2)):
-//   flat(d)    — every non-empty front row gets the centered d-run in side;
-//                top rows for z in the run copy front's column occupancy.
-//   inflate    — per-row depth from front-mask row width (icon2, unchanged).
-//   round(max) — revolve approximation for round-in-top-view objects: chord
-//                width per column from a circle fit to the column extent.
-//   prone(h)   — the icon mask IS a top view (spider-like); object sits h
-//                rows tall on the ground, front/side derived by transpose.
+//   flat(d)      — every non-empty front row gets the centered d-run in
+//                  side; top rows for z in the run copy front's column
+//                  occupancy.
+//   inflate      — per-row depth from front-mask row width (icon2, unchanged).
+//   round(max)   — revolve approximation for round-in-top-view objects:
+//                  chord width per column from a circle fit to the column
+//                  extent, quantized to the nearest even depth in [2, max].
+//   round2(lo,hi)— two-level variant of round: same chord-fit revolve, but
+//                  each column's chord snaps to whichever of lo/hi is
+//                  closer (ties go to hi), avoiding the staircase ledges a
+//                  multi-level round(max) produces.
+//   prone(h)     — the icon mask IS a top view (spider-like); object sits h
+//                  rows tall on the ground, front/side derived by transpose.
 
 import { readFileSync } from 'node:fs';
 import { Resvg } from '@resvg/resvg-js';
@@ -254,12 +260,27 @@ function clampEvenDepth(t: number, maxDepth: number): number {
  * of the lifted hull so the strict lift has zero reprojection loss on all
  * three views (front survives untouched because every centered even run
  * >= 2 includes z in {7,8}).
+ *
+ * With `levels` given as `[lo, hi]`, this becomes the round2 variant: each
+ * column's chord snaps to whichever of lo/hi is closer (`chord >= mid ?
+ * hi : lo`) instead of rounding to the nearest even depth up to maxDepth.
+ * Quantizing to exactly two depths avoids the staircase ledges a
+ * multi-level round(maxDepth) renders as. `maxDepth` is ignored when
+ * `levels` is present.
  */
 export function synthesizeSideTopRound(
   front: Mask,
   maxDepth: number,
+  levels?: [number, number],
 ): { side: Mask; top: Mask; colDepths: number[] } {
-  if (maxDepth % 2 !== 0 || maxDepth < 2 || maxDepth > SIZE) {
+  if (levels) {
+    const [lo, hi] = levels;
+    if (lo % 2 !== 0 || hi % 2 !== 0 || lo < 2 || lo >= hi || hi > SIZE) {
+      throw new Error(
+        `round2(lo,hi): lo and hi must be even with 2 <= lo < hi <= ${SIZE}, got lo=${lo} hi=${hi}`,
+      );
+    }
+  } else if (maxDepth % 2 !== 0 || maxDepth < 2 || maxDepth > SIZE) {
     throw new Error(`round(maxDepth): maxDepth must be even and in [2, ${SIZE}], got ${maxDepth}`);
   }
 
@@ -289,7 +310,12 @@ export function synthesizeSideTopRound(
     if (!colOccupied[c]) continue;
     const dx = c + 0.5 - cx;
     const chord = 2 * Math.sqrt(Math.max(0, R * R - dx * dx));
-    colDepths[c] = clampEvenDepth(chord, maxDepth);
+    if (levels) {
+      const [lo, hi] = levels;
+      colDepths[c] = chord >= (lo + hi) / 2 ? hi : lo;
+    } else {
+      colDepths[c] = clampEvenDepth(chord, maxDepth);
+    }
   }
 
   // Top: for each filled column c, fill the top rows for the centered
@@ -385,6 +411,7 @@ export type DepthProfile =
   | { kind: 'flat'; depth: number }
   | { kind: 'inflate' }
   | { kind: 'round'; maxDepth: number }
+  | { kind: 'round2'; lo: number; hi: number }
   | { kind: 'prone'; height: number };
 
 export function depthProfileLabel(p: DepthProfile): string {
@@ -395,6 +422,8 @@ export function depthProfileLabel(p: DepthProfile): string {
       return 'inflate';
     case 'round':
       return `round(${p.maxDepth})`;
+    case 'round2':
+      return `round2(${p.lo},${p.hi})`;
     case 'prone':
       return `prone(${p.height})`;
   }
@@ -456,10 +485,10 @@ export function rasterToFrontMask(svg: string, sourceLabel: string): FrontMaskRe
 }
 
 /**
- * Apply a depth profile to a front mask (flat/inflate/round), or reinterpret
- * the raw (ungrounded) mask as a top view (prone). Returns the resolved
- * front/side/top triple plus a diagnostic summary for logging, and asserts
- * the strict-lift zero-reprojection-loss invariant.
+ * Apply a depth profile to a front mask (flat/inflate/round/round2), or
+ * reinterpret the raw (ungrounded) mask as a top view (prone). Returns the
+ * resolved front/side/top triple plus a diagnostic summary for logging, and
+ * asserts the strict-lift zero-reprojection-loss invariant.
  */
 export function applyDepthProfile(
   profile: DepthProfile,
@@ -488,6 +517,11 @@ export function applyDepthProfile(
         : 0;
   } else if (profile.kind === 'round') {
     const round = synthesizeSideTopRound(front, profile.maxDepth);
+    side = round.side;
+    top = round.top;
+    maxDepthUsed = Math.max(0, ...round.colDepths);
+  } else if (profile.kind === 'round2') {
+    const round = synthesizeSideTopRound(front, profile.hi, [profile.lo, profile.hi]);
     side = round.side;
     top = round.top;
     maxDepthUsed = Math.max(0, ...round.colDepths);
