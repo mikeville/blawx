@@ -12,6 +12,9 @@ dist
 dist-ssr
 *.local
 
+# Provider API keys for scripts/gen-silhouettes.ts (TOGETHER_API_KEY / REPLICATE_API_TOKEN)
+.env
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

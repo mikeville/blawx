@@ -21,6 +21,7 @@
 
 import { readFileSync } from 'node:fs';
 import { Resvg } from '@resvg/resvg-js';
+import { PNG } from 'pngjs';
 import { liftHull } from '../../src/bench/hull.ts';
 import type { Mask } from '../../src/bench/encodings.ts';
 
@@ -36,20 +37,43 @@ export const DEPTH_Z_MAX = 9;
 
 export type PixelBox = { minX: number; minY: number; maxX: number; maxY: number };
 
-export function isInk(pixels: Buffer, w: number, x: number, y: number): boolean {
+/** Pluggable ink test: given the RGBA buffer and a pixel coordinate, is it ink? */
+export type InkPredicate = (pixels: Buffer, w: number, x: number, y: number) => boolean;
+
+/** Alpha-based ink test — correct for transparent-background SVG rasters. */
+export function isInkAlpha(pixels: Buffer, w: number, x: number, y: number): boolean {
   const i = (y * w + x) * 4;
   return pixels[i + 3] > 127; // alpha channel
 }
 
+/** Back-compat alias: original name, original (alpha) behavior. */
+export const isInk = isInkAlpha;
+
+/**
+ * Dark-pixel ink test for opaque generated PNGs (black silhouette on white
+ * background): ink iff opaque AND luminance < 128 (Rec. 601 luma).
+ */
+export function isInkDark(pixels: Buffer, w: number, x: number, y: number): boolean {
+  const i = (y * w + x) * 4;
+  if (pixels[i + 3] <= 127) return false;
+  const luminance = 0.299 * pixels[i] + 0.587 * pixels[i + 1] + 0.114 * pixels[i + 2];
+  return luminance < 128;
+}
+
 /** Tight bounding box (inclusive) of all ink pixels, or null if none found. */
-export function inkBBox(pixels: Buffer, width: number, height: number): PixelBox | null {
+export function inkBBox(
+  pixels: Buffer,
+  width: number,
+  height: number,
+  ink: InkPredicate = isInkAlpha,
+): PixelBox | null {
   let minX = Infinity;
   let minY = Infinity;
   let maxX = -Infinity;
   let maxY = -Infinity;
   for (let y = 0; y < height; y++) {
     for (let x = 0; x < width; x++) {
-      if (isInk(pixels, width, x, y)) {
+      if (ink(pixels, width, x, y)) {
         if (x < minX) minX = x;
         if (x > maxX) maxX = x;
         if (y < minY) minY = y;
@@ -71,6 +95,7 @@ export function bboxToFrontMask(
   width: number,
   bbox: PixelBox,
   threshold: number,
+  ink: InkPredicate = isInkAlpha,
 ): Mask {
   const boxW = bbox.maxX - bbox.minX + 1;
   const boxH = bbox.maxY - bbox.minY + 1;
@@ -94,7 +119,7 @@ export function bboxToFrontMask(
     for (let c = 0; c < SIZE; c++) {
       const px0 = originX + c * cellPx;
       const px1 = originX + (c + 1) * cellPx;
-      row.push(cellInkCoverage(pixels, width, px0, px1, py0, py1) >= threshold);
+      row.push(cellInkCoverage(pixels, width, px0, px1, py0, py1, ink) >= threshold);
     }
     mask.push(row);
   }
@@ -109,6 +134,7 @@ export function cellInkCoverage(
   px1: number,
   py0: number,
   py1: number,
+  ink: InkPredicate = isInkAlpha,
 ): number {
   const x0 = Math.max(0, Math.floor(px0));
   const x1 = Math.min(width - 1, Math.ceil(px1) - 1);
@@ -116,14 +142,14 @@ export function cellInkCoverage(
   const y1 = Math.min(width - 1, Math.ceil(py1) - 1);
   if (x1 < x0 || y1 < y0) return 0;
   let total = 0;
-  let ink = 0;
+  let inkCount = 0;
   for (let y = y0; y <= y1; y++) {
     for (let x = x0; x <= x1; x++) {
       total += 1;
-      if (isInk(pixels, width, x, y)) ink += 1;
+      if (ink(pixels, width, x, y)) inkCount += 1;
     }
   }
-  return total === 0 ? 0 : ink / total;
+  return total === 0 ? 0 : inkCount / total;
 }
 
 export function emptyMask(): Mask {
@@ -446,6 +472,12 @@ export function readSvgFile(path: string): string {
   return readFileSync(path, 'utf8');
 }
 
+/** Decode PNG bytes to RGBA pixels compatible with isInkAlpha/isInkDark. */
+export function decodePng(buf: Buffer): { pixels: Buffer; width: number; height: number } {
+  const png = PNG.sync.read(buf);
+  return { pixels: png.data, width: png.width, height: png.height };
+}
+
 export type FrontMaskResult = {
   front: Mask;
   thresholdUsed: number;
@@ -454,34 +486,49 @@ export type FrontMaskResult = {
 };
 
 /**
- * Rasterize an SVG and produce the grounded, threshold-fit 16×16 front
- * mask, retrying at a lower threshold if coverage is too sparse. Shared by
- * both the flat/inflate icon-lift path and prone (which uses the mask
- * un-grounded as its top view — grounding is applied by the caller as
- * appropriate).
+ * Core of the downsample path, shared by SVG rasters and decoded PNGs: bbox
+ * → threshold-fit 16×16 mask → grounded, retrying at a lower threshold if
+ * coverage is too sparse. Shared by both the flat/inflate icon-lift path and
+ * prone (which uses the mask un-grounded as its top view — grounding is
+ * applied by the caller as appropriate).
  */
-export function rasterToFrontMask(svg: string, sourceLabel: string): FrontMaskResult & {
-  rawMask: Mask;
-} {
-  const { pixels, width, height } = rasterizeSvg(svg);
-  const bbox = inkBBox(pixels, width, height);
+export function pixelsToFrontMask(
+  pixels: Buffer,
+  width: number,
+  height: number,
+  sourceLabel: string,
+  ink: InkPredicate = isInkAlpha,
+): FrontMaskResult & { rawMask: Mask } {
+  const bbox = inkBBox(pixels, width, height, ink);
   if (!bbox) throw new Error(`${sourceLabel}: no ink pixels found in raster`);
 
   let threshold = DEFAULT_THRESHOLD;
-  let rawMask = bboxToFrontMask(pixels, width, bbox, threshold);
+  let rawMask = bboxToFrontMask(pixels, width, bbox, threshold, ink);
   let front = groundMask(rawMask);
   let filledCells = countFilled(front);
 
   let note: string | undefined;
   if (filledCells < MIN_FILLED_CELLS) {
     threshold = FALLBACK_THRESHOLD;
-    rawMask = bboxToFrontMask(pixels, width, bbox, threshold);
+    rawMask = bboxToFrontMask(pixels, width, bbox, threshold, ink);
     front = groundMask(rawMask);
     filledCells = countFilled(front);
     note = `low coverage at threshold ${DEFAULT_THRESHOLD}; retried at ${FALLBACK_THRESHOLD}`;
   }
 
   return { front, rawMask, thresholdUsed: threshold, filledCells, note };
+}
+
+/**
+ * Rasterize an SVG and produce the grounded, threshold-fit 16×16 front
+ * mask via pixelsToFrontMask with the alpha ink predicate (correct for
+ * transparent-background SVG rasters).
+ */
+export function rasterToFrontMask(svg: string, sourceLabel: string): FrontMaskResult & {
+  rawMask: Mask;
+} {
+  const { pixels, width, height } = rasterizeSvg(svg);
+  return pixelsToFrontMask(pixels, width, height, sourceLabel, isInkAlpha);
 }
 
 /**
