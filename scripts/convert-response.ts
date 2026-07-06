@@ -12,9 +12,10 @@ import { readFileSync, writeFileSync, existsSync } from 'node:fs';
 import { basename, dirname, join } from 'node:path';
 import { extractViews, parseMaskText, VIEWS, type Encoding } from '../src/bench/encodings.ts';
 import { liftHull } from '../src/bench/hull.ts';
+import { maskToRows } from '../src/bench/maskOps.ts';
 import { estimateTokens } from '../src/bench/cost.ts';
 import { NOUNS } from '../src/bench/nouns.ts';
-import type { BenchResult, RunManifest } from '../src/bench/types.ts';
+import type { BenchMeta, BenchResult, RunManifest } from '../src/bench/types.ts';
 
 const responsePath = process.argv[2];
 if (!responsePath) {
@@ -45,6 +46,7 @@ const notes: string[] = [];
 let voxels: BenchResult['voxels'] = [];
 let malformedRows = 0;
 let reprojectionLoss = { front: 0, side: 0, top: 0 };
+let masks: BenchMeta['masks'];
 
 if (missing.length > 0) {
   notes.push(`missing views: ${missing.join(', ')} — lift skipped`);
@@ -54,6 +56,11 @@ if (missing.length > 0) {
   const hull = liftHull(parsed[0].mask, parsed[1].mask, parsed[2].mask, size);
   voxels = hull.voxels;
   reprojectionLoss = hull.reprojectionLoss;
+  masks = {
+    front: maskToRows(parsed[0].mask),
+    side: maskToRows(parsed[1].mask),
+    top: maskToRows(parsed[2].mask),
+  };
   if (voxels.length === 0) notes.push('hull collapsed to zero voxels');
 }
 
@@ -67,6 +74,7 @@ const result: BenchResult = {
     tokensIn: estimateTokens(promptText),
     tokensOut: estimateTokens(response),
     hull: { malformedRows, reprojectionLoss },
+    ...(masks ? { masks } : {}),
     ...(notes.length > 0 ? { notes: notes.join('; ') } : {}),
   },
 };
