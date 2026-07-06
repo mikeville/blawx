@@ -48,6 +48,28 @@ test('painter order: nearer voxel drawn after farther one', () => {
   assert.ok(far < near, 'far voxel polygons must precede near voxel polygons');
 });
 
+test('shaded mode draws the contact shadow beneath the object', () => {
+  const svg = renderIsoSVG([[0, 0, 0]], { mode: 'shaded' });
+  // 3 faces + 1 core footprint diamond + 4 halo diamonds
+  assert.equal(polyCount(svg), 8);
+  // Shadow polygons must precede face polygons (drawn beneath).
+  assert.ok(svg.indexOf('#d6d6ce') < svg.indexOf('#f2f2ec'));
+});
+
+test('shaded depth falloff darkens farther voxels', () => {
+  const svg = renderIsoSVG([[0, 0, 0], [2, 0, 0]], { mode: 'shaded' });
+  // Near voxel's top face at full brightness; far voxel scaled by DEPTH_FAR
+  // (0.78): shade('#f2f2ec', 0.78) = '#bdbdb8'.
+  assert.ok(svg.includes('#f2f2ec'), 'near top face at full brightness');
+  assert.ok(svg.includes('#bdbdb8'), 'far top face darkened');
+});
+
+test('monotone output stays free of shaded-mode artifacts', () => {
+  const svg = renderIsoSVG([[0, 0, 0], [1, 1, 1]]);
+  assert.ok(!svg.includes('#d6d6ce') && !svg.includes('#e8e8e2'), 'no shadow polys');
+  assert.ok(svg.includes('#e9e9e9'), 'neutral palette unchanged');
+});
+
 test('shade scales hex channels', () => {
   assert.equal(shade('#ffffff', 0.5), '#808080');
   assert.equal(shade('#fff', 1), '#ffffff');

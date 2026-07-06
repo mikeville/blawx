@@ -138,6 +138,7 @@ function Tile({
   runId,
   blind,
   color,
+  shaded,
   showMasks,
   score,
 }: {
@@ -146,6 +147,7 @@ function Tile({
   runId: string;
   blind: boolean;
   color: boolean;
+  shaded: boolean;
   showMasks: boolean;
   score?: RunScores[string];
 }) {
@@ -153,10 +155,12 @@ function Tile({
   const svg = useMemo(
     () =>
       renderIsoSVG(result.voxels, {
-        mode: color ? 'color' : 'monotone',
+        // shaded wins over color: it is the presentation experiment being
+        // A/B'd against the neutral eval render.
+        mode: shaded ? 'shaded' : color ? 'color' : 'monotone',
         colors: result.colors,
       }),
-    [result, color],
+    [result, color, shaded],
   );
   const cost =
     result.meta?.model && result.meta.tokensIn != null && result.meta.tokensOut != null
@@ -225,6 +229,7 @@ function RunSection({
   run,
   blind,
   color,
+  shaded,
   showMasks,
   collapsed,
   onToggle,
@@ -232,6 +237,7 @@ function RunSection({
   run: Run;
   blind: boolean;
   color: boolean;
+  shaded: boolean;
   showMasks: boolean;
   collapsed: boolean;
   onToggle: () => void;
@@ -277,6 +283,7 @@ function RunSection({
               runId={run.id}
               blind={blind}
               color={color}
+              shaded={shaded}
               showMasks={showMasks}
               score={run.scores?.[item.result.noun]}
             />
@@ -343,6 +350,7 @@ export default function App() {
 
   const [blind, setBlind] = useState(false);
   const [color, setColor] = useState(false);
+  const [shaded, setShaded] = useState(false);
   const [showMasks, setShowMasks] = useState(hasMasks);
   const [sort, setSort] = useState<SortKey>('date-desc');
   const [query, setQuery] = useState('');
@@ -385,6 +393,10 @@ export default function App() {
           <label>
             <input type="checkbox" checked={color} onChange={(e) => setColor(e.target.checked)} />
             color (secondary)
+          </label>
+          <label>
+            <input type="checkbox" checked={shaded} onChange={(e) => setShaded(e.target.checked)} />
+            shaded (experiment)
           </label>
           {hasMasks && (
             <label>
@@ -456,6 +468,7 @@ export default function App() {
           run={run}
           blind={blind}
           color={color}
+          shaded={shaded}
           showMasks={showMasks}
           collapsed={!openIds.has(run.id)}
           onToggle={() => toggleRun(run.id)}

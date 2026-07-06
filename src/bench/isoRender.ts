@@ -12,7 +12,16 @@ export type Vec3 = readonly [number, number, number];
 export type Face = 'top' | 'left' | 'right';
 
 export type RenderOptions = {
-  mode?: 'monotone' | 'color';
+  /**
+   * 'monotone' is the neutral eval render (byte-stable — past scoring PNGs
+   * depend on it). 'shaded' is the presentation experiment: wider face
+   * luminance separation, per-voxel depth falloff (terraces read as shaded
+   * curvature instead of identical plateaus), and a two-tone ground contact
+   * shadow. Silhouette outline deliberately deferred: with painter's
+   * occlusion, naive boundary-edge strokes draw false lines over covering
+   * faces.
+   */
+  mode?: 'monotone' | 'color' | 'shaded';
   /** Hex colors parallel to `voxels`; only read in color mode. */
   colors?: readonly (string | undefined)[];
   /** Background fill; null for transparent. */
@@ -39,6 +48,19 @@ const FACES: { face: Face; normal: Vec3; corners: Vec3[] }[] = [
 
 const MONO: Record<Face, string> = { top: '#e9e9e9', left: '#b3b3b3', right: '#7d7d7d' };
 const TINT: Record<Face, number> = { top: 1, left: 0.76, right: 0.53 };
+
+// Shaded-mode palette: wider luminance spread than MONO on a slightly warm
+// gray, so the three face families separate at a glance instead of washing
+// into one another.
+const SHADED: Record<Face, string> = { top: '#f2f2ec', left: '#9c9c92', right: '#5a5a52' };
+// Per-voxel depth falloff along the (1,1,1) view axis: nearest voxels at
+// full brightness, farthest scaled by DEPTH_FAR. Stepped surfaces pick up a
+// tonal gradient, reading as shaded volume rather than repeated plateaus.
+const DEPTH_FAR = 0.78;
+// Two-tone ground contact shadow (drawn beneath the object at the y=0
+// plane): core under the footprint, halo one cell dilated.
+const SHADOW_CORE = '#d6d6ce';
+const SHADOW_HALO = '#e8e8e2';
 
 /** Scale a #rgb/#rrggbb color's channels by k (0..1). */
 export function shade(hex: string, k: number): string {
@@ -69,6 +91,59 @@ export function renderIsoSVG(
   const polys: string[] = [];
   let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
 
+  // Corner projector shared by faces and shadow, tracking the view box.
+  const pt = (px: number, py: number): string => {
+    if (px < minX) minX = px;
+    if (px > maxX) maxX = px;
+    if (py < minY) minY = py;
+    if (py > maxY) maxY = py;
+    return `${r2(px)},${r2(py)}`;
+  };
+  /** Ground-plane (y=0) diamond for grid cell (x, z). */
+  const groundDiamond = (x: number, z: number, fill: string): string => {
+    const pts = (
+      [[x, z], [x + 1, z], [x + 1, z + 1], [x, z + 1]] as const
+    )
+      .map(([cx, cz]) => {
+        const [px, py] = project(cx, 0, cz, unit);
+        return pt(px, py);
+      })
+      .join(' ');
+    return `<polygon points="${pts}" fill="${fill}" stroke="${fill}" stroke-width="0.5" stroke-linejoin="round"/>`;
+  };
+
+  // Depth falloff normalization (shaded mode only).
+  let minSum = Infinity;
+  let maxSum = -Infinity;
+  if (mode === 'shaded') {
+    for (const [x, y, z] of voxels) {
+      const s = x + y + z;
+      if (s < minSum) minSum = s;
+      if (s > maxSum) maxSum = s;
+    }
+
+    // Contact shadow first, so the object draws over it: halo (footprint
+    // dilated by 4-neighbors) beneath the core footprint.
+    const footprint = new Set<string>();
+    for (const [x, , z] of voxels) footprint.add(`${x},${z}`);
+    const halo = new Set<string>();
+    for (const cell of footprint) {
+      const [x, z] = cell.split(',').map(Number);
+      for (const [dx, dz] of [[1, 0], [-1, 0], [0, 1], [0, -1]] as const) {
+        const k = `${x + dx},${z + dz}`;
+        if (!footprint.has(k)) halo.add(k);
+      }
+    }
+    for (const cell of halo) {
+      const [x, z] = cell.split(',').map(Number);
+      polys.push(groundDiamond(x, z, SHADOW_HALO));
+    }
+    for (const cell of footprint) {
+      const [x, z] = cell.split(',').map(Number);
+      polys.push(groundDiamond(x, z, SHADOW_CORE));
+    }
+  }
+
   for (const { v: [x, y, z], i } of order) {
     // Fully hidden from this camera: all three visible-face neighbors filled.
     if (
@@ -90,7 +165,13 @@ export function renderIsoSVG(
           return `${r2(px)},${r2(py)}`;
         })
         .join(' ');
-      const fill = base ? shade(base, TINT[face]) : MONO[face];
+      let fill: string;
+      if (mode === 'shaded') {
+        const t = maxSum > minSum ? (x + y + z - minSum) / (maxSum - minSum) : 1;
+        fill = shade(SHADED[face], DEPTH_FAR + (1 - DEPTH_FAR) * t);
+      } else {
+        fill = base ? shade(base, TINT[face]) : MONO[face];
+      }
       // stroke = fill seals hairline antialiasing seams between faces
       polys.push(
         `<polygon points="${pts}" fill="${fill}" stroke="${fill}" stroke-width="0.5" stroke-linejoin="round"/>`,
