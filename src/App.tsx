@@ -40,6 +40,10 @@ function loadRuns(): Run[] {
       run.manifest = data as RunManifest;
     } else if (name === 'scores') {
       run.scores = data as RunScores;
+    } else if (name === 'gen' || name === 'misses' || name === 'scores-calibration') {
+      // Known non-result sidecars (generation manifests, miss lists,
+      // calibration passes) — not BenchResult items, not errors either.
+      continue;
     } else {
       try {
         const { result, dropped } = parseBenchResult(data);
