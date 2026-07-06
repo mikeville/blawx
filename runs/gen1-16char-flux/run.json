@@ -1,0 +1,6 @@
+{
+  "id": "gen1-16char-flux",
+  "label": "gen1 · FLUX schnell silhouettes (source batch)",
+  "date": "2026-07-05",
+  "pipeline": "silhouette source generation: FLUX.1 schnell (Replicate) → 4 seeds per noun over 16 nouns → 64 raw PNGs, per-view masks, thumbnail previews. Not a benchmark run — the outputs feed seed4-16char-mixed as pre-baked silhouette sources. See runs/gen1-16char-flux/gen.json for the full generation manifest."
+}

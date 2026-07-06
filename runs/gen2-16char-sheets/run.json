@@ -1,0 +1,6 @@
+{
+  "id": "gen2-16char-sheets",
+  "label": "gen2 · rung-2b three-view model-sheet probe",
+  "date": "2026-07-06",
+  "pipeline": "rung-2b sheet probe: one 'orthographic model sheet' prompt per noun (FRONT/SIDE/TOP left-to-right) via FLUX.1 schnell (Replicate) → exact-thirds split → per-view 16×16 mask → 8-way flip search → front-protecting repair → strict visual hull lift. 4 nouns × 2 prompt variants × 4 seeds = 32 sheets, 27 processed. Two candidate voxelizations per sheet: -hull2cap6 (front ∩ depth-capped cross-section) and -flat4 (baseline). See runs/gen2-16char-sheets/gen.json for compliance metrics."
+}
