@@ -1,0 +1,10 @@
+Your masks have mechanical errors:
+
+- side mask rows 9-16: every row must be exactly 16 characters, using only "#" and "." — count the characters in each row
+- side mask columns and top mask rows disagree on the object's depth: side has depth cells 0-5, top implies depth cells 0-7 — make them agree
+- declared bounds say y:0-15 but the front mask occupies y 0-7 (y=0 is the bottom row) — make them agree
+- the top view is a near-solid full-width rectangle — unless the object is genuinely box-shaped, its footprint should taper and round: carve the corners so the top view matches the object's true footprint
+
+Fix every error and re-emit your COMPLETE corrected answer in exactly the
+original format: the bounds line, then exactly three fenced code blocks
+labeled front, side, top. No other text.

@@ -1,0 +1,7 @@
+Your masks have mechanical errors:
+
+- side mask columns and top mask rows disagree on the object's depth: side has depth cells 0-5, top implies depth cells 10-15 — make them agree. Remember the top view's rows run back to front: its FIRST row is the object's BACK (z=15) and its LAST row is the object's FRONT (z=0). Your side mask puts the object at depth z:0-5, so the top view's filled rows must be its last six rows (rows 11-16), not its first six.
+
+Fix every error and re-emit your COMPLETE corrected answer in exactly the
+original format: the bounds line, then exactly three fenced code blocks
+labeled front, side, top. No other text.

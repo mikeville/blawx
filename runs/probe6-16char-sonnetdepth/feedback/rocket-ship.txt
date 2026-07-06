@@ -1,0 +1,12 @@
+Your masks have mechanical errors:
+
+- side mask columns and top mask rows disagree on the object's depth: side has depth cells 4-11, top implies depth cells 0-4 — make them agree
+- declared bounds say x:2-13 but the front mask occupies columns 4-11 — make them agree
+- declared bounds say y:0-15 but the front mask occupies y 0-14 (y=0 is the bottom row) — make them agree
+- declared bounds say z:0-5 but the side mask occupies depth 4-11 — make them agree
+- the side mask has 2 empty cells enclosed inside the silhouette — masks must be SOLID: fill every cell inside the outline with "#"
+- the object should be at most 6 cells deep front-to-back, but the side mask currently spans 8 depth cells — redraw the side view as a depth cross-section, not a second profile of the object
+
+Fix every error and re-emit your COMPLETE corrected answer in exactly the
+original format: the bounds line, then exactly three fenced code blocks
+labeled front, side, top. No other text.

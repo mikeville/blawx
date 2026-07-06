@@ -1,0 +1,12 @@
+Your masks have mechanical errors:
+
+- top mask rows 12-16: every row must be exactly 16 characters, using only "#" and "." — count the characters in each row
+- front and top masks disagree on which columns are filled (they share the object's width): front has columns 0-15, top has columns 0-10 — make them identical
+- side mask columns and top mask rows disagree on the object's depth: side has depth cells 0-8, top implies depth cells 0-6 — make them agree
+- declared bounds say y:0-15 but the front mask occupies y 0-11 (y=0 is the bottom row) — make them agree
+- declared bounds say z:0-4 but the side mask occupies depth 0-8 — make them agree
+- the object should be at most 6 cells deep front-to-back, but the side mask currently spans 9 depth cells — redraw the side view as a depth cross-section, not a second profile of the object
+
+Fix every error and re-emit your COMPLETE corrected answer in exactly the
+original format: the bounds line, then exactly three fenced code blocks
+labeled front, side, top. No other text.

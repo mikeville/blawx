@@ -1,0 +1,14 @@
+{
+  "id": "probe6-16char-sonnetdepth",
+  "label": "probe6 16³ · seed4 front + sonnet-drawn depth",
+  "date": "2026-07-06",
+  "pipeline": "conditioned-depth probe: seed4 canonical front mask (FA/FLUX sourced) held verbatim; Sonnet designs side/top conditioned on it (per-part depth, cap 6), single-shot + deterministic retry (retry-feedback.ts --trust-front --max-depth=6), strict lift. icon3 route at n=6 with the post-icon3 validator tooling.",
+  "conditions": {
+    "grid": "16",
+    "encoding": "char",
+    "model": "claude-sonnet-5",
+    "prompt": "depth-draw-v2 (front given verbatim, depth cap 6, dog worked example)",
+    "source": "seed4-16char-mixed fronts (FA + FLUX)",
+    "method": "2-call: single-shot + 1 deterministic-feedback retry; duck + mug needed a 2nd deterministic retry for a z-mirrored top view (3 calls)"
+  }
+}
