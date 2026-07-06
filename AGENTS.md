@@ -810,14 +810,106 @@ Findings (Fable eyeball of raw sheets + renders + gen.json stats):
   hull3 entirely; a 2-view sheet prompt (front + side only) would
   also likely cut the empty-third failures.
 
-**Next action:** Mike to eyeball `runs/gen2-16char-sheets/renders/`
-(compare `-hull2cap6` vs `-flat4` per candidate; fox-vb-c2 and
-duck-va-c2 are the reference cases) and call whether the quadruped
-win justifies scaling rung-2b. If yes, the shaped next step: a 2-view
-sheet variant (front + side, no top slot) over the benchmark's animal
-nouns, hull2cap6 as the depth treatment, and a `sheet` source kind in
-seed-library.ts — ~$0.003/sheet, per-run sign-off required. Parallel
-lever, independent of sheet quality: render-side shading (stronger
-face separation, contact shadow) attacks the same "extruded" read and
-the deferred QA-gate legibility floor. Earlier candidates stay live:
-flower/ladder retry batch; declare seeding done at 28/30.
+**Mike eyeball verdict on gen2 (2026-07-06): sheet route RETIRED.**
+"None of the foxes look good, including in the gen2-16char-sheets
+round." This overrides the earlier Fable call that the cap6 fox was a
+standout — that call over-weighted structural novelty (z-separated
+legs, which no deterministic profile can produce) and under-weighted
+the actual bar, instant recognizability: the cap6 fox reads as a
+generic chunky quadruped (elephant/table), having traded away the
+profile legibility that made seed4's fox at least nameable. Full
+rung-2b ledger (~$0.30 total spend): best case (duck) = parity with
+$0 inflate; round objects = worse than flat(4); animals = legibility
+loss. **Do not scale the sheet route.** Standing conclusion: sourcing
+better FRONTS from schnell works (gen1 → seed4); sourcing DEPTH from
+schnell does not beat the free heuristics at 16³.
+
+Sharper restatement of the open problem: Mike's fox verdict covers
+seed4's inflate fox too — even the best-treatment sprites still read
+as "a flat icon, just fatter" (the complaint that started rung-2b).
+With depth shaping now measured as topping out at parity, the
+extruded-icon feel is substantially a PRESENTATION problem: the
+monotone renderer's three near-identical face grays turn every depth
+step into a terrace, nothing grounds the object (no contact shadow),
+and there's no silhouette edge. This is also exactly the deferred
+QA-gate legibility-floor work.
+
+**Render-side shading experiment built (2026-07-06, $0, no model
+calls).** `renderIsoSVG` gained `mode: 'shaded'`
+(`src/bench/isoRender.ts`): (1) wider face-luminance separation on a
+slightly warm gray (top #f2f2ec / left #9c9c92 / right #5a5a52 vs the
+neutral 233/179/125), (2) per-voxel depth falloff along the (1,1,1)
+view axis (nearest full brightness → farthest ×0.78) so stepped
+surfaces pick up a tonal gradient and read as shaded volume instead
+of repeated plateaus, (3) two-tone ground contact shadow at the y=0
+plane (core footprint + 4-neighbor-dilated halo) drawn beneath the
+object. Silhouette outline deliberately deferred: with painter's
+occlusion, naive boundary-edge strokes draw false lines over covering
+faces. The default neutral mode is byte-stable (asserted by test) so
+past scoring PNGs stay comparable; viewer has a "shaded (experiment)"
+toggle next to blind/color/masks. 30 tests passing. First Fable
+eyeball of seed4 shaded vs neutral: grounding + volume clearly
+improved — objects sit on a floor instead of floating, terraced tails
+and caps read as gradients.
+
+**Mike eyeball verdict on shading (2026-07-06): no help.** "The
+shaded fox looks bad. The shading doesn't help with any of the nouns.
+No improved rendering, including color, can help the poor voxel
+geometry." The presentation hypothesis is falsified — the shaded mode
+stays in the code as a viewer toggle, but render-side work is OFF the
+table as a quality lever. Geometry quality below a legibility floor
+cannot be presented into goodness. (Process note, recorded so it
+isn't repeated: the shading bet was proposed as "the remaining lever"
+instead of as a vetoable hypothesis; Mike flagged he would have
+stopped it had the framing been clearer.)
+
+**Mike observation (2026-07-06), reframing the tier picture:** aside
+from Fable rounds (mostly good enough), the SONNET rounds look okay —
+better than every other non-Fable round: icon3-16char-sonnetdepth,
+probe1-16char-sonnet[-bbox], probe4-16char-sonnet,
+probe5-16char-sonnet. Synthesis against the recorded evidence:
+
+- What those five rounds share, and nothing else in the project has:
+  **the side/top masks were DESIGNED by a model**, not derived
+  mechanically from a 2D source. Model-designed volume varies depth
+  semantically (probe1's mug is a cylinder; Fable's bird is head-4 /
+  body-6 / legs-2). Every icon/FLUX round extrudes or inflates — the
+  "flat icon, fatter" signature.
+- The recorded negative verdicts on Sonnet conflated three things
+  Mike's eyeball now separates: (1) mechanical reliability — solved,
+  5/5, by the deterministic retry at ~2× tokens; (2) recognizability
+  as scored by Haiku blind-naming — an instrument the 2026-07-04
+  QA-gate calibration later showed INVERTS quality ordering, so
+  probe5's "1/3" likely underrated those outputs; (3) shape-design
+  quality per Fable A/B on n=2 (icon3) — small-sample, and now
+  effectively overridden by Mike's cross-run eyeball.
+- Two-axis decomposition of the whole problem: front-silhouette
+  legibility (icons/FLUX excellent + ~free; Sonnet weaker) vs volume
+  character (heuristics flat; model-designed 3D-native). seed4
+  optimized the first axis and defaulted the second — which is
+  exactly Mike's complaint. Rung-2b tried to source the second axis
+  from an image model and failed. The untested combination is
+  **sourced front + Sonnet-designed side/top conditioned on it** —
+  icon3's route, retired after n=2, BEFORE the tooling built for it
+  existed (retry-feedback's --trust-front, --max-depth, and top-slab
+  advisory were added later and directly target icon3's and probe5's
+  observed failure modes: second-profile side views, slab
+  footprints).
+- Economics: probe token counts (~520–670 in / ~220 out per call)
+  put a Sonnet 2-call conditioned-depth term at roughly $0.01 at list
+  prices — inside the $0.01–0.02 production target. Library seeding
+  via subscription subagents stays $0 actual.
+
+**Next action:** candidate probe, pending Mike's sign-off on the
+framing (hypothesis: model-designed depth over sourced fronts is the
+missing quality axis; $0 actual, subscription subagents): re-run the
+icon3 route over ~6 seed4 canonical fronts spanning body plans (fox,
+duck, cat + mug, rocket, table), Sonnet draws side/top conditioned on
+the verbatim front through retry-feedback with --trust-front and
+--max-depth, strict lift, render into a run dir for eyeball A/B
+against seed4's inflate/flat treatments. Verdict instrument: Mike's
+eyeball only (blind-naming is calibrated-broken). Secondary open
+axis, untested and unpriced: grid resolution (everything so far is
+16³; the benchmark plan always contemplated 32³, where fronts survive
+downsampling with far more feature detail). Earlier candidates stay
+live: flower/ladder retry batch; declare seeding done at 28/30.
