@@ -132,16 +132,36 @@ Specific questions the repo must answer before implementation:
   context ("fox" → wolf/cat exemplar). Static, cacheable prompt content.
 - Measure delta on the benchmark, organic subset especially.
 
-### Phase 5 — Only if organics still miss: armature DSL
+### Phase 5 — Pipeline v1 (active)
+
+Zoom back out from geometry to the full noun-in / booklet-out toy.
+Ships **cache-only** against the seed4 library; **v2 goal is live
+generation on cache miss** — the magic moment: type any noun, watch
+it get built. Detailed roadmap and settled substrate in `AGENTS.md`
+§ Phase 5; probe-by-probe geometry history in
+`docs/voxel-history.md`.
+
+Minimum tier is mostly a **port + upsize from 8³ to 16³** of the
+sibling repo's booklet and skin — `../blawx/src/{render,voxel,booklet,
+search,api}/*` are the reusable substrate. Order: (1) LEGO skin at
+16³, (2) minimum layer-by-layer instructions, (3) noun-input frontend
++ result page, (4) KV cache seeding, (5) ship. Ratchet up after ship:
+greedy brick-packer (1×2/2×2/2×4), live-gen on miss (v2), exploded
+assembly diagram.
+
+### Phase 6 — Contingency: armature DSL
+(Was Phase 5 pre-2026-07-06; demoted after probe6 landed a satisfying
+geometry pipeline. Only if organics still miss under real user
+distribution once the v1 toy is out.)
 - Parameterized body-plan part kits the LLM selects and adjusts;
   silhouettes become the check rather than the source. Produces part
   labels for free (future LEGO step decomposition).
 
 ### Later / out of scope now
-- Cache + precompute head-of-distribution nouns before launch; 👍/👎 on
-  the toy → cache becomes distillation training data.
-- LEGO skin phase: brick decomposition, construction steps, 2:1 (26.565°)
-  stepping if renders look jaggy at true 30°.
+- 👍/👎 on the toy → cache becomes distillation training data.
+- Middle/ambitious instructions tiers: greedy brick-packer, exploded
+  assembly diagram, sub-assemblies.
+- 2:1 (26.565°) stepping if renders look jaggy at true 30°.
 - Minecraft or other skins.
 
 ## Explicitly rejected (with reasons)
@@ -169,7 +189,10 @@ run does not carry to re-runs or larger variants.
   without renderer changes (format compatibility check).
 
 ## Status of open questions
-1. Repo access: pending — user wants the curiosity list (now in Phase 0)
-   before permitting reads. Tactical history arrives via user paste.
-2. Grid policy: resolved — adaptive 8³/16³, user open to larger since
-   cost is grid-size-insensitive.
+1. Repo access: resolved — full read + write authorized during Phase 1a.
+2. Grid policy: resolved — 16³ char encoding is the settled shipping
+   grid (probe6). 32³ untested and unpriced; deferred until real user
+   distribution shows 16³ insufficient.
+3. v1 vs v2 shipping shape: resolved (2026-07-06) — v1 cache-only over
+   seed4 library; v2 live-gen on miss (probe6 route into `../api/`
+   Worker). Standing constraint: never depend on Fable-tier at runtime.
