@@ -702,9 +702,104 @@ round-depth verdict: front-edge smoothness matters more than depth
 profile — tiered front edges (tree canopy, mushroom cap) always
 extrude to staircase ledges.
 
-**Next action:** none started; candidates, not prescriptions:
-(a) mini retry batch for the remaining weak/missing fronts (flower
-thicker-stem prompt, ladder, ice-cream cone taper, hat/mushroom
-upgrades — ~$0.05–0.15, needs sign-off per the spend rule); (b) the
-deferred QA-gate render-legibility experiment; (c) declare seeding
-done at 28/30 and move to the next phase of the product build.
+**Rung-2b three-view sheet probe built (2026-07-06, $0 — no API
+calls).** Mike's verdict on the gen-sourced iso renders: they read as
+"flat icons extruded — a 2D thing that's just fatter," not 3D-native.
+Diagnosis: the flatness is authored by the depth profiles (flat/inflate
+sweep a constant-or-width-proportional cross-section straight back),
+not by the schnell prompt — so the fix is sourcing real cross-sections,
+not prompt styling. Separate per-view schnell prompts were rejected
+before spending: two independent draws have no identity anchor (icon
+training data makes "fox, front view" a head-only icon while the side
+view is a full body — row-mapped depth from mismatched body plans is
+garbage). Instead, Mike's single-image idea: one "orthographic model
+sheet" prompt (FRONT / SIDE / TOP left-to-right), split into thirds,
+each third downsampled 16×16, and lifted with the existing strict
+visual hull — `liftHull` IS the 3-view AND-intersection, and
+`alignBboxes` (built for the LLM-mask path) handles cross-view extent
+reconciliation.
+
+`scripts/gen-sheets.ts` (Sonnet-built, Fable-reviewed): 4 probe nouns
+(duck, fox, mug, rocket ship; per-noun `displayThird` maps the
+profile view to the pipeline front mask, the other of front/side
+becomes the depth cross-section), 2 prompt phrasings A/B ("model
+sheet" convention vs geometric description), 4 seeds → 32 sheets at
+1344×576 (Together) / 21:9 (Replicate). Deterministic post-processing
+per sheet: exact-thirds split; compliance checks recorded in gen.json
+(gutter-band ink, per-third connected components, bbox aspect);
+8-way flip orientation search minimizing summed reprojection loss
+(recorded flips are best-fit compensation for the sheet's unknowable
+view orientation, not semantically meaningful); front-protecting
+repair pass (front mask is ground truth — zero front reprojection
+loss asserted, side/top reprojected from the final voxel set); three
+renders per candidate for eyeball A/B — `-hull3` (repaired 3-view
+hull), `-hull2` (front ∩ cross-section only, top unconstrained),
+`-flat4` (baseline). `--selftest` runs the whole path offline on an
+adversarially inconsistent synthetic sheet (annulus hole in the top
+view forces the repair path, x-asymmetric flange forces a non-default
+flip; asserts nonzero pre-repair loss, nonzero repairs, zero
+post-repair front loss). `--dry-run` verified: 32 images, ~$0.096
+Replicate / ~$0.067 Together. Type-check clean.
+
+Known limits going in: intersection only carves, never adds — the
+thin-feature fragmentation mode (ladder rungs, flower stems) gets two
+extra chances to trigger, which is what the repair pass and the hull2
+fallback are for; top-view compliance is expected weakest (top-down
+animals are rare in icon data); real-sheet layout compliance (three
+views, right order, clean gutters) is THE probe question and is
+untested until a paid run — the selftest only proves the machinery.
+
+**Rung-2b sheet probe executed (2026-07-06, ~$0.10, Replicate,
+Mike-approved).** 32/32 sheets generated into
+`runs/gen2-16char-sheets/`; 27 processed, 5 failed on an empty third.
+Findings (Fable eyeball of raw sheets + renders + gen.json stats):
+
+- **The weak link is view diversity, not layout.** Sheets reliably
+  contain 2–3 clean silhouettes of the SAME subject (identity drift —
+  the reason separate per-view prompts were rejected — did not occur
+  even once). But the TOP slot never contained a top-down view (best
+  case a crouching duck, usually a third profile or a tilted copy),
+  and true head-on views appeared only for duck and rocket; fox and
+  mug sheets were 2–3 profiles in different poses. Empty-third
+  failures concentrated in mug (4 of 8 — it drew two big mugs and
+  stopped). Prompt variants a/b performed similarly. The gutter flag
+  fired 21/27, mostly subjects straddling the third boundaries.
+- **hull3 (strict 3-view AND) is dead on arrival** — intersecting
+  with the garbage top slot carves slots and terraces, and
+  alignBboxes's z pair stretched the cross-section's depth to that
+  view's extent (duck body 13 of 16 deep → pancake). Fixed in-script:
+  hull2 is now computed decoupled from the top third (empty top mask →
+  alignBboxes skips the x/z pairs).
+- **Cross-view consistency of the two good views is excellent:**
+  pre-repair front reprojection loss mostly < 0.09, repair restored
+  ≤ 10 cells except on the two worst fox sheets. The single-context
+  sheet fully solved the consistency problem it was designed for.
+- **Depth needs a cap, not aspect correction.** The aspect-true
+  rescale (hull2ZScale in gen.json) measured ≈ 1.00 nearly
+  everywhere — the fat depth is what schnell drew, not a
+  normalization artifact. Capping the cross-section's total z extent
+  at 6 (the seed2 round-depth threshold; `-hull2cap6.png` renders,
+  DEPTH_CAP in gen-sheets.ts): duck lands at rough parity with
+  seed4's inflate; **fox is the standout — four legs separated in
+  BOTH x and z with arched openings under the body, a volume no
+  deterministic profile (flat/inflate/round) can produce** — and it
+  came from a "wrong" sheet of two fox profiles, whose intersection
+  is still plausible animal volume; mug is crushed (worse than
+  flat(4) — round objects stay icon-sourced + flat).
+- Net: the sheet route's viable product is **front ∩ depth-capped
+  cross-section (hull2cap6)**, its value concentrated in
+  organic/quadruped nouns. Any scale-up should drop the top slot and
+  hull3 entirely; a 2-view sheet prompt (front + side only) would
+  also likely cut the empty-third failures.
+
+**Next action:** Mike to eyeball `runs/gen2-16char-sheets/renders/`
+(compare `-hull2cap6` vs `-flat4` per candidate; fox-vb-c2 and
+duck-va-c2 are the reference cases) and call whether the quadruped
+win justifies scaling rung-2b. If yes, the shaped next step: a 2-view
+sheet variant (front + side, no top slot) over the benchmark's animal
+nouns, hull2cap6 as the depth treatment, and a `sheet` source kind in
+seed-library.ts — ~$0.003/sheet, per-run sign-off required. Parallel
+lever, independent of sheet quality: render-side shading (stronger
+face separation, contact shadow) attacks the same "extruded" read and
+the deferred QA-gate legibility floor. Earlier candidates stay live:
+flower/ladder retry batch; declare seeding done at 28/30.
