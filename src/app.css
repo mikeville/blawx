@@ -53,8 +53,54 @@ h2 {
   user-select: none;
 }
 
+.run-controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 0;
+  margin-bottom: 4px;
+  border-bottom: 1px solid #e2e2da;
+  flex-wrap: wrap;
+}
+
+.run-controls label {
+  display: inline-flex;
+  gap: 6px;
+  align-items: center;
+  color: #6f6f68;
+}
+
+.run-controls select,
+.run-controls input {
+  font: inherit;
+  font-size: 12px;
+  background: #fff;
+  border: 1px solid #c9c9c2;
+  border-radius: 2px;
+  padding: 2px 6px;
+  color: #1c1c1a;
+}
+
+.run-search {
+  min-width: 220px;
+}
+
+.run-count {
+  color: #9a9a90;
+  font-size: 11px;
+}
+
+.run-controls-spacer {
+  flex: 1;
+}
+
 .run {
-  margin-top: 36px;
+  margin-top: 24px;
+}
+
+.run-collapsed {
+  margin-top: 0;
+  border-bottom: 1px solid #f0f0ea;
 }
 
 .run > header {
@@ -64,13 +110,52 @@ h2 {
   margin-bottom: 14px;
 }
 
+.run-collapsed > header {
+  margin-bottom: 0;
+  padding: 6px 0;
+}
+
+.run-toggle {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 6px;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  color: inherit;
+}
+
+.run-toggle:hover h2 {
+  text-decoration: underline;
+}
+
+.run-caret {
+  color: #9a9a90;
+  font-size: 10px;
+  width: 10px;
+  display: inline-block;
+}
+
 .run-info {
   color: #6f6f68;
   flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .run-info strong {
   color: #1c1c1a;
+}
+
+.run-date {
+  color: #1c1c1a;
+}
+
+.run-label {
+  color: #9a9a90;
 }
 
 button {

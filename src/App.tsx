@@ -205,58 +205,128 @@ function Tile({
   );
 }
 
+function runMean(run: Run): number | null {
+  if (!run.scores) return null;
+  const scored = run.items.filter((i) => run.scores![i.result.noun]);
+  if (scored.length === 0) return null;
+  return (
+    scored.reduce((s, i) => s + VERDICT_VALUE[run.scores![i.result.noun].verdict], 0) /
+    scored.length
+  );
+}
+
+function runGroup(run: Run): string {
+  // First hyphen-delimited token of the id: probe1-16char-fable -> "probe1".
+  // Not perfect but matches the seed/probe/gen/sweep/relift/icon naming.
+  return run.id.split('-')[0] ?? run.id;
+}
+
 function RunSection({
   run,
   blind,
   color,
   showMasks,
+  collapsed,
+  onToggle,
 }: {
   run: Run;
   blind: boolean;
   color: boolean;
   showMasks: boolean;
+  collapsed: boolean;
+  onToggle: () => void;
 }) {
-  const scored = run.scores
-    ? run.items.filter((i) => run.scores![i.result.noun])
-    : [];
-  const mean =
-    scored.length > 0
-      ? scored.reduce((s, i) => s + VERDICT_VALUE[run.scores![i.result.noun].verdict], 0) /
-        scored.length
-      : null;
+  const mean = runMean(run);
   return (
-    <section className="run">
+    <section className={`run${collapsed ? ' run-collapsed' : ''}`}>
       <header>
-        <h2>{run.manifest?.label ?? run.id}</h2>
-        <span className="run-info">
-          {run.manifest?.date} · {run.manifest?.pipeline} · {run.items.length} items
+        <button
+          type="button"
+          className="run-toggle"
+          onClick={onToggle}
+          aria-expanded={!collapsed}
+          title={run.manifest?.label ?? run.id}
+        >
+          <span className="run-caret">{collapsed ? '▸' : '▾'}</span>
+          <h2>{run.id}</h2>
+        </button>
+        <span className="run-info" title={run.manifest?.pipeline}>
+          <span className="run-date">{run.manifest?.date ?? '—'}</span>
+          <span> · {run.items.length} items</span>
           {!blind && mean != null && (
             <strong> · blind-name {Math.round(mean * 100)}%</strong>
+          )}
+          {run.manifest?.label && (
+            <span className="run-label"> · {run.manifest.label}</span>
           )}
         </span>
         <button type="button" onClick={() => void exportRunPngs(run)}>
           export scoring pngs
         </button>
       </header>
-      {run.errors.length > 0 && (
+      {!collapsed && run.errors.length > 0 && (
         <p className="errors">unparseable: {run.errors.join('; ')}</p>
       )}
-      <div className="grid">
-        {run.items.map((item, i) => (
-          <Tile
-            key={item.file}
-            item={item}
-            index={i}
-            runId={run.id}
-            blind={blind}
-            color={color}
-            showMasks={showMasks}
-            score={run.scores?.[item.result.noun]}
-          />
-        ))}
-      </div>
+      {!collapsed && (
+        <div className="grid">
+          {run.items.map((item, i) => (
+            <Tile
+              key={item.file}
+              item={item}
+              index={i}
+              runId={run.id}
+              blind={blind}
+              color={color}
+              showMasks={showMasks}
+              score={run.scores?.[item.result.noun]}
+            />
+          ))}
+        </div>
+      )}
     </section>
   );
+}
+
+type SortKey = 'date-desc' | 'date-asc' | 'id-asc' | 'score-desc' | 'items-desc';
+
+const SORT_LABELS: Record<SortKey, string> = {
+  'date-desc': 'date (newest)',
+  'date-asc': 'date (oldest)',
+  'id-asc': 'id (a-z)',
+  'score-desc': 'blind-name score',
+  'items-desc': 'item count',
+};
+
+function sortRuns(runs: Run[], key: SortKey): Run[] {
+  const copy = [...runs];
+  copy.sort((a, b) => {
+    switch (key) {
+      case 'date-desc':
+      case 'date-asc': {
+        const ad = a.manifest?.date ?? '';
+        const bd = b.manifest?.date ?? '';
+        // Missing dates sink either way.
+        if (!ad && !bd) return a.id.localeCompare(b.id);
+        if (!ad) return 1;
+        if (!bd) return -1;
+        const cmp = ad.localeCompare(bd);
+        return key === 'date-desc' ? -cmp : cmp;
+      }
+      case 'id-asc':
+        return a.id.localeCompare(b.id);
+      case 'score-desc': {
+        const am = runMean(a);
+        const bm = runMean(b);
+        if (am == null && bm == null) return a.id.localeCompare(b.id);
+        if (am == null) return 1;
+        if (bm == null) return -1;
+        return bm - am;
+      }
+      case 'items-desc':
+        return b.items.length - a.items.length || a.id.localeCompare(b.id);
+    }
+  });
+  return copy;
 }
 
 export default function App() {
@@ -265,9 +335,44 @@ export default function App() {
     () => runs.some((run) => run.items.some((i) => i.result.meta?.masks)),
     [runs],
   );
+  const groups = useMemo(() => {
+    const s = new Set<string>();
+    for (const r of runs) s.add(runGroup(r));
+    return [...s].sort();
+  }, [runs]);
+
   const [blind, setBlind] = useState(false);
   const [color, setColor] = useState(false);
   const [showMasks, setShowMasks] = useState(hasMasks);
+  const [sort, setSort] = useState<SortKey>('date-desc');
+  const [query, setQuery] = useState('');
+  const [groupFilter, setGroupFilter] = useState<string>('all');
+  // Default: all collapsed, so the sorted/filtered list is scannable at a glance.
+  // Track which run ids are open; empty set = all collapsed.
+  const [openIds, setOpenIds] = useState<Set<string>>(() => new Set());
+
+  const filteredSorted = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    const filtered = runs.filter((r) => {
+      if (groupFilter !== 'all' && runGroup(r) !== groupFilter) return false;
+      if (!q) return true;
+      const hay = `${r.id} ${r.manifest?.label ?? ''} ${r.manifest?.pipeline ?? ''}`.toLowerCase();
+      return hay.includes(q);
+    });
+    return sortRuns(filtered, sort);
+  }, [runs, sort, query, groupFilter]);
+
+  const toggleRun = (id: string) => {
+    setOpenIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  };
+  const expandAll = () => setOpenIds(new Set(filteredSorted.map((r) => r.id)));
+  const collapseAll = () => setOpenIds(new Set());
+
   return (
     <main>
       <header className="page-header">
@@ -293,14 +398,68 @@ export default function App() {
           )}
         </div>
       </header>
+      <div className="run-controls">
+        <label>
+          sort
+          <select value={sort} onChange={(e) => setSort(e.target.value as SortKey)}>
+            {(Object.keys(SORT_LABELS) as SortKey[]).map((k) => (
+              <option key={k} value={k}>
+                {SORT_LABELS[k]}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label>
+          group
+          <select value={groupFilter} onChange={(e) => setGroupFilter(e.target.value)}>
+            <option value="all">all ({runs.length})</option>
+            {groups.map((g) => {
+              const n = runs.filter((r) => runGroup(r) === g).length;
+              return (
+                <option key={g} value={g}>
+                  {g} ({n})
+                </option>
+              );
+            })}
+          </select>
+        </label>
+        <input
+          type="search"
+          placeholder="filter by id / label / pipeline"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          className="run-search"
+        />
+        <span className="run-count">
+          {filteredSorted.length} / {runs.length}
+        </span>
+        <div className="run-controls-spacer" />
+        <button type="button" onClick={expandAll}>
+          expand all
+        </button>
+        <button type="button" onClick={collapseAll}>
+          collapse all
+        </button>
+      </div>
       {runs.length === 0 && (
         <p className="empty">
           No runs found. Drop result JSON into <code>runs/&lt;run-id&gt;/</code> —
           see <code>runs/README.md</code>.
         </p>
       )}
-      {runs.map((run) => (
-        <RunSection key={run.id} run={run} blind={blind} color={color} showMasks={showMasks} />
+      {runs.length > 0 && filteredSorted.length === 0 && (
+        <p className="empty">No runs match the current filter.</p>
+      )}
+      {filteredSorted.map((run) => (
+        <RunSection
+          key={run.id}
+          run={run}
+          blind={blind}
+          color={color}
+          showMasks={showMasks}
+          collapsed={!openIds.has(run.id)}
+          onToggle={() => toggleRun(run.id)}
+        />
       ))}
     </main>
   );
