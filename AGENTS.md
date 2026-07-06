@@ -87,6 +87,24 @@ choice.
 None as a labeled dataset. The `baseline-*` snapshots above are the
 visual reference set — treat them as "this is what bad looks like."
 
+## Run metadata (required)
+
+Every `runs/<id>/` directory intended to appear in the contact-sheet
+viewer **must** contain a `run.json` with at least `id`, `label`,
+`date` (ISO `YYYY-MM-DD`), and `pipeline`. The viewer sorts, groups,
+and filters on these fields — a missing manifest shows up as a
+metadata-less row (dash date, sink to the bottom on date sort) and
+breaks group-family filtering. Applies to gen batches and source-image
+runs too, not just benchmark rounds — anything that lands in `runs/`.
+`sheet-selftest`-style script sanity checks with no JSON at the
+top level of the run dir are fine to omit, since the viewer never
+picks them up.
+
+Any script or workflow that creates a new `runs/<id>/` directory
+should write `run.json` in the same pass. See existing manifests for
+tone (label is a short human name; pipeline is a one-sentence
+description of the process, not a novel).
+
 ## Status
 
 **Phase 1a benchmark harness: built and verified (2026-07-03).**

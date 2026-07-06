@@ -36,8 +36,12 @@ h2 {
   align-items: baseline;
   justify-content: space-between;
   border-bottom: 1px solid #1c1c1a;
-  padding-bottom: 12px;
-  margin-bottom: 8px;
+  padding: 12px 0;
+  margin-bottom: 0;
+  position: sticky;
+  top: 0;
+  background: #fcfcfa;
+  z-index: 3;
 }
 
 .controls {
@@ -61,6 +65,11 @@ h2 {
   margin-bottom: 4px;
   border-bottom: 1px solid #e2e2da;
   flex-wrap: wrap;
+  position: sticky;
+  /* Sits directly under .page-header (measured ~47px tall). */
+  top: 47px;
+  background: #fcfcfa;
+  z-index: 2;
 }
 
 .run-controls label {
