@@ -900,16 +900,63 @@ probe5-16char-sonnet. Synthesis against the recorded evidence:
   prices — inside the $0.01–0.02 production target. Library seeding
   via subscription subagents stays $0 actual.
 
-**Next action:** candidate probe, pending Mike's sign-off on the
-framing (hypothesis: model-designed depth over sourced fronts is the
-missing quality axis; $0 actual, subscription subagents): re-run the
-icon3 route over ~6 seed4 canonical fronts spanning body plans (fox,
-duck, cat + mug, rocket, table), Sonnet draws side/top conditioned on
-the verbatim front through retry-feedback with --trust-front and
---max-depth, strict lift, render into a run dir for eyeball A/B
-against seed4's inflate/flat treatments. Verdict instrument: Mike's
-eyeball only (blind-naming is calibrated-broken). Secondary open
-axis, untested and unpriced: grid resolution (everything so far is
-16³; the benchmark plan always contemplated 32³, where fronts survive
-downsampling with far more feature detail). Earlier candidates stay
-live: flower/ladder retry batch; declare seeding done at 28/30.
+**Conditioned-depth probe executed (2026-07-06, $0 actual, Claude Code
+Sonnet subscription subagents): `runs/probe6-16char-sonnetdepth`.**
+The icon3 route at n=6 with the post-icon3 tooling: seed4 canonical
+fronts (fox, duck, cat, mug, rocket ship, table) held verbatim in a
+new `depth-draw-v2` prompt (`scripts/make-probe6-prompts.ts` — front
+given, per-part depth instruction, depth cap 6, dog worked example
+with a note defusing its rectangular top view), single-shot Sonnet →
+`retry-feedback.ts --trust-front --max-depth=6` → conversation-resumed
+retry → strict lift → `convert-response.ts` (which now records
+`meta.masks`, so the run renders masks in the viewer like relifted
+runs). Mechanics findings:
+
+- All six call-1s were mechanically broken (bounds drift everywhere;
+  the `--max-depth` second-profile check fired on 4/6). But the
+  trust-front check never fired: **6/6 reproduced the given front
+  verbatim on call 1** — copying a sourced mask is a solved sub-task
+  at Sonnet, unlike designing one.
+- One deterministic retry fixed 4/6 outright. duck and mug came back
+  with a NEW failure mode: top view drawn **z-mirrored** (footprint on
+  the back rows, disagreeing with the side view's z cells). One more
+  targeted feedback round (validator text + an explicit "first row =
+  back" reminder) fixed both. Net 6/6 validator-clean, zero malformed
+  rows, zero reprojection loss; duck/mug were 3-call.
+- The z-mirror is NOT repaired by bbox alignment — alignBboxes
+  reconciled it by *stretching* duck/mug to full-16-deep extrusions
+  (2214-voxel mug), which would have poisoned the A/B; the variant dir
+  was discarded. The deterministic fix if this route ships is a z-flip
+  orientation search (precedent: gen-sheets' 8-way flip search), not
+  bbox.
+- The top-slab advisory false-positives on genuinely rectangular
+  objects (fired on the table's final answer, which is correct as
+  drawn); it's advisory-only so nothing broke, but a production loop
+  would want a per-category exemption.
+- Hypothetical cost at Sonnet list prices: ~835 in / ~221 out per
+  call → ≈$0.012/term 2-call, ≈$0.018 3-call — inside the $0.01–0.02
+  target, at the top end.
+
+Fable eyeball vs seed4 (scoring PNGs; Mike's viewer verdict is the
+instrument that counts): the clear wins are the STRUCTURAL nouns —
+table is the best A/B delta in the project (four legs separated in
+both x and z under an overhanging top vs seed4-flat(6)'s two slab
+legs; reads as a real isometric table), rocket ship gains separated
+landing fins and a shaped taper vs the flat(4) slab. Mug is close to
+seed4 (chunkier, rim visible, saucer corners tapered; handle hole
+survives). The animals improve only modestly: fox/duck/cat get
+tapered footprints and per-part depth but keep every staircase the
+front edge dictates — the front-edge-smoothness ceiling recorded on
+seed4 applies unchanged. Pattern echoes icon2/icon3: model-designed
+depth differentiates most where the object's cross-section varies
+semantically (legs, fins), least where inflate already approximates it
+(bodies).
+
+**Next action:** Mike eyeballs `probe6-16char-sonnetdepth` against
+`seed4-16char-mixed` in the contact-sheet viewer (same six nouns:
+cat, duck, fox, mug, rocket ship, table) — verdict on the
+conditioned-depth hypothesis (model-designed depth over sourced
+fronts as the missing quality axis). Secondary open axis, untested
+and unpriced: grid resolution (everything so far is 16³; the plan
+always contemplated 32³). Earlier candidates stay live: flower/ladder
+retry batch; declare seeding done at 28/30.
