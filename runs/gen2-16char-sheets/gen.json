@@ -1,0 +1,1673 @@
+{
+  "id": "gen2-16char-sheets",
+  "date": "2026-07-06",
+  "provider": "replicate",
+  "model": "black-forest-labs/FLUX.1-schnell",
+  "candidates": [
+    {
+      "noun": "duck",
+      "variant": "a",
+      "seed": 1,
+      "prompt": "orthographic model sheet of a duck standing: three flat solid black silhouettes side by side on a pure white background, left to right: front view seen head-on, side profile view, top view seen from directly above, same scale, minimal flat icon style, no labels, no outlines, no shading, no text",
+      "ok": true,
+      "note": "reused existing raw (skip-existing)",
+      "compliance": {
+        "gutter1InkFraction": 0,
+        "gutter2InkFraction": 0.08056640625,
+        "flagGutter": true,
+        "front": {
+          "empty": false,
+          "componentCount": 2,
+          "largestComponentFraction": 0.9897959183673469,
+          "inkAspectRatio": 0.8897485493230174,
+          "flagFragmented": false
+        },
+        "side": {
+          "empty": false,
+          "componentCount": 1,
+          "largestComponentFraction": 1,
+          "inkAspectRatio": 0.39539347408829173,
+          "flagFragmented": false
+        },
+        "top": {
+          "empty": false,
+          "componentCount": 1,
+          "largestComponentFraction": 1,
+          "inkAspectRatio": 1.6041666666666667,
+          "flagFragmented": false
+        },
+        "compliant": false
+      },
+      "orientation": {
+        "flips": {
+          "sideZ": false,
+          "topZ": false,
+          "topX": false
+        },
+        "lossBeforeRepair": {
+          "front": 0,
+          "side": 0.010638297872340425,
+          "top": 0
+        }
+      },
+      "repair": {
+        "frontCellsRestored": 0,
+        "sideCellsAdded": 0,
+        "topCellsAdded": 0
+      },
+      "voxelCounts": {
+        "hull3": 623,
+        "hull2": 476,
+        "hull2at": 476,
+        "hull2cap6": 476,
+        "flat4": 392
+      },
+      "hull2ZScale": 1
+    },
+    {
+      "noun": "duck",
+      "variant": "a",
+      "seed": 2,
+      "prompt": "orthographic model sheet of a duck standing: three flat solid black silhouettes side by side on a pure white background, left to right: front view seen head-on, side profile view, top view seen from directly above, same scale, minimal flat icon style, no labels, no outlines, no shading, no text",
+      "ok": true,
+      "note": "reused existing raw (skip-existing)",
+      "compliance": {
+        "gutter1InkFraction": 0.00654296875,
+        "gutter2InkFraction": 0,
+        "flagGutter": false,
+        "front": {
+          "empty": false,
+          "componentCount": 1,
+          "largestComponentFraction": 1,
+          "inkAspectRatio": 0.6526104417670683,
+          "flagFragmented": false
+        },
+        "side": {
+          "empty": false,
+          "componentCount": 4,
+          "largestComponentFraction": 0.9438202247191011,
+          "inkAspectRatio": 0.6554455445544555,
+          "flagFragmented": false
+        },
+        "top": {
+          "empty": false,
+          "componentCount": 1,
+          "largestComponentFraction": 1,
+          "inkAspectRatio": 1.2422145328719723,
+          "flagFragmented": false
+        },
+        "compliant": true
+      },
+      "orientation": {
+        "flips": {
+          "sideZ": false,
+          "topZ": false,
+          "topX": false
+        },
+        "lossBeforeRepair": {
+          "front": 0.015151515151515152,
+          "side": 0.017857142857142856,
+          "top": 0
+        }
+      },
+      "repair": {
+        "frontCellsRestored": 2,
+        "sideCellsAdded": 0,
+        "topCellsAdded": 2
+      },
+      "voxelCounts": {
+        "hull3": 812,
+        "hull2": 611,
+        "hull2at": 611,
+        "hull2cap6": 363,
+        "flat4": 320
+      },
+      "hull2ZScale": 1
+    },
+    {
+      "noun": "duck",
+      "variant": "a",
+      "seed": 3,
+      "prompt": "orthographic model sheet of a duck standing: three flat solid black silhouettes side by side on a pure white background, left to right: front view seen head-on, side profile view, top view seen from directly above, same scale, minimal flat icon style, no labels, no outlines, no shading, no text",
+      "ok": true,
+      "note": "reused existing raw (skip-existing)",
+      "compliance": {
+        "gutter1InkFraction": 0.44833984375,
+        "gutter2InkFraction": 0.277587890625,
+        "flagGutter": true,
+        "front": {
+          "empty": false,
+          "componentCount": 2,
+          "largestComponentFraction": 0.9183673469387755,
+          "inkAspectRatio": 1.0847457627118644,
+          "flagFragmented": false
+        },
+        "side": {
+          "empty": false,
+          "componentCount": 2,
+          "largestComponentFraction": 0.6901408450704225,
+          "inkAspectRatio": 0.7541666666666667,
+          "flagFragmented": true
+        },
+        "top": {
+          "empty": false,
+          "componentCount": 1,
+          "largestComponentFraction": 1,
+          "inkAspectRatio": 0.42729970326409494,
+          "flagFragmented": false
+        },
+        "compliant": false
+      },
+      "orientation": {
+        "flips": {
+          "sideZ": false,
+          "topZ": false,
+          "topX": false
+        },
+        "lossBeforeRepair": {
+          "front": 0,
+          "side": 0.14864864864864866,
+          "top": 0.4304635761589404
+        }
+      },
+      "repair": {
+        "frontCellsRestored": 0,
+        "sideCellsAdded": 0,
+        "topCellsAdded": 0
+      },
+      "voxelCounts": {
+        "hull3": 290,
+        "hull2": 362,
+        "hull2at": 362,
+        "hull2cap6": 162,
+        "flat4": 196
+      },
+      "hull2ZScale": 1
+    },
+    {
+      "noun": "duck",
+      "variant": "a",
+      "seed": 4,
+      "prompt": "orthographic model sheet of a duck standing: three flat solid black silhouettes side by side on a pure white background, left to right: front view seen head-on, side profile view, top view seen from directly above, same scale, minimal flat icon style, no labels, no outlines, no shading, no text",
+      "ok": true,
+      "note": "reused existing raw (skip-existing)",
+      "compliance": {
+        "gutter1InkFraction": 0.121435546875,
+        "gutter2InkFraction": 0.157568359375,
+        "flagGutter": true,
+        "front": {
+          "empty": false,
+          "componentCount": 3,
+          "largestComponentFraction": 0.8620689655172413,
+          "inkAspectRatio": 1.0733752620545074,
+          "flagFragmented": false
+        },
+        "side": {
+          "empty": false,
+          "componentCount": 1,
+          "largestComponentFraction": 1,
+          "inkAspectRatio": 1.0458937198067633,
+          "flagFragmented": false
+        },
+        "top": {
+          "empty": false,
+          "componentCount": 2,
+          "largestComponentFraction": 0.9873417721518988,
+          "inkAspectRatio": 0.7887323943661971,
+          "flagFragmented": false
+        },
+        "compliant": false
+      },
+      "orientation": {
+        "flips": {
+          "sideZ": false,
+          "topZ": false,
+          "topX": false
+        },
+        "lossBeforeRepair": {
+          "front": 0.05172413793103448,
+          "side": 0.019230769230769232,
+          "top": 0.39285714285714285
+        }
+      },
+      "repair": {
+        "frontCellsRestored": 3,
+        "sideCellsAdded": 0,
+        "topCellsAdded": 3
+      },
+      "voxelCounts": {
+        "hull3": 366,
+        "hull2": 558,
+        "hull2at": 560,
+        "hull2cap6": 207,
+        "flat4": 232
+      },
+      "hull2ZScale": 1.077
+    },
+    {
+      "noun": "duck",
+      "variant": "b",
+      "seed": 1,
+      "prompt": "three orthographic solid black silhouettes of a duck standing on pure white, arranged left to right: FRONT view, SIDE view, TOP-DOWN view, each silhouette centered in its third, same scale, no labels, no outlines, no shading, no text",
+      "ok": true,
+      "note": "reused existing raw (skip-existing)",
+      "compliance": {
+        "gutter1InkFraction": 0,
+        "gutter2InkFraction": 0.1162109375,
+        "flagGutter": true,
+        "front": {
+          "empty": false,
+          "componentCount": 1,
+          "largestComponentFraction": 1,
+          "inkAspectRatio": 0.8555133079847909,
+          "flagFragmented": false
+        },
+        "side": {
+          "empty": false,
+          "componentCount": 1,
+          "largestComponentFraction": 1,
+          "inkAspectRatio": 0.3977272727272727,
+          "flagFragmented": false
+        },
+        "top": {
+          "empty": false,
+          "componentCount": 2,
+          "largestComponentFraction": 0.875,
+          "inkAspectRatio": 0.9934640522875817,
+          "flagFragmented": false
+        },
+        "compliant": false
+      },
+      "orientation": {
+        "flips": {
+          "sideZ": false,
+          "topZ": false,
+          "topX": false
+        },
+        "lossBeforeRepair": {
+          "front": 0,
+          "side": 0.2222222222222222,
+          "top": 0
+        }
+      },
+      "repair": {
+        "frontCellsRestored": 0,
+        "sideCellsAdded": 0,
+        "topCellsAdded": 0
+      },
+      "voxelCounts": {
+        "hull3": 581,
+        "hull2": 483,
+        "hull2at": 483,
+        "hull2cap6": 483,
+        "flat4": 412
+      },
+      "hull2ZScale": 1
+    },
+    {
+      "noun": "duck",
+      "variant": "b",
+      "seed": 2,
+      "prompt": "three orthographic solid black silhouettes of a duck standing on pure white, arranged left to right: FRONT view, SIDE view, TOP-DOWN view, each silhouette centered in its third, same scale, no labels, no outlines, no shading, no text",
+      "ok": true,
+      "note": "reused existing raw (skip-existing)",
+      "compliance": {
+        "gutter1InkFraction": 0,
+        "gutter2InkFraction": 0,
+        "flagGutter": false,
+        "front": {
+          "empty": false,
+          "componentCount": 1,
+          "largestComponentFraction": 1,
+          "inkAspectRatio": 0.5600706713780919,
+          "flagFragmented": false
+        },
+        "side": {
+          "empty": false,
+          "componentCount": 2,
+          "largestComponentFraction": 0.9146341463414634,
+          "inkAspectRatio": 0.5808170515097691,
+          "flagFragmented": false
+        },
+        "top": {
+          "empty": false,
+          "componentCount": 1,
+          "largestComponentFraction": 1,
+          "inkAspectRatio": 0.6697247706422018,
+          "flagFragmented": false
+        },
+        "compliant": true
+      },
+      "orientation": {
+        "flips": {
+          "sideZ": false,
+          "topZ": false,
+          "topX": true
+        },
+        "lossBeforeRepair": {
+          "front": 0.04054054054054054,
+          "side": 0.05128205128205128,
+          "top": 0.014084507042253521
+        }
+      },
+      "repair": {
+        "frontCellsRestored": 3,
+        "sideCellsAdded": 1,
+        "topCellsAdded": 2
+      },
+      "voxelCounts": {
+        "hull3": 448,
+        "hull2": 432,
+        "hull2at": 356,
+        "hull2cap6": 255,
+        "flat4": 212
+      },
+      "hull2ZScale": 0.857
+    },
+    {
+      "noun": "duck",
+      "variant": "b",
+      "seed": 3,
+      "prompt": "three orthographic solid black silhouettes of a duck standing on pure white, arranged left to right: FRONT view, SIDE view, TOP-DOWN view, each silhouette centered in its third, same scale, no labels, no outlines, no shading, no text",
+      "ok": true,
+      "note": "reused existing raw (skip-existing)",
+      "compliance": {
+        "gutter1InkFraction": 0.44755859375,
+        "gutter2InkFraction": 0.21298828125,
+        "flagGutter": true,
+        "front": {
+          "empty": false,
+          "componentCount": 2,
+          "largestComponentFraction": 0.8727272727272727,
+          "inkAspectRatio": 0.9980506822612085,
+          "flagFragmented": false
+        },
+        "side": {
+          "empty": false,
+          "componentCount": 2,
+          "largestComponentFraction": 0.7205882352941176,
+          "inkAspectRatio": 0.7833655705996132,
+          "flagFragmented": false
+        },
+        "top": {
+          "empty": false,
+          "componentCount": 1,
+          "largestComponentFraction": 1,
+          "inkAspectRatio": 0.38996138996138996,
+          "flagFragmented": false
+        },
+        "compliant": false
+      },
+      "orientation": {
+        "flips": {
+          "sideZ": false,
+          "topZ": false,
+          "topX": true
+        },
+        "lossBeforeRepair": {
+          "front": 0.05454545454545454,
+          "side": 0.21176470588235294,
+          "top": 0.34108527131782945
+        }
+      },
+      "repair": {
+        "frontCellsRestored": 3,
+        "sideCellsAdded": 0,
+        "topCellsAdded": 1
+      },
+      "voxelCounts": {
+        "hull3": 307,
+        "hull2": 414,
+        "hull2at": 464,
+        "hull2cap6": 173,
+        "flat4": 220
+      },
+      "hull2ZScale": 1.167
+    },
+    {
+      "noun": "duck",
+      "variant": "b",
+      "seed": 4,
+      "prompt": "three orthographic solid black silhouettes of a duck standing on pure white, arranged left to right: FRONT view, SIDE view, TOP-DOWN view, each silhouette centered in its third, same scale, no labels, no outlines, no shading, no text",
+      "ok": true,
+      "note": "reused existing raw (skip-existing)",
+      "compliance": {
+        "gutter1InkFraction": 0.115771484375,
+        "gutter2InkFraction": 0.142724609375,
+        "flagGutter": true,
+        "front": {
+          "empty": false,
+          "componentCount": 3,
+          "largestComponentFraction": 0.873015873015873,
+          "inkAspectRatio": 1.0666666666666667,
+          "flagFragmented": false
+        },
+        "side": {
+          "empty": false,
+          "componentCount": 1,
+          "largestComponentFraction": 1,
+          "inkAspectRatio": 1.2491349480968859,
+          "flagFragmented": false
+        },
+        "top": {
+          "empty": false,
+          "componentCount": 2,
+          "largestComponentFraction": 0.9876543209876543,
+          "inkAspectRatio": 0.7967479674796748,
+          "flagFragmented": false
+        },
+        "compliant": false
+      },
+      "orientation": {
+        "flips": {
+          "sideZ": false,
+          "topZ": true,
+          "topX": false
+        },
+        "lossBeforeRepair": {
+          "front": 0.07936507936507936,
+          "side": 0.033783783783783786,
+          "top": 0.34513274336283184
+        }
+      },
+      "repair": {
+        "frontCellsRestored": 5,
+        "sideCellsAdded": 0,
+        "topCellsAdded": 3
+      },
+      "voxelCounts": {
+        "hull3": 468,
+        "hull2": 710,
+        "hull2at": 796,
+        "hull2cap6": 281,
+        "flat4": 252
+      },
+      "hull2ZScale": 1.4
+    },
+    {
+      "noun": "fox",
+      "variant": "a",
+      "seed": 1,
+      "prompt": "orthographic model sheet of a fox standing: three flat solid black silhouettes side by side on a pure white background, left to right: front view seen head-on, side profile view, top view seen from directly above, same scale, minimal flat icon style, no labels, no outlines, no shading, no text",
+      "ok": true,
+      "note": "reused existing raw (skip-existing)",
+      "compliance": {
+        "gutter1InkFraction": 0,
+        "gutter2InkFraction": 0.32646484375,
+        "flagGutter": true,
+        "front": {
+          "empty": false,
+          "componentCount": 1,
+          "largestComponentFraction": 1,
+          "inkAspectRatio": 1.2379746835443037,
+          "flagFragmented": false
+        },
+        "side": {
+          "empty": false,
+          "componentCount": 1,
+          "largestComponentFraction": 1,
+          "inkAspectRatio": 0.5400410677618069,
+          "flagFragmented": false
+        },
+        "top": {
+          "empty": false,
+          "componentCount": 1,
+          "largestComponentFraction": 1,
+          "inkAspectRatio": 0.3137755102040816,
+          "flagFragmented": false
+        },
+        "compliant": false
+      },
+      "orientation": {
+        "flips": {
+          "sideZ": false,
+          "topZ": false,
+          "topX": true
+        },
+        "lossBeforeRepair": {
+          "front": 0.05161290322580645,
+          "side": 0,
+          "top": 0
+        }
+      },
+      "repair": {
+        "frontCellsRestored": 8,
+        "sideCellsAdded": 0,
+        "topCellsAdded": 4
+      },
+      "voxelCounts": {
+        "hull3": 1084,
+        "hull2": 818,
+        "hull2at": 634,
+        "hull2cap6": 636,
+        "flat4": 472
+      },
+      "hull2ZScale": 0.786
+    },
+    {
+      "noun": "fox",
+      "variant": "a",
+      "seed": 2,
+      "prompt": "orthographic model sheet of a fox standing: three flat solid black silhouettes side by side on a pure white background, left to right: front view seen head-on, side profile view, top view seen from directly above, same scale, minimal flat icon style, no labels, no outlines, no shading, no text",
+      "ok": true,
+      "note": "reused existing raw (skip-existing)",
+      "compliance": {
+        "gutter1InkFraction": 0.586865234375,
+        "gutter2InkFraction": 0.258544921875,
+        "flagGutter": true,
+        "front": {
+          "empty": false,
+          "componentCount": 2,
+          "largestComponentFraction": 0.8936170212765957,
+          "inkAspectRatio": 1.0260521042084167,
+          "flagFragmented": false
+        },
+        "side": {
+          "empty": false,
+          "componentCount": 1,
+          "largestComponentFraction": 1,
+          "inkAspectRatio": 0.9469387755102041,
+          "flagFragmented": false
+        },
+        "top": {
+          "empty": false,
+          "componentCount": 1,
+          "largestComponentFraction": 1,
+          "inkAspectRatio": 1.2403314917127073,
+          "flagFragmented": false
+        },
+        "compliant": false
+      },
+      "orientation": {
+        "flips": {
+          "sideZ": false,
+          "topZ": true,
+          "topX": false
+        },
+        "lossBeforeRepair": {
+          "front": 0,
+          "side": 0.006993006993006993,
+          "top": 0.028735632183908046
+        }
+      },
+      "repair": {
+        "frontCellsRestored": 0,
+        "sideCellsAdded": 0,
+        "topCellsAdded": 0
+      },
+      "voxelCounts": {
+        "hull3": 1126,
+        "hull2": 1590,
+        "hull2at": 1590,
+        "hull2cap6": 604,
+        "flat4": 564
+      },
+      "hull2ZScale": 1
+    },
+    {
+      "noun": "fox",
+      "variant": "a",
+      "seed": 3,
+      "prompt": "orthographic model sheet of a fox standing: three flat solid black silhouettes side by side on a pure white background, left to right: front view seen head-on, side profile view, top view seen from directly above, same scale, minimal flat icon style, no labels, no outlines, no shading, no text",
+      "ok": true,
+      "note": "reused existing raw (skip-existing)",
+      "compliance": {
+        "gutter1InkFraction": 0.201220703125,
+        "gutter2InkFraction": 0.167919921875,
+        "flagGutter": true,
+        "front": {
+          "empty": false,
+          "componentCount": 1,
+          "largestComponentFraction": 1,
+          "inkAspectRatio": 1.4182825484764543,
+          "flagFragmented": false
+        },
+        "side": {
+          "empty": false,
+          "componentCount": 3,
+          "largestComponentFraction": 0.863013698630137,
+          "inkAspectRatio": 0.751503006012024,
+          "flagFragmented": false
+        },
+        "top": {
+          "empty": false,
+          "componentCount": 1,
+          "largestComponentFraction": 1,
+          "inkAspectRatio": 0.888402625820569,
+          "flagFragmented": false
+        },
+        "compliant": false
+      },
+      "orientation": {
+        "flips": {
+          "sideZ": false,
+          "topZ": true,
+          "topX": true
+        },
+        "lossBeforeRepair": {
+          "front": 0.01694915254237288,
+          "side": 0.13924050632911392,
+          "top": 0.20618556701030927
+        }
+      },
+      "repair": {
+        "frontCellsRestored": 2,
+        "sideCellsAdded": 0,
+        "topCellsAdded": 2
+      },
+      "voxelCounts": {
+        "hull3": 419,
+        "hull2": 685,
+        "hull2at": 442,
+        "hull2cap6": 299,
+        "flat4": 332
+      },
+      "hull2ZScale": 0.714
+    },
+    {
+      "noun": "fox",
+      "variant": "a",
+      "seed": 4,
+      "prompt": "orthographic model sheet of a fox standing: three flat solid black silhouettes side by side on a pure white background, left to right: front view seen head-on, side profile view, top view seen from directly above, same scale, minimal flat icon style, no labels, no outlines, no shading, no text",
+      "ok": true,
+      "note": "reused existing raw (skip-existing)",
+      "compliance": {
+        "gutter1InkFraction": 0.610693359375,
+        "gutter2InkFraction": 0,
+        "flagGutter": true,
+        "front": {
+          "empty": false,
+          "componentCount": 4,
+          "largestComponentFraction": 0.625,
+          "inkAspectRatio": 0.7786259541984732,
+          "flagFragmented": true
+        },
+        "side": {
+          "empty": false,
+          "componentCount": 1,
+          "largestComponentFraction": 1,
+          "inkAspectRatio": 0.851145038167939,
+          "flagFragmented": false
+        },
+        "top": {
+          "empty": false,
+          "componentCount": 2,
+          "largestComponentFraction": 0.9850746268656716,
+          "inkAspectRatio": 0.628131021194605,
+          "flagFragmented": false
+        },
+        "compliant": false
+      },
+      "orientation": {
+        "flips": {
+          "sideZ": false,
+          "topZ": true,
+          "topX": true
+        },
+        "lossBeforeRepair": {
+          "front": 0.4305555555555556,
+          "side": 0.21568627450980393,
+          "top": 0.5510204081632653
+        }
+      },
+      "repair": {
+        "frontCellsRestored": 31,
+        "sideCellsAdded": 0,
+        "topCellsAdded": 14
+      },
+      "voxelCounts": {
+        "hull3": 384,
+        "hull2": 497,
+        "hull2at": 497,
+        "hull2cap6": 247,
+        "flat4": 288
+      },
+      "hull2ZScale": 1
+    },
+    {
+      "noun": "fox",
+      "variant": "b",
+      "seed": 1,
+      "prompt": "three orthographic solid black silhouettes of a fox standing on pure white, arranged left to right: FRONT view, SIDE view, TOP-DOWN view, each silhouette centered in its third, same scale, no labels, no outlines, no shading, no text",
+      "ok": true,
+      "note": "reused existing raw (skip-existing)",
+      "compliance": {
+        "gutter1InkFraction": 0.195556640625,
+        "gutter2InkFraction": 0.268798828125,
+        "flagGutter": true,
+        "front": {
+          "empty": false,
+          "componentCount": 1,
+          "largestComponentFraction": 1,
+          "inkAspectRatio": 1.2219570405727924,
+          "flagFragmented": false
+        },
+        "side": {
+          "empty": false,
+          "componentCount": 2,
+          "largestComponentFraction": 0.9154929577464789,
+          "inkAspectRatio": 0.5954022988505747,
+          "flagFragmented": false
+        },
+        "top": {
+          "empty": false,
+          "componentCount": 1,
+          "largestComponentFraction": 1,
+          "inkAspectRatio": 0.2546916890080429,
+          "flagFragmented": false
+        },
+        "compliant": false
+      },
+      "orientation": {
+        "flips": {
+          "sideZ": false,
+          "topZ": false,
+          "topX": true
+        },
+        "lossBeforeRepair": {
+          "front": 0.013422818791946308,
+          "side": 0.010638297872340425,
+          "top": 0.26666666666666666
+        }
+      },
+      "repair": {
+        "frontCellsRestored": 2,
+        "sideCellsAdded": 0,
+        "topCellsAdded": 1
+      },
+      "voxelCounts": {
+        "hull3": 1065,
+        "hull2": 872,
+        "hull2at": 755,
+        "hull2cap6": 529,
+        "flat4": 492
+      },
+      "hull2ZScale": 0.857
+    },
+    {
+      "noun": "fox",
+      "variant": "b",
+      "seed": 2,
+      "prompt": "three orthographic solid black silhouettes of a fox standing on pure white, arranged left to right: FRONT view, SIDE view, TOP-DOWN view, each silhouette centered in its third, same scale, no labels, no outlines, no shading, no text",
+      "ok": true,
+      "note": "reused existing raw (skip-existing)",
+      "compliance": {
+        "gutter1InkFraction": 0.58251953125,
+        "gutter2InkFraction": 0.36015625,
+        "flagGutter": true,
+        "front": {
+          "empty": false,
+          "componentCount": 2,
+          "largestComponentFraction": 0.8791946308724832,
+          "inkAspectRatio": 1.0281124497991967,
+          "flagFragmented": false
+        },
+        "side": {
+          "empty": false,
+          "componentCount": 1,
+          "largestComponentFraction": 1,
+          "inkAspectRatio": 0.9754601226993865,
+          "flagFragmented": false
+        },
+        "top": {
+          "empty": false,
+          "componentCount": 1,
+          "largestComponentFraction": 1,
+          "inkAspectRatio": 0.9708222811671088,
+          "flagFragmented": false
+        },
+        "compliant": false
+      },
+      "orientation": {
+        "flips": {
+          "sideZ": false,
+          "topZ": false,
+          "topX": true
+        },
+        "lossBeforeRepair": {
+          "front": 0.040268456375838924,
+          "side": 0,
+          "top": 0.0055248618784530384
+        }
+      },
+      "repair": {
+        "frontCellsRestored": 6,
+        "sideCellsAdded": 0,
+        "topCellsAdded": 2
+      },
+      "voxelCounts": {
+        "hull3": 1201,
+        "hull2": 1697,
+        "hull2at": 1697,
+        "hull2cap6": 651,
+        "flat4": 596
+      },
+      "hull2ZScale": 1
+    },
+    {
+      "noun": "fox",
+      "variant": "b",
+      "seed": 3,
+      "prompt": "three orthographic solid black silhouettes of a fox standing on pure white, arranged left to right: FRONT view, SIDE view, TOP-DOWN view, each silhouette centered in its third, same scale, no labels, no outlines, no shading, no text",
+      "ok": true,
+      "note": "reused existing raw (skip-existing)",
+      "compliance": {
+        "gutter1InkFraction": 0.41953125,
+        "gutter2InkFraction": 0.176171875,
+        "flagGutter": true,
+        "front": {
+          "empty": false,
+          "componentCount": 4,
+          "largestComponentFraction": 0.7386363636363636,
+          "inkAspectRatio": 1.0260521042084167,
+          "flagFragmented": false
+        },
+        "side": {
+          "empty": false,
+          "componentCount": 2,
+          "largestComponentFraction": 0.8666666666666667,
+          "inkAspectRatio": 0.7355212355212355,
+          "flagFragmented": false
+        },
+        "top": {
+          "empty": false,
+          "componentCount": 1,
+          "largestComponentFraction": 1,
+          "inkAspectRatio": 0.8946280991735537,
+          "flagFragmented": false
+        },
+        "compliant": false
+      },
+      "orientation": {
+        "flips": {
+          "sideZ": false,
+          "topZ": true,
+          "topX": true
+        },
+        "lossBeforeRepair": {
+          "front": 0,
+          "side": 0.22988505747126436,
+          "top": 0.38461538461538464
+        }
+      },
+      "repair": {
+        "frontCellsRestored": 0,
+        "sideCellsAdded": 0,
+        "topCellsAdded": 0
+      },
+      "voxelCounts": {
+        "hull3": 304,
+        "hull2": 496,
+        "hull2at": 496,
+        "hull2cap6": 268,
+        "flat4": 352
+      },
+      "hull2ZScale": 1
+    },
+    {
+      "noun": "fox",
+      "variant": "b",
+      "seed": 4,
+      "prompt": "three orthographic solid black silhouettes of a fox standing on pure white, arranged left to right: FRONT view, SIDE view, TOP-DOWN view, each silhouette centered in its third, same scale, no labels, no outlines, no shading, no text",
+      "ok": true,
+      "note": "reused existing raw (skip-existing)",
+      "compliance": {
+        "gutter1InkFraction": 0.70361328125,
+        "gutter2InkFraction": 0,
+        "flagGutter": true,
+        "front": {
+          "empty": false,
+          "componentCount": 2,
+          "largestComponentFraction": 0.6421052631578947,
+          "inkAspectRatio": 0.7706766917293233,
+          "flagFragmented": true
+        },
+        "side": {
+          "empty": false,
+          "componentCount": 1,
+          "largestComponentFraction": 1,
+          "inkAspectRatio": 0.868421052631579,
+          "flagFragmented": false
+        },
+        "top": {
+          "empty": false,
+          "componentCount": 2,
+          "largestComponentFraction": 0.9850746268656716,
+          "inkAspectRatio": 0.5658153241650294,
+          "flagFragmented": false
+        },
+        "compliant": false
+      },
+      "orientation": {
+        "flips": {
+          "sideZ": false,
+          "topZ": false,
+          "topX": true
+        },
+        "lossBeforeRepair": {
+          "front": 0.37894736842105264,
+          "side": 0.1134020618556701,
+          "top": 0.4
+        }
+      },
+      "repair": {
+        "frontCellsRestored": 36,
+        "sideCellsAdded": 0,
+        "topCellsAdded": 15
+      },
+      "voxelCounts": {
+        "hull3": 480,
+        "hull2": 653,
+        "hull2at": 653,
+        "hull2cap6": 325,
+        "flat4": 380
+      },
+      "hull2ZScale": 1
+    },
+    {
+      "noun": "mug",
+      "variant": "a",
+      "seed": 1,
+      "prompt": "orthographic model sheet of a coffee mug with a handle: three flat solid black silhouettes side by side on a pure white background, left to right: front view seen head-on, side profile view, top view seen from directly above, same scale, minimal flat icon style, no labels, no outlines, no shading, no text",
+      "ok": false,
+      "note": "reused existing raw (skip-existing)",
+      "error": "mug-va-c1: one or more thirds had no extractable ink (front/side/top)"
+    },
+    {
+      "noun": "mug",
+      "variant": "a",
+      "seed": 2,
+      "prompt": "orthographic model sheet of a coffee mug with a handle: three flat solid black silhouettes side by side on a pure white background, left to right: front view seen head-on, side profile view, top view seen from directly above, same scale, minimal flat icon style, no labels, no outlines, no shading, no text",
+      "ok": false,
+      "note": "reused existing raw (skip-existing)",
+      "error": "mug-va-c2: one or more thirds had no extractable ink (front/side/top)"
+    },
+    {
+      "noun": "mug",
+      "variant": "a",
+      "seed": 3,
+      "prompt": "orthographic model sheet of a coffee mug with a handle: three flat solid black silhouettes side by side on a pure white background, left to right: front view seen head-on, side profile view, top view seen from directly above, same scale, minimal flat icon style, no labels, no outlines, no shading, no text",
+      "ok": true,
+      "note": "reused existing raw (skip-existing)",
+      "compliance": {
+        "gutter1InkFraction": 0.125048828125,
+        "gutter2InkFraction": 0.42451171875,
+        "flagGutter": true,
+        "front": {
+          "empty": false,
+          "componentCount": 3,
+          "largestComponentFraction": 0.686046511627907,
+          "inkAspectRatio": 1.8545454545454545,
+          "flagFragmented": true
+        },
+        "side": {
+          "empty": false,
+          "componentCount": 1,
+          "largestComponentFraction": 1,
+          "inkAspectRatio": 1.1236363636363635,
+          "flagFragmented": false
+        },
+        "top": {
+          "empty": false,
+          "componentCount": 1,
+          "largestComponentFraction": 1,
+          "inkAspectRatio": 0.84,
+          "flagFragmented": false
+        },
+        "compliant": false
+      },
+      "orientation": {
+        "flips": {
+          "sideZ": false,
+          "topZ": false,
+          "topX": false
+        },
+        "lossBeforeRepair": {
+          "front": 0,
+          "side": 0,
+          "top": 0.07142857142857142
+        }
+      },
+      "repair": {
+        "frontCellsRestored": 0,
+        "sideCellsAdded": 0,
+        "topCellsAdded": 0
+      },
+      "voxelCounts": {
+        "hull3": 1489,
+        "hull2": 1919,
+        "hull2at": 1169,
+        "hull2cap6": 773,
+        "flat4": 344
+      },
+      "hull2ZScale": 0.571
+    },
+    {
+      "noun": "mug",
+      "variant": "a",
+      "seed": 4,
+      "prompt": "orthographic model sheet of a coffee mug with a handle: three flat solid black silhouettes side by side on a pure white background, left to right: front view seen head-on, side profile view, top view seen from directly above, same scale, minimal flat icon style, no labels, no outlines, no shading, no text",
+      "ok": true,
+      "note": "reused existing raw (skip-existing)",
+      "compliance": {
+        "gutter1InkFraction": 0,
+        "gutter2InkFraction": 0.12080078125,
+        "flagGutter": true,
+        "front": {
+          "empty": false,
+          "componentCount": 1,
+          "largestComponentFraction": 1,
+          "inkAspectRatio": 1.0181159420289856,
+          "flagFragmented": false
+        },
+        "side": {
+          "empty": false,
+          "componentCount": 1,
+          "largestComponentFraction": 1,
+          "inkAspectRatio": 0.9927536231884058,
+          "flagFragmented": false
+        },
+        "top": {
+          "empty": false,
+          "componentCount": 2,
+          "largestComponentFraction": 0.9652173913043478,
+          "inkAspectRatio": 1.2180232558139534,
+          "flagFragmented": false
+        },
+        "compliant": false
+      },
+      "orientation": {
+        "flips": {
+          "sideZ": false,
+          "topZ": false,
+          "topX": true
+        },
+        "lossBeforeRepair": {
+          "front": 0.024630541871921183,
+          "side": 0,
+          "top": 0
+        }
+      },
+      "repair": {
+        "frontCellsRestored": 5,
+        "sideCellsAdded": 0,
+        "topCellsAdded": 2
+      },
+      "voxelCounts": {
+        "hull3": 1600,
+        "hull2": 2519,
+        "hull2at": 2519,
+        "hull2cap6": 939,
+        "flat4": 812
+      },
+      "hull2ZScale": 1
+    },
+    {
+      "noun": "mug",
+      "variant": "b",
+      "seed": 1,
+      "prompt": "three orthographic solid black silhouettes of a coffee mug with a handle on pure white, arranged left to right: FRONT view, SIDE view, TOP-DOWN view, each silhouette centered in its third, same scale, no labels, no outlines, no shading, no text",
+      "ok": false,
+      "note": "reused existing raw (skip-existing)",
+      "error": "mug-vb-c1: one or more thirds had no extractable ink (front/side/top)"
+    },
+    {
+      "noun": "mug",
+      "variant": "b",
+      "seed": 2,
+      "prompt": "three orthographic solid black silhouettes of a coffee mug with a handle on pure white, arranged left to right: FRONT view, SIDE view, TOP-DOWN view, each silhouette centered in its third, same scale, no labels, no outlines, no shading, no text",
+      "ok": false,
+      "note": "reused existing raw (skip-existing)",
+      "error": "mug-vb-c2: one or more thirds had no extractable ink (front/side/top)"
+    },
+    {
+      "noun": "mug",
+      "variant": "b",
+      "seed": 3,
+      "prompt": "three orthographic solid black silhouettes of a coffee mug with a handle on pure white, arranged left to right: FRONT view, SIDE view, TOP-DOWN view, each silhouette centered in its third, same scale, no labels, no outlines, no shading, no text",
+      "ok": true,
+      "note": "reused existing raw (skip-existing)",
+      "compliance": {
+        "gutter1InkFraction": 0.141650390625,
+        "gutter2InkFraction": 0.43798828125,
+        "flagGutter": true,
+        "front": {
+          "empty": false,
+          "componentCount": 5,
+          "largestComponentFraction": 0.7738095238095238,
+          "inkAspectRatio": 1.7902097902097902,
+          "flagFragmented": false
+        },
+        "side": {
+          "empty": false,
+          "componentCount": 1,
+          "largestComponentFraction": 1,
+          "inkAspectRatio": 1.4212034383954155,
+          "flagFragmented": false
+        },
+        "top": {
+          "empty": false,
+          "componentCount": 1,
+          "largestComponentFraction": 1,
+          "inkAspectRatio": 0.9335664335664335,
+          "flagFragmented": false
+        },
+        "compliant": false
+      },
+      "orientation": {
+        "flips": {
+          "sideZ": false,
+          "topZ": false,
+          "topX": false
+        },
+        "lossBeforeRepair": {
+          "front": 0,
+          "side": 0,
+          "top": 0.08139534883720931
+        }
+      },
+      "repair": {
+        "frontCellsRestored": 0,
+        "sideCellsAdded": 0,
+        "topCellsAdded": 0
+      },
+      "voxelCounts": {
+        "hull3": 902,
+        "hull2": 715,
+        "hull2at": 715,
+        "hull2cap6": 382,
+        "flat4": 336
+      },
+      "hull2ZScale": 1
+    },
+    {
+      "noun": "mug",
+      "variant": "b",
+      "seed": 4,
+      "prompt": "three orthographic solid black silhouettes of a coffee mug with a handle on pure white, arranged left to right: FRONT view, SIDE view, TOP-DOWN view, each silhouette centered in its third, same scale, no labels, no outlines, no shading, no text",
+      "ok": true,
+      "note": "reused existing raw (skip-existing)",
+      "compliance": {
+        "gutter1InkFraction": 0,
+        "gutter2InkFraction": 0.116064453125,
+        "flagGutter": true,
+        "front": {
+          "empty": false,
+          "componentCount": 1,
+          "largestComponentFraction": 1,
+          "inkAspectRatio": 0.9096774193548387,
+          "flagFragmented": false
+        },
+        "side": {
+          "empty": false,
+          "componentCount": 2,
+          "largestComponentFraction": 0.9948186528497409,
+          "inkAspectRatio": 1.0289855072463767,
+          "flagFragmented": false
+        },
+        "top": {
+          "empty": false,
+          "componentCount": 3,
+          "largestComponentFraction": 0.9663865546218487,
+          "inkAspectRatio": 1.183381088825215,
+          "flagFragmented": false
+        },
+        "compliant": false
+      },
+      "orientation": {
+        "flips": {
+          "sideZ": false,
+          "topZ": false,
+          "topX": true
+        },
+        "lossBeforeRepair": {
+          "front": 0.020618556701030927,
+          "side": 0,
+          "top": 0
+        }
+      },
+      "repair": {
+        "frontCellsRestored": 4,
+        "sideCellsAdded": 0,
+        "topCellsAdded": 1
+      },
+      "voxelCounts": {
+        "hull3": 1577,
+        "hull2": 2180,
+        "hull2at": 2180,
+        "hull2cap6": 804,
+        "flat4": 712
+      },
+      "hull2ZScale": 1
+    },
+    {
+      "noun": "rocket ship",
+      "variant": "a",
+      "seed": 1,
+      "prompt": "orthographic model sheet of a rocket ship pointing straight up: three flat solid black silhouettes side by side on a pure white background, left to right: front view seen head-on, side profile view, top view seen from directly above, same scale, minimal flat icon style, no labels, no outlines, no shading, no text",
+      "ok": true,
+      "note": "reused existing raw (skip-existing)",
+      "compliance": {
+        "gutter1InkFraction": 0,
+        "gutter2InkFraction": 0.164892578125,
+        "flagGutter": true,
+        "front": {
+          "empty": false,
+          "componentCount": 1,
+          "largestComponentFraction": 1,
+          "inkAspectRatio": 0.37410071942446044,
+          "flagFragmented": false
+        },
+        "side": {
+          "empty": false,
+          "componentCount": 1,
+          "largestComponentFraction": 1,
+          "inkAspectRatio": 1.5864406779661018,
+          "flagFragmented": false
+        },
+        "top": {
+          "empty": false,
+          "componentCount": 1,
+          "largestComponentFraction": 1,
+          "inkAspectRatio": 1.4095238095238096,
+          "flagFragmented": false
+        },
+        "compliant": false
+      },
+      "orientation": {
+        "flips": {
+          "sideZ": false,
+          "topZ": false,
+          "topX": false
+        },
+        "lossBeforeRepair": {
+          "front": 0.04597701149425287,
+          "side": 0.07792207792207792,
+          "top": 0.12738853503184713
+        }
+      },
+      "repair": {
+        "frontCellsRestored": 8,
+        "sideCellsAdded": 0,
+        "topCellsAdded": 4
+      },
+      "voxelCounts": {
+        "hull3": 1218,
+        "hull2": 600,
+        "hull2at": 660,
+        "hull2cap6": 218,
+        "flat4": 240
+      },
+      "hull2ZScale": 1.6
+    },
+    {
+      "noun": "rocket ship",
+      "variant": "a",
+      "seed": 2,
+      "prompt": "orthographic model sheet of a rocket ship pointing straight up: three flat solid black silhouettes side by side on a pure white background, left to right: front view seen head-on, side profile view, top view seen from directly above, same scale, minimal flat icon style, no labels, no outlines, no shading, no text",
+      "ok": true,
+      "note": "reused existing raw (skip-existing)",
+      "compliance": {
+        "gutter1InkFraction": 0.00263671875,
+        "gutter2InkFraction": 0,
+        "flagGutter": false,
+        "front": {
+          "empty": false,
+          "componentCount": 1,
+          "largestComponentFraction": 1,
+          "inkAspectRatio": 0.46210720887245843,
+          "flagFragmented": false
+        },
+        "side": {
+          "empty": false,
+          "componentCount": 1,
+          "largestComponentFraction": 1,
+          "inkAspectRatio": 0.7524752475247525,
+          "flagFragmented": false
+        },
+        "top": {
+          "empty": false,
+          "componentCount": 1,
+          "largestComponentFraction": 1,
+          "inkAspectRatio": 0.46210720887245843,
+          "flagFragmented": false
+        },
+        "compliant": true
+      },
+      "orientation": {
+        "flips": {
+          "sideZ": false,
+          "topZ": false,
+          "topX": false
+        },
+        "lossBeforeRepair": {
+          "front": 0.06896551724137931,
+          "side": 0,
+          "top": 0.13114754098360656
+        }
+      },
+      "repair": {
+        "frontCellsRestored": 6,
+        "sideCellsAdded": 0,
+        "topCellsAdded": 6
+      },
+      "voxelCounts": {
+        "hull3": 471,
+        "hull2": 548,
+        "hull2at": 487,
+        "hull2cap6": 278,
+        "flat4": 292
+      },
+      "hull2ZScale": 0.875
+    },
+    {
+      "noun": "rocket ship",
+      "variant": "a",
+      "seed": 3,
+      "prompt": "orthographic model sheet of a rocket ship pointing straight up: three flat solid black silhouettes side by side on a pure white background, left to right: front view seen head-on, side profile view, top view seen from directly above, same scale, minimal flat icon style, no labels, no outlines, no shading, no text",
+      "ok": true,
+      "note": "reused existing raw (skip-existing)",
+      "compliance": {
+        "gutter1InkFraction": 0.453466796875,
+        "gutter2InkFraction": 0.015966796875,
+        "flagGutter": true,
+        "front": {
+          "empty": false,
+          "componentCount": 3,
+          "largestComponentFraction": 0.6341463414634146,
+          "inkAspectRatio": 0.9857142857142858,
+          "flagFragmented": true
+        },
+        "side": {
+          "empty": false,
+          "componentCount": 3,
+          "largestComponentFraction": 0.5918367346938775,
+          "inkAspectRatio": 1.3852459016393444,
+          "flagFragmented": true
+        },
+        "top": {
+          "empty": false,
+          "componentCount": 1,
+          "largestComponentFraction": 1,
+          "inkAspectRatio": 0.5357142857142857,
+          "flagFragmented": false
+        },
+        "compliant": false
+      },
+      "orientation": {
+        "flips": {
+          "sideZ": false,
+          "topZ": true,
+          "topX": true
+        },
+        "lossBeforeRepair": {
+          "front": 0.024390243902439025,
+          "side": 0.09210526315789473,
+          "top": 0.6891891891891891
+        }
+      },
+      "repair": {
+        "frontCellsRestored": 1,
+        "sideCellsAdded": 0,
+        "topCellsAdded": 1
+      },
+      "voxelCounts": {
+        "hull3": 182,
+        "hull2": 270,
+        "hull2at": 242,
+        "hull2cap6": 102,
+        "flat4": 164
+      },
+      "hull2ZScale": 1.5
+    },
+    {
+      "noun": "rocket ship",
+      "variant": "a",
+      "seed": 4,
+      "prompt": "orthographic model sheet of a rocket ship pointing straight up: three flat solid black silhouettes side by side on a pure white background, left to right: front view seen head-on, side profile view, top view seen from directly above, same scale, minimal flat icon style, no labels, no outlines, no shading, no text",
+      "ok": true,
+      "note": "reused existing raw (skip-existing)",
+      "compliance": {
+        "gutter1InkFraction": 0,
+        "gutter2InkFraction": 0.0076171875,
+        "flagGutter": false,
+        "front": {
+          "empty": false,
+          "componentCount": 1,
+          "largestComponentFraction": 1,
+          "inkAspectRatio": 0.532,
+          "flagFragmented": false
+        },
+        "side": {
+          "empty": false,
+          "componentCount": 1,
+          "largestComponentFraction": 1,
+          "inkAspectRatio": 0.6205533596837944,
+          "flagFragmented": false
+        },
+        "top": {
+          "empty": false,
+          "componentCount": 1,
+          "largestComponentFraction": 1,
+          "inkAspectRatio": 0.651394422310757,
+          "flagFragmented": false
+        },
+        "compliant": true
+      },
+      "orientation": {
+        "flips": {
+          "sideZ": false,
+          "topZ": false,
+          "topX": false
+        },
+        "lossBeforeRepair": {
+          "front": 0,
+          "side": 0,
+          "top": 0
+        }
+      },
+      "repair": {
+        "frontCellsRestored": 0,
+        "sideCellsAdded": 0,
+        "topCellsAdded": 0
+      },
+      "voxelCounts": {
+        "hull3": 365,
+        "hull2": 300,
+        "hull2at": 300,
+        "hull2cap6": 174,
+        "flat4": 220
+      },
+      "hull2ZScale": 1
+    },
+    {
+      "noun": "rocket ship",
+      "variant": "b",
+      "seed": 1,
+      "prompt": "three orthographic solid black silhouettes of a rocket ship pointing straight up on pure white, arranged left to right: FRONT view, SIDE view, TOP-DOWN view, each silhouette centered in its third, same scale, no labels, no outlines, no shading, no text",
+      "ok": false,
+      "note": "reused existing raw (skip-existing)",
+      "error": "rocket-ship-vb-c1: one or more thirds had no extractable ink (front/side/top)"
+    },
+    {
+      "noun": "rocket ship",
+      "variant": "b",
+      "seed": 2,
+      "prompt": "three orthographic solid black silhouettes of a rocket ship pointing straight up on pure white, arranged left to right: FRONT view, SIDE view, TOP-DOWN view, each silhouette centered in its third, same scale, no labels, no outlines, no shading, no text",
+      "ok": true,
+      "note": "reused existing raw (skip-existing)",
+      "compliance": {
+        "gutter1InkFraction": 0,
+        "gutter2InkFraction": 0,
+        "flagGutter": false,
+        "front": {
+          "empty": false,
+          "componentCount": 2,
+          "largestComponentFraction": 0.8974358974358975,
+          "inkAspectRatio": 0.4014336917562724,
+          "flagFragmented": false
+        },
+        "side": {
+          "empty": false,
+          "componentCount": 2,
+          "largestComponentFraction": 0.975,
+          "inkAspectRatio": 0.3559633027522936,
+          "flagFragmented": false
+        },
+        "top": {
+          "empty": false,
+          "componentCount": 1,
+          "largestComponentFraction": 1,
+          "inkAspectRatio": 0.46466431095406363,
+          "flagFragmented": false
+        },
+        "compliant": true
+      },
+      "orientation": {
+        "flips": {
+          "sideZ": false,
+          "topZ": true,
+          "topX": false
+        },
+        "lossBeforeRepair": {
+          "front": 0.04081632653061224,
+          "side": 0.25,
+          "top": 0.08771929824561403
+        }
+      },
+      "repair": {
+        "frontCellsRestored": 2,
+        "sideCellsAdded": 0,
+        "topCellsAdded": 2
+      },
+      "voxelCounts": {
+        "hull3": 263,
+        "hull2": 113,
+        "hull2at": 113,
+        "hull2cap6": 113,
+        "flat4": 156
+      },
+      "hull2ZScale": 1
+    },
+    {
+      "noun": "rocket ship",
+      "variant": "b",
+      "seed": 3,
+      "prompt": "three orthographic solid black silhouettes of a rocket ship pointing straight up on pure white, arranged left to right: FRONT view, SIDE view, TOP-DOWN view, each silhouette centered in its third, same scale, no labels, no outlines, no shading, no text",
+      "ok": true,
+      "note": "reused existing raw (skip-existing)",
+      "compliance": {
+        "gutter1InkFraction": 0.515625,
+        "gutter2InkFraction": 0.42216796875,
+        "flagGutter": true,
+        "front": {
+          "empty": false,
+          "componentCount": 2,
+          "largestComponentFraction": 0.6607142857142857,
+          "inkAspectRatio": 0.7096774193548387,
+          "flagFragmented": true
+        },
+        "side": {
+          "empty": false,
+          "componentCount": 3,
+          "largestComponentFraction": 0.4507042253521127,
+          "inkAspectRatio": 0.920863309352518,
+          "flagFragmented": true
+        },
+        "top": {
+          "empty": false,
+          "componentCount": 2,
+          "largestComponentFraction": 0.5,
+          "inkAspectRatio": 0.7594142259414226,
+          "flagFragmented": true
+        },
+        "compliant": false
+      },
+      "orientation": {
+        "flips": {
+          "sideZ": false,
+          "topZ": false,
+          "topX": false
+        },
+        "lossBeforeRepair": {
+          "front": 0.08771929824561403,
+          "side": 0.038461538461538464,
+          "top": 0.46511627906976744
+        }
+      },
+      "repair": {
+        "frontCellsRestored": 5,
+        "sideCellsAdded": 0,
+        "topCellsAdded": 3
+      },
+      "voxelCounts": {
+        "hull3": 225,
+        "hull2": 425,
+        "hull2at": 341,
+        "hull2cap6": 169,
+        "flat4": 224
+      },
+      "hull2ZScale": 1.091
+    },
+    {
+      "noun": "rocket ship",
+      "variant": "b",
+      "seed": 4,
+      "prompt": "three orthographic solid black silhouettes of a rocket ship pointing straight up on pure white, arranged left to right: FRONT view, SIDE view, TOP-DOWN view, each silhouette centered in its third, same scale, no labels, no outlines, no shading, no text",
+      "ok": true,
+      "note": "reused existing raw (skip-existing)",
+      "compliance": {
+        "gutter1InkFraction": 0,
+        "gutter2InkFraction": 0,
+        "flagGutter": false,
+        "front": {
+          "empty": false,
+          "componentCount": 1,
+          "largestComponentFraction": 1,
+          "inkAspectRatio": 0.4334677419354839,
+          "flagFragmented": false
+        },
+        "side": {
+          "empty": false,
+          "componentCount": 1,
+          "largestComponentFraction": 1,
+          "inkAspectRatio": 0.5222437137330754,
+          "flagFragmented": false
+        },
+        "top": {
+          "empty": false,
+          "componentCount": 1,
+          "largestComponentFraction": 1,
+          "inkAspectRatio": 0.5207920792079208,
+          "flagFragmented": false
+        },
+        "compliant": true
+      },
+      "orientation": {
+        "flips": {
+          "sideZ": false,
+          "topZ": false,
+          "topX": false
+        },
+        "lossBeforeRepair": {
+          "front": 0,
+          "side": 0,
+          "top": 0
+        }
+      },
+      "repair": {
+        "frontCellsRestored": 0,
+        "sideCellsAdded": 0,
+        "topCellsAdded": 0
+      },
+      "voxelCounts": {
+        "hull3": 392,
+        "hull2": 257,
+        "hull2at": 257,
+        "hull2cap6": 195,
+        "flat4": 212
+      },
+      "hull2ZScale": 1.071
+    }
+  ]
+}
