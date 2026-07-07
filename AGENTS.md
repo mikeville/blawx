@@ -195,27 +195,66 @@ today only holds the benchmark harness (`bench/`, `App.tsx`).
 
 **Ordering (minimum first, iterating up):**
 
-1. **LEGO skin at 16³.** Port `../blawx/src/render/{Brick,Scene,iso,
-   palette}.ts` into `src/render/`. Cross-check iso projection constants
-   against `src/bench/isoRender.ts` — they should be geometrically
-   identical. Deterministic palette assignment for v1 (model-picked
-   is a v2+ knob).
-2. **Minimum instructions view.** Port `../blawx/src/voxel/{pack,steps,
-   analyze,projections,transform,types}.ts` and
-   `../blawx/src/booklet/*` at 16³. Simplest step decomposition
-   (layer-by-layer plate). Get end-to-end noun → booklet working over
-   the seed4 library.
+1. **LEGO skin at 16³.** ✅ Done (2026-07-06, commit `9324dae`).
+   Verbatim port of `../blawx/src/render/{iso,palette,Brick,Scene}.ts`
+   + `voxel/types.ts` into `src/render/` and `src/voxel/`. All four
+   render files are grid-size-agnostic (iso.ts uses per-voxel UNIT=22,
+   Scene.tsx auto-fits viewBox to `computeExtents(bricks)`) — no
+   upsize needed. Iso constants confirmed identical to
+   `src/bench/isoRender.ts`.
+2. **Minimum instructions view.** Port `../blawx/src/voxel/{pack,steps}
+   .ts` + `../blawx/src/booklet/*` at 16³.
+   - **Step 2a — voxel port** ✅ Done (2026-07-06, commit `1aea577`).
+     `pack.ts` made grid-size-independent (loop bounds derived from
+     filled cells rather than importing `GRID_SIZE`); `steps.ts` is a
+     clean copy. Test glob widened to `src/voxel/*.test.ts`. 10 new
+     tests pass (40/40 total).
+   - **Step 2b — booklet port** (next). Port
+     `../blawx/src/booklet/{Booklet,StepPage,TitlePage,InventoryPage,
+     FinalPage,PointsCell}.tsx` — these are the v1 minimum booklet
+     files. Booklet.tsx imports `buildSteps`/`allBricks` from
+     `voxel/steps.ts` (already ported). Watch: TitlePage/InventoryPage
+     may have hardcoded 8³ layout assumptions worth reflowing at 16³
+     (step count grows ~8×; the booklet layout may need pagination
+     changes). Not blocking, but worth eyeballing after the port.
+   - **Step 2c — seed4 adapter + wire-up.** Write a small adapter that
+     takes a seed4 JSON (`{voxels: [[x,y,z], ...]}`, no color) + noun
+     → `VoxelGrid` with a hand-authored per-noun color from a table
+     (see palette decision below). Smoke test: pick one noun (e.g.
+     `fox` or `table` from `runs/probe6-16char-sonnetdepth/`), render
+     the resulting `Scene` on screen, confirm it looks LEGO-like.
 3. **Frontend.** Port `../blawx/src/search/SearchLanding.tsx`.
    Pick-from-set for v1 (or free-text over the library with a
    "not-in-library, try X/Y/Z" branch on miss). Result page.
+   Open UX question: does the new noun-input page live at `/` and
+   demote the benchmark viewer to a separate route (`/bench`),
+   or does the benchmark viewer stay at `/` (dev tool) with the toy
+   at `/toy`? Recommend the former since v1's *audience* is public,
+   not you; the benchmark viewer is R&D infra.
 4. **Cache seeding.** Batch the seed4 outputs into KV via the
    `../api/` Worker. Ship.
+
+**Palette decision for v1 (2026-07-06):** single hand-authored color
+per noun (option chosen over region-based auto-segmentation and
+all-lightGray). Table lives in the seed4 adapter (Step 2c); one entry
+per noun in `runs/seed4-16char-mixed/`. Missing entries fall back to
+lightGray. Model-picked / region-based palette is a v2+ knob.
+
+**Skipped for v1 minimum (do NOT port unless promoted):**
+- `../blawx/src/voxel/{projections,transform,analyze}.ts` — only used
+  by deferred booklet files.
+- `../blawx/src/voxel/{loadVox,sampleDuck,sampleTree,sampleHouse}.ts`
+  — `.vox` file loader + hand-authored 8³ demo data.
+- `../blawx/src/booklet/{Comparison,Gallery,Workbench}.tsx` +
+  `comparisonCosts.ts` — cost-comparison / gallery / hand-editing UI
+  that's evaluation infra, not the shipped booklet.
 
 **Ratchet up after v1 ships (in order of ambition):**
 
 - **Middle-tier instructions:** greedy brick-packer that recognizes
   1×1 / 1×2 / 2×2 / 2×4 runs before rendering. Makes the step list
-  feel like an actual LEGO manual.
+  feel like an actual LEGO manual. Note: `Brick.footprint` is
+  currently typed `w: 1|2, d: 1|2` — widen when this ratchet lands.
 - **v2: live generation on cache miss (the magic moment).** Wire the
   probe6 route (Sonnet + validator + retry) into the `../api/` Worker.
   Front-source live: FA icon lookup first, FLUX schnell on miss.
@@ -229,6 +268,11 @@ today only holds the benchmark harness (`bench/`, `App.tsx`).
 - Cache seeding remains $0 via subscription subagents; live-gen R&D
   requires per-run sign-off under the spend guardrail.
 
-**Next action:** Port `../blawx/src/render/{Brick,Scene,iso,palette}.ts`
-into `src/render/` at 16³ (Step 1). Cross-check iso projection
-constants against `src/bench/isoRender.ts` first.
+**Next action:** Step 2b — port `../blawx/src/booklet/{Booklet,StepPage,
+TitlePage,InventoryPage,FinalPage,PointsCell}.tsx` into `src/booklet/`.
+`Booklet.tsx` will need to be adapted to consume a `VoxelGrid`; the
+other five consume `Brick`/`Step` types already ported. This port is
+mechanical enough to run under a Sonnet subagent — main-loop review
+before commit. After Step 2b commits cleanly, Step 2c is the seed4
+adapter + first end-to-end smoke test (Booklet rendering one seed4
+noun on screen).
