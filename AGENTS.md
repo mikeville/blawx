@@ -209,14 +209,19 @@ today only holds the benchmark harness (`bench/`, `App.tsx`).
      filled cells rather than importing `GRID_SIZE`); `steps.ts` is a
      clean copy. Test glob widened to `src/voxel/*.test.ts`. 10 new
      tests pass (40/40 total).
-   - **Step 2b — booklet port** (next). Port
-     `../blawx/src/booklet/{Booklet,StepPage,TitlePage,InventoryPage,
-     FinalPage,PointsCell}.tsx` — these are the v1 minimum booklet
-     files. Booklet.tsx imports `buildSteps`/`allBricks` from
-     `voxel/steps.ts` (already ported). Watch: TitlePage/InventoryPage
-     may have hardcoded 8³ layout assumptions worth reflowing at 16³
-     (step count grows ~8×; the booklet layout may need pagination
-     changes). Not blocking, but worth eyeballing after the port.
+   - **Step 2b — booklet port** ✅ Done (2026-07-07, commit `0ad3022`).
+     Verbatim port of `../blawx/src/booklet/{Booklet,StepPage,
+     TitlePage,InventoryPage,FinalPage}.tsx` + a scoped `pages.css`
+     slice (lines 1–201, up to `.page--step .scene svg`; excludes the
+     `.app-shell`/Comparison CSS below it) into `src/booklet/`. All
+     five files turned out grid-size-agnostic already — no 8³→16³
+     layout changes were needed, confirmed by inline review before
+     commit. `PointsCell.tsx` was **not** ported: it's only consumed
+     by `Comparison.tsx`, which is explicitly out-of-scope eval infra
+     (see "Skipped for v1 minimum" below) — porting it would've been
+     wasted work with no consumer in the shipped booklet. Typecheck
+     clean, 40/40 tests pass (no new tests added — these are pure UI
+     components with no unit-testable logic).
    - **Step 2c — seed4 adapter + wire-up.** Write a small adapter that
      takes a seed4 JSON (`{voxels: [[x,y,z], ...]}`, no color) + noun
      → `VoxelGrid` with a hand-authored per-noun color from a table
@@ -268,11 +273,12 @@ lightGray. Model-picked / region-based palette is a v2+ knob.
 - Cache seeding remains $0 via subscription subagents; live-gen R&D
   requires per-run sign-off under the spend guardrail.
 
-**Next action:** Step 2b — port `../blawx/src/booklet/{Booklet,StepPage,
-TitlePage,InventoryPage,FinalPage,PointsCell}.tsx` into `src/booklet/`.
-`Booklet.tsx` will need to be adapted to consume a `VoxelGrid`; the
-other five consume `Brick`/`Step` types already ported. This port is
-mechanical enough to run under a Sonnet subagent — main-loop review
-before commit. After Step 2b commits cleanly, Step 2c is the seed4
-adapter + first end-to-end smoke test (Booklet rendering one seed4
-noun on screen).
+**Next action:** Step 2c — seed4 adapter + wire-up. Write a small
+adapter (e.g. `src/voxel/seed4.ts`) that takes a seed4 JSON
+(`{voxels: [[x,y,z], ...]}`, no color) + noun → `VoxelGrid`, applying
+a hand-authored per-noun color from a table (fallback `lightGray` for
+misses — see palette decision above). Then smoke test end-to-end:
+pick one noun from `runs/seed4-16char-mixed/` (or `runs/probe6-16char-
+sonnetdepth/`), run it through the adapter → `buildSteps` → `Booklet`,
+and render it on screen (`preview_start` + `preview_screenshot`) to
+confirm it looks LEGO-like at 16³.
