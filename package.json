@@ -7,7 +7,7 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "oxlint",
-    "test": "tsx --test src/bench/*.test.ts",
+    "test": "tsx --test src/bench/*.test.ts src/voxel/*.test.ts",
     "preview": "vite preview",
     "relift": "tsx scripts/relift.ts"
   },
