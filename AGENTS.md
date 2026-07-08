@@ -259,8 +259,39 @@ today only holds the benchmark harness (`bench/`, `App.tsx`).
      index. `mockCache.ts` port was unnecessary — landing takes the
      noun list as a prop from `App.tsx`, which already builds it from
      the seed4 glob for `?q=` routing.
-4. **Cache seeding.** Batch the seed4 outputs into KV via the
-   `../api/` Worker. Ship.
+4. **Cache seeding + KV read-path.** ✅ Done locally (2026-07-08),
+   pending production deploy.
+   - **Seed script:** `../api/scripts/seed4.ts` (new; `npm run seed4`,
+     `-- --local` for miniflare). Reads `runs/seed4-16char-mixed/*.json`
+     and imports blawx2's **own** `slug()` + `seed4ToGrid()` so keys
+     (`g:<slug>`) and grid shape are byte-identical to the SPA and
+     forward-compatible with v2 misses. Keys on the **filename stem**
+     (what the frontend routes by), warns on noun/filename drift.
+     Excludes `misses`, `run` → 28 grids. Cache entry is `{ grid }` only
+     (metrics/degraded omitted — unused on the hit path). `$0` — pure
+     JSON→KV, no Anthropic. (The old `seed.ts` still seeds the sibling
+     `../blawx` 8³ set; left intact.)
+   - **Worker `CACHE_ONLY` flag** (`../api/src/index.ts`): a miss returns
+     `404 {code:'miss'}` **before** rate-limit/Anthropic, so v1 ships
+     `$0` by construction. Set in blawx2's local `.dev.vars`; left unset
+     in committed `wrangler.toml` so the shared sibling keeps live-gen.
+     Flip off when v2 live-gen lands.
+   - **Frontend read-path** (pulled forward from v2): `App.tsx` no longer
+     bundles grids. `src/api/generateClient.ts` fetches
+     `GET /api/generate?q=` from the Worker (`VITE_BLAWX_API`, set in
+     gitignored `.env.local` → `http://localhost:8787`). The landing's
+     library index now derives names from a **non-eager** glob (names
+     only; grids come from KV). Miss/error → placeholder page.
+   - **Verified (local):** 28 grids in miniflare KV; `curl` hits return
+     16³ grids w/ `x-cache: hit` + CORS; `q=octagon` → 404 `code:miss`
+     (no Anthropic); browser `?q=cat` renders set #9262 / 123 bricks /
+     36 steps (identical to the step-2c glob render); `?q=octagon` →
+     "no cached build" placeholder. Typecheck clean.
+   - **Not done — production:** remote KV namespaces don't exist yet
+     (`wrangler.toml` ids are `local-placeholder-*`). Prod ship needs
+     `wrangler kv namespace create CACHE/RL` → paste ids → `deploy` →
+     `npm run seed4` (remote) → set blawx2's build `VITE_BLAWX_API` +
+     `CACHE_ONLY=1`. Requires a Cloudflare-account session.
 
 **Palette decision for v1 (2026-07-06):** single hand-authored color
 per noun (option chosen over region-based auto-segmentation and
@@ -296,9 +327,21 @@ lightGray. Model-picked / region-based palette is a v2+ knob.
 - Cache seeding remains $0 via subscription subagents; live-gen R&D
   requires per-run sign-off under the spend guardrail.
 
-**Next action:** Step 4 — cache seeding. Batch the 28 seed4 outputs
-into KV via the `../api/` Worker (`g:<slug>` keys, infinite TTL).
-Slug normalization is already forward-compatible with v2 live-gen
-misses. Landing + booklet at `/` and `?q=<noun>` are live; the design
-system refactor of the frontend styles is a separate pass Mike will
-brief when he's ready.
+**Next action:** Step 4 done locally (seed script + `CACHE_ONLY` worker
+flag + frontend KV read-path, all verified against local miniflare KV).
+The frontend now fetches from the Worker instead of bundling grids;
+`$0` cache-only is structural. Open forks, both vetoable — Mike picks:
+- **(a) Production ship** — create real Cloudflare KV namespaces,
+  deploy the Worker, seed remote (`npm run seed4`), point blawx2's build
+  `VITE_BLAWX_API` at the deployed Worker with `CACHE_ONLY=1`. Gets a
+  live public v0.5 (fixed 28-noun menu). Needs a Cloudflare-account
+  session (headless can't do the OAuth/namespace step).
+- **(b) v2 live-gen pipeline** — the "type any noun → watch it build"
+  magic moment. Port blawx2's generation route into the Worker's
+  miss-path (the current `PROMPT_DRAFT`/ASCII path is the stale sibling
+  approach; blawx2 is image-based: FA icon → FLUX schnell → validator).
+  This is the real product; carries the quality risk and the only
+  billable step (bounded, per-run sign-off).
+
+Landing + booklet at `/` and `?q=<noun>` are live. Frontend design-system
+refactor is a separate pass Mike will brief when ready.
