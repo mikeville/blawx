@@ -235,13 +235,30 @@ today only holds the benchmark harness (`bench/`, `App.tsx`).
      steps, 123-brick inventory. Typecheck clean, 40/40 tests pass.
      Slug normalization matches the sibling repo, so KV keys stay
      forward-compatible with v2 live-gen misses.
-3. **Frontend.** Port `../blawx/src/search/SearchLanding.tsx`.
-   Pick-from-set for v1 (or free-text over the library with a
-   "not-in-library, try X/Y/Z" branch on miss). Result page.
-   Routing decided (2026-07-07): public noun input takes `/`; the
-   benchmark contact sheet is temporary and can be dropped from the
-   bundle when SearchLanding lands (no `/bench` fallback needed —
-   R&D can spin it back up locally from git if ever wanted).
+3. **Frontend.** ✅ Done (2026-07-08). Two commits:
+   - `chore(bundle): drop benchmark contact sheet …` — App.tsx stripped
+     of bench imports; `src/app.css` deleted. `src/bench/*` kept intact
+     for offline scripts (seed-library, convert-response, relift, etc.).
+     Restore point in the commit message.
+   - `feat(landing): vintage-manual SearchLanding at / (Phase 5, step 3)`
+     — `src/search/{SearchLanding.tsx, search.css}` + `src/index.css`
+     global reset (light color-scheme, paper body bg). Free-text input
+     over the seed4 library + numbered two-column library index of the
+     28 available nouns (`misses.json` and `run.json` filtered out).
+     Miss → placeholder "no cached build" page (v2 live-gen slot).
+     Client-side routing via `history.pushState` + popstate listener;
+     no router dep. Wordmark: "blawx" (working mark).
+   - **Aesthetic direction (this pass):** warm-paper landing (#fdfcf8,
+     #1a1a1a ink, one LEGO red #da291c) styled after vintage LEGO
+     instruction manuals — sharp corners, hairline rules, big flat sans
+     numerals, monospaced metadata. Intentionally throwaway styles;
+     design-system refactor comes later.
+   - **Not ported from sibling:** rounded pill "chip" suggestions
+     (2010s web pattern, off-brand for the manual aesthetic) — replaced
+     with a two-column numbered list that reads like a manual's parts
+     index. `mockCache.ts` port was unnecessary — landing takes the
+     noun list as a prop from `App.tsx`, which already builds it from
+     the seed4 glob for `?q=` routing.
 4. **Cache seeding.** Batch the seed4 outputs into KV via the
    `../api/` Worker. Ship.
 
@@ -279,7 +296,9 @@ lightGray. Model-picked / region-based palette is a v2+ knob.
 - Cache seeding remains $0 via subscription subagents; live-gen R&D
   requires per-run sign-off under the spend guardrail.
 
-**Next action:** Step 3 — port `../blawx/src/search/SearchLanding.tsx`
-to take `/`. Bench contact sheet is temporary — drop it when the
-landing page lands (git preserves it). The `?q=<noun>` wire-up from 2c
-is a stopgap; the landing page owns the term-entry flow going forward.
+**Next action:** Step 4 — cache seeding. Batch the 28 seed4 outputs
+into KV via the `../api/` Worker (`g:<slug>` keys, infinite TTL).
+Slug normalization is already forward-compatible with v2 live-gen
+misses. Landing + booklet at `/` and `?q=<noun>` are live; the design
+system refactor of the frontend styles is a separate pass Mike will
+brief when he's ready.

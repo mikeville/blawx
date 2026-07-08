@@ -1,0 +1,12 @@
+/* Global reset — force light canvas so system dark-mode doesn't bleed
+   black behind the paper-toned pages. */
+
+:root {
+  color-scheme: light;
+}
+
+html,
+body {
+  margin: 0;
+  background: #fdfcf8;
+}

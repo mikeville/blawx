@@ -1,5 +1,6 @@
-import { useMemo } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { Booklet } from './booklet/Booklet.tsx';
+import { SearchLanding } from './search/SearchLanding.tsx';
 import { seed4ToGrid, type Seed4Json } from './voxel/seed4.ts';
 import { setNumberFor, slug } from './api/slug.ts';
 
@@ -22,8 +23,13 @@ function loadSeed4(): Map<string, Seed4Json> {
   return out;
 }
 
-function BookletView({ term }: { term: string }) {
-  const library = useMemo(loadSeed4, []);
+function BookletView({
+  term,
+  library,
+}: {
+  term: string;
+  library: Map<string, Seed4Json>;
+}) {
   const s = slug(term);
   const json = library.get(s);
   if (!json) {
@@ -31,7 +37,8 @@ function BookletView({ term }: { term: string }) {
     return (
       <main style={{ padding: 24, fontFamily: 'system-ui, sans-serif' }}>
         <p>
-          no cached build for <code>{s}</code>.
+          no cached build for <code>{s}</code>.{' '}
+          <a href="./">back</a>
         </p>
         <p style={{ opacity: 0.6, fontSize: 12 }}>available: {available}</p>
       </main>
@@ -41,12 +48,33 @@ function BookletView({ term }: { term: string }) {
   return <Booklet grid={grid} setNumber={setNumberFor(s)} />;
 }
 
+function readQuery(): string | null {
+  return new URLSearchParams(window.location.search).get('q');
+}
+
 export default function App() {
-  const q = new URLSearchParams(window.location.search).get('q');
-  if (q) return <BookletView term={q} />;
+  const library = useMemo(loadSeed4, []);
+  const [q, setQ] = useState<string | null>(readQuery);
+
+  useEffect(() => {
+    const onPop = () => setQ(readQuery());
+    window.addEventListener('popstate', onPop);
+    return () => window.removeEventListener('popstate', onPop);
+  }, []);
+
+  function navigate(term: string) {
+    const s = slug(term);
+    const url = `?q=${encodeURIComponent(s)}`;
+    window.history.pushState({}, '', url);
+    setQ(s);
+    window.scrollTo(0, 0);
+  }
+
+  if (q) return <BookletView term={q} library={library} />;
   return (
-    <main style={{ padding: 24, fontFamily: 'system-ui, sans-serif' }}>
-      <p>landing page pending — try <code>?q=cat</code>.</p>
-    </main>
+    <SearchLanding
+      nouns={[...library.keys()]}
+      onSubmit={navigate}
+    />
   );
 }

@@ -1,0 +1,254 @@
+/*
+ * Landing page — first pass at a vintage-LEGO-instruction-booklet visual
+ * language. Intentionally throwaway: replaced when the design system lands.
+ * No rounded corners, no soft shadows, no gradients. One red. Hairline
+ * rules. Big flat sans numerals. Warm paper background.
+ */
+
+.landing {
+  --paper: #fdfcf8;
+  --ink: #1a1a1a;
+  --ink-soft: #8a8070;
+  --rule: #e2ddd6;
+  --red: #da291c;
+  --red-shadow: rgba(0, 0, 0, 0.22);
+  --sans: 'Helvetica Neue', Helvetica, Arial, 'Univers', sans-serif;
+  --mono: 'SF Mono', 'Menlo', 'Consolas', monospace;
+
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--sans);
+  min-height: 100dvh;
+  padding: 32px 16px 64px;
+  display: flex;
+  justify-content: center;
+  -webkit-font-smoothing: antialiased;
+}
+
+.landing__sheet {
+  width: 100%;
+  max-width: 480px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* ── Masthead ────────────────────────────────────────────────────────── */
+
+.landing__masthead {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.landing__mark {
+  font-size: 22px;
+  font-weight: 900;
+  letter-spacing: -0.6px;
+  color: var(--ink);
+}
+
+.landing__page {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 2px;
+  color: var(--ink-soft);
+  text-transform: uppercase;
+}
+
+/* ── Rules ───────────────────────────────────────────────────────────── */
+
+.landing__rule {
+  border: 0;
+  height: 1px;
+  background: var(--rule);
+  margin: 0;
+}
+
+/* ── Step header (numeral + title) ───────────────────────────────────── */
+
+.landing__step {
+  display: flex;
+  align-items: baseline;
+  gap: 16px;
+}
+
+.landing__stepnum {
+  font-size: 56px;
+  font-weight: 900;
+  line-height: 0.85;
+  letter-spacing: -2px;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+  min-width: 44px;
+}
+
+.landing__stepbody {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.landing__stephead {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 800;
+  letter-spacing: -0.3px;
+  color: var(--ink);
+}
+
+.landing__stepsub {
+  margin: 0;
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 1px;
+  color: var(--ink-soft);
+  text-transform: lowercase;
+}
+
+/* ── Input ───────────────────────────────────────────────────────────── */
+
+.landing__form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.landing__field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 12px 14px;
+  background: #fff;
+  border: 2px solid var(--rule);
+  transition: border-color 0.15s ease;
+}
+
+.landing__field:focus-within {
+  border-color: var(--ink);
+}
+
+.landing__fieldlabel {
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 2px;
+  color: var(--ink-soft);
+  text-transform: uppercase;
+}
+
+.landing__input {
+  font-family: var(--sans);
+  font-size: 26px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  color: var(--ink);
+  background: transparent;
+  border: 0;
+  outline: 0;
+  padding: 0;
+  width: 100%;
+}
+
+.landing__input::placeholder {
+  color: #c8c1b3;
+  font-weight: 800;
+}
+
+/* ── Submit ──────────────────────────────────────────────────────────── */
+
+.landing__submit {
+  padding: 15px 20px;
+  background: var(--red);
+  color: #fff;
+  border: 0;
+  font-family: var(--sans);
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  cursor: pointer;
+  box-shadow: inset 0 -3px 0 var(--red-shadow);
+  transition: transform 0.08s ease;
+}
+
+.landing__submit:active {
+  transform: translateY(1px);
+  box-shadow: inset 0 -2px 0 var(--red-shadow);
+}
+
+.landing__submit:disabled {
+  background: var(--rule);
+  color: #b0a898;
+  cursor: default;
+  box-shadow: none;
+}
+
+.landing__error {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--red);
+  letter-spacing: 0.5px;
+}
+
+/* ── Library index (numbered two-column list) ───────────────────────── */
+
+.landing__index {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  column-gap: 20px;
+  row-gap: 0;
+}
+
+.landing__indexitem {
+  border-bottom: 1px solid var(--rule);
+}
+
+.landing__indexbtn {
+  width: 100%;
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  padding: 10px 0;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  font-family: var(--sans);
+  text-align: left;
+  color: var(--ink);
+  transition: color 0.1s ease;
+}
+
+.landing__indexbtn:hover,
+.landing__indexbtn:focus-visible {
+  color: var(--red);
+  outline: 0;
+}
+
+.landing__indexnum {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 1px;
+  color: var(--ink-soft);
+  font-variant-numeric: tabular-nums;
+  min-width: 20px;
+}
+
+.landing__indexname {
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: -0.2px;
+}
+
+/* ── Foot ────────────────────────────────────────────────────────────── */
+
+.landing__foot {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 1.5px;
+  color: var(--ink-soft);
+  text-align: center;
+  text-transform: lowercase;
+}
