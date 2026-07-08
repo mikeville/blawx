@@ -222,20 +222,26 @@ today only holds the benchmark harness (`bench/`, `App.tsx`).
      wasted work with no consumer in the shipped booklet. Typecheck
      clean, 40/40 tests pass (no new tests added — these are pure UI
      components with no unit-testable logic).
-   - **Step 2c — seed4 adapter + wire-up.** Write a small adapter that
-     takes a seed4 JSON (`{voxels: [[x,y,z], ...]}`, no color) + noun
-     → `VoxelGrid` with a hand-authored per-noun color from a table
-     (see palette decision below). Smoke test: pick one noun (e.g.
-     `fox` or `table` from `runs/probe6-16char-sonnetdepth/`), render
-     the resulting `Scene` on screen, confirm it looks LEGO-like.
+   - **Step 2c — seed4 adapter + wire-up** ✅ Done (2026-07-07).
+     `src/voxel/seed4.ts` exports `seed4ToGrid(json)` + a
+     `NOUN_COLOR` table covering all 29 nouns in
+     `runs/seed4-16char-mixed/` (fallback `lightGray`).
+     `src/api/slug.ts` ported verbatim (slug + `setNumberFor`).
+     `App.tsx` gains a `?q=<noun>` route that loads the seed4 JSON via
+     `import.meta.glob('../runs/seed4-16char-mixed/*.json')`, runs it
+     through the adapter → `buildSteps` → `Booklet`. The existing
+     benchmark contact sheet stays as the default view (no `?q=`).
+     Smoke test: `?q=cat` renders a black 16³ cat, set #9262, 36 build
+     steps, 123-brick inventory. Typecheck clean, 40/40 tests pass.
+     Slug normalization matches the sibling repo, so KV keys stay
+     forward-compatible with v2 live-gen misses.
 3. **Frontend.** Port `../blawx/src/search/SearchLanding.tsx`.
    Pick-from-set for v1 (or free-text over the library with a
    "not-in-library, try X/Y/Z" branch on miss). Result page.
-   Open UX question: does the new noun-input page live at `/` and
-   demote the benchmark viewer to a separate route (`/bench`),
-   or does the benchmark viewer stay at `/` (dev tool) with the toy
-   at `/toy`? Recommend the former since v1's *audience* is public,
-   not you; the benchmark viewer is R&D infra.
+   Routing decided (2026-07-07): public noun input takes `/`; the
+   benchmark contact sheet is temporary and can be dropped from the
+   bundle when SearchLanding lands (no `/bench` fallback needed —
+   R&D can spin it back up locally from git if ever wanted).
 4. **Cache seeding.** Batch the seed4 outputs into KV via the
    `../api/` Worker. Ship.
 
@@ -273,12 +279,7 @@ lightGray. Model-picked / region-based palette is a v2+ knob.
 - Cache seeding remains $0 via subscription subagents; live-gen R&D
   requires per-run sign-off under the spend guardrail.
 
-**Next action:** Step 2c — seed4 adapter + wire-up. Write a small
-adapter (e.g. `src/voxel/seed4.ts`) that takes a seed4 JSON
-(`{voxels: [[x,y,z], ...]}`, no color) + noun → `VoxelGrid`, applying
-a hand-authored per-noun color from a table (fallback `lightGray` for
-misses — see palette decision above). Then smoke test end-to-end:
-pick one noun from `runs/seed4-16char-mixed/` (or `runs/probe6-16char-
-sonnetdepth/`), run it through the adapter → `buildSteps` → `Booklet`,
-and render it on screen (`preview_start` + `preview_screenshot`) to
-confirm it looks LEGO-like at 16³.
+**Next action:** Step 3 — port `../blawx/src/search/SearchLanding.tsx`
+to take `/`. Bench contact sheet is temporary — drop it when the
+landing page lands (git preserves it). The `?q=<noun>` wire-up from 2c
+is a stopgap; the landing page owns the term-entry flow going forward.
