@@ -1,0 +1,137 @@
+/*
+ * Blawx design tokens — the whole app's visual language in one place.
+ *
+ * Reference: vintage LEGO instruction manuals. Modernist, minimal,
+ * Bauhaus/Swedish. The rules of that world, encoded:
+ *
+ *   1. Colour is the BRICK palette — nothing else. UI chrome borrows
+ *      the exact hexes the renderer paints with (render/palette.ts), so
+ *      a yellow button and a yellow brick are the same yellow. Yellow is
+ *      the standing UI accent (see --accent); the other primaries appear
+ *      where bricks, legends, and step markers do.
+ *   2. No rounded corners. No soft shadows. No gradients. A manual is
+ *      printed with flat ink and hairline rules; so is this.
+ *   3. Structure is drawn with a few discrete rule weights, not shadows.
+ *   4. Numerals are huge and flat; functional text is small and quiet.
+ *   5. Layout sits on a stud grid — spacing is multiples of one stud.
+ *
+ * Consumed globally via :root (imported first in index.css). Components
+ * reference var(--…); they should not hardcode hexes.
+ */
+
+:root {
+  /* ── Paper ───────────────────────────────────────────────────────────
+     Mint 1980s set, not aged: a bright, clean page with only the
+     faintest warmth — never cream or yellowed. The app ground is that
+     fresh stock; a literal "page" (where bricks print) is pure white
+     (== renderer PAGE_BG), so it reads a hair brighter than the ground.
+     Calibrated against the 1981 set-6628 scans in
+     notes/instruction references/. */
+  --paper: #f4f4f4; /* app ground — bright neutral white, warmth removed */
+  --page: #ffffff; /* a manual page / brick canvas (== render PAGE_BG) */
+  --paper-sunk: #e8e8e8; /* recessed wells, inactive fields */
+
+  /* ── Ink ─────────────────────────────────────────────────────────────
+     Warm near-black == the brick `black` (#1A1A1A). Coherent by design:
+     printed ink and a black brick are one value. */
+  --ink: #1a1a1a; /* primary text, heavy rules, outlines */
+  --ink-2: #4b4b49; /* secondary text */
+  --ink-faint: #8b8b89; /* captions, metadata, disabled */
+
+  /* ── Brick / system palette (from render/palette.ts, verbatim) ───────
+     These are the ONLY chromatic values in the app. Yellow is the
+     standing UI accent (--accent below); the rest are for bricks, the
+     parts legend, and step marks. */
+  --red: #c8102e;
+  --yellow: #ffcc00; /* authentic bright LEGO yellow (locked to render palette) */
+  --blue: #0a3d91;
+  --green: #2e7d32;
+  --gray: #a4acae;
+  --brick-white: #f7f7f2;
+  --outline: #000000; /* brick outline — pure black, matches renderer */
+
+  /* Red, pressed/settled — a darker face for the "settle" of a press,
+     read as the shaded side of a brick rather than a drop shadow. */
+  --red-shade: #8f0a20;
+
+  /* Primary accent = authentic LEGO yellow with black ink on top (a
+     yellow 2×4 with black print). The standing CTA colour. --accent-shade
+     is the pressed/settled darker face. */
+  --accent: var(--yellow);
+  --accent-ink: var(--ink);
+  --accent-shade: #d9a900;
+
+  /* ── Rules ───────────────────────────────────────────────────────────
+     A manual draws with line weight, not elevation — but the reference
+     leans on whitespace and the big step numerals to structure the page,
+     so rules are the exception, not the grid. Three discrete weights;
+     nothing in between. */
+  --rule: #e2e2e0; /* hairline dividers on paper (used sparingly) */
+  --rule-hair: 1px;
+  --rule-bold: 2px;
+  --rule-heavy: 3px;
+
+  /* ── Type ────────────────────────────────────────────────────────────
+     A Swiss grotesque, faithful to the manuals and zero-dependency.
+     Mono is reserved for true machine data (set numbers, brick counts) —
+     a deliberate modern-instruction accent, never body prose. */
+  --font-sans: 'Helvetica Neue', Helvetica, Arial, 'Univers', sans-serif;
+  --font-mono: 'SF Mono', 'Menlo', 'Consolas', ui-monospace, monospace;
+
+  --fw-regular: 400;
+  --fw-bold: 700;
+  --fw-black: 900;
+
+  /* Type scale. Numeral is the giant flat step number (fluid on mobile);
+     everything else is small and functional. */
+  --t-numeral: clamp(44px, 14vw, 72px);
+  --t-display: 28px; /* wordmark, term headline */
+  --t-title: 17px; /* step / section heads */
+  --t-body: 15px; /* body, list items */
+  --t-caption: 11px; /* captions */
+  --t-micro: 9px; /* uppercase machine labels */
+
+  --lh-tight: 0.9; /* numerals, headlines */
+  --lh-body: 1.35;
+
+  --tracking-tight: -0.5px; /* large flat type */
+  --tracking-label: 2px; /* uppercase micro labels */
+
+  /* ── Geometry ────────────────────────────────────────────────────────
+     Sharp corners are a decision, stated once. A stud is the base unit;
+     spacing is stud multiples so the whole layout rides the brick grid. */
+  --radius: 0;
+  --stud: 8px;
+  --s-1: 4px; /* half-stud */
+  --s-2: 8px; /* 1 stud */
+  --s-3: 12px;
+  --s-4: 16px; /* 2 studs */
+  --s-5: 24px; /* 3 studs */
+  --s-6: 32px; /* 4 studs */
+  --s-7: 48px; /* 6 studs */
+  --s-8: 64px; /* 8 studs */
+
+  /* ── Surface widths ──────────────────────────────────────────────────
+     Mobile-first: the app is a single manual page, phone-width, centred
+     on the ground. */
+  --surface-w: 420px;
+  --gutter: 20px;
+
+  /* ── Motion ──────────────────────────────────────────────────────────
+     Stop-motion, not smooth — see design/motion.ts for the full rules.
+     These mirror the JS constants (12fps → ~83ms/frame) so CSS- and
+     JS-driven motion share one clock. `steps()` gives the snap. */
+  --ease-step: steps(5, end); /* signature stop-motion snap */
+  --dur-snap: 166ms; /* a brick seating / a press settling */
+  --dur-place: 415ms; /* one element flying into place */
+  --dur-swap: 665ms; /* a full shape swap */
+}
+
+/* When the OS asks for less motion, signature moves cut instantly. */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --dur-snap: 0ms;
+    --dur-place: 0ms;
+    --dur-swap: 0ms;
+  }
+}

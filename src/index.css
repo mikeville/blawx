@@ -1,5 +1,9 @@
-/* Global reset — force light canvas so system dark-mode doesn't bleed
-   black behind the paper-toned pages. */
+/* Design tokens first — the whole app's visual language (see
+   design/tokens.css). Everything below and downstream reads var(--…). */
+@import './design/tokens.css';
+
+/* Global reset — force a light canvas so system dark-mode never bleeds
+   black behind the paper-toned pages. Ground + ink come from tokens. */
 
 :root {
   color-scheme: light;
@@ -8,5 +12,8 @@
 html,
 body {
   margin: 0;
-  background: #fdfcf8;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
 }
