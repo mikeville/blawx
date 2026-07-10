@@ -502,11 +502,12 @@ lands directly in the result.
      log is the cover: the front brick layer assembles on the stage during
      the model wait (real data — the front mask is known at t=0).
 
-   **3b — streamed honest miss-path log** (the live-gen "watch it get
-   built" moment), rendered in the below-the-rule zone during the wait.
-   Today `generateClient.generate()` is one blocking GET — to show real
-   stages the Worker must stream (SSE/chunked) real events. Honest step
-   mapping (from `../api/src/{generate,index}.ts`):
+   **3b — streamed honest miss-path log** ✅ Landed + verified in-browser
+   (2026-07-10; as-built notes in the "Stage 3b landed" block below). The
+   live-gen "watch it get built" moment, rendered in the below-the-rule zone
+   during the wait. Spec as designed: `generateClient.generate()` went from a
+   blocking GET to an SSE stream of real events. Honest step mapping (from
+   `../api/src/{generate,index}.ts`):
 
    | Real op | Time | Log label |
    |---|---|---|
@@ -619,25 +620,90 @@ link) against the live cache-only Worker on :5174.
   **`TitlePage.tsx` deleted** (its masthead/stage now live in Shell; only
   consumer was Booklet).
 
-**Next action:** Stage **3b** — the streamed honest miss-path log (the
-"watch it get built" moment), rendered in the below-the-rule zone during
-the model wait, giving the now-persistent stage a real transition to cover
-the idle→result morph. See the expanded Stage 3 above for the honest step
-map and the distinct failure states. Entry points:
-`src/api/generateClient.ts` (blocking GET → streamed events),
-`../api/src/{generate,index}.ts` (Worker must emit SSE/chunked), a new log
-component in the below-rule zone, and the stage's front-brick-layer
-assemble-on-real-data during the wait.
+**Stage 3b landed (2026-07-10)** — the streamed honest build log + the
+front-layer assemble on the stage, verified in-browser at mobile width
+against the **replayed** duck pipeline at **$0** (no Anthropic call ever
+made). The full cycle confirmed: idle → submit an uncached term → the stage
+shows the front silhouette as a one-deep brick wall while the log dwells on
+"Designing the build" → on `done` the wall morphs into the finished 3D model
+and the log gives way to the booklet (set number appears only on completion).
+The persistent shell (3a) holds through the whole transition; no console
+errors.
 
-**Spend gate (load-bearing) for 3b:** build the entire streamed-log UX at
-**$0** by replaying the recorded duck call-1/call-2 responses
-(`../api/test/fixtures/duck-response.txt`, `duck-masks.txt`) through the
-Worker with injected latency. Only Phase 5 rung (a) — a final 1–2
-novel-term smoke test — bills Anthropic, under a discrete per-run sign-off.
-No live call before that sign-off.
+- **Transport = SSE.** The Worker's generation path streams `text/event-stream`
+  frames; cache **hits stay plain JSON** (instant, no log). The client branches
+  on `content-type`. Frame contract: `front {mask,color}` (the 256-char FA
+  front mask, emitted at t=0) · `step {id,label}` (one per honest pipeline op) ·
+  `done {grid,degraded,calls}` · `error {code,status}`.
+- **`../api/src/generate.ts`** — threads an optional `OnProgress` callback
+  (default no-op, so tests/offline are unaffected) through `generate` /
+  `generateFromFront`, emitting `front` + one `step` per real op: match →
+  design (call #1) → check → **correct only when the retry actually fires** →
+  square → solidify. Honest: nearly all wall-clock is the model call(s), so the
+  log dwells on design/correct and the rest flash as fast bookends.
+- **`../api/src/index.ts`** — new `streamGeneration()` helper bridges the async
+  pipeline to an SSE `TransformStream`; on success it stores the KV entry
+  **before** `done` (so the next hit is instant), replay passes no `store` (must
+  not pollute KV with duck-as-`<term>`). Distinct terminal frames per failure:
+  no-source → 404-family, bad-model-output/upstream → 502. 429 rate-limit and
+  cache-only 404 stay pre-stream JSON.
+- **`../api/src/replay.ts`** (new) + **`test/replay.test.ts`** — the $0 harness.
+  Embeds the frozen duck fixtures as string constants (the Worker can't
+  `readFileSync` at the edge) and a `replayModelCall(delayMs)` that returns the
+  recorded clean response after an injected delay → the real streaming pipeline
+  runs offline, 1 call, no "Correcting". A drift test asserts the embed stays
+  byte-identical to `test/fixtures/{duck-response,duck-masks}.txt`. Worker tests
+  32 → 34.
+- **`src/api/generateClient.ts`** — `generate(term, onEvent?)` now parses the SSE
+  stream (frame reader + dispatch), resolving on `done`/`error`; falls back to
+  JSON for hits/cache-only-miss/rate-limit. `GenerateResult` gained `miss.code`
+  (`miss` | `no-source`) and `error.kind` (`rate-limit` | `upstream` | `network`
+  | `config` | `bad-response`) for distinct copy.
+- **`src/build/{BuildLog.tsx,build.css}`** (new) — the log in the below-rule
+  zone: "BUILDING `<term>`" header, one row per streamed step, seated steps get
+  a yellow stud marker + faint text, the active (running) step gets a dark
+  marker that blinks on the stop-motion beat + bold ink. No spinner.
+- **`src/voxel/frontLayer.ts`** (new) — `frontMaskToBricks(mask, color)` turns
+  the front event's 256-char mask into a one-voxel-deep brick layer at the front
+  plane (z=0), using the hull's front convention (`front[size-1-y][x]`) so it
+  aligns with the finished model that replaces it. Verified visually: renders as
+  a correct upright silhouette, not flipped.
+- **`src/App.tsx`** — threads `onEvent` into `generate`: `front` → assemble the
+  front layer on the persistent stage; `step` → append to `logSteps`. Loading
+  renders `<BuildLog>`; failures render distinct `failureText(...)` copy.
 
-**Spend gate (load-bearing):** build the entire streamed-log UX at **$0**
-by replaying the recorded duck call-1/call-2 responses through the Worker
-with injected latency. Only Phase 5 rung (a) — a final 1–2 novel-term
-smoke test — bills Anthropic, under a discrete per-run sign-off. No live
-call before that sign-off.
+**$0 replay dev toggle (local `../api/.dev.vars`, gitignored):** `CACHE_ONLY`
+is commented out and `REPLAY=1` + `REPLAY_DELAY_MS=3500` are set, so any
+uncached `?q=` streams the duck fixtures with 3.5 s of fake model latency — the
+way to see the 3b log locally. `REPLAY` short-circuits the miss path **before**
+rate-limit + Anthropic, so it's $0 by construction. **To return to cache-only
+v1:** uncomment `CACHE_ONLY=1` and remove/zero `REPLAY`. (This is the *shared*
+Worker's dev config — it also gates the sibling `../blawx` locally.)
+
+**Not done in 3b (recorded, not blockers):**
+- **Failure states verified by code/types only, not in-browser** — replay always
+  succeeds (clean duck), so the `no-source` / `429` / `upstream` / `x-degraded`
+  copy paths weren't exercised live. The mapping is typed + unit-adjacent; a live
+  or forced-error pass would confirm the rendered strings.
+- **Front layer is static, not staggered.** It appears all-at-once when the
+  `front` event lands. The per-brick stop-motion *assemble* (bricks seating one
+  at a time) is Stage 4 animation, not built here.
+
+**Next action:** Stage 3 (the one morphing surface + streamed log) is complete.
+Remaining Phase 6 / Phase 5 threads, each an independently vetoable bet:
+- **Stage 4 — stop-motion animation pass.** Intro fall-into-place + the
+  per-brick front-layer assemble on stepped/held timing (see `design/motion.ts`).
+  `Scene.tsx` renders a static SVG, so per-brick staged animation likely needs a
+  render-side change — feasibility TBD. Mike flagged this lower-priority / his
+  call.
+- **3b polish** — exercise the distinct failure-state copy in-browser (force a
+  `no-source` term / a 429 / an upstream error) to confirm the rendered strings.
+- **Phase 5 rung (a)** — the first billable Anthropic smoke test (1–2 novel
+  terms, ~$0.02–0.04, discrete per-run sign-off). Flip `CACHE_ONLY`/`REPLAY` off,
+  point at a real key. This is the only step that leaves $0.
+- **Phase 5 rung (d)** — production ship (remote KV, deploy, seed4 remote); can
+  ship cache-only first, independent of live-gen.
+
+**Spend gate (still load-bearing):** the entire 3b UX was built and verified at
+**$0** via replay. Only Phase 5 rung (a) bills Anthropic, under a discrete
+per-run sign-off. No live call has been made.
