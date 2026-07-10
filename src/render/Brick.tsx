@@ -11,7 +11,15 @@ type Props = {
   style?: BrickStyle;
 };
 
-const STROKE = 0.65;
+// Brick outline weight, expressed as a fraction of one voxel unit rather
+// than a fixed screen width. Combined with a *scaling* stroke (no
+// vectorEffect), the on-screen outline is proportional to the brick's
+// on-screen size at every scale: a full 16³ model that fits into the
+// scroll gets a fine outline, a single 1×1 preview brick gets a heavier
+// one, and both read as the same manual line. This replaces the old
+// non-scaling 0.65px stroke, which held constant screen width and so read
+// proportionally heavy once the whole model was scaled down to fit.
+const STROKE_RATIO = 0.04;
 
 const HEIGHT_RATIO: Record<BrickStyle, number> = {
   plate: PLATE_HEIGHT_RATIO,
@@ -24,6 +32,7 @@ function poly(points: Array<{ x: number; y: number }>): string {
 
 export function BrickShape({ brick, desaturated, unit = UNIT, style = 'plate' }: Props) {
   const { x: bx, y: by, z: bz, w, d, color } = brick;
+  const stroke = unit * STROKE_RATIO;
   const heightRatio = HEIGHT_RATIO[style];
   const yBot = by * heightRatio;
   const yTop = (by + 1) * heightRatio;
@@ -55,14 +64,13 @@ export function BrickShape({ brick, desaturated, unit = UNIT, style = 'plate' }:
   return (
     <g
       stroke={OUTLINE}
-      strokeWidth={STROKE}
+      strokeWidth={stroke}
       strokeLinejoin="miter"
       strokeLinecap="square"
-      vectorEffect="non-scaling-stroke"
     >
-      <polygon points={poly([TBR, TFR, BFR, BBR])} fill={rightFill} vectorEffect="non-scaling-stroke" />
-      <polygon points={poly([TFL, TFR, BFR, BFL])} fill={leftFill} vectorEffect="non-scaling-stroke" />
-      <polygon points={poly([TBL, TBR, TFR, TFL])} fill={topFill} vectorEffect="non-scaling-stroke" />
+      <polygon points={poly([TBR, TFR, BFR, BBR])} fill={rightFill} />
+      <polygon points={poly([TFL, TFR, BFR, BFL])} fill={leftFill} />
+      <polygon points={poly([TBL, TBR, TFR, TFL])} fill={topFill} />
       {showStuds && studs.map((s, i) => {
         const sideLeftX = s.cx - studR;
         const sideRightX = s.cx + studR;
@@ -75,7 +83,6 @@ export function BrickShape({ brick, desaturated, unit = UNIT, style = 'plate' }:
                   A ${studR.toFixed(3)} ${studRY.toFixed(3)} 0 0 1 ${sideLeftX.toFixed(3)} ${s.cy.toFixed(3)}
                   Z`}
               fill={OUTLINE}
-              vectorEffect="non-scaling-stroke"
             />
             <ellipse
               cx={s.cx}
@@ -83,7 +90,6 @@ export function BrickShape({ brick, desaturated, unit = UNIT, style = 'plate' }:
               rx={studR}
               ry={studRY}
               fill={topFill}
-              vectorEffect="non-scaling-stroke"
             />
           </g>
         );
