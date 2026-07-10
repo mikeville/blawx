@@ -1,6 +1,6 @@
 import { useMemo, useState, useEffect } from 'react';
 import { Booklet } from './booklet/Booklet.tsx';
-import { SearchLanding } from './search/SearchLanding.tsx';
+import { Surface } from './surface/Surface.tsx';
 import { setNumberFor, slug } from './api/slug.ts';
 import { generate, type GenerateResult } from './api/generateClient.ts';
 
@@ -88,5 +88,5 @@ export default function App() {
   }
 
   if (q) return <BookletView term={q} />;
-  return <SearchLanding nouns={nouns} onSubmit={navigate} />;
+  return <Surface nouns={nouns} onSubmit={navigate} />;
 }

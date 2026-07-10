@@ -1,0 +1,183 @@
+/*
+ * Idle/input front surface — see src/design/tokens.css for the language
+ * this obeys. Mobile-first single column; structure from whitespace and
+ * the huge flat step numeral, not rules.
+ */
+
+.surface {
+  min-height: 100vh;
+  background: var(--paper);
+  display: flex;
+  justify-content: center;
+}
+
+.surface__sheet {
+  width: 100%;
+  max-width: var(--surface-w);
+  padding: var(--s-6) var(--gutter) var(--s-8);
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-6);
+}
+
+.surface__masthead {
+  display: flex;
+}
+
+.surface__mark {
+  font-family: var(--font-sans);
+  font-weight: var(--fw-black);
+  font-size: var(--t-display);
+  line-height: var(--lh-tight);
+  letter-spacing: var(--tracking-tight);
+  color: var(--ink);
+  text-transform: lowercase;
+}
+
+/* The persistent iso stage: a random cached set, floating on the paper.
+   No card, no border, no shadow — the model reads as an object sitting
+   on the page, not a boxed illustration. */
+.surface__stage {
+  min-height: 220px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.surface__stage svg {
+  width: 100%;
+  height: auto;
+  max-height: 260px;
+  display: block;
+}
+
+.surface__form {
+  display: flex;
+  flex-direction: column;
+}
+
+.surface__step {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--s-4);
+}
+
+.surface__stepnum {
+  flex: 0 0 auto;
+  font-family: var(--font-sans);
+  font-weight: var(--fw-black);
+  font-size: var(--t-numeral);
+  line-height: var(--lh-tight);
+  color: var(--ink);
+}
+
+.surface__stepbody {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-4);
+  padding-top: var(--s-2);
+}
+
+.surface__stephead {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-weight: var(--fw-bold);
+  font-size: var(--t-title);
+  line-height: var(--lh-body);
+  color: var(--ink);
+}
+
+.surface__input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: var(--s-3) var(--s-4);
+  background: var(--page);
+  border: var(--rule-bold) solid var(--rule);
+  border-radius: var(--radius);
+  font-family: var(--font-sans);
+  font-size: var(--t-body);
+  color: var(--ink);
+}
+
+.surface__input::placeholder {
+  color: var(--ink-faint);
+}
+
+.surface__input:focus {
+  outline: none;
+  border-color: var(--ink);
+}
+
+.surface__error {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: var(--t-caption);
+  color: var(--red);
+}
+
+/* Parts-legend picks — a 2-col grid of sharp swatches, explicitly not
+   pills. Reads like a manual's parts inventory, not a chip tray. */
+.surface__picks {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--s-3) var(--s-4);
+}
+
+.surface__pick {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-2);
+  min-width: 0;
+  padding: var(--s-1) 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: var(--font-sans);
+  font-size: var(--t-body);
+  color: var(--ink);
+  text-align: left;
+}
+
+.surface__swatch {
+  flex: 0 0 auto;
+  width: 16px;
+  height: 16px;
+  border: var(--rule-hair) solid var(--outline);
+  border-radius: var(--radius);
+}
+
+.surface__pickname {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.surface__submit {
+  margin-top: var(--s-2);
+  padding: var(--s-3) var(--s-5);
+  background: var(--accent);
+  border: none;
+  border-radius: var(--radius);
+  font-family: var(--font-sans);
+  font-weight: var(--fw-bold);
+  font-size: var(--t-body);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--accent-ink);
+  cursor: pointer;
+  transition: transform var(--dur-snap) var(--ease-step),
+    background-color var(--dur-snap) var(--ease-step);
+}
+
+.surface__submit:active:not(:disabled) {
+  transform: translateY(1px);
+  background: var(--accent-shade);
+}
+
+.surface__submit:disabled {
+  background: var(--paper-sunk);
+  color: var(--ink-faint);
+  cursor: not-allowed;
+}
