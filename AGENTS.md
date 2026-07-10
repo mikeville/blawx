@@ -467,10 +467,44 @@ lands directly in the result.
    the new hero-plus-scroll); reuse the iso-hero + grid→bricks pattern
    from `src/surface/Surface.tsx`. Also fold in the stroke-vs-scale fix
    noted below now that brick size becomes intentional per step.
-3. **Streamed honest miss-path log** (the live-gen "watch it get built"
-   moment). Today `generateClient.generate()` is one blocking GET — to
-   show real stages the Worker must stream (SSE/chunked) real events.
-   Honest step mapping (from `../api/src/{generate,index}.ts`):
+3. **One morphing surface + streamed honest miss-path log.** Two moves,
+   sequenced: first make the surface actually persist (3a), then fill the
+   wait with the honest log (3b). Do them together — the log is what gives
+   the now-persistent stage a real transition to cover the swap, so the
+   persistence reads as intentional instead of a glitchy hard-swap.
+   (Decided 2026-07-10 with Mike: fold the persistence refactor into
+   Stage 3 rather than shipping it as a standalone probe.)
+
+   **3a — persist the shell (the one-page-app feel).** Problem Mike named:
+   today `App.tsx` swaps `<Surface>` out for `<BookletView>` wholesale, so
+   two entirely different DOM trees mount/unmount on submit — it reads as a
+   hard page load even though it's client-side. The Phase 6 "one morphing
+   surface with the iso stage always present" (above) was never actually
+   built; we built two surfaces that merely share a renderer. Fix, with
+   **no new UI** (constraint from Mike — global nav persisting is table
+   stakes, don't add chrome):
+   - Hoist the iso **stage** (and the `blawx` masthead) into a persistent
+     shell element that never unmounts across idle → loading → result.
+     Only the content *below* the stage swaps. The `?q=` deep-link still
+     lands in the result, but inside the same shell.
+   - Put a single **black horizontal rule between the stage and the
+     content below it** (the "Name your brick set" area in idle; the
+     booklet in result). This is the visible seam of the fixed-stage /
+     swappable-content split, and a shared landmark present in *both* idle
+     and result — the same 1px brick-weight rule already used between
+     booklet sections. One line of CSS, not new UI.
+   - Consequence to handle: the idle random set must visibly *become* the
+     named set on submit. A hard brick-swap on a now-fixed stage just
+     moves the "page load" feeling onto the stage itself — so this needs
+     at least a minimal stepped stop-motion cut (ties to Stage 4). 3b's
+     log is the cover: the front brick layer assembles on the stage during
+     the model wait (real data — the front mask is known at t=0).
+
+   **3b — streamed honest miss-path log** (the live-gen "watch it get
+   built" moment), rendered in the below-the-rule zone during the wait.
+   Today `generateClient.generate()` is one blocking GET — to show real
+   stages the Worker must stream (SSE/chunked) real events. Honest step
+   mapping (from `../api/src/{generate,index}.ts`):
 
    | Real op | Time | Log label |
    |---|---|---|
@@ -550,7 +584,22 @@ the live cache-only Worker (`?q=cat` / `?q=duck`).
   previews a proportionally heavier one, both reading as the same manual
   line. `unit` is now purely a margin/proportion knob per call site.
 
-Next: Stage 3 — streamed honest miss-path log (see Stage 3 above). Build
-the whole streamed-log UX at **$0** by replaying the recorded duck
-call-1/call-2 responses through the Worker with injected latency; only
-Phase 5 rung (a) bills Anthropic, under a discrete per-run sign-off.
+**Next action:** Stage 3 (see the expanded Stage 3 above). Two moves in
+one pass: **3a** — hoist the iso stage + `blawx` masthead into a
+persistent shell so idle → loading → result stop hard-swapping DOM trees
+(the one-page-app feel Mike wants), with a black horizontal rule as the
+seam between the stage and the content below it, and **no new UI** beyond
+that rule. **3b** — the streamed honest log fills the below-the-rule zone
+during the model wait and gives the persistent stage its transition (front
+brick layer assembling on real data). Entry points: `src/App.tsx` (the
+`Surface`↔`BookletView` swap becomes a shell + swappable content),
+`src/surface/Surface.tsx` + `src/booklet/Booklet.tsx` (both currently own
+their own stage — factor the stage out so one instance persists),
+`src/api/generateClient.ts` (blocking GET → streamed events),
+`../api/src/{generate,index}.ts` (Worker must emit SSE/chunked).
+
+**Spend gate (load-bearing):** build the entire streamed-log UX at **$0**
+by replaying the recorded duck call-1/call-2 responses through the Worker
+with injected latency. Only Phase 5 rung (a) — a final 1–2 novel-term
+smoke test — bills Anthropic, under a discrete per-run sign-off. No live
+call before that sign-off.
