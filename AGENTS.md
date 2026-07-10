@@ -475,7 +475,9 @@ lands directly in the result.
    (Decided 2026-07-10 with Mike: fold the persistence refactor into
    Stage 3 rather than shipping it as a standalone probe.)
 
-   **3a — persist the shell (the one-page-app feel).** Problem Mike named:
+   **3a — persist the shell (the one-page-app feel).** ✅ Landed +
+   verified in-browser (2026-07-10; see the Next action block for the
+   as-built notes). Problem Mike named:
    today `App.tsx` swaps `<Surface>` out for `<BookletView>` wholesale, so
    two entirely different DOM trees mount/unmount on submit — it reads as a
    hard page load even though it's client-side. The Phase 6 "one morphing
@@ -584,19 +586,55 @@ the live cache-only Worker (`?q=cat` / `?q=duck`).
   previews a proportionally heavier one, both reading as the same manual
   line. `unit` is now purely a margin/proportion knob per call site.
 
-**Next action:** Stage 3 (see the expanded Stage 3 above). Two moves in
-one pass: **3a** — hoist the iso stage + `blawx` masthead into a
-persistent shell so idle → loading → result stop hard-swapping DOM trees
-(the one-page-app feel Mike wants), with a black horizontal rule as the
-seam between the stage and the content below it, and **no new UI** beyond
-that rule. **3b** — the streamed honest log fills the below-the-rule zone
-during the model wait and gives the persistent stage its transition (front
-brick layer assembling on real data). Entry points: `src/App.tsx` (the
-`Surface`↔`BookletView` swap becomes a shell + swappable content),
-`src/surface/Surface.tsx` + `src/booklet/Booklet.tsx` (both currently own
-their own stage — factor the stage out so one instance persists),
+**Stage 3a landed (2026-07-10)** — the persistent shell, verified
+in-browser at mobile width (idle → SPA submit → reset, plus `?q=` deep
+link) against the live cache-only Worker on :5174.
+
+- **`src/shell/{Shell.tsx,shell.css}`** (new) — the persistent surface:
+  `blawx` masthead + the iso **stage** (`Scene`) + the black seam rule +
+  a swappable `children` content slot. `App` renders `<Shell>` in *every*
+  state, so the masthead and stage `<svg>` never unmount across idle →
+  loading → result — only the below-rule content reconciles. The stage
+  morphs in place (idle random set → finished model) instead of two DOM
+  trees swapping. The seam is one 1px black (`--ink`) rule via
+  `border-top` on `.shell__content` — present in every state, the shared
+  landmark; **no new UI** beyond it.
+- **`App.tsx`** now owns the stage bricks + the fetch (folded in from the
+  old `BookletView`). `stageBricks` holds the idle random set while idle
+  and the finished model once a build resolves; it is *held* across the
+  idle→loading transition so the stage never blanks (verified: a
+  CORS-failed fetch left the idle model on the stage rather than clearing
+  it). `reset()` bumps an `idleNonce` so returning to idle re-rolls the
+  stage's random set (verified 768→254).
+- **`src/surface/heroSets.ts`** (new) — shared hero pool + `sample` /
+  `pickOne` / `loadBricksForNoun`, factored out of `Surface` so `App`
+  (idle stage) and `Surface` (parts-legend picks) stop duplicating the
+  glob/loader.
+- **`Surface.tsx`** stripped to just the below-rule idle form (masthead +
+  stage + idle-brick loading moved to Shell/App); `surface.css` trimmed to
+  match. **`Booklet.tsx`** drops the `TitlePage` hero + the full-page
+  `.result` framing and renders a lead block (term + counts) + inventory +
+  steps + final directly inside the shell content; `pages.css` re-scoped
+  (title-hero/masthead removed, lead block added, messages de-full-screened).
+  **`TitlePage.tsx` deleted** (its masthead/stage now live in Shell; only
+  consumer was Booklet).
+
+**Next action:** Stage **3b** — the streamed honest miss-path log (the
+"watch it get built" moment), rendered in the below-the-rule zone during
+the model wait, giving the now-persistent stage a real transition to cover
+the idle→result morph. See the expanded Stage 3 above for the honest step
+map and the distinct failure states. Entry points:
 `src/api/generateClient.ts` (blocking GET → streamed events),
-`../api/src/{generate,index}.ts` (Worker must emit SSE/chunked).
+`../api/src/{generate,index}.ts` (Worker must emit SSE/chunked), a new log
+component in the below-rule zone, and the stage's front-brick-layer
+assemble-on-real-data during the wait.
+
+**Spend gate (load-bearing) for 3b:** build the entire streamed-log UX at
+**$0** by replaying the recorded duck call-1/call-2 responses
+(`../api/test/fixtures/duck-response.txt`, `duck-masks.txt`) through the
+Worker with injected latency. Only Phase 5 rung (a) — a final 1–2
+novel-term smoke test — bills Anthropic, under a discrete per-run sign-off.
+No live call before that sign-off.
 
 **Spend gate (load-bearing):** build the entire streamed-log UX at **$0**
 by replaying the recorded duck call-1/call-2 responses through the Worker
