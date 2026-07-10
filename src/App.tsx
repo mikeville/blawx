@@ -2,8 +2,10 @@ import { useMemo, useState, useEffect, type ReactNode } from 'react';
 import { Shell } from './shell/Shell.tsx';
 import { Booklet } from './booklet/Booklet.tsx';
 import { Surface } from './surface/Surface.tsx';
+import { BuildLog, type LogStep } from './build/BuildLog.tsx';
 import { buildHeroPool, pickOne, loadBricksForNoun } from './surface/heroSets.ts';
 import { buildSteps, allBricks } from './voxel/steps.ts';
+import { frontMaskToBricks } from './voxel/frontLayer.ts';
 import type { Brick } from './voxel/types.ts';
 import { setNumberFor, slug } from './api/slug.ts';
 import { generate, type GenerateResult } from './api/generateClient.ts';
@@ -45,6 +47,44 @@ function readQuery(): string | null {
   return new URLSearchParams(window.location.search).get('q');
 }
 
+// Distinct, honest copy per failure — never one generic "something went
+// wrong". A miss says we don't have it (and why); an error says the build
+// couldn't finish (and whether retrying helps).
+function failureText(
+  view: Extract<GenerateResult, { status: 'miss' } | { status: 'error' }>,
+  term: string,
+): ReactNode {
+  if (view.status === 'miss') {
+    return view.code === 'no-source' ? (
+      <>
+        no starting outline for <code>{term}</code> yet.
+      </>
+    ) : (
+      <>
+        no cached build for <code>{term}</code> yet.
+      </>
+    );
+  }
+  switch (view.kind) {
+    case 'rate-limit':
+      return <>5 fresh builds an hour — cached sets are free. try one from the shelf.</>;
+    case 'network':
+      return (
+        <>
+          couldn’t reach the builder for <code>{term}</code>.
+        </>
+      );
+    case 'config':
+      return <>the builder isn’t configured ({view.message}).</>;
+    default:
+      return (
+        <>
+          couldn’t finish <code>{term}</code> — try again.
+        </>
+      );
+  }
+}
+
 export default function App() {
   const nouns = useMemo(seed4Nouns, []);
   const heroPool = useMemo(() => buildHeroPool(nouns), [nouns]);
@@ -54,10 +94,14 @@ export default function App() {
   const [idleNonce, setIdleNonce] = useState(0);
   const [view, setView] = useState<View>({ status: 'loading' });
 
+  // The honest build log during a live generation — one row per real
+  // pipeline op, streamed from the Worker. Empty while idle / on a hit.
+  const [logSteps, setLogSteps] = useState<LogStep[]>([]);
+
   // The one thing the persistent stage shows: the idle random set while
-  // idle, the finished model once a build resolves. Held across the
-  // idle → loading transition so the stage never blanks out (3b will
-  // assemble the front layer here during the wait).
+  // idle; the front brick layer (from the FA mask, known at t=0) during the
+  // model wait; the finished model once a build resolves. Held across the
+  // idle → loading transition so the stage never blanks out.
   const [stageBricks, setStageBricks] = useState<Brick[]>([]);
 
   useEffect(() => {
@@ -76,7 +120,17 @@ export default function App() {
       };
     }
     setView({ status: 'loading' });
-    generate(slug(q)).then((r) => {
+    setLogSteps([]);
+    generate(slug(q), (e) => {
+      if (!alive) return;
+      if (e.kind === 'front') {
+        // Front silhouette in hand before any depth — assemble it on the
+        // stage so the wait shows the real build starting, not a spinner.
+        setStageBricks(frontMaskToBricks(e.mask, e.color));
+      } else {
+        setLogSteps((prev) => [...prev, { id: e.id, label: e.label }]);
+      }
+    }).then((r) => {
       if (!alive) return;
       setView(r);
       if (r.status === 'ok') setStageBricks(allBricks(buildSteps(r.grid)));
@@ -112,33 +166,14 @@ export default function App() {
   function content() {
     if (s === null) return <Surface nouns={nouns} onSubmit={navigate} />;
     if (view.status === 'loading') {
-      return (
-        <div className="result-msg">
-          <p className="result-msg__text">
-            building <code>{s}</code>…
-          </p>
-        </div>
-      );
+      return <BuildLog term={s} steps={logSteps} />;
     }
     if (view.status === 'ok') {
       return (
         <Booklet grid={view.grid} term={s} setNumber={setNumberFor(s)} onReset={reset} />
       );
     }
-    return (
-      <ResultMessage onReset={reset}>
-        {view.status === 'miss' ? (
-          <>
-            no cached build for <code>{s}</code> yet.
-          </>
-        ) : (
-          <>
-            couldn’t reach the builder for <code>{s}</code>
-            {view.message ? ` (${view.message})` : ''}.
-          </>
-        )}
-      </ResultMessage>
-    );
+    return <ResultMessage onReset={reset}>{failureText(view, s)}</ResultMessage>;
   }
 
   return (
