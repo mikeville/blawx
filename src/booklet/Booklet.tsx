@@ -8,27 +8,33 @@ import './pages.css';
 
 type Props = {
   grid: VoxelGrid;
+  term: string;
   setNumber: string;
+  onReset: () => void;
 };
 
-export function Booklet({ grid, setNumber }: Props) {
+// The unified result scroll: one manual, top to bottom. The finished iso
+// model is the persistent hero; beneath it the booklet flows flush —
+// parts inventory → build steps → final — with each section separated
+// from the last by a single brick-weight rule instead of being boxed in
+// a shadowed card. "Build another set" waits at the very end.
+export function Booklet({ grid, term, setNumber, onReset }: Props) {
   const steps = buildSteps(grid);
   const finalBricks = allBricks(steps);
   return (
-    <div className="booklet">
-      <div className="page-wrap page-wrap--span">
-        <TitlePage bricks={finalBricks} setNumber={setNumber} />
-      </div>
-      <div className="page-wrap">
+    <div className="result">
+      <div className="result__sheet">
+        <TitlePage
+          bricks={finalBricks}
+          term={term}
+          setNumber={setNumber}
+          stepCount={steps.length}
+        />
         <InventoryPage bricks={finalBricks} />
-      </div>
-      {steps.map((step, i) => (
-        <div key={i} className="page-wrap">
-          <StepPage step={step} number={i + 1} />
-        </div>
-      ))}
-      <div className="page-wrap page-wrap--span">
-        <FinalPage bricks={finalBricks} setNumber={setNumber} />
+        {steps.map((step, i) => (
+          <StepPage key={i} step={step} number={i + 1} total={steps.length} />
+        ))}
+        <FinalPage bricks={finalBricks} setNumber={setNumber} onReset={onReset} />
       </div>
     </div>
   );

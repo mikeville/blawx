@@ -1,122 +1,139 @@
-:root {
-  --page-w: 880px;
-  --page-h: 1100px;
-  --page-margin: 56px;
-  --page-scale: 0.55;
-  --booklet-bg: #d6d6d2;
-  --page-bg: #ffffff;
-  --page-shadow: 0 1px 0 rgba(0, 0, 0, 0.04), 0 18px 40px -22px rgba(0, 0, 0, 0.28);
-  --ink: #000000;
-}
+/*
+ * Unified result scroll — see src/design/tokens.css for the language this
+ * obeys. The finished model is the hero; the booklet flows beneath it as
+ * ONE manual, mobile-first, on the same stud grid + tokens as the front
+ * surface. No cards, no shadows, no fixed print-page geometry: each
+ * section is a flush block, and everything below the hero is separated
+ * from what precedes it by a single brick-weight (1px) black rule — the
+ * same line as a brick outline — so the scroll reads as printed pages,
+ * not a stack of cards.
+ */
 
-@media (max-width: 720px) {
-  :root {
-    --page-scale: 0.38;
-  }
-}
-
-.booklet {
-  background: var(--booklet-bg);
+.result {
   min-height: 100vh;
-  padding: 32px 24px 96px;
-  display: grid;
-  grid-template-columns: 1fr;
-  justify-items: center;
-  column-gap: 32px;
-  row-gap: 32px;
-  font-family: 'Helvetica Neue', Helvetica, Arial, 'Univers', sans-serif;
-  -webkit-font-smoothing: antialiased;
+  background: var(--paper);
+  display: flex;
+  justify-content: center;
 }
 
-@media (min-width: 1100px) {
-  .booklet {
-    grid-template-columns: 1fr 1fr;
-    max-width: calc((var(--page-w) * var(--page-scale)) * 2 + 32px + 96px);
-    margin: 0 auto;
-  }
-  .page-wrap--span {
-    grid-column: 1 / -1;
-  }
-}
-
-.page-wrap {
-  width: calc(var(--page-w) * var(--page-scale));
-  height: calc(var(--page-h) * var(--page-scale));
-  background: var(--page-bg);
-  box-shadow: var(--page-shadow);
-  overflow: hidden;
-  position: relative;
-}
-
-.page {
-  width: var(--page-w);
-  height: var(--page-h);
-  background: var(--page-bg);
-  position: relative;
-  overflow: hidden;
-  transform-origin: top left;
-  transform: scale(var(--page-scale));
-}
-
-.page__inner {
-  position: absolute;
-  inset: var(--page-margin);
+.result__sheet {
+  width: 100%;
+  max-width: var(--surface-w);
+  padding: 0 var(--gutter) var(--s-8);
   display: flex;
   flex-direction: column;
 }
 
-.page--title .page__inner,
-.page--final .page__inner {
-  justify-content: center;
-  align-items: center;
+.page {
+  position: relative;
+  padding: var(--s-6) 0;
 }
 
-.page--title .set-number,
-.page--final .set-number {
-  position: absolute;
-  bottom: var(--page-margin);
-  right: var(--page-margin);
-  font-weight: 900;
-  font-size: 44px;
-  letter-spacing: 0.02em;
+/* The one structural rule: a hairline black divider (brick-outline weight)
+   between each section below the hero. */
+.page--inventory,
+.page--step,
+.page--final {
+  border-top: var(--rule-hair) solid var(--ink);
+}
+
+/* ── Section label (uppercase machine tag) ──────────────────────────── */
+.section-label {
+  margin: 0 0 var(--s-4);
+  font-family: var(--font-sans);
+  font-weight: var(--fw-bold);
+  font-size: var(--t-micro);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--ink-faint);
+}
+
+/* ── Hero (title + final share the model stage) ─────────────────────── */
+.page--title {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-4);
+}
+
+.masthead {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.masthead__mark {
+  font-family: var(--font-sans);
+  font-weight: var(--fw-black);
+  font-size: var(--t-display);
+  line-height: var(--lh-tight);
+  letter-spacing: var(--tracking-tight);
+  text-transform: lowercase;
   color: var(--ink);
+}
+
+.masthead__set {
+  font-family: var(--font-mono);
+  font-size: var(--t-caption);
+  color: var(--ink-faint);
   font-variant-numeric: tabular-nums;
 }
 
-.page--title .hero,
-.page--final .hero {
-  width: 78%;
-  height: 78%;
+.hero {
   display: flex;
   align-items: center;
   justify-content: center;
+  min-height: 240px;
 }
 
-.page--title .hero svg,
-.page--final .hero svg {
+.hero svg {
   width: 100%;
-  height: 100%;
+  height: auto;
+  max-height: 300px;
+  display: block;
 }
 
-.page--inventory .inventory-grid {
+.hero__label {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-1);
+}
+
+.hero__term {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-weight: var(--fw-black);
+  font-size: var(--t-numeral);
+  line-height: var(--lh-tight);
+  letter-spacing: var(--tracking-tight);
+  text-transform: lowercase;
+  color: var(--ink);
+}
+
+.hero__meta {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: var(--t-caption);
+  color: var(--ink-faint);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── Inventory ──────────────────────────────────────────────────────── */
+.inventory-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 32px 24px;
-  flex: 1;
-  align-content: start;
+  gap: var(--s-5) var(--s-3);
 }
 
 .inventory-cell {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: flex-end;
-  gap: 8px;
+  gap: var(--s-1);
 }
 
 .inventory-cell__brick {
-  width: 110px;
-  height: 90px;
+  width: 100%;
+  height: 52px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -128,47 +145,60 @@
 }
 
 .inventory-cell__count {
-  font-weight: 900;
-  font-size: 26px;
-  letter-spacing: -0.02em;
+  font-family: var(--font-mono);
+  font-weight: var(--fw-bold);
+  font-size: var(--t-body);
   color: var(--ink);
   font-variant-numeric: tabular-nums;
 }
 
-.page--step .step-numeral {
-  position: absolute;
-  top: var(--page-margin);
-  left: var(--page-margin);
-  font-weight: 900;
-  font-size: 96px;
-  line-height: 0.85;
-  color: var(--ink);
-  font-variant-numeric: tabular-nums;
-  letter-spacing: -0.04em;
-}
-
-.page--step .callout {
-  position: absolute;
-  top: var(--page-margin);
-  right: var(--page-margin);
-  background: #ffffff;
-  border: 2px solid var(--ink);
-  padding: 14px 18px;
+/* ── Build step ─────────────────────────────────────────────────────── */
+.page--step {
   display: flex;
-  gap: 18px;
+  flex-direction: column;
+  gap: var(--s-4);
+}
+
+.step-head {
+  display: flex;
+  align-items: baseline;
+  gap: var(--s-3);
+}
+
+.step-numeral {
+  font-family: var(--font-sans);
+  font-weight: var(--fw-black);
+  font-size: var(--t-numeral);
+  line-height: var(--lh-tight);
+  letter-spacing: var(--tracking-tight);
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+
+.step-progress {
+  font-family: var(--font-mono);
+  font-size: var(--t-caption);
+  color: var(--ink-faint);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Parts added this step — inline bricks + counts, no frame. */
+.callout {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-3) var(--s-4);
   align-items: center;
 }
 
 .callout-item {
   display: flex;
-  flex-direction: column;
   align-items: center;
-  gap: 4px;
+  gap: var(--s-1);
 }
 
 .callout-item__brick {
-  width: 56px;
-  height: 44px;
+  width: 38px;
+  height: 30px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -180,22 +210,109 @@
 }
 
 .callout-item__count {
-  font-weight: 900;
-  font-size: 18px;
+  font-family: var(--font-mono);
+  font-weight: var(--fw-bold);
+  font-size: var(--t-caption);
   color: var(--ink);
   font-variant-numeric: tabular-nums;
 }
 
-.page--step .scene {
-  position: absolute;
-  inset: calc(var(--page-margin) + 140px) var(--page-margin) calc(var(--page-margin) + 30px);
+.scene {
   display: flex;
   align-items: center;
   justify-content: center;
+  min-height: 200px;
 }
 
-.page--step .scene svg {
+.scene svg {
   width: 100%;
-  height: 100%;
+  height: auto;
+  max-height: 280px;
+  display: block;
 }
 
+/* ── Final ──────────────────────────────────────────────────────────── */
+.page--final {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--s-3);
+  text-align: center;
+}
+
+.final__done {
+  margin: var(--s-3) 0 0;
+  font-family: var(--font-sans);
+  font-weight: var(--fw-bold);
+  font-size: var(--t-title);
+  color: var(--ink);
+}
+
+.final__set {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: var(--t-caption);
+  color: var(--ink-faint);
+  font-variant-numeric: tabular-nums;
+}
+
+.final__again {
+  margin-top: var(--s-3);
+  padding: var(--s-3) var(--s-5);
+  background: var(--accent);
+  border: none;
+  border-radius: var(--radius);
+  font-family: var(--font-sans);
+  font-weight: var(--fw-bold);
+  font-size: var(--t-body);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--accent-ink);
+  cursor: pointer;
+  transition: transform var(--dur-snap) var(--ease-step),
+    background-color var(--dur-snap) var(--ease-step);
+}
+
+.final__again:active {
+  transform: translateY(1px);
+  background: var(--accent-shade);
+}
+
+/* ── Loading / miss / error messages ────────────────────────────────── */
+.result-msg {
+  min-height: 100vh;
+  background: var(--paper);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--s-4);
+  padding: var(--gutter);
+  text-align: center;
+}
+
+.result-msg__text {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: var(--t-body);
+  color: var(--ink-2);
+}
+
+.result-msg__text code {
+  font-family: var(--font-mono);
+  color: var(--ink);
+}
+
+.result-msg__back {
+  padding: var(--s-2) var(--s-4);
+  background: none;
+  border: var(--rule-bold) solid var(--ink);
+  border-radius: var(--radius);
+  font-family: var(--font-sans);
+  font-weight: var(--fw-bold);
+  font-size: var(--t-caption);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--ink);
+  cursor: pointer;
+}

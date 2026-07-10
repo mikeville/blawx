@@ -4,6 +4,7 @@ import { Scene } from '../render/Scene.tsx';
 type Props = {
   step: Step;
   number: number;
+  total: number;
 };
 
 type Tally = { color: Brick['color']; w: 1 | 2; d: 1 | 2; count: number };
@@ -23,24 +24,31 @@ function previewBrick(t: Tally): Brick {
   return { x: 0, y: 0, z: 0, w: t.w, d: t.d, color: t.color };
 }
 
-export function StepPage({ step, number }: Props) {
+// One build step, flush on the page: a giant flat step numeral, the parts
+// added this step (as small iso bricks with counts, no frame), then the
+// assembly view — new bricks in full colour on top of the desaturated
+// cumulative model.
+export function StepPage({ step, number, total }: Props) {
   const items = tally(step.newBricks);
   return (
-    <div className="page page--step">
-      <div className="step-numeral">{number}</div>
+    <section className="page page--step">
+      <header className="step-head">
+        <span className="step-numeral">{number}</span>
+        <span className="step-progress">of {total}</span>
+      </header>
       <div className="callout">
         {items.map((t, i) => (
           <div className="callout-item" key={i}>
             <div className="callout-item__brick">
-              <Scene cumulative={[]} fresh={[previewBrick(t)]} unit={18} margin={4} />
+              <Scene cumulative={[]} fresh={[previewBrick(t)]} unit={16} margin={4} />
             </div>
-            <div className="callout-item__count">{t.count}x</div>
+            <div className="callout-item__count">{t.count}×</div>
           </div>
         ))}
       </div>
       <div className="scene">
-        <Scene cumulative={step.cumulativeBricks} fresh={step.newBricks} unit={26} margin={24} />
+        <Scene cumulative={step.cumulativeBricks} fresh={step.newBricks} unit={22} margin={16} />
       </div>
-    </div>
+    </section>
   );
 }

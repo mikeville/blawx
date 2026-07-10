@@ -1,4 +1,4 @@
-import { useMemo, useState, useEffect } from 'react';
+import { useMemo, useState, useEffect, type ReactNode } from 'react';
 import { Booklet } from './booklet/Booklet.tsx';
 import { Surface } from './surface/Surface.tsx';
 import { setNumberFor, slug } from './api/slug.ts';
@@ -20,7 +20,24 @@ function seed4Nouns(): string[] {
 
 type ViewState = { status: 'loading' } | GenerateResult;
 
-function BookletView({ term }: { term: string }) {
+function ResultMessage({
+  children,
+  onReset,
+}: {
+  children: ReactNode;
+  onReset: () => void;
+}) {
+  return (
+    <div className="result-msg">
+      <p className="result-msg__text">{children}</p>
+      <button type="button" className="result-msg__back" onClick={onReset}>
+        Back
+      </button>
+    </div>
+  );
+}
+
+function BookletView({ term, onReset }: { term: string; onReset: () => void }) {
   const s = slug(term);
   const [state, setState] = useState<ViewState>({ status: 'loading' });
 
@@ -37,32 +54,34 @@ function BookletView({ term }: { term: string }) {
 
   if (state.status === 'loading') {
     return (
-      <main style={{ padding: 24, fontFamily: 'system-ui, sans-serif' }}>
-        <p style={{ opacity: 0.6 }}>
+      <div className="result-msg">
+        <p className="result-msg__text">
           building <code>{s}</code>…
         </p>
-      </main>
+      </div>
     );
   }
 
   if (state.status === 'ok') {
-    return <Booklet grid={state.grid} setNumber={setNumberFor(s)} />;
+    return (
+      <Booklet grid={state.grid} term={s} setNumber={setNumberFor(s)} onReset={onReset} />
+    );
   }
 
   // miss | error
   return (
-    <main style={{ padding: 24, fontFamily: 'system-ui, sans-serif' }}>
+    <ResultMessage onReset={onReset}>
       {state.status === 'miss' ? (
-        <p>
-          no cached build for <code>{s}</code> yet. <a href="./">back</a>
-        </p>
+        <>
+          no cached build for <code>{s}</code> yet.
+        </>
       ) : (
-        <p>
+        <>
           couldn’t reach the builder for <code>{s}</code>
-          {state.message ? ` (${state.message})` : ''}. <a href="./">back</a>
-        </p>
+          {state.message ? ` (${state.message})` : ''}.
+        </>
       )}
-    </main>
+    </ResultMessage>
   );
 }
 
@@ -87,6 +106,12 @@ export default function App() {
     window.scrollTo(0, 0);
   }
 
-  if (q) return <BookletView term={q} />;
+  function reset() {
+    window.history.pushState({}, '', './');
+    setQ(null);
+    window.scrollTo(0, 0);
+  }
+
+  if (q) return <BookletView term={q} onReset={reset} />;
   return <Surface nouns={nouns} onSubmit={navigate} />;
 }

@@ -27,22 +27,23 @@ function previewBrick(t: Tally): Brick {
   return { x: 0, y: 0, z: 0, w: t.w, d: t.d, color: t.color };
 }
 
+// Parts inventory — the manual's first content page. A flat grid of every
+// distinct brick with its count. No frame; the bricks sit on the paper.
 export function InventoryPage({ bricks }: Props) {
   const items = tally(bricks);
   return (
-    <div className="page page--inventory">
-      <div className="page__inner">
-        <div className="inventory-grid">
-          {items.map((t, i) => (
-            <div className="inventory-cell" key={i}>
-              <div className="inventory-cell__brick">
-                <Scene cumulative={[]} fresh={[previewBrick(t)]} unit={26} margin={6} />
-              </div>
-              <div className="inventory-cell__count">{t.count}x</div>
+    <section className="page page--inventory">
+      <p className="section-label">Parts</p>
+      <div className="inventory-grid">
+        {items.map((t, i) => (
+          <div className="inventory-cell" key={i}>
+            <div className="inventory-cell__brick">
+              <Scene cumulative={[]} fresh={[previewBrick(t)]} unit={24} margin={6} />
             </div>
-          ))}
-        </div>
+            <div className="inventory-cell__count">{t.count}×</div>
+          </div>
+        ))}
       </div>
-    </div>
+    </section>
   );
 }

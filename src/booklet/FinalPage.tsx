@@ -4,17 +4,23 @@ import { Scene } from '../render/Scene.tsx';
 type Props = {
   bricks: Brick[];
   setNumber: string;
+  onReset: () => void;
 };
 
-export function FinalPage({ bricks, setNumber }: Props) {
+// The last page: the finished build again as the payoff, its set number,
+// and the single way out of the scroll — "Build another set" lands here,
+// at the natural finish point, instead of an outward nav bar.
+export function FinalPage({ bricks, setNumber, onReset }: Props) {
   return (
-    <div className="page page--final">
-      <div className="page__inner">
-        <div className="hero">
-          <Scene cumulative={[]} fresh={bricks} unit={36} margin={20} />
-        </div>
+    <section className="page page--final">
+      <div className="hero">
+        <Scene cumulative={[]} fresh={bricks} unit={24} margin={12} />
       </div>
-      <div className="set-number">{setNumber}</div>
-    </div>
+      <p className="final__done">Set complete.</p>
+      <p className="final__set">{setNumber}</p>
+      <button type="button" className="final__again" onClick={onReset}>
+        Build another set
+      </button>
+    </section>
   );
 }
