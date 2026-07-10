@@ -327,21 +327,40 @@ lightGray. Model-picked / region-based palette is a v2+ knob.
 - Cache seeding remains $0 via subscription subagents; live-gen R&D
   requires per-run sign-off under the spend guardrail.
 
-**Next action:** Step 4 done locally (seed script + `CACHE_ONLY` worker
-flag + frontend KV read-path, all verified against local miniflare KV).
-The frontend now fetches from the Worker instead of bundling grids;
-`$0` cache-only is structural. Open forks, both vetoable — Mike picks:
-- **(a) Production ship** — create real Cloudflare KV namespaces,
-  deploy the Worker, seed remote (`npm run seed4`), point blawx2's build
-  `VITE_BLAWX_API` at the deployed Worker with `CACHE_ONLY=1`. Gets a
-  live public v0.5 (fixed 28-noun menu). Needs a Cloudflare-account
-  session (headless can't do the OAuth/namespace step).
-- **(b) v2 live-gen pipeline** — the "type any noun → watch it build"
-  magic moment. Port blawx2's generation route into the Worker's
-  miss-path (the current `PROMPT_DRAFT`/ASCII path is the stale sibling
-  approach; blawx2 is image-based: FA icon → FLUX schnell → validator).
-  This is the real product; carries the quality risk and the only
-  billable step (bounded, per-run sign-off).
+**Next action:** Step 4 done + committed (blawx2 `8219880` / `fffd4a9`).
+Landing + booklet at `/` and `?q=<noun>` are live over local KV.
+Production ship (create remote KV, deploy, seed remote) is **deferred —
+not needed yet.** Direction decided (2026-07-09): **v2 live generation
+on cache miss** — the magic moment, type any noun → watch it build.
 
-Landing + booklet at `/` and `?q=<noun>` are live. Frontend design-system
-refactor is a separate pass Mike will brief when ready.
+Facts/constraints for the v2 session (recorded, not a plan — sequencing
+is the driving session's call):
+- **What's being ported:** the offline probe6 route, into the Worker's
+  miss-path (the current `../api/src/index.ts` `PROMPT_DRAFT`/ASCII path
+  is the stale sibling approach — replace it). Entry points:
+  `scripts/seed-library.ts` (noun → front-mask → depth → Sonnet-response
+  orchestration), `scripts/lib/silhouette.ts` (front-mask acquisition),
+  `scripts/convert-response.ts` (response → voxel JSON),
+  `scripts/retry-feedback.ts` (deterministic validator). Settled shape
+  documented under "Phase 1–4" above.
+- **Cost-model shift (load-bearing):** the offline runs are `$0` via the
+  R&D *subscription* route. A deployed Worker has **no subscription
+  route** — every live gen is billed per call to `ANTHROPIC_API_KEY`
+  (separate money, ~$0.012–0.018/term at the settled 2–3-call Sonnet
+  tier). Wiring, parsing, and validation are all `$0` to write; only a
+  live end-to-end real-term test spends — and that test is the per-run
+  sign-off boundary. `CACHE_ONLY=1` keeps the surface `$0` until then;
+  every generated result caches to KV, so each term is paid once ever.
+- **Runtime shift:** the offline pipeline is Node/tsx (`fs` reads of
+  `runs/*.png`, vendored FA SVGs). The Worker is the CF edge runtime —
+  no Node `fs`; front-mask sourcing must be bundled or fetched, not
+  disk-read.
+- **Still-unwired deterministic fixes:** z-flip orientation search +
+  top-slab advisory (see "Known deterministic fixes" above).
+- **Repo hygiene:** `../api` (where the miss-path port lands) is **not a
+  git repo** — its Step-4 Worker changes (`CACHE_ONLY`, `seed4.ts`,
+  `wrangler.toml`) are on disk but untracked. `git init` it before v2
+  code lands, or the work is unversioned.
+
+Frontend design-system refactor is a separate pass Mike will brief when
+ready.
