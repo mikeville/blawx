@@ -32,6 +32,7 @@ const NOUN_COLOR: Record<string, Color> = {
   'palm-tree': 'green',
   penguin: 'black',
   robot: 'lightGray',
+  rooster: 'red',
   'rocket-ship': 'white',
   run: 'lightGray',
   sailboat: 'white',
