@@ -454,8 +454,9 @@ lands directly in the result.
    pre-cached set) → "Name your brick set" → ≤7 randomized pre-cached
    picks (replaces today's full numbered library list) → loading. Our
    renderer throughout. Drops the retired copy.
-2. **Unified result scroll.** Persistent iso hero → `Booklet` (inventory
-   → steps → final). Kill the three links. "Build another set" at
+2. **Unified result scroll.** ✅ Done (2026-07-10). Persistent iso hero →
+   `Booklet` (inventory → steps → final). Kill the three links. "Build
+   another set" at
    end-of-scroll. NO cards / drop-shadows — the ported `pages.css` uses
    shadowed `.page` cards; replace them. Arrange the steps flush
    vertically, separated by a brick-weight (1px) rule matching the brick
@@ -520,10 +521,36 @@ bricks stay locked (yellow bricks are brighter everywhere now); brick
 stroke 1.5→0.65 and studs given a black cylindrical side + brick-colour
 flat top (only the stud `path` side is `OUTLINE`; the top `ellipse` keeps
 `topFill`) to match the set-6628 manual. One shared renderer, so these
-propagate to the booklet too. Note for Stage 2: strokes read
-proportionally heavy because `vectorEffect="non-scaling-stroke"` holds a
-constant screen width while the whole 16³ model scales down to fit —
-revisit stroke-vs-scale when the booklet lands in the scroll. Uncommitted.
+propagate to the booklet too.
 
-Next: Stage 2 — unified result scroll (see Stage 2 above; no cards/
-shadows, steps flush with a brick-weight rule).
+Stage 2 landed (2026-07-10), verified in-browser at mobile width against
+the live cache-only Worker (`?q=cat` / `?q=duck`).
+
+- **Result scroll** — `BookletView` (`App.tsx`) now renders one vertical
+  scroll: persistent iso **hero** (finished model) → `Booklet`
+  (inventory → steps → final). The three outward links are gone; "Build
+  another set" is a single CTA at the end of `FinalPage` that resets to
+  the idle surface (`App.tsx` `reset()` → clears `?q`, scrolls top).
+  `BookletView` takes `term` + `onReset`; loading/miss/error are a
+  token-styled `ResultMessage` (Stage 3 replaces the loading path with
+  the streamed log).
+- **No cards / no shadows** — `pages.css` fully rewritten off the old
+  fixed 880×1100 scaled print-page cards onto the design tokens: each
+  section is a flush block, mobile-first on `--surface-w`, separated
+  from the previous by a single 1px black brick-weight rule
+  (`border-top: var(--rule-hair) solid var(--ink)`), so the scroll reads
+  as one manual. `TitlePage` repurposed as the hero (masthead + model +
+  giant lowercase term headline + mono `N pieces · M steps`); `StepPage`
+  callout de-boxed to inline brick+count chips; `FinalPage` gains the CTA.
+- **Stroke-vs-scale fix folded in** — `render/Brick.tsx`: stroke is now
+  `unit * STROKE_RATIO` (0.04) with `vectorEffect="non-scaling-stroke"`
+  removed, so the outline **scales with the model**. On-screen stroke
+  works out to ≈ `RATIO × renderPx / modelUnitsWide` — independent of the
+  `unit` param — so the full 16³ hero gets a fine outline and single-brick
+  previews a proportionally heavier one, both reading as the same manual
+  line. `unit` is now purely a margin/proportion knob per call site.
+
+Next: Stage 3 — streamed honest miss-path log (see Stage 3 above). Build
+the whole streamed-log UX at **$0** by replaying the recorded duck
+call-1/call-2 responses through the Worker with injected latency; only
+Phase 5 rung (a) bills Anthropic, under a discrete per-run sign-off.
