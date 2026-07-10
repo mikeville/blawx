@@ -9,7 +9,8 @@
     "lint": "oxlint",
     "test": "tsx --test src/bench/*.test.ts src/voxel/*.test.ts",
     "preview": "vite preview",
-    "relift": "tsx scripts/relift.ts"
+    "relift": "tsx scripts/relift.ts",
+    "fa-index": "tsx scripts/build-fa-index.ts"
   },
   "dependencies": {
     "react": "^19.2.7",
