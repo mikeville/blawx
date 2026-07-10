@@ -11,7 +11,7 @@ type Props = {
   style?: BrickStyle;
 };
 
-const STROKE = 1.5;
+const STROKE = 0.65;
 
 const HEIGHT_RATIO: Record<BrickStyle, number> = {
   plate: PLATE_HEIGHT_RATIO,
@@ -74,7 +74,7 @@ export function BrickShape({ brick, desaturated, unit = UNIT, style = 'plate' }:
                   L ${sideRightX.toFixed(3)} ${s.cy.toFixed(3)}
                   A ${studR.toFixed(3)} ${studRY.toFixed(3)} 0 0 1 ${sideLeftX.toFixed(3)} ${s.cy.toFixed(3)}
                   Z`}
-              fill={topFill}
+              fill={OUTLINE}
               vectorEffect="non-scaling-stroke"
             />
             <ellipse

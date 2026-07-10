@@ -2,7 +2,7 @@ import type { Color } from '../voxel/types.ts';
 
 export const COLORS: Record<Color, string> = {
   red: '#C8102E',
-  yellow: '#F4C300',
+  yellow: '#FFCC00',
   blue: '#0A3D91',
   green: '#2E7D32',
   white: '#F7F7F2',
