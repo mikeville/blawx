@@ -1,55 +1,9 @@
 /*
- * Idle/input front surface — see src/design/tokens.css for the language
- * this obeys. Mobile-first single column; structure from whitespace and
- * the huge flat step numeral, not rules.
+ * Idle/input front surface — the content below the shell's seam rule. See
+ * src/design/tokens.css for the language this obeys. Mobile-first single
+ * column; structure from whitespace and the huge flat step numeral, not
+ * rules. The masthead and iso stage above the rule live in the Shell.
  */
-
-.surface {
-  min-height: 100vh;
-  background: var(--paper);
-  display: flex;
-  justify-content: center;
-}
-
-.surface__sheet {
-  width: 100%;
-  max-width: var(--surface-w);
-  padding: var(--s-6) var(--gutter) var(--s-8);
-  display: flex;
-  flex-direction: column;
-  gap: var(--s-6);
-}
-
-.surface__masthead {
-  display: flex;
-}
-
-.surface__mark {
-  font-family: var(--font-sans);
-  font-weight: var(--fw-black);
-  font-size: var(--t-display);
-  line-height: var(--lh-tight);
-  letter-spacing: var(--tracking-tight);
-  color: var(--ink);
-  text-transform: lowercase;
-}
-
-/* The persistent iso stage: a random cached set, floating on the paper.
-   No card, no border, no shadow — the model reads as an object sitting
-   on the page, not a boxed illustration. */
-.surface__stage {
-  min-height: 220px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.surface__stage svg {
-  width: 100%;
-  height: auto;
-  max-height: 260px;
-  display: block;
-}
 
 .surface__form {
   display: flex;

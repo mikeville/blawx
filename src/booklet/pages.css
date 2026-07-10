@@ -1,32 +1,44 @@
 /*
- * Unified result scroll — see src/design/tokens.css for the language this
- * obeys. The finished model is the hero; the booklet flows beneath it as
- * ONE manual, mobile-first, on the same stud grid + tokens as the front
- * surface. No cards, no shadows, no fixed print-page geometry: each
- * section is a flush block, and everything below the hero is separated
- * from what precedes it by a single brick-weight (1px) black rule — the
- * same line as a brick outline — so the scroll reads as printed pages,
- * not a stack of cards.
+ * Unified result scroll — the content below the shell's seam rule. See
+ * src/design/tokens.css for the language this obeys. The finished model is
+ * the shell's persistent stage above the rule; the booklet flows beneath it
+ * as ONE manual, mobile-first, on the same stud grid + tokens as the front
+ * surface. No cards, no shadows, no fixed print-page geometry: each section
+ * is a flush block, and everything is separated from what precedes it by a
+ * single brick-weight (1px) black rule — the same line as a brick outline —
+ * so the scroll reads as printed pages, not a stack of cards.
  */
-
-.result {
-  min-height: 100vh;
-  background: var(--paper);
-  display: flex;
-  justify-content: center;
-}
-
-.result__sheet {
-  width: 100%;
-  max-width: var(--surface-w);
-  padding: 0 var(--gutter) var(--s-8);
-  display: flex;
-  flex-direction: column;
-}
 
 .page {
   position: relative;
   padding: var(--s-6) 0;
+}
+
+/* ── Lead: term + counts, the first block under the seam rule ────────── */
+.result__lead {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-1);
+  padding-bottom: var(--s-6);
+}
+
+.result__term {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-weight: var(--fw-black);
+  font-size: var(--t-numeral);
+  line-height: var(--lh-tight);
+  letter-spacing: var(--tracking-tight);
+  text-transform: lowercase;
+  color: var(--ink);
+}
+
+.result__meta {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: var(--t-caption);
+  color: var(--ink-faint);
+  font-variant-numeric: tabular-nums;
 }
 
 /* The one structural rule: a hairline black divider (brick-outline weight)
@@ -48,36 +60,7 @@
   color: var(--ink-faint);
 }
 
-/* ── Hero (title + final share the model stage) ─────────────────────── */
-.page--title {
-  display: flex;
-  flex-direction: column;
-  gap: var(--s-4);
-}
-
-.masthead {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-}
-
-.masthead__mark {
-  font-family: var(--font-sans);
-  font-weight: var(--fw-black);
-  font-size: var(--t-display);
-  line-height: var(--lh-tight);
-  letter-spacing: var(--tracking-tight);
-  text-transform: lowercase;
-  color: var(--ink);
-}
-
-.masthead__set {
-  font-family: var(--font-mono);
-  font-size: var(--t-caption);
-  color: var(--ink-faint);
-  font-variant-numeric: tabular-nums;
-}
-
+/* ── Final-page model payoff (the finished build again at scroll's end) ─ */
 .hero {
   display: flex;
   align-items: center;
@@ -90,31 +73,6 @@
   height: auto;
   max-height: 300px;
   display: block;
-}
-
-.hero__label {
-  display: flex;
-  flex-direction: column;
-  gap: var(--s-1);
-}
-
-.hero__term {
-  margin: 0;
-  font-family: var(--font-sans);
-  font-weight: var(--fw-black);
-  font-size: var(--t-numeral);
-  line-height: var(--lh-tight);
-  letter-spacing: var(--tracking-tight);
-  text-transform: lowercase;
-  color: var(--ink);
-}
-
-.hero__meta {
-  margin: 0;
-  font-family: var(--font-mono);
-  font-size: var(--t-caption);
-  color: var(--ink-faint);
-  font-variant-numeric: tabular-nums;
 }
 
 /* ── Inventory ──────────────────────────────────────────────────────── */
@@ -279,16 +237,13 @@
 }
 
 /* ── Loading / miss / error messages ────────────────────────────────── */
+/* Rendered in the shell's below-the-rule content zone, not full-screen. */
 .result-msg {
-  min-height: 100vh;
-  background: var(--paper);
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
+  align-items: flex-start;
   gap: var(--s-4);
-  padding: var(--gutter);
-  text-align: center;
+  padding: var(--s-2) 0 var(--s-6);
 }
 
 .result-msg__text {

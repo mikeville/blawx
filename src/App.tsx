@@ -1,6 +1,10 @@
 import { useMemo, useState, useEffect, type ReactNode } from 'react';
+import { Shell } from './shell/Shell.tsx';
 import { Booklet } from './booklet/Booklet.tsx';
 import { Surface } from './surface/Surface.tsx';
+import { buildHeroPool, pickOne, loadBricksForNoun } from './surface/heroSets.ts';
+import { buildSteps, allBricks } from './voxel/steps.ts';
+import type { Brick } from './voxel/types.ts';
 import { setNumberFor, slug } from './api/slug.ts';
 import { generate, type GenerateResult } from './api/generateClient.ts';
 
@@ -18,7 +22,7 @@ function seed4Nouns(): string[] {
     .sort();
 }
 
-type ViewState = { status: 'loading' } | GenerateResult;
+type View = { status: 'loading' } | GenerateResult;
 
 function ResultMessage({
   children,
@@ -37,61 +41,50 @@ function ResultMessage({
   );
 }
 
-function BookletView({ term, onReset }: { term: string; onReset: () => void }) {
-  const s = slug(term);
-  const [state, setState] = useState<ViewState>({ status: 'loading' });
-
-  useEffect(() => {
-    let alive = true;
-    setState({ status: 'loading' });
-    generate(s).then((r) => {
-      if (alive) setState(r);
-    });
-    return () => {
-      alive = false;
-    };
-  }, [s]);
-
-  if (state.status === 'loading') {
-    return (
-      <div className="result-msg">
-        <p className="result-msg__text">
-          building <code>{s}</code>…
-        </p>
-      </div>
-    );
-  }
-
-  if (state.status === 'ok') {
-    return (
-      <Booklet grid={state.grid} term={s} setNumber={setNumberFor(s)} onReset={onReset} />
-    );
-  }
-
-  // miss | error
-  return (
-    <ResultMessage onReset={onReset}>
-      {state.status === 'miss' ? (
-        <>
-          no cached build for <code>{s}</code> yet.
-        </>
-      ) : (
-        <>
-          couldn’t reach the builder for <code>{s}</code>
-          {state.message ? ` (${state.message})` : ''}.
-        </>
-      )}
-    </ResultMessage>
-  );
-}
-
 function readQuery(): string | null {
   return new URLSearchParams(window.location.search).get('q');
 }
 
 export default function App() {
   const nouns = useMemo(seed4Nouns, []);
+  const heroPool = useMemo(() => buildHeroPool(nouns), [nouns]);
+
   const [q, setQ] = useState<string | null>(readQuery);
+  // Bumped on reset so returning to idle re-rolls the stage's random set.
+  const [idleNonce, setIdleNonce] = useState(0);
+  const [view, setView] = useState<View>({ status: 'loading' });
+
+  // The one thing the persistent stage shows: the idle random set while
+  // idle, the finished model once a build resolves. Held across the
+  // idle → loading transition so the stage never blanks out (3b will
+  // assemble the front layer here during the wait).
+  const [stageBricks, setStageBricks] = useState<Brick[]>([]);
+
+  useEffect(() => {
+    let alive = true;
+    if (q === null) {
+      const noun = pickOne(heroPool);
+      if (!noun) {
+        setStageBricks([]);
+        return;
+      }
+      loadBricksForNoun(noun).then((bricks) => {
+        if (alive) setStageBricks(bricks);
+      });
+      return () => {
+        alive = false;
+      };
+    }
+    setView({ status: 'loading' });
+    generate(slug(q)).then((r) => {
+      if (!alive) return;
+      setView(r);
+      if (r.status === 'ok') setStageBricks(allBricks(buildSteps(r.grid)));
+    });
+    return () => {
+      alive = false;
+    };
+  }, [q, idleNonce, heroPool]);
 
   useEffect(() => {
     const onPop = () => setQ(readQuery());
@@ -109,9 +102,48 @@ export default function App() {
   function reset() {
     window.history.pushState({}, '', './');
     setQ(null);
+    setIdleNonce((n) => n + 1);
     window.scrollTo(0, 0);
   }
 
-  if (q) return <BookletView term={q} onReset={reset} />;
-  return <Surface nouns={nouns} onSubmit={navigate} />;
+  const s = q === null ? null : slug(q);
+  const setNumber = s !== null && view.status === 'ok' ? setNumberFor(s) : undefined;
+
+  function content() {
+    if (s === null) return <Surface nouns={nouns} onSubmit={navigate} />;
+    if (view.status === 'loading') {
+      return (
+        <div className="result-msg">
+          <p className="result-msg__text">
+            building <code>{s}</code>…
+          </p>
+        </div>
+      );
+    }
+    if (view.status === 'ok') {
+      return (
+        <Booklet grid={view.grid} term={s} setNumber={setNumberFor(s)} onReset={reset} />
+      );
+    }
+    return (
+      <ResultMessage onReset={reset}>
+        {view.status === 'miss' ? (
+          <>
+            no cached build for <code>{s}</code> yet.
+          </>
+        ) : (
+          <>
+            couldn’t reach the builder for <code>{s}</code>
+            {view.message ? ` (${view.message})` : ''}.
+          </>
+        )}
+      </ResultMessage>
+    );
+  }
+
+  return (
+    <Shell stageBricks={stageBricks} setNumber={setNumber}>
+      {content()}
+    </Shell>
+  );
 }

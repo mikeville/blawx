@@ -1,0 +1,72 @@
+/*
+ * The persistent shell — masthead + iso stage + seam rule, carried
+ * unchanged through idle / loading / result. See src/design/tokens.css
+ * for the language it obeys. Mobile-first single column on the stud grid;
+ * the stage floats on the paper (no card, no shadow) and the one black
+ * rule under it is the fixed-stage / swappable-content seam.
+ */
+
+.shell {
+  min-height: 100vh;
+  background: var(--paper);
+  display: flex;
+  justify-content: center;
+}
+
+.shell__sheet {
+  width: 100%;
+  max-width: var(--surface-w);
+  padding: var(--s-6) var(--gutter) var(--s-8);
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-6);
+}
+
+.shell__masthead {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.shell__mark {
+  font-family: var(--font-sans);
+  font-weight: var(--fw-black);
+  font-size: var(--t-display);
+  line-height: var(--lh-tight);
+  letter-spacing: var(--tracking-tight);
+  text-transform: lowercase;
+  color: var(--ink);
+}
+
+.shell__set {
+  font-family: var(--font-mono);
+  font-size: var(--t-caption);
+  color: var(--ink-faint);
+  font-variant-numeric: tabular-nums;
+}
+
+/* The iso stage: the constant motif. A model floating on the paper — no
+   card, no border, no shadow — that morphs from the idle random set into
+   the set you named. */
+.shell__stage {
+  min-height: 220px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.shell__stage svg {
+  width: 100%;
+  height: auto;
+  max-height: 280px;
+  display: block;
+}
+
+/* The seam: one hairline black rule (brick-outline weight) between the
+   fixed stage and the swappable content. Present in every state. */
+.shell__content {
+  border-top: var(--rule-hair) solid var(--ink);
+  padding-top: var(--s-6);
+  display: flex;
+  flex-direction: column;
+}
