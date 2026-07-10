@@ -165,16 +165,19 @@ schnell output). This is the library the v1 toy ships against.
 - `src/bench/*` — neutral iso renderer, hull lift, encoding parsers,
   hypothetical cost math.
 
-**Known deterministic fixes not yet wired** (only matters if the
-probe6 route is live-served in v2):
-- **z-flip orientation search** for top-view z-mirror — precedent in
-  `scripts/gen-sheets.ts`'s 8-way flip search. `alignBboxes` reconciles
-  the z-mirror by stretching to full-depth extrusion (bad); an
-  8-orientation search picking min reprojection loss is the right fix.
-- **Top-slab advisory per-category exemption** — the advisory
-  false-positives on genuinely rectangular objects (fires on `table`,
-  which is correct as drawn). Advisory-only today, so nothing breaks,
-  but production would want an exemption list.
+**Known deterministic fixes** (status as of the v2 Worker port,
+2026-07-09):
+- **z-flip orientation search** — ✅ WIRED in the Worker
+  (`../api/src/orientation.ts`): the 8-orientation flip search +
+  front-protecting repair ported from `scripts/gen-sheets.ts` now runs
+  on every live-gen response before the hull lift. (The offline
+  `alignBboxes` full-depth-stretch reconciliation was never ported —
+  the flip search replaces it.)
+- **Top-slab advisory per-category exemption** — still open. The
+  advisory false-positives on genuinely rectangular objects (fires on
+  `table`, which is correct as drawn). In the Worker it can trigger an
+  unnecessary (but harmless) second model call on box-shaped nouns; an
+  exemption list is a production nicety, not a blocker.
 
 **Journey behind these facts:** `docs/voxel-history.md` — probe-by-probe
 log of what was tried and settled.
@@ -292,6 +295,43 @@ today only holds the benchmark harness (`bench/`, `App.tsx`).
      `wrangler kv namespace create CACHE/RL` → paste ids → `deploy` →
      `npm run seed4` (remote) → set blawx2's build `VITE_BLAWX_API` +
      `CACHE_ONLY=1`. Requires a Cloudflare-account session.
+5. **v2 live generation — Worker port.** ✅ Code done + committed
+   (2026-07-09; api `668b7ef`, blawx2 `4ffb3b8`). NOT live-tested — no
+   Anthropic call has ever been made; `CACHE_ONLY` still on everywhere.
+   - `../api` is now a **git repo**: baseline `e069edb` (pre-existing
+     Worker as of step 4) then the port commit. Repo-hygiene note from
+     the v2 handoff is resolved.
+   - **FA front-mask index** (solves the no-`fs` edge-runtime shift):
+     blawx2 `scripts/build-fa-index.ts` (`npm run fa-index`) rasterizes
+     all FA6 Free solid icons through the existing `silhouette.ts`
+     pipeline and writes `../api/src/fa-index.json` — 1997/2001 icons
+     as grounded 16×16 masks (256-char strings) + 7,509-term lookup
+     from FA names/aliases/search terms. 736 KB raw / 104 KB gz,
+     bundled into the Worker; zero runtime rasterization. Drift
+     self-check: all 14 FA-sourced seed4 nouns byte-identical to the
+     shipped v1 masks.
+   - **Worker miss path** (`../api/src/{generate,probe6,orientation,
+     faIndex,masks,hull,color,exemplar}.ts`): probe6 prompt ported
+     byte-identically (verified against
+     `runs/probe6-16char-sonnetdepth/prompts/duck.md`); retry-feedback
+     validator as a pure function (trust-front, depth cap 6, top-slab);
+     one feedback retry → max 2 model calls; trusted front replaces the
+     model's front before lift; z-flip 8-orientation search +
+     front-protecting repair; strict hull lift; NOUN_COLOR with
+     lightGray fallback. Stale `prompt/parser/transform.ts` deleted.
+     No FA match → 404 `code:'no-source'` (frontend still shows the
+     generic placeholder — see remaining rungs).
+   - **Model config:** `claude-sonnet-5`, maxTokens 2048, 30 s/call
+     timeout, and `thinking: {type:'disabled'}` set **explicitly** —
+     Sonnet 5 runs adaptive thinking by default when the field is
+     omitted, which would silently blow the 2–3-call cost/latency
+     profile the pipeline was tuned against. Revisit as an A/B knob at
+     the live-test round.
+   - **Verified offline ($0):** 32/32 tests (model call injected +
+     mocked), `tsc --noEmit` clean, and an end-to-end replay of the
+     recorded duck call-1/call-2 responses through the Worker pipeline
+     reproduces the offline conversion exactly (360/360 voxels,
+     2 calls, not degraded).
 
 **Palette decision for v1 (2026-07-06):** single hand-authored color
 per noun (option chosen over region-based auto-segmentation and
@@ -327,40 +367,36 @@ lightGray. Model-picked / region-based palette is a v2+ knob.
 - Cache seeding remains $0 via subscription subagents; live-gen R&D
   requires per-run sign-off under the spend guardrail.
 
-**Next action:** Step 4 done + committed (blawx2 `8219880` / `fffd4a9`).
-Landing + booklet at `/` and `?q=<noun>` are live over local KV.
-Production ship (create remote KV, deploy, seed remote) is **deferred —
-not needed yet.** Direction decided (2026-07-09): **v2 live generation
-on cache miss** — the magic moment, type any noun → watch it build.
+**Next action:** Step 5 (v2 Worker port) done + committed (api
+`668b7ef`, blawx2 `4ffb3b8`); details in step 5 above. All verification
+was offline/$0; `CACHE_ONLY` is still on and no Anthropic call has ever
+been made.
 
-Facts/constraints for the v2 session (recorded, not a plan — sequencing
-is the driving session's call):
-- **What's being ported:** the offline probe6 route, into the Worker's
-  miss-path (the current `../api/src/index.ts` `PROMPT_DRAFT`/ASCII path
-  is the stale sibling approach — replace it). Entry points:
-  `scripts/seed-library.ts` (noun → front-mask → depth → Sonnet-response
-  orchestration), `scripts/lib/silhouette.ts` (front-mask acquisition),
-  `scripts/convert-response.ts` (response → voxel JSON),
-  `scripts/retry-feedback.ts` (deterministic validator). Settled shape
-  documented under "Phase 1–4" above.
-- **Cost-model shift (load-bearing):** the offline runs are `$0` via the
-  R&D *subscription* route. A deployed Worker has **no subscription
-  route** — every live gen is billed per call to `ANTHROPIC_API_KEY`
-  (separate money, ~$0.012–0.018/term at the settled 2–3-call Sonnet
-  tier). Wiring, parsing, and validation are all `$0` to write; only a
-  live end-to-end real-term test spends — and that test is the per-run
-  sign-off boundary. `CACHE_ONLY=1` keeps the surface `$0` until then;
-  every generated result caches to KV, so each term is paid once ever.
-- **Runtime shift:** the offline pipeline is Node/tsx (`fs` reads of
-  `runs/*.png`, vendored FA SVGs). The Worker is the CF edge runtime —
-  no Node `fs`; front-mask sourcing must be bundled or fetched, not
-  disk-read.
-- **Still-unwired deterministic fixes:** z-flip orientation search +
-  top-slab advisory (see "Known deterministic fixes" above).
-- **Repo hygiene:** `../api` (where the miss-path port lands) is **not a
-  git repo** — its Step-4 Worker changes (`CACHE_ONLY`, `seed4.ts`,
-  `wrangler.toml`) are on disk but untracked. `git init` it before v2
-  code lands, or the work is unversioned.
+Remaining rungs (recorded, no order decided — each is a separate bet
+Mike can pick or veto):
+- **(a) Live end-to-end smoke test** — the first billable Anthropic
+  call. Per-run sign-off boundary under the spend guardrail: ~$0.02–0.04
+  for 1–2 novel terms at the settled 2-call Sonnet tier (list price;
+  intro pricing is roughly a third off through 2026-08). Also the moment
+  to A/B `thinking: disabled` vs adaptive-low.
+- **(b) Frontend miss-path UX** — the "watch it build" moment: loading
+  state while the Worker generates (~10 s), distinct message for 404
+  `code:'no-source'` vs generation failure. Currently every miss shows
+  the static "no cached build" placeholder. $0.
+- **(c) FLUX-schnell front sourcing on FA-index miss** — the second
+  front-source rung from the settled decision. Needs Replicate
+  (~$0.003/img, separate key, separate sign-off) and a Worker-side
+  image→mask downsample (the luminance path in `silhouette.ts` is
+  portable; no resvg needed for PNGs).
+- **(d) Production ship** — create remote KV, deploy, seed4 remote,
+  point blawx2's build at it (see step 4's "Not done — production").
+  Independent of live-gen: can ship cache-only first.
+
+**Cost-model constraint (still load-bearing):** the deployed Worker has
+no subscription route — every live gen bills `ANTHROPIC_API_KEY`
+directly (~$0.012–0.018/term, 2–3 Sonnet calls). Every result caches to
+KV, so each term is paid once ever. `CACHE_ONLY=1` keeps the surface $0
+by construction until the live test is signed off.
 
 Frontend design-system refactor is a separate pass Mike will brief when
 ready.
