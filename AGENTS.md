@@ -4,10 +4,13 @@ Read `PLAN.md` for the project plan.
 
 ## Entry point
 
-**Active work: Phase 5 (pipeline v1)** — see Phase 5 section below.
-Geometry pipeline (Phases 1–4) is settled; canonical exemplars and
-settled decisions are recorded in "Phase 1–4: geometry pipeline" below,
-with the round-by-round journey in `docs/voxel-history.md`.
+**Active work: Phase 6 (front-end overhaul)** — see Phase 6 section
+below. The generation pipeline (Phases 1–5) is code-complete; Phase 5's
+remaining rungs (live smoke test, production ship) stay open and are
+independent of the overhaul. Geometry pipeline (Phases 1–4) is settled;
+canonical exemplars and settled decisions are recorded in "Phase 1–4:
+geometry pipeline" below, with the round-by-round journey in
+`docs/voxel-history.md`.
 
 ## Spend guardrail (load-bearing)
 
@@ -398,5 +401,129 @@ directly (~$0.012–0.018/term, 2–3 Sonnet calls). Every result caches to
 KV, so each term is paid once ever. `CACHE_ONLY=1` keeps the surface $0
 by construction until the live test is signed off.
 
-Frontend design-system refactor is a separate pass Mike will brief when
-ready.
+## Phase 6: front-end overhaul (active)
+
+Brief (2026-07-10): overhaul the shipped front-end into a single
+mobile-first surface styled faithfully after **vintage LEGO instruction
+manuals** — modernist, minimalist, Bauhaus/Swedish. Everything in the
+app derives from that reference. Desktop is a later pass once mobile is
+right.
+
+**Reference:** the Figma Make mockup at `../mobile-landing` (single-file
+`src/app/App.tsx`; the local checkout was stale — fast-forwarded to
+origin `0864672` on 2026-07-10). Take its **structure**, reject its
+execution:
+- KEEP — mobile-first; a persistent isometric-brick stage as the
+  constant motif across idle / loading / result; an intro
+  fall-into-place; a status log during the (non-instant) build; the
+  "name your set + pick from a few options" generation UX.
+- REJECT — its brick renderer (gradient faces, ellipse studs, no
+  outlines): use ours (`render/Scene.tsx`, black outlines). Its smooth
+  float/bounce easing. The name "BrickGen". The three outward "links" in
+  the done state. The copy "p. 01" and "16 × 16 × 16 · booklet included".
+
+**Name:** "Blawx" (not BrickGen). Logo/wordmark in our own block style.
+
+**Locked decisions (2026-07-10):**
+- Establish the design language as code (Stage 0) before layout.
+- The idle stage shows a **random real pre-cached set** from the library
+  (not an abstract build) — it advertises what the app makes.
+- The done state collapses into **one vertical scroll**, no outward
+  navigation: persistent iso model (hero) → our `Booklet` (whose first
+  page is already the parts inventory → step pages). One scroll covers
+  the mockup's three links (3D model, parts list, booklet) in the view
+  you are already on.
+- "Build another set" lands at the **end of the scroll** (the natural
+  finish point) — try this before anything cleverer.
+
+**Architecture shift:** from two screens (`SearchLanding` → `?q=` route →
+`BookletView`) to **one morphing surface** (idle → loading → result)
+with the iso stage always present. `?q=<noun>` stays as a deep-link that
+lands directly in the result.
+
+**Stages (each independently vetoable):**
+
+0. **Design language as code.** ✅ In progress. `src/design/tokens.css`
+   (palette derived from the real brick colors in `render/palette.ts`,
+   type scale, rule weights, stud-based spacing, sharp corners) +
+   `src/design/motion.ts` (stop-motion principles + timing constants).
+   Governs everything downstream. Note: UI chrome is unified onto the
+   brick palette — the canonical accent red is the brick red `#C8102E`,
+   not the throwaway `#da291c` the first-pass landing used.
+1. **Front surface.** Single morphing surface: idle iso stage (random
+   pre-cached set) → "Name your brick set" → ≤7 randomized pre-cached
+   picks (replaces today's full numbered library list) → loading. Our
+   renderer throughout. Drops the retired copy.
+2. **Unified result scroll.** Persistent iso hero → `Booklet` (inventory
+   → steps → final). Kill the three links. "Build another set" at
+   end-of-scroll. NO cards / drop-shadows — the ported `pages.css` uses
+   shadowed `.page` cards; replace them. Arrange the steps flush
+   vertically, separated by a brick-weight (1px) rule matching the brick
+   stroke, so the scroll reads as one manual, not a stack of cards.
+   Entry points: `src/booklet/{Booklet,StepPage,InventoryPage,TitlePage,
+   FinalPage}.tsx` + `pages.css` (restyle away from cards, onto the
+   design tokens); `src/App.tsx`'s `BookletView` (swap the old result for
+   the new hero-plus-scroll); reuse the iso-hero + grid→bricks pattern
+   from `src/surface/Surface.tsx`. Also fold in the stroke-vs-scale fix
+   noted below now that brick size becomes intentional per step.
+3. **Streamed honest miss-path log** (the live-gen "watch it get built"
+   moment). Today `generateClient.generate()` is one blocking GET — to
+   show real stages the Worker must stream (SSE/chunked) real events.
+   Honest step mapping (from `../api/src/{generate,index}.ts`):
+
+   | Real op | Time | Log label |
+   |---|---|---|
+   | FA-index front lookup | instant | Matching a silhouette |
+   | Sonnet call #1 (side/top depth) | ~3–6 s | Designing the build |
+   | validator | instant | Checking the fit |
+   | Sonnet call #2 (retry, *conditional*) | ~3–6 s | Correcting |
+   | flip search | ms | Squaring it up |
+   | repair + hull lift | ms | Solidifying |
+   | client pack→steps | ms | Writing the booklet |
+
+   Truth: ~all wall-clock is calls #1/#2 — the log dwells there and
+   treats the rest as fast bookends. The front mask is known at t=0, so
+   the **front brick layer** assembles during the model wait (real data,
+   not filler). "Correcting" only shows when the retry actually fires.
+   Honest, distinct failure states (never a spinner that dies):
+   `no-source` 404 ("no starting outline for '{term}' yet"), `429` rate
+   limit ("5 fresh builds/hr — cached sets free"), `x-degraded` (renders;
+   mark experimental?), `502` upstream/parse ("couldn't finish — retry").
+
+   **Spend gate (load-bearing):** build the entire streamed-log UX at
+   **$0** by replaying the recorded duck call-1/call-2 responses through
+   the Worker with an injected delay to simulate model latency. Only a
+   final 1–2 novel-term smoke test bills Anthropic — that is Phase 5 rung
+   (a), ~$0.02–0.04, a discrete per-run sign-off under the spend
+   guardrail. No live call before that sign-off.
+4. **Stop-motion animation pass.** Intro fall-into-place + ambient, on
+   stepped/held timing (replacing the mockup's smooth float). Feasibility
+   TBD: `Scene.tsx` renders a static SVG, so per-brick staged animation
+   may need a render-side change. Lower priority (Mike's call).
+
+**Next action:** Stages 0–1 landed + a refinement pass, all verified
+in-browser at mobile width (2026-07-10). Stage 0: `src/design/
+{tokens.css,motion.ts}` wired into `index.css`. Stage 1:
+`src/surface/{Surface.tsx,surface.css}` — the single-surface front door
+(idle iso stage renders a random set from a curated `HERO_SETS` pool via
+a `../../runs/seed4-16char-mixed/*.json` glob → `seed4ToGrid` →
+`allBricks(buildSteps())` → `Scene`; parts-legend picks with brick-colour
+swatches, no pills). Replaces `SearchLanding` for the no-`q` route
+(`SearchLanding.tsx` left on disk unreferenced); the `?q=` result still
+renders the OLD `BookletView`.
+
+Refinement pass (Mike review): warm off-whites neutralised
+(`--paper #f4f4f4`, sunk/rule/ink ramp de-warmed); **primary accent
+switched red → authentic LEGO yellow `#FFCC00`** with black text — token
+`--accent` and render palette `COLORS.yellow` moved together so UI and
+bricks stay locked (yellow bricks are brighter everywhere now); brick
+stroke 1.5→0.65 and studs given a black cylindrical side + brick-colour
+flat top (only the stud `path` side is `OUTLINE`; the top `ellipse` keeps
+`topFill`) to match the set-6628 manual. One shared renderer, so these
+propagate to the booklet too. Note for Stage 2: strokes read
+proportionally heavy because `vectorEffect="non-scaling-stroke"` holds a
+constant screen width while the whole 16³ model scales down to fit —
+revisit stroke-vs-scale when the booklet lands in the scroll. Uncommitted.
+
+Next: Stage 2 — unified result scroll (see Stage 2 above; no cards/
+shadows, steps flush with a brick-weight rule).
