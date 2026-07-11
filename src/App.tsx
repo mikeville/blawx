@@ -9,6 +9,7 @@ import { frontMaskToBricks } from './voxel/frontLayer.ts';
 import type { Brick } from './voxel/types.ts';
 import { setNumberFor, slug } from './api/slug.ts';
 import { generate, type GenerateResult } from './api/generateClient.ts';
+import { MotionDevPanel } from './dev/MotionDevPanel.tsx';
 
 // Names only — the booklet's geometry now comes from the Worker (KV),
 // not the bundle. Non-eager so the JSON isn't pulled into the main
@@ -85,7 +86,19 @@ function failureText(
   }
 }
 
+// Stage 4 dev harness: an isolated playground for comparing stop-motion
+// assembly profiles, gated behind ?dev so it never enters the shipped
+// path. A hook-free wrapper picks between the two components rather than
+// early-returning inside one — each of AppMain / MotionDevPanel calls its
+// own hooks unconditionally, satisfying the rules of hooks.
 export default function App() {
+  if (new URLSearchParams(window.location.search).has('dev')) {
+    return <MotionDevPanel />;
+  }
+  return <AppMain />;
+}
+
+function AppMain() {
   const nouns = useMemo(seed4Nouns, []);
   const heroPool = useMemo(() => buildHeroPool(nouns), [nouns]);
 

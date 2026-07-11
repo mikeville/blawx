@@ -10,6 +10,11 @@ type Props = {
   width?: number;
   height?: number;
   style?: BrickStyle;
+  // Optional per-brick transform hook for the stop-motion harness
+  // (see render/useStopMotion.ts). Absent for every existing caller —
+  // the booklet's static pages must render byte-identical to before, so
+  // this only wraps a brick in an extra <g> when actually supplied.
+  transformFor?: (brick: Brick, index: number) => { transform?: string; opacity?: number } | undefined;
 };
 
 const HEIGHT_RATIO: Record<BrickStyle, number> = {
@@ -60,6 +65,7 @@ export function Scene({
   width,
   height,
   style = 'plate',
+  transformFor,
 }: Props) {
   const items: Sortable[] = [
     ...cumulative.map(brick => ({ brick, desaturated: true })),
@@ -83,9 +89,17 @@ export function Scene({
       preserveAspectRatio="xMidYMid meet"
       shapeRendering="geometricPrecision"
     >
-      {items.map(({ brick, desaturated }, i) => (
-        <BrickShape key={i} brick={brick} desaturated={desaturated} unit={unit} style={style} />
-      ))}
+      {items.map(({ brick, desaturated }, i) => {
+        if (!transformFor) {
+          return <BrickShape key={i} brick={brick} desaturated={desaturated} unit={unit} style={style} />;
+        }
+        const t = transformFor(brick, i);
+        return (
+          <g key={i} transform={t?.transform} opacity={t?.opacity}>
+            <BrickShape brick={brick} desaturated={desaturated} unit={unit} style={style} />
+          </g>
+        );
+      })}
     </svg>
   );
 }

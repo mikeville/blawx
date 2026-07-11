@@ -1,0 +1,188 @@
+/*
+ * Motion dev panel — a functional playground, not a shipped surface.
+ * Same tokens as the rest of the app (design/tokens.css) so the stage
+ * itself looks exactly like it will in production; the chrome around it
+ * is deliberately plainer than the shipped UI — mono labels, hairline
+ * rules, no ornament.
+ */
+
+.motion-dev {
+  min-height: 100vh;
+  background: var(--paper);
+  display: flex;
+  flex-direction: column;
+}
+
+.motion-dev__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--s-4);
+  padding: var(--s-4) var(--s-5);
+  border-bottom: var(--rule-hair) solid var(--ink);
+}
+
+.motion-dev__mark {
+  font-family: var(--font-mono);
+  font-size: var(--t-body);
+  font-weight: var(--fw-bold);
+  color: var(--ink);
+}
+
+.motion-dev__hint {
+  font-family: var(--font-mono);
+  font-size: var(--t-caption);
+  color: var(--ink-faint);
+}
+
+.motion-dev__body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+@media (min-width: 860px) {
+  .motion-dev__body {
+    flex-direction: row;
+  }
+}
+
+.motion-dev__stage {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--s-6);
+  min-height: 320px;
+  border-bottom: var(--rule-hair) solid var(--rule);
+}
+
+.motion-dev__stage svg {
+  width: 100%;
+  max-width: 480px;
+  height: auto;
+}
+
+@media (min-width: 860px) {
+  .motion-dev__stage {
+    border-bottom: none;
+    border-right: var(--rule-hair) solid var(--ink);
+  }
+}
+
+.motion-dev__controls {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-5);
+  padding: var(--s-5);
+  overflow-y: auto;
+}
+
+@media (min-width: 860px) {
+  .motion-dev__controls {
+    width: 360px;
+    flex: none;
+  }
+}
+
+.motion-dev__section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-2);
+  padding-bottom: var(--s-4);
+  border-bottom: var(--rule-hair) solid var(--rule);
+}
+
+.motion-dev__section:last-child {
+  border-bottom: none;
+}
+
+.motion-dev__section-title {
+  margin: 0 0 var(--s-1);
+  font-family: var(--font-sans);
+  font-size: var(--t-micro);
+  font-weight: var(--fw-bold);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--ink-faint);
+}
+
+.motion-dev__radio-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-1);
+}
+
+.motion-dev__radio {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  font-family: var(--font-sans);
+  font-size: var(--t-body);
+  color: var(--ink);
+}
+
+.motion-dev__row {
+  display: grid;
+  grid-template-columns: 92px 1fr 48px;
+  align-items: center;
+  gap: var(--s-2);
+}
+
+.motion-dev__row--check {
+  grid-template-columns: 92px auto;
+}
+
+.motion-dev__row-label {
+  font-family: var(--font-mono);
+  font-size: var(--t-caption);
+  color: var(--ink-2);
+}
+
+.motion-dev__row-value {
+  font-family: var(--font-mono);
+  font-size: var(--t-caption);
+  color: var(--ink-faint);
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.motion-dev__row input[type='range'] {
+  width: 100%;
+  accent-color: var(--accent);
+}
+
+.motion-dev__row select {
+  font-family: var(--font-mono);
+  font-size: var(--t-caption);
+  color: var(--ink);
+  background: var(--page);
+  border: var(--rule-hair) solid var(--ink);
+  border-radius: var(--radius);
+  padding: var(--s-1);
+}
+
+.motion-dev__actions {
+  display: flex;
+  gap: var(--s-2);
+  margin-top: var(--s-1);
+}
+
+.motion-dev__button {
+  font-family: var(--font-mono);
+  font-size: var(--t-caption);
+  font-weight: var(--fw-bold);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--ink);
+  background: var(--accent);
+  border: var(--rule-hair) solid var(--ink);
+  border-radius: var(--radius);
+  padding: var(--s-2) var(--s-3);
+  cursor: pointer;
+}
+
+.motion-dev__button:active {
+  background: var(--accent-shade);
+}
