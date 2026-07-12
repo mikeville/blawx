@@ -6,10 +6,12 @@ Read `PLAN.md` for the project plan.
 
 **Open search / live-gen (Phase 5 rung a) went LIVE locally 2026-07-12** —
 the first billable Anthropic calls were made under Mike's sign-off
-(`helicopter` + `tractor`, ~2–4 Sonnet calls total, ≲$0.04). The local
-wrangler dev Worker on :8787 is **left live** (REPLAY commented out in
-`../api/.dev.vars`): any novel term typed at :5174 now bills
-`ANTHROPIC_API_KEY` (~$0.015/term, 5 fresh/hr/IP, cached forever after).
+(`helicopter` + `tractor`, ~2–4 Sonnet calls total, ≲$0.04). **The color
+system landed 2026-07-12** (see Phase 6 next-bets item 2). `../api/.dev.vars`
+is in the live config (REPLAY commented out), but the :8787 wrangler process
+still needs one bounce to load it — see the Phase 6 "Next action" block.
+Once bounced: any novel term typed at :5174 bills `ANTHROPIC_API_KEY`
+(~$0.017/term incl. the Haiku color call, 5 fresh/hr/IP, cached forever).
 Mike granted a **standing allowance for spend below $5/session** (2026-07-12)
 — above that, or for new spend shapes (batch seeding, A/B sweeps, Replicate),
 re-confirm per run. Restore `REPLAY=1` in `.dev.vars` for $0-by-construction.
@@ -234,11 +236,12 @@ flips live):**
   duck replay reproduces the offline conversion exactly (360/360 voxels,
   2 calls, not degraded). No Anthropic call has ever been made.
 
-**Palette decision for v1 (2026-07-06):** single hand-authored color
-per noun (option chosen over region-based auto-segmentation and
-all-lightGray). Table lives in the seed4 adapter (Step 2c); one entry
-per noun in `runs/seed4-16char-mixed/`. Missing entries fall back to
-lightGray. Model-picked / region-based palette is a v2+ knob.
+**Palette decision for v1 (2026-07-06), superseded 2026-07-12:** single
+hand-authored color per noun. The color system (next-bets item 2, below)
+replaced this with a model-painted front overlay; the `NOUN_COLOR` tables
+(client seed4 adapter + Worker `color.ts`) survive as the fallback when
+the overlay call fails or is absent. As-built: `docs/build-log.md`
+("Color system").
 
 **Skipped for v1 minimum (do NOT port unless promoted):**
 - `../blawx/src/voxel/{projections,transform,analyze}.ts` — only used
@@ -286,7 +289,8 @@ lightGray. Model-picked / region-based palette is a v2+ knob.
 
 **Cost-model constraint (still load-bearing):** the deployed Worker has
 no subscription route — every live gen bills `ANTHROPIC_API_KEY` directly
-(~$0.012–0.018/term, 2–3 Sonnet calls). Every result caches to KV, so each
+(~$0.014–0.020/term, ≤2 Sonnet calls + 1 Haiku color-overlay call). Every
+result caches to KV, so each
 term is paid once ever. `CACHE_ONLY=1` keeps the surface $0 by construction
 until the live test is signed off.
 
@@ -379,11 +383,29 @@ verification) is moved to `docs/build-log.md` (Phase 6). Nothing there is
 required to start the next action — it's archaeology, and the load-bearing
 bits are summarized in the stage lines above.
 
-**Next action — open search is live locally (2026-07-12); Mike's move is to
-play with it** (type any term at :5174 — each novel FA-matched term bills
-~$0.015 under the standing <$5 allowance) **and veto/confirm the next bet:
-color (item 2), now unblocked** — he can feel fresh monotone terms today.
-The bricks/instructions items after it are a *proposed* order (derives from
+**Next action — the color system (item 2) landed 2026-07-12, verified at $0
+via replay. One restore step is pending, then Mike's move is to feel it
+live:**
+
+1. **Bounce the Worker** (the running :8787 process is still the REPLAY
+   verification instance with a 12 s injected delay; `.dev.vars` on disk is
+   already back to the live config): kill the `wrangler dev` process and
+   rerun `cd ../api && npx wrangler dev` (or detached:
+   `nohup npx wrangler dev > /tmp/blawx-api-dev.log 2>&1 &`). The session
+   harness couldn't restart a billable-path server without fresh
+   confirmation.
+2. **Type fresh terms at :5174** — each novel FA-matched term now bills
+   ~$0.017 (≤2 Sonnet + 1 Haiku color call) under the standing <$5
+   allowance, and should arrive colored, with the front layer visibly
+   repainted mid-wait (the `paint` beat).
+3. **Vetoable, ready when signed off: the library backfill** —
+   `cd ../api && npx tsx scripts/color-library.ts` prints the plan
+   (29 terms ≈ $0.06) and exits; `--confirm-spend` runs it, then
+   `npx tsx scripts/seed4.ts --local` re-seeds KV so the library +
+   idle stage go colored too. Until then they stay single-color, as do
+   the pre-color `helicopter`/`tractor` cache entries (redo = KV delete).
+
+The bricks/instructions items below are a *proposed* order (derives from
 Mike's stated constraints) still open to veto. Each is an independently
 vetoable bet; intended sequence —
 1. **Open search / live-gen (Phase 5 rung a) — ✅ LANDED locally 2026-07-12.**
@@ -403,10 +425,16 @@ vetoable bet; intended sequence —
      runs used disabled, the tuned profile).
    - The **deployed** Worker (rung d) still needs remote KV + secret + a
      fresh sign-off before any public surface can spend.
-2. **Color** — strategic per-set color so results read as the named thing.
-   Cheap render-layer change, high payoff. **Deliberately gated** behind Mike
-   experiencing a fresh, uncached term in *monotone* first (he wants to feel
-   the no-color version). Minor re-touch expected once brick types change (3).
+2. **Color — ✅ LANDED 2026-07-12** (Mike confirmed the bet; monotone gate
+   satisfied by the helicopter/tractor round). Model-painted front overlay:
+   a second, independent Haiku call repaints the trusted front mask
+   (validated cell-for-cell, deterministic), voxels inherit their front
+   cell's color, and a mid-wait `paint` SSE frame repaints the assembling
+   front layer in place. Palette +3 (orange/brown/tan). Geometry prompt
+   untouched; any color failure falls back to the old single-color path.
+   Verified at $0 via replay (Worker 51/51, client 49/49, in-browser duck
+   with orange beak). As-built + backfill gate: `docs/build-log.md`.
+   Minor re-touch expected once brick types change (3).
 3. **Heterogeneous brick types** — real sets combine brick shapes, not the
    current homogenous voxels. Deeper geometry/pipeline arc (bigger weight class
    than 1–2; scope as its own committed arc). **Upstream of** instruction UX.

@@ -372,3 +372,76 @@ hits still serve from the persisted miniflare KV.
 typed at :5174 bills `ANTHROPIC_API_KEY` (~$0.015/term, 5 fresh/hr/IP,
 cached forever). Restore `REPLAY=1` for $0-by-construction. Deployed/remote
 (rung d) untouched: no remote KV, no secret set, needs its own sign-off.
+
+## Color system (next-bets item 2) — landed 2026-07-12
+
+**Design.** Semantic color is a **painted-front overlay**: a 16×16 repaint
+of the trusted FA front mask, one color letter per `#` cell, and every
+voxel inherits the color of its front cell (`rows[15-y][x]` — the same
+front-row↔y convention the hull lift uses). Regions that differ in x/y
+(trunk vs canopy, beak vs body) color correctly for free; depth columns
+stay uniform, which is right at 16³. The geometry prompt (probe6) is
+settled/validated and was **not touched** — the overlay comes from a
+second, independent model call that races the geometry call:
+
+- **Model:** `ANTHROPIC_COLOR_MODEL` env override, default
+  `claude-haiku-4-5`, maxTokens 1024, 15 s timeout, no `thinking` field
+  (Haiku only thinks when explicitly enabled). ~$0.002/term, so a fresh
+  colored term is **~$0.017 total (≤2 Sonnet + 1 Haiku)** — still inside
+  the $0.01–0.02 target.
+- **Validator (deterministic):** `parseOverlay` requires exactly 16×16 and
+  cell-for-cell agreement with the trusted front — every filled cell a
+  legend letter, every empty cell a `.`. Any violation → null → the grid
+  ships with the old single-color `NOUN_COLOR` fallback. **Color can never
+  fail, delay, or degrade a generation** — no retry, no extra latency
+  (awaited only after the geometry pipeline finishes).
+- **Legend (client/Worker hand-copy, keep in sync):** R red, O orange,
+  Y yellow, G green, B blue, N brown, T tan, W white, L lightGray, K black.
+
+**Palette extension.** `Color` union +3 in both repos: orange `#FF8200`,
+brown `#7E4A26`, tan `#E4CD9E` (tan joins the light-colors set for
+side-face darkening). Inventory order and `frontLayer`'s name validation
+updated; UI chrome untouched (`--accent` stays brick yellow). Surface's
+swatch map carries the three as raw-hex type-completeness entries —
+`colorFor()` can't return them today; promote to tokens if they ever
+become UI colors.
+
+**The paint beat.** New SSE frame `paint {overlay}` fires the moment the
+overlay validates — mid-wait, while the front layer is still assembling.
+The client rebuilds the stage bricks from the overlay **without bumping
+`stageTrigger`**: `useStopMotion` keys start frames off brick coordinates,
+so a same-geometry/new-colors swap repaints in place mid-assembly instead
+of restarting from frame 0. The build gets visibly painted while the model
+designs the depth. Frame contract change is backward-compatible (unknown
+SSE events were already ignored).
+
+**Files.** Worker: `src/colorOverlay.ts` (prompt/validator/propagation) +
+threading through `generate.ts` (optional `callColor` param), `index.ts`
+(second `callAnthropic`, replay wiring, write-after-close hardening on the
+SSE frame helper), `replay.ts` (`DUCK_COLOR_RESPONSE` hand-derived fixture
++ `replayColorCall`). Client: `src/voxel/colorOverlay.ts` (legend, overlay
+→ bricks, grid recolor), `seed4ToGrid(json, overlay?)`, `heroSets` glob for
+optional `runs/seed4-16char-mixed/colors/*.txt`, `generateClient` +
+`App.tsx` paint handling.
+
+**Verified ($0, REPLAY):** Worker 51/51 + client 49/49 tests, `tsc` clean
+both; curl of the SSE stream shows `front → paint → done` with orange beak
+voxels at exactly (x∈{0,1}, y=10); in-browser at :5174 — front layer
+assembles, **repaints in place** (yellow + orange beak/foot) during
+"Designing the build", resolve assembles the colored duck, booklet
+inventory tallies yellow/orange separately, zero console errors.
+
+**Library backfill — staged, NOT run (batch spend gate).**
+`../api/scripts/color-library.ts` colors the 29 seed nouns via the same
+Haiku call and writes `runs/seed4-16char-mixed/colors/<stem>.txt`; both
+the bundled idle stage and `../api/scripts/seed4.ts` (KV re-seed) consume
+those files automatically once present. Without `--confirm-spend` it
+prints the plan and exits: **29 terms → ≤58 Haiku calls ≈ $0.06**. Until
+it runs, library sets and the idle stage stay single-color; `helicopter`/
+`tractor` KV entries also predate color (redo = KV delete + re-type).
+
+**State left behind:** `../api/.dev.vars` is restored to the live config
+(`REPLAY` commented out), but the wrangler process on :8787 is still the
+REPLAY instance from verification (12 s injected delay) — it needs one
+restart to load the live config; the harness could not restart a
+billable-path server without a fresh per-session confirmation.
