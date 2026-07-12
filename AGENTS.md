@@ -4,17 +4,18 @@ Read `PLAN.md` for the project plan.
 
 ## Entry point
 
-**If you are a fresh session told "continue work": start on open search /
-live-gen** — Phase 5 rung (a). The Phase 6 front-end overhaul is complete
-through **Stage 4 (stop-motion, landed 2026-07-12)**; the full brief and the
-confirmed next-action ordering live in the Phase 6 "Next action" block below.
-The generation **miss path is already built and verified $0** (probe6 Sonnet
-route + z-flip + FA index + hull/color — see Phase 5 step 5 below); what's
-left for "search any term" is flipping the surface live and driving the first
-**billable** Anthropic call under a hard per-run sign-off. **Mike drives this
-thread with Fable's top-tier reasoning** — this doc records the facts; the
-approach is Fable's call. Do NOT run any live/`CACHE_ONLY`-off Worker without
-explicit per-session sign-off (see Spend guardrail).
+**Open search / live-gen (Phase 5 rung a) went LIVE locally 2026-07-12** —
+the first billable Anthropic calls were made under Mike's sign-off
+(`helicopter` + `tractor`, ~2–4 Sonnet calls total, ≲$0.04). The local
+wrangler dev Worker on :8787 is **left live** (REPLAY commented out in
+`../api/.dev.vars`): any novel term typed at :5174 now bills
+`ANTHROPIC_API_KEY` (~$0.015/term, 5 fresh/hr/IP, cached forever after).
+Mike granted a **standing allowance for spend below $5/session** (2026-07-12)
+— above that, or for new spend shapes (batch seeding, A/B sweeps, Replicate),
+re-confirm per run. Restore `REPLAY=1` in `.dev.vars` for $0-by-construction.
+The Phase 6 front-end overhaul is complete through Stage 4; details in the
+Phase 6 block below. **Mike drives this thread with Fable's top-tier
+reasoning** — this doc records the facts; the approach is Fable's call.
 
 Geometry pipeline (Phases 1–4) is settled; canonical exemplars and settled
 decisions are recorded in "Phase 1–4: geometry pipeline" below, with the
@@ -269,8 +270,8 @@ lightGray. Model-picked / region-based palette is a v2+ knob.
 
 **Remaining rungs** (the open-search work is rung (a) — see the Phase 6
 "Next action" block below for the canonical, detailed entry point):
-- **(a) Live end-to-end smoke test** — the first billable Anthropic call.
-  See Phase 6 Next action item 1.
+- **(a) Live end-to-end smoke test** — ✅ landed 2026-07-12 (helicopter +
+  tractor, first billable calls; see Phase 6 Next action item 1).
 - **(b) Frontend miss-path UX** — ✅ delivered by Stage 3b (streamed build
   log + distinct `no-source`/rate-limit/upstream failure copy). The copy
   paths are typed but not yet exercised in-browser (replay always succeeds);
@@ -367,8 +368,10 @@ lands directly in the result.
 4. **Stop-motion animation pass.** ✅ Landed 2026-07-12. `AnimatedStage`
    (legoMovie profile) wired into the persistent shell; the stage assembles
    its set on each change (idle re-roll / front-mask / resolve). The
-   front-mask + build-resolve assembles use the same trigger mechanism but
-   weren't driven locally (need the Worker). As-built: `docs/build-log.md`.
+   front-mask + build-resolve assembles were verified in-browser 2026-07-12
+   via the REPLAY Worker miss path ($0): streamed log, front-layer assemble
+   during the model wait, resolve assemble into the result scroll, zero
+   console errors. As-built: `docs/build-log.md`.
 
 **As-built log for Stages 0–4** (persistent-shell refactor, result-scroll
 restyle, streamed-log internals, stop-motion wiring, per-stage in-browser
@@ -376,40 +379,30 @@ verification) is moved to `docs/build-log.md` (Phase 6). Nothing there is
 required to start the next action — it's archaeology, and the load-bearing
 bits are summarized in the stage lines above.
 
-**Next action — Mike confirmed open search / live-gen is next (2026-07-12).**
-The color/bricks/instructions items after it are a *proposed* order (derives
-from Mike's stated constraints) still open to veto. Each is an independently
+**Next action — open search is live locally (2026-07-12); Mike's move is to
+play with it** (type any term at :5174 — each novel FA-matched term bills
+~$0.015 under the standing <$5 allowance) **and veto/confirm the next bet:
+color (item 2), now unblocked** — he can feel fresh monotone terms today.
+The bricks/instructions items after it are a *proposed* order (derives from
+Mike's stated constraints) still open to veto. Each is an independently
 vetoable bet; intended sequence —
-1. **Open search / live-gen (Phase 5 rung a) — THE next-session entry point.**
-   Make the tool answer *any* term, not just cached seed4. **Most of this is
-   already built:** the Worker miss path (`../api/src/{generate,probe6,
-   orientation,faIndex,masks,hull,color}.ts`) runs the probe6 Sonnet route
-   (validator + 1 retry, max 2 calls), z-flip orientation search, the FA
-   7,509-term → 16×16-mask index, hull lift and per-noun color — all verified
-   offline/$0, gated off by `CACHE_ONLY=1`. And 3b already shipped the
-   streaming build-log + distinct failure copy, so the frontend "watch it
-   build" + `no-source`/error UX is in place. **So the actual remaining work is
-   flipping the surface live and driving the first real call**, not building the
-   pipeline. Facts a Fable session needs:
-   - **This is the first billable Anthropic call ever** (~$0.02–0.04 for 1–2
-     novel terms, 2 Sonnet calls at list price). The deployed Worker has **no
-     subscription route** — every live gen bills `ANTHROPIC_API_KEY` directly.
-     Exercising it locally = `../api` wrangler dev with a real key and
-     `CACHE_ONLY` removed from `.dev.vars` → **billable by construction.** HARD
-     per-run sign-off before any such run; no live call has been made yet.
-     (To test the *stream/UX* at **$0** without spending, the `../api` replay
-     Worker — `REPLAY=1` + `REPLAY_DELAY_MS` in `.dev.vars`, short-circuits
-     before Anthropic — replays the duck fixtures; details in
-     `docs/build-log.md`.)
-   - **Coverage is bounded by the FA index** (~7,509 terms). A term with no FA
-     match returns `no-source` 404 — which is exactly the uncached / monotone
-     result Mike wants to *feel* before color (item 2). Widening coverage via
-     FLUX-schnell front-sourcing is rung (c): separate Replicate key, separate
-     sign-off — a later, optional bet, not required for the first live test.
-   - Open decisions left to Fable's judgment (not prescribed here): local
-     wrangler-dev vs a deployed test; `thinking: disabled` vs adaptive-low A/B;
-     which 1–2 seed novel terms to spend on first.
-   - Every result caches to KV, so each term is paid once ever.
+1. **Open search / live-gen (Phase 5 rung a) — ✅ LANDED locally 2026-07-12.**
+   First billable calls ever: `helicopter` (degraded — 2 components, 148
+   floating; the rotor disconnects across the thin mast, the known
+   thin-feature failure class) and `tractor` (clean — 1 component, grounded,
+   silhouette reads well). Both ≤2 Sonnet calls, ~10 s wall each, cached to
+   local KV (degraded results cache too, by design — redo needs
+   `npx wrangler kv key delete "g:helicopter" --binding CACHE --local`).
+   Full round log: `docs/build-log.md` (Phase 5 rung a). Facts that remain
+   load-bearing:
+   - **Coverage is bounded by the FA index** (~7,509 terms; no match →
+     `no-source` 404). Term→icon mapping has traps: `crab` → the Cancer
+     zodiac glyph, `elephant` → the GOP logo. FLUX-schnell front-sourcing
+     (rung c) widens coverage: separate Replicate key, separate sign-off.
+   - `thinking: disabled` vs adaptive-low is an untested A/B knob (first
+     runs used disabled, the tuned profile).
+   - The **deployed** Worker (rung d) still needs remote KV + secret + a
+     fresh sign-off before any public surface can spend.
 2. **Color** — strategic per-set color so results read as the named thing.
    Cheap render-layer change, high payoff. **Deliberately gated** behind Mike
    experiencing a fresh, uncached term in *monotone* first (he wants to feel
@@ -423,6 +416,9 @@ vetoable bet; intended sequence —
 - **Phase 5 rung (d)** — production ship (remote KV, deploy, seed4 remote); can
   ship cache-only first, independent of live-gen. Orthogonal to 1–4.
 
-**Spend gate (still load-bearing):** everything through Stage 4 was built and
-verified at **$0**. Only Phase 5 rung (a) / open-search (item 1) bills
-Anthropic, under a discrete per-run sign-off. No live call has been made.
+**Spend gate (updated 2026-07-12):** everything through Stage 4 was built and
+verified at $0. The first live calls (helicopter, tractor, ≲$0.04) ran under
+Mike's sign-off, and he granted a **standing allowance for spend below
+$5/session**. The local Worker is live (see Entry point); larger spend shapes
+(batch seeding, sweeps, deploy-side spend, Replicate) still need their own
+sign-off.

@@ -335,3 +335,40 @@ action is answered.
   path. To confirm live at $0: run the `../api` replay Worker
   (`REPLAY=1` in `../api/.dev.vars`, short-circuits before Anthropic) and submit
   an uncached `?q=`.
+
+## Phase 5 rung (a): open search / live-gen — landed 2026-07-12
+
+**$0 prep (all verified before any spend):** Worker suite green (34/34,
+`tsc` clean); replay miss-path smoked via curl (SSE frames: `front` →
+honest `step`s → `done`, duck fixture, 1 call) and then **in-browser** —
+typed an uncached term at :5174 and watched the full miss UX live for the
+first time: streamed build log, front-layer stop-motion assemble during the
+model wait, resolve assemble into the result scroll, zero console errors.
+That closed Stage 4's "front-mask + build-resolve assembles not driven
+locally" caveat before going live.
+
+**Term selection:** probed candidates against the FA index first. Traps
+found: `crab` → the Cancer zodiac glyph (♋, not a crab), `elephant` → the
+GOP party logo, `scooter` → the motorcycle icon. Picked `helicopter` +
+`tractor` (novel, FA-matched, depth-interesting). `windmill`, `submarine`,
+`whale`, `owl`, `tank`, `dinosaur` are FA misses → `no-source` 404.
+
+**The flip:** commented `REPLAY=1` out of `../api/.dev.vars` (comment block
+documents the billing consequence), restarted wrangler dev detached
+(`/tmp/blawx-api-dev.log`) so the loaded config is known, confirmed cache
+hits still serve from the persisted miniflare KV.
+
+**First billable calls ever (signed off; standing allowance <$5/session):**
+- `helicopter` — resolved ~10 s. **Degraded**: 521 voxels, 2 components,
+  148 floating — the rotor disconnects from the fuselage across the
+  one-cell mast, the known thin-feature failure class (ladder/flower).
+  Cached with `x-degraded: 1` (by design; redo requires a KV delete).
+- `tractor` — resolved ~10 s. **Clean**: 525 voxels, 1 component, grounded;
+  222 pieces · 53 steps; the silhouette reads (cab, sloping hood, wheels).
+- Both ≤2 Sonnet calls (`thinking: disabled`, the tuned profile); total
+  spend ≲$0.04 at list price.
+
+**State left behind:** the local Worker on :8787 is **live** — a novel term
+typed at :5174 bills `ANTHROPIC_API_KEY` (~$0.015/term, 5 fresh/hr/IP,
+cached forever). Restore `REPLAY=1` for $0-by-construction. Deployed/remote
+(rung d) untouched: no remote KV, no secret set, needs its own sign-off.
