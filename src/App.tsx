@@ -116,6 +116,10 @@ function AppMain() {
   // model wait; the finished model once a build resolves. Held across the
   // idle → loading transition so the stage never blanks out.
   const [stageBricks, setStageBricks] = useState<Brick[]>([]);
+  // Bumped alongside each new stage set so the shell replays the stop-motion
+  // assembly from frame 0 (a set change without a trigger bump would render
+  // frozen at the previous animation's final frame).
+  const [stageTrigger, setStageTrigger] = useState(0);
 
   useEffect(() => {
     let alive = true;
@@ -126,7 +130,9 @@ function AppMain() {
         return;
       }
       loadBricksForNoun(noun).then((bricks) => {
-        if (alive) setStageBricks(bricks);
+        if (!alive) return;
+        setStageBricks(bricks);
+        setStageTrigger((n) => n + 1);
       });
       return () => {
         alive = false;
@@ -140,13 +146,17 @@ function AppMain() {
         // Front silhouette in hand before any depth — assemble it on the
         // stage so the wait shows the real build starting, not a spinner.
         setStageBricks(frontMaskToBricks(e.mask, e.color));
+        setStageTrigger((n) => n + 1);
       } else {
         setLogSteps((prev) => [...prev, { id: e.id, label: e.label }]);
       }
     }).then((r) => {
       if (!alive) return;
       setView(r);
-      if (r.status === 'ok') setStageBricks(allBricks(buildSteps(r.grid)));
+      if (r.status === 'ok') {
+        setStageBricks(allBricks(buildSteps(r.grid)));
+        setStageTrigger((n) => n + 1);
+      }
     });
     return () => {
       alive = false;
@@ -190,7 +200,7 @@ function AppMain() {
   }
 
   return (
-    <Shell stageBricks={stageBricks} setNumber={setNumber}>
+    <Shell stageBricks={stageBricks} stageTrigger={stageTrigger} setNumber={setNumber}>
       {content()}
     </Shell>
   );

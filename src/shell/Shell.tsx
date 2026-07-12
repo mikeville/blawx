@@ -1,10 +1,13 @@
 import type { ReactNode } from 'react';
-import { Scene } from '../render/Scene.tsx';
+import { AnimatedStage } from '../render/AnimatedStage.tsx';
+import { DEFAULT_PROFILES } from '../design/motionProfiles.ts';
 import type { Brick } from '../voxel/types.ts';
 import './shell.css';
 
 type Props = {
   stageBricks: Brick[];
+  /** Bumped by the caller on each new stage set, to replay the assembly. */
+  stageTrigger: number;
   setNumber?: string;
   children: ReactNode;
 };
@@ -14,7 +17,7 @@ type Props = {
 // swaps (the idle form, the build log, or the booklet). The single black
 // rule between stage and content is the visible seam of the fixed-stage /
 // swappable-content split, and the one landmark shared by every state.
-export function Shell({ stageBricks, setNumber, children }: Props) {
+export function Shell({ stageBricks, stageTrigger, setNumber, children }: Props) {
   return (
     <div className="shell">
       <div className="shell__sheet">
@@ -23,7 +26,13 @@ export function Shell({ stageBricks, setNumber, children }: Props) {
           {setNumber && <span className="shell__set">{setNumber}</span>}
         </header>
         <div className="shell__stage">
-          <Scene cumulative={[]} fresh={stageBricks} unit={24} margin={16} />
+          <AnimatedStage
+            bricks={stageBricks}
+            profile={DEFAULT_PROFILES.legoMovie}
+            trigger={stageTrigger}
+            unit={24}
+            margin={16}
+          />
         </div>
         <div className="shell__content">{children}</div>
       </div>
