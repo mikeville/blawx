@@ -15,7 +15,9 @@ function tally(bricks: Brick[]): Tally[] {
     if (existing) existing.count += 1;
     else map.set(key, { color: b.color, w: b.w, d: b.d, count: 1 });
   }
-  const order: Brick['color'][] = ['yellow', 'red', 'blue', 'green', 'white', 'lightGray', 'black'];
+  const order: Brick['color'][] = [
+    'yellow', 'red', 'orange', 'blue', 'green', 'brown', 'tan', 'white', 'lightGray', 'black',
+  ];
   return [...map.values()].sort((a, b) => {
     const co = order.indexOf(a.color) - order.indexOf(b.color);
     if (co !== 0) return co;

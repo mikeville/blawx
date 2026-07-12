@@ -9,6 +9,9 @@ const COLORS: readonly Color[] = [
   'white',
   'black',
   'lightGray',
+  'orange',
+  'brown',
+  'tan',
 ];
 
 function toColor(name: string): Color {

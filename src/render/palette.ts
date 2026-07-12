@@ -8,12 +8,15 @@ export const COLORS: Record<Color, string> = {
   white: '#F7F7F2',
   black: '#1A1A1A',
   lightGray: '#A4ACAE',
+  orange: '#FF8200',
+  brown: '#7E4A26',
+  tan: '#E4CD9E',
 };
 
 export const PAGE_BG = '#FFFFFF';
 export const OUTLINE = '#000000';
 
-const LIGHT_COLORS: ReadonlySet<Color> = new Set(['white', 'lightGray']);
+const LIGHT_COLORS: ReadonlySet<Color> = new Set(['white', 'lightGray', 'tan']);
 const SIDE_FACE_DARKEN = 0.94;
 const DESAT_S_MULTIPLIER = 0.5;
 

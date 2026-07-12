@@ -6,6 +6,7 @@ import { BuildLog, type LogStep } from './build/BuildLog.tsx';
 import { buildHeroPool, pickOne, loadBricksForNoun } from './surface/heroSets.ts';
 import { buildSteps, allBricks } from './voxel/steps.ts';
 import { frontMaskToBricks } from './voxel/frontLayer.ts';
+import { overlayToBricks } from './voxel/colorOverlay.ts';
 import type { Brick } from './voxel/types.ts';
 import { setNumberFor, slug } from './api/slug.ts';
 import { generate, type GenerateResult } from './api/generateClient.ts';
@@ -147,6 +148,15 @@ function AppMain() {
         // stage so the wait shows the real build starting, not a spinner.
         setStageBricks(frontMaskToBricks(e.mask, e.color));
         setStageTrigger((n) => n + 1);
+      } else if (e.kind === 'paint') {
+        // Same geometry as the front mask already assembling, now with the
+        // model's real per-cell colors. Deliberately do NOT bump
+        // stageTrigger: useStopMotion.ts keys its start frames off brick
+        // coordinates, so swapping in same-geometry/new-color bricks without
+        // a trigger bump repaints in place mid-assembly instead of
+        // restarting the animation from frame 0.
+        const bricks = overlayToBricks(e.overlay);
+        if (bricks.length > 0) setStageBricks(bricks);
       } else {
         setLogSteps((prev) => [...prev, { id: e.id, label: e.label }]);
       }

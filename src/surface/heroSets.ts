@@ -18,9 +18,23 @@ const seed4Modules = import.meta.glob<{ default: Seed4Json }>(
   '../../runs/seed4-16char-mixed/*.json',
 );
 
+// Optional per-noun color overlays (16 rows of 16 '.'/legend-letter chars —
+// see src/voxel/colorOverlay.ts) for recoloring a bundled seed on top of its
+// flat NOUN_COLOR fallback. The colors/ directory doesn't exist yet, so this
+// glob matches nothing today; that's the safe, expected state, not an error.
+const overlayModules = import.meta.glob<string>(
+  '../../runs/seed4-16char-mixed/colors/*.txt',
+  { query: '?raw', import: 'default' },
+);
+
 function loaderForNoun(noun: string) {
   const path = Object.keys(seed4Modules).find((p) => p.endsWith(`/${noun}.json`));
   return path ? seed4Modules[path] : undefined;
+}
+
+function overlayLoaderForNoun(noun: string) {
+  const path = Object.keys(overlayModules).find((p) => p.endsWith(`/${noun}.txt`));
+  return path ? overlayModules[path] : undefined;
 }
 
 /** The hero pool intersected with what's actually cached; full library if none. */
@@ -52,5 +66,7 @@ export async function loadBricksForNoun(noun: string): Promise<Brick[]> {
   const loader = loaderForNoun(noun);
   if (!loader) return [];
   const mod = await loader();
-  return allBricks(buildSteps(seed4ToGrid(mod.default)));
+  const overlayLoader = overlayLoaderForNoun(noun);
+  const overlay = overlayLoader ? await overlayLoader() : undefined;
+  return allBricks(buildSteps(seed4ToGrid(mod.default, overlay)));
 }

@@ -4,10 +4,13 @@ const API_BASE = import.meta.env.VITE_BLAWX_API ?? '';
 
 // Honest build-log events streamed from the Worker during a live gen.
 // `front` (the FA front mask, known at t=0) drives the on-stage front-layer
-// assemble; each `step` is one real pipeline op. Mirror of the Worker's
+// assemble; `paint` arrives once the model has assigned real per-cell colors
+// to that same front silhouette, so the stage repaints in place rather than
+// reassembling; each `step` is one real pipeline op. Mirror of the Worker's
 // ProgressEvent — kept as a hand copy so the client owns no server import.
 export type BuildEvent =
   | { kind: 'front'; mask: string; color: string }
+  | { kind: 'paint'; overlay: string }
   | { kind: 'step'; id: string; label: string };
 
 export type GenerateResult =
@@ -25,9 +28,9 @@ export type GenerateResult =
  * The Worker answers a cache hit / cache-only miss / rate-limit as plain
  * JSON, but streams the live-generation path as Server-Sent Events so the
  * caller can show an honest build log. `onEvent` receives those `front` /
- * `step` beats as they arrive; the promise resolves once `done` (or a
- * terminal `error`) lands. When the answer is immediate JSON, `onEvent`
- * never fires.
+ * `paint` / `step` beats as they arrive; the promise resolves once `done`
+ * (or a terminal `error`) lands. When the answer is immediate JSON,
+ * `onEvent` never fires.
  */
 export async function generate(
   term: string,
@@ -137,6 +140,11 @@ function handleFrame(
     case 'front': {
       const p = payload as { mask: string; color: string };
       onEvent?.({ kind: 'front', mask: p.mask, color: p.color });
+      return null;
+    }
+    case 'paint': {
+      const p = payload as { overlay: string };
+      onEvent?.({ kind: 'paint', overlay: p.overlay });
       return null;
     }
     case 'step': {

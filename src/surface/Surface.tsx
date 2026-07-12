@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import { colorFor } from '../voxel/seed4.ts';
 import type { Color } from '../voxel/types.ts';
+import { COLORS as PALETTE_HEX } from '../render/palette.ts';
 import { validateTerm } from '../api/slug.ts';
 import { buildHeroPool, sample } from './heroSets.ts';
 import './surface.css';
@@ -17,7 +18,11 @@ function displayNoun(noun: string): string {
 }
 
 // Pick swatches borrow the exact brick colors via the same tokens the
-// renderer paints with — never a hardcoded hex.
+// renderer paints with — never a hardcoded hex. orange/brown/tan don't have
+// design tokens yet (tokens.css is out of scope for the color-overlay work
+// that added them to the Color union), so those three fall back to the
+// palette's hex directly; colorFor() never actually returns them today, so
+// this is a type-completeness fallback, not a live code path.
 const SWATCH_VAR: Record<Color, string> = {
   red: 'var(--red)',
   yellow: 'var(--yellow)',
@@ -26,6 +31,9 @@ const SWATCH_VAR: Record<Color, string> = {
   white: 'var(--brick-white)',
   black: 'var(--ink)',
   lightGray: 'var(--gray)',
+  orange: PALETTE_HEX.orange,
+  brown: PALETTE_HEX.brown,
+  tan: PALETTE_HEX.tan,
 };
 
 // The idle content below the seam rule: "Name your brick set" + a few

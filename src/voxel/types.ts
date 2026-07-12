@@ -5,7 +5,10 @@ export type Color =
   | 'green'
   | 'white'
   | 'black'
-  | 'lightGray';
+  | 'lightGray'
+  | 'orange'
+  | 'brown'
+  | 'tan';
 
 export const GRID_SIZE = 8;
 
