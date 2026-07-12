@@ -4,13 +4,21 @@ Read `PLAN.md` for the project plan.
 
 ## Entry point
 
-**Active work: Phase 6 (front-end overhaul)** — see Phase 6 section
-below. The generation pipeline (Phases 1–5) is code-complete; Phase 5's
-remaining rungs (live smoke test, production ship) stay open and are
-independent of the overhaul. Geometry pipeline (Phases 1–4) is settled;
-canonical exemplars and settled decisions are recorded in "Phase 1–4:
-geometry pipeline" below, with the round-by-round journey in
-`docs/voxel-history.md`.
+**If you are a fresh session told "continue work": start on open search /
+live-gen** — Phase 5 rung (a). The Phase 6 front-end overhaul is complete
+through **Stage 4 (stop-motion, landed 2026-07-12)**; the full brief and the
+confirmed next-action ordering live in the Phase 6 "Next action" block below.
+The generation **miss path is already built and verified $0** (probe6 Sonnet
+route + z-flip + FA index + hull/color — see Phase 5 step 5 below); what's
+left for "search any term" is flipping the surface live and driving the first
+**billable** Anthropic call under a hard per-run sign-off. **Mike drives this
+thread with Fable's top-tier reasoning** — this doc records the facts; the
+approach is Fable's call. Do NOT run any live/`CACHE_ONLY`-off Worker without
+explicit per-session sign-off (see Spend guardrail).
+
+Geometry pipeline (Phases 1–4) is settled; canonical exemplars and settled
+decisions are recorded in "Phase 1–4: geometry pipeline" below, with the
+round-by-round journey in `docs/voxel-history.md`.
 
 ## Spend guardrail (load-bearing)
 
@@ -689,21 +697,79 @@ Worker's dev config — it also gates the sibling `../blawx` locally.)
   `front` event lands. The per-brick stop-motion *assemble* (bricks seating one
   at a time) is Stage 4 animation, not built here.
 
-**Next action:** Stage 3 (the one morphing surface + streamed log) is complete.
-Remaining Phase 6 / Phase 5 threads, each an independently vetoable bet:
-- **Stage 4 — stop-motion animation pass.** Intro fall-into-place + the
-  per-brick front-layer assemble on stepped/held timing (see `design/motion.ts`).
-  `Scene.tsx` renders a static SVG, so per-brick staged animation likely needs a
-  render-side change — feasibility TBD. Mike flagged this lower-priority / his
-  call.
-- **3b polish** — exercise the distinct failure-state copy in-browser (force a
-  `no-source` term / a 429 / an upstream error) to confirm the rendered strings.
-- **Phase 5 rung (a)** — the first billable Anthropic smoke test (1–2 novel
-  terms, ~$0.02–0.04, discrete per-run sign-off). Flip `CACHE_ONLY`/`REPLAY` off,
-  point at a real key. This is the only step that leaves $0.
-- **Phase 5 rung (d)** — production ship (remote KV, deploy, seed4 remote); can
-  ship cache-only first, independent of live-gen.
+**Stage 4 landed (2026-07-12)** — stop-motion assembly wired out of the
+`?dev` harness into the shipped shell, at **$0**. The persistent stage now
+renders `<AnimatedStage>` (was static `<Scene>`) with the **legoMovie**
+profile (Mike's pick from the harness; `DEFAULT_PROFILES.legoMovie`,
+front-to-back arc-drop). `Scene` already took an optional `transformFor`, so
+no render-side rework was needed — the feasibility question from the old Next
+action is answered.
 
-**Spend gate (still load-bearing):** the entire 3b UX was built and verified at
-**$0** via replay. Only Phase 5 rung (a) bills Anthropic, under a discrete
-per-run sign-off. No live call has been made.
+- **`src/shell/Shell.tsx`** — swaps the static `<Scene>` for `<AnimatedStage
+  bricks profile=legoMovie trigger unit=24 margin=16>`; takes a new
+  `stageTrigger` prop. Resting framing unchanged (same Scene, same unit/margin).
+- **`src/App.tsx`** — new `stageTrigger` counter, bumped alongside each of the
+  three `setStageBricks` moments (idle re-roll · front-mask on the model wait ·
+  finished model on resolve) so a set change replays the assembly from frame 0
+  rather than rendering frozen at the prior animation's last frame.
+- **Verified in-browser (idle path, $0, no Worker):** `animatedStageMounted`,
+  116 per-brick `<g>` wrappers, transforms caught at legoMovie **frame 0**
+  (`translate(…,-100)` + `opacity 0` = the arc-start pose); a Back-reset
+  re-rolled a fresh set and it fell into place, fully landed and unclipped at
+  margin 16. rAF pauses in a backgrounded headless tab (froze one probe mid-
+  flight) — a harness artifact, not a product bug: `useStopMotion` derives the
+  frame from wall-clock, so a trigger fired while hidden jumps to the settled
+  pose on resume; reduced-motion collapses to an instant identity cut.
+- **Not driven locally:** the **front-mask assemble** and the **build-resolve
+  assemble** need the Worker (`VITE_BLAWX_API` unreachable in dev →
+  "couldn't reach the builder"). Same trigger mechanism as the verified idle
+  path. To confirm live at $0: run the `../api` replay Worker
+  (`REPLAY=1` in `../api/.dev.vars`, short-circuits before Anthropic) and submit
+  an uncached `?q=`.
+
+**Next action — Mike confirmed open search / live-gen is next (2026-07-12).**
+The color/bricks/instructions items after it are a *proposed* order (derives
+from Mike's stated constraints) still open to veto. Each is an independently
+vetoable bet; intended sequence —
+1. **Open search / live-gen (Phase 5 rung a) — THE next-session entry point.**
+   Make the tool answer *any* term, not just cached seed4. **Most of this is
+   already built:** the Worker miss path (`../api/src/{generate,probe6,
+   orientation,faIndex,masks,hull,color}.ts`) runs the probe6 Sonnet route
+   (validator + 1 retry, max 2 calls), z-flip orientation search, the FA
+   7,509-term → 16×16-mask index, hull lift and per-noun color — all verified
+   offline/$0, gated off by `CACHE_ONLY=1`. And 3b already shipped the
+   streaming build-log + distinct failure copy, so the frontend "watch it
+   build" + `no-source`/error UX is in place. **So the actual remaining work is
+   flipping the surface live and driving the first real call**, not building the
+   pipeline. Facts a Fable session needs:
+   - **This is the first billable Anthropic call ever** (~$0.02–0.04 for 1–2
+     novel terms, 2 Sonnet calls at list price). The deployed Worker has **no
+     subscription route** — every live gen bills `ANTHROPIC_API_KEY` directly.
+     Exercising it locally = `../api` wrangler dev with a real key and
+     `CACHE_ONLY` removed from `.dev.vars` → **billable by construction.** HARD
+     per-run sign-off before any such run; no live call has been made yet.
+   - **Coverage is bounded by the FA index** (~7,509 terms). A term with no FA
+     match returns `no-source` 404 — which is exactly the uncached / monotone
+     result Mike wants to *feel* before color (item 2). Widening coverage via
+     FLUX-schnell front-sourcing is rung (c): separate Replicate key, separate
+     sign-off — a later, optional bet, not required for the first live test.
+   - Open decisions left to Fable's judgment (not prescribed here): local
+     wrangler-dev vs a deployed test; `thinking: disabled` vs adaptive-low A/B;
+     which 1–2 seed novel terms to spend on first.
+   - Every result caches to KV, so each term is paid once ever.
+2. **Color** — strategic per-set color so results read as the named thing.
+   Cheap render-layer change, high payoff. **Deliberately gated** behind Mike
+   experiencing a fresh, uncached term in *monotone* first (he wants to feel
+   the no-color version). Minor re-touch expected once brick types change (3).
+3. **Heterogeneous brick types** — real sets combine brick shapes, not the
+   current homogenous voxels. Deeper geometry/pipeline arc (bigger weight class
+   than 1–2; scope as its own committed arc). **Upstream of** instruction UX.
+4. **Instruction-manual UX** — smarter step inference (max step count,
+   thoughtful ordering / what comes first), better manual display. Rides on
+   (3)'s new decomposition, so it follows brick types, not precedes them.
+- **Phase 5 rung (d)** — production ship (remote KV, deploy, seed4 remote); can
+  ship cache-only first, independent of live-gen. Orthogonal to 1–4.
+
+**Spend gate (still load-bearing):** everything through Stage 4 was built and
+verified at **$0**. Only Phase 5 rung (a) / open-search (item 1) bills
+Anthropic, under a discrete per-run sign-off. No live call has been made.
