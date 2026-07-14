@@ -8,10 +8,40 @@ Read `PLAN.md` for the project plan.
 the first billable Anthropic calls were made under Mike's sign-off
 (`helicopter` + `tractor`, ~2–4 Sonnet calls total, ≲$0.04). **The color
 system landed 2026-07-12** (see Phase 6 next-bets item 2). `../api/.dev.vars`
-is in the live config (REPLAY commented out), but the :8787 wrangler process
-still needs one bounce to load it — see the Phase 6 "Next action" block.
-Once bounced: any novel term typed at :5174 bills `ANTHROPIC_API_KEY`
-(~$0.017/term incl. the Haiku color call, 5 fresh/hr/IP, cached forever).
+is in the live config (REPLAY commented out); the :8787 wrangler process was
+bounced to load it 2026-07-12 (confirmed via cached-hit smoke test on
+`horse` — REPLAY not in the binding list). Any novel term typed at :5174 now bills `ANTHROPIC_API_KEY`
+(~$0.017/term incl. the Haiku color call, cached forever). **The 5 fresh/hr/IP
+rate limit is OFF locally as of 2026-07-13** (`RATE_LIMIT_OFF=1` in
+`../api/.dev.vars`, worker bounced same day) — Mike will say when to turn it
+back on; it stays mandatory for any real deploy. **Store path confirmed
+working 2026-07-13** — a completed generation (`star`) persisted to local
+KV as expected; earlier "nothing cached" reports were 529 errors killing
+runs before the store step, not a store bug. **Known color caveats
+(reconfirmed + expanded 2026-07-13) — two independent causes of
+single-color results:**
+  1. **Color call drops out** — the Haiku overlay fails intermittently
+     (transient Anthropic 529 overload window observed 2026-07-13, since
+     passed; also `parseOverlay` rejects any non-cell-exact repaint, which
+     thin/pointy silhouettes like `star` trip) → no `paint` frame → uniform
+     fallback color, cached as-is. Failure is swallowed silently by design.
+  2. **Projection loss (the bigger structural gap)** — even when the paint
+     call *succeeds* with a good multi-color silhouette, the final grid is
+     colored by column (`voxel color = front cell [15-y][x]`), so accent
+     colors over silhouette regions the 3D geometry didn't voxel-fill simply
+     vanish. Measured: `apple` painted a clean 3-color front (green leaves,
+     brown stem, red body) but stored as 420 red + 1 brown + 0 green — a red
+     blob, flagged `x-degraded`. The color prompt asks for accents on
+     identifying *details* (beak, wheels, trunk, stem) — exactly the thin
+     features that don't survive as voxels — so objects collapse toward
+     their dominant body color. Fix is a design decision, not a bug fix
+     (options logged in the Next action block; all vetoable).
+
+  Separately, the entire seed4 shelf (incl. `horse`) predates the color
+  system — recolor via `api/scripts/color-library.ts --confirm-spend`
+  (~$0.06) then reseed, pending Mike's go-ahead. Note: `color-library.ts`
+  recolors the *front silhouette* only, so it's subject to the same
+  projection loss as live gen.
 Mike granted a **standing allowance for spend below $5/session** (2026-07-12)
 — above that, or for new spend shapes (batch seeding, A/B sweeps, Replicate),
 re-confirm per run. Restore `REPLAY=1` in `.dev.vars` for $0-by-construction.
@@ -254,10 +284,19 @@ the overlay call fails or is absent. As-built: `docs/build-log.md`
 
 **Ratchet up after v1 ships (in order of ambition):**
 
-- **Middle-tier instructions:** greedy brick-packer that recognizes
-  1×1 / 1×2 / 2×2 / 2×4 runs before rendering. Makes the step list
-  feel like an actual LEGO manual. Note: `Brick.footprint` is
-  currently typed `w: 1|2, d: 1|2` — widen when this ratchet lands.
+- **Middle-tier instructions:** ✅ LANDED 2026-07-13 (Lever A — see item 3
+  below), refined same day per Mike's feedback. `pack.ts` greedy packer over
+  the real LEGO System catalog (`1×{1,2,3,4,6,8}`, `2×{2,3,4,6,8}` + rotations),
+  color-bounded, running bond via per-layer axis parity. Candidate order is
+  **commonality-ranked** (`FOOTPRINT_PREFERENCE`, 2×4 workhorse), NOT largest-
+  area — so 2×6/2×8 stay legal but rarely fire (intentional). `Brick.w/d` +
+  `BrickFootprint` widened `1|2` → `number`. **Render: 1 voxel = 1 brick** —
+  default `BrickStyle` is now `'brick'` (height ratio 1.0 + studs) in
+  `Brick.tsx`/`Scene.tsx`, replacing the old ambiguous 0.8 `'plate'` default;
+  `'plate'`/`'cube'` kept for later use. `pack.test.ts` (8 invariant tests, incl.
+  8×2→two 2×4 and no-brick-larger-than-2×4-on-clean-region) + one earlier
+  `steps.test.ts` fixture fix; 50/50 pass, `tsc` clean, verified in-browser on
+  the idle yellow `duck` (tall brick walls, 2×4 running bond, no console errors).
 - **v2: live generation on cache miss (the magic moment).** Wire the
   probe6 route (Sonnet + validator + retry) into the `../api/` Worker.
   Front-source live: FA icon lookup first, FLUX schnell on miss.
@@ -383,21 +422,41 @@ verification) is moved to `docs/build-log.md` (Phase 6). Nothing there is
 required to start the next action — it's archaeology, and the load-bearing
 bits are summarized in the stage lines above.
 
-**Next action — the color system (item 2) landed 2026-07-12, verified at $0
-via replay. One restore step is pending, then Mike's move is to feel it
-live:**
+**Next action — live gen is confirmed working end-to-end (2026-07-13:
+`star` ran a full pipeline to `done` and cached; `apple` painted a clean
+3-color front frame). The load-bearing open finding is the color-projection
+gap, below. The Worker is bounced and live; Mike's move is to decide how
+much the accent-color loss matters.**
 
-1. **Bounce the Worker** (the running :8787 process is still the REPLAY
-   verification instance with a 12 s injected delay; `.dev.vars` on disk is
-   already back to the live config): kill the `wrangler dev` process and
-   rerun `cd ../api && npx wrangler dev` (or detached:
-   `nohup npx wrangler dev > /tmp/blawx-api-dev.log 2>&1 &`). The session
-   harness couldn't restart a billable-path server without fresh
-   confirmation.
-2. **Type fresh terms at :5174** — each novel FA-matched term now bills
-   ~$0.017 (≤2 Sonnet + 1 Haiku color call) under the standing <$5
-   allowance, and should arrive colored, with the front layer visibly
-   repainted mid-wait (the `paint` beat).
+**Load-bearing finding (2026-07-13): accent colors mostly don't survive to
+the rendered grid.** The color model works, but column-projection
+(`voxel color = front cell [15-y][x]`) drops any accent color over a
+silhouette region the geometry didn't voxel-fill — and accents are exactly
+the thin details (beak, stem, wheels) that don't get voxels. Net: objects
+render near-single-color even when the `paint` frame looked multi-color
+(`apple`: 3-color paint → 420 red + 1 brown stored). Full mechanism + the
+other single-color cause (color-call dropout) are in the Entry point "Known
+color caveats" block. Three vetoable directions, no recommendation implied:
+  - **Make accent geometry survive** — ensure thin identifying features get
+    voxels so their front colors have a column to land on.
+  - **Change the color mapping** — color by 3D part/region instead of flat
+    column projection, decoupling accent colors from voxel presence.
+  - **Accept body-dominant** — lean into single-strong-color LEGO objects
+    and drop the accent ambition (cheapest; the color system already
+    trends here in practice).
+
+Housekeeping items still standing:
+
+1. ~~Bounce the Worker~~ — done (re-bounced 2026-07-13): killed the old
+   REPLAY-instance `wrangler dev`, restarted detached
+   (`nohup npx wrangler dev > /tmp/blawx-api-dev.log 2>&1 &` from `../api`).
+   Confirmed live config via `GET :8787/api/generate?q=horse` → `x-cache:
+   hit`, no `REPLAY` binding at boot.
+2. **Fresh FA-matched terms at :5174** bill ~$0.017 (≤2 Sonnet + 1 Haiku)
+   under the standing <$5 allowance and cache on completion. Non-FA terms
+   (`pig`, `submarine`) return `no-source` 404 ("no starting outline yet")
+   — no fallback until FLUX rung (c) is built. Transient Anthropic 529s can
+   error a run mid-stream (observed then cleared 2026-07-13); retry.
 3. **Vetoable, ready when signed off: the library backfill** —
    `cd ../api && npx tsx scripts/color-library.ts` prints the plan
    (29 terms ≈ $0.06) and exits; `--confirm-spend` runs it, then
@@ -436,8 +495,54 @@ vetoable bet; intended sequence —
    with orange beak). As-built + backfill gate: `docs/build-log.md`.
    Minor re-touch expected once brick types change (3).
 3. **Heterogeneous brick types** — real sets combine brick shapes, not the
-   current homogenous voxels. Deeper geometry/pipeline arc (bigger weight class
-   than 1–2; scope as its own committed arc). **Upstream of** instruction UX.
+   current homogenous voxels. Split into two levers (2026-07-13):
+   - **Lever A — richer brick *vocabulary* over the same voxel field ✅ LANDED
+     2026-07-13.** Footprint variety (real System catalog) + running bond, in
+     `pack.ts`. $0, no pipeline/model change, no render change. Makes the build
+     read as "assembled from real bricks" and feeds smarter step inference (4).
+     Its ceiling: the *silhouette* stays blocky — A does not defeat the
+     Minecraft read on its own (that's Lever B). Details in the "Middle-tier
+     instructions" bullet above.
+     - **Deferred sub-bet (vetoable): plate/brick height mix.** Real plates are
+       ⅓ a brick's height, but the voxel grid is uniform unit-height layers, and
+       "tall brick *with* studs" isn't a render style yet (`'cube'` has no
+       studs). Touches render semantics + the byte-identical-static-pages
+       constraint for marginal realism. Not worth rabbit-holing into A; greenlight
+       separately if wanted.
+     - **Height model (locked 2026-07-13, Mike): 1 voxel = 1 brick.** Every
+       voxel renders as a full-height studded brick, so a 2×4 reads
+       unambiguously as *the* flagship brick (not an ambiguous mid-height slab).
+       Chosen over "1 voxel = 1 plate" because the latter (a brick = 3 stacked
+       plates — real LEGO: stud 8mm, plate 3.2mm, brick 9.6mm) would need ~3×
+       vertical grid resolution or it squashes every model. Plates/tiles become
+       a deliberate later accent, not the base unit. Reference facts:
+       memory `reference_lego_common_parts` + https://brickarchitect.com/parts/most-common.
+     - **Vocabulary is commonality-ranked, not largest-area (Mike's feedback
+       2026-07-13):** the packer prefers the most common real footprints
+       (2×4 workhorse, then 2×2, 2×3, 1×4, 1×2, 1×1, …). 2×6/2×8/1×6/1×8 stay
+       legal but rarely fire under greedy — intentional. Deterministic greedy
+       can't sprinkle occasional big bricks for variety without stochasticity;
+       Mike is fine with that for now ("some 2×8 okay but not a big deal").
+   - **Lever B — non-cubic geometry AND richer piece-height types (the real
+     Minecraft-killer, the committed arc; Mike confirmed 2026-07-13 he'll want
+     this in a future version).** Two entangled expansions, both pipeline-scale
+     ("not a packing tweak"): (1) non-cubic parts — slopes/wedges, cheese
+     slopes, round bricks/cylinders/cones, curved slopes, arches — change the
+     *silhouette*, needing a geometry representation beyond occupancy (per-cell
+     part type + orientation), inference of where they go (surface-normal /
+     staircase detection on the voxel hull, or ask the model), and a renderer
+     per part type; (2) mixed piece heights — real plates + bricks + tiles,
+     which means "1 voxel = 1 plate" with ~3× vertical resolution so a brick is
+     3 plates. Entangles with the color-projection gap. Not started; scope as
+     its own arc. **Upstream of** instruction UX.
+   - **Buildability / inventory settings (new feature idea, Mike 2026-07-13):**
+     a settings menu where the user declares which brick types they own (or
+     don't), so the generated set is buildable from their actual collection.
+     Default = the full/wide piece vocabulary; the control *narrows* it. Slots
+     cleanly onto the packer's footprint-preference list (filter the allowed
+     set) and, once Lever B lands, onto the piece-type catalog too. AI-native
+     angle: "make me something I can actually build tonight from what's in the
+     bin." Backlog, not scheduled.
 4. **Instruction-manual UX** — smarter step inference (max step count,
    thoughtful ordering / what comes first), better manual display. Rides on
    (3)'s new decomposition, so it follows brick types, not precedes them.
