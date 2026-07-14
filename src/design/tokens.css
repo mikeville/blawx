@@ -30,6 +30,7 @@
   --paper: #f4f4f4; /* app ground — bright neutral white, warmth removed */
   --page: #ffffff; /* a manual page / brick canvas (== render PAGE_BG) */
   --paper-sunk: #e8e8e8; /* recessed wells, inactive fields */
+  --field-border: #d9d9d9; /* the quiet stroke on the name field + chips */
 
   /* ── Ink ─────────────────────────────────────────────────────────────
      Warm near-black == the brick `black` (#1A1A1A). Coherent by design:
@@ -72,9 +73,11 @@
   --rule-heavy: 3px;
 
   /* ── Type ────────────────────────────────────────────────────────────
-     A Swiss grotesque, faithful to the manuals and zero-dependency.
-     Mono is reserved for true machine data (set numbers, brick counts) —
-     a deliberate modern-instruction accent, never body prose. */
+     A Swiss grotesque, faithful to the manuals and zero-dependency. A real
+     LEGO booklet sets everything — headings, part counts, set numbers — in
+     that one Helvetica-family grotesque, so the printed surfaces do too.
+     Mono is reserved for the live build/generation log, where terminal-style
+     machine output is the point; it never touches the booklet. */
   --font-sans: 'Helvetica Neue', Helvetica, Arial, 'Univers', sans-serif;
   --font-mono: 'SF Mono', 'Menlo', 'Consolas', ui-monospace, monospace;
 
@@ -99,8 +102,13 @@
 
   /* ── Geometry ────────────────────────────────────────────────────────
      Sharp corners are a decision, stated once. A stud is the base unit;
-     spacing is stud multiples so the whole layout rides the brick grid. */
+     spacing is stud multiples so the whole layout rides the brick grid.
+     One exception: the primary CTA (Generate set / Build another set) and
+     the suggestion chips are fully-rounded pills (--radius-pill). The
+     landing reads a touch friendlier, and the button reads identically at
+     both ends of the flow; the strict manual interior stays square. */
   --radius: 0;
+  --radius-pill: 999px;
   --stud: 8px;
   --s-1: 4px; /* half-stud */
   --s-2: 8px; /* 1 stud */

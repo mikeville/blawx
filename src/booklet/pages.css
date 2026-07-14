@@ -35,7 +35,7 @@
 
 .result__meta {
   margin: 0;
-  font-family: var(--font-mono);
+  font-family: var(--font-sans);
   font-size: var(--t-caption);
   color: var(--ink-faint);
   font-variant-numeric: tabular-nums;
@@ -103,7 +103,7 @@
 }
 
 .inventory-cell__count {
-  font-family: var(--font-mono);
+  font-family: var(--font-sans);
   font-weight: var(--fw-bold);
   font-size: var(--t-body);
   color: var(--ink);
@@ -134,7 +134,7 @@
 }
 
 .step-progress {
-  font-family: var(--font-mono);
+  font-family: var(--font-sans);
   font-size: var(--t-caption);
   color: var(--ink-faint);
   font-variant-numeric: tabular-nums;
@@ -168,7 +168,7 @@
 }
 
 .callout-item__count {
-  font-family: var(--font-mono);
+  font-family: var(--font-sans);
   font-weight: var(--fw-bold);
   font-size: var(--t-caption);
   color: var(--ink);
@@ -208,23 +208,23 @@
 
 .final__set {
   margin: 0;
-  font-family: var(--font-mono);
+  font-family: var(--font-sans);
   font-size: var(--t-caption);
   color: var(--ink-faint);
   font-variant-numeric: tabular-nums;
 }
 
+/* The twin of the front surface's Generate CTA — same yellow pill, so the
+   primary action reads identically at both ends of the flow. */
 .final__again {
   margin-top: var(--s-3);
-  padding: var(--s-3) var(--s-5);
+  padding: var(--s-4) var(--s-5);
   background: var(--accent);
   border: none;
-  border-radius: var(--radius);
+  border-radius: var(--radius-pill);
   font-family: var(--font-sans);
   font-weight: var(--fw-bold);
   font-size: var(--t-body);
-  letter-spacing: var(--tracking-label);
-  text-transform: uppercase;
   color: var(--accent-ink);
   cursor: pointer;
   transition: transform var(--dur-snap) var(--ease-step),

@@ -8,30 +8,7 @@
 .surface__form {
   display: flex;
   flex-direction: column;
-}
-
-.surface__step {
-  display: flex;
-  align-items: flex-start;
   gap: var(--s-4);
-}
-
-.surface__stepnum {
-  flex: 0 0 auto;
-  font-family: var(--font-sans);
-  font-weight: var(--fw-black);
-  font-size: var(--t-numeral);
-  line-height: var(--lh-tight);
-  color: var(--ink);
-}
-
-.surface__stepbody {
-  flex: 1 1 auto;
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  gap: var(--s-4);
-  padding-top: var(--s-2);
 }
 
 .surface__stephead {
@@ -46,9 +23,9 @@
 .surface__input {
   width: 100%;
   box-sizing: border-box;
-  padding: var(--s-3) var(--s-4);
+  padding: var(--s-4);
   background: var(--page);
-  border: var(--rule-bold) solid var(--rule);
+  border: var(--rule-hair) solid var(--field-border);
   border-radius: var(--radius);
   font-family: var(--font-sans);
   font-size: var(--t-body);
@@ -71,54 +48,42 @@
   color: var(--red);
 }
 
-/* Parts-legend picks — a 2-col grid of sharp swatches, explicitly not
-   pills. Reads like a manual's parts inventory, not a chip tray. */
+/* Suggestion chips — quiet outlined pills that seed the field with a known
+   noun. A softer landing than the strict manual interior; one tap submits. */
 .surface__picks {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: var(--s-3) var(--s-4);
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-2);
 }
 
 .surface__pick {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--s-2);
-  min-width: 0;
-  padding: var(--s-1) 0;
+  padding: var(--s-1) var(--s-3);
   background: none;
-  border: none;
+  border: var(--rule-hair) solid var(--field-border);
+  border-radius: var(--radius-pill);
   cursor: pointer;
   font-family: var(--font-sans);
-  font-size: var(--t-body);
-  color: var(--ink);
-  text-align: left;
-}
-
-.surface__swatch {
-  flex: 0 0 auto;
-  width: 16px;
-  height: 16px;
-  border: var(--rule-hair) solid var(--outline);
-  border-radius: var(--radius);
-}
-
-.surface__pickname {
-  overflow: hidden;
-  text-overflow: ellipsis;
+  font-size: var(--t-caption);
+  color: var(--ink-faint);
   white-space: nowrap;
+  transition: border-color var(--dur-snap) var(--ease-step),
+    color var(--dur-snap) var(--ease-step);
+}
+
+.surface__pick:hover {
+  border-color: var(--ink);
+  color: var(--ink);
 }
 
 .surface__submit {
   margin-top: var(--s-2);
-  padding: var(--s-3) var(--s-5);
+  padding: var(--s-4) var(--s-5);
   background: var(--accent);
   border: none;
-  border-radius: var(--radius);
+  border-radius: var(--radius-pill);
   font-family: var(--font-sans);
   font-weight: var(--fw-bold);
   font-size: var(--t-body);
-  letter-spacing: var(--tracking-label);
-  text-transform: uppercase;
   color: var(--accent-ink);
   cursor: pointer;
   transition: transform var(--dur-snap) var(--ease-step),
