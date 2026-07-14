@@ -7,7 +7,7 @@ type Props = {
   total: number;
 };
 
-type Tally = { color: Brick['color']; w: 1 | 2; d: 1 | 2; count: number };
+type Tally = { color: Brick['color']; w: number; d: number; count: number };
 
 function tally(bricks: Brick[]): Tally[] {
   const map = new Map<string, Tally>();

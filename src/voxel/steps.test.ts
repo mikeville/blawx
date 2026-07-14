@@ -30,10 +30,14 @@ test('cumulative grows monotonically', () => {
 });
 
 test('dense layer over cap splits into multiple steps', () => {
+  // Alternate color by column (not by row) so the running-bond packer can't
+  // collapse the whole layer into a couple of long same-color runs — each
+  // column stays its own 1x2 brick, keeping the layer over STEP_BRICK_CAP.
   const voxels: Voxel[] = [];
   for (let x = 0; x < 8; x++) {
-    voxels.push({ x, y: 0, z: 0, color: 'red' });
-    voxels.push({ x, y: 0, z: 1, color: 'green' });
+    const color = x % 2 === 0 ? 'red' : 'green';
+    voxels.push({ x, y: 0, z: 0, color });
+    voxels.push({ x, y: 0, z: 1, color });
   }
   const steps = buildSteps(gridOf(voxels));
   assert.ok(steps.length >= 2);

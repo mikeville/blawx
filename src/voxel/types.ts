@@ -26,14 +26,14 @@ export type VoxelGrid = {
   voxels: Voxel[];
 };
 
-export type BrickFootprint = { w: 1 | 2; d: 1 | 2 };
+export type BrickFootprint = { w: number; d: number };
 
 export type Brick = {
   x: number;
   y: number;
   z: number;
-  w: 1 | 2;
-  d: 1 | 2;
+  w: number;
+  d: number;
   color: Color;
 };
 

@@ -4,13 +4,55 @@ function key(x: number, z: number): string {
   return `${x},${z}`;
 }
 
+type Footprint = { w: number; d: number };
+
+// Footprint preference, most-common-first (real LEGO commonality; 2×4 is the
+// iconic workhorse brick). Greedy takes the FIRST candidate that fits, so on a
+// clean flat region the 2×4 dominates and the longer 2×6/2×8/1×6/1×8 stay legal
+// but almost never fire — that's intentional: we prioritize common shapes over
+// maximal coverage. Entries are unoriented [long, short].
+const FOOTPRINT_PREFERENCE: ReadonlyArray<readonly [number, number]> = [
+  [4, 2], // 2×4
+  [2, 2], // 2×2
+  [3, 2], // 2×3
+  [4, 1], // 1×4
+  [2, 1], // 1×2
+  [1, 1], // 1×1
+  [3, 1], // 1×3
+  [6, 2], // 2×6  — legal, rarely chosen
+  [6, 1], // 1×6
+  [8, 2], // 2×8  — rare, last resort
+  [8, 1], // 1×8
+];
+
+// Candidate footprints in preference order, oriented for a given layer. Each
+// preference entry expands to one footprint (square) or two (rectangular —
+// both orientations). For rectangular entries, running bond decides which
+// orientation goes first: on even layers the x-major orientation (wider
+// along x) leads, on odd layers the z-major orientation (deeper along z)
+// leads. That staggers long seams between courses instead of stacking them
+// straight up, layer after layer.
+function candidateOrder(y: number): Footprint[] {
+  const out: Footprint[] = [];
+  const xMajorFirst = y % 2 === 0;
+  for (const [long, short] of FOOTPRINT_PREFERENCE) {
+    if (long === short) {
+      out.push({ w: long, d: short });
+      continue;
+    }
+    const xMajor: Footprint = { w: long, d: short };
+    const zMajor: Footprint = { w: short, d: long };
+    out.push(...(xMajorFirst ? [xMajor, zMajor] : [zMajor, xMajor]));
+  }
+  return out;
+}
+
 export function packLayer(layerVoxels: Voxel[]): Brick[] {
   if (layerVoxels.length === 0) return [];
   const y = layerVoxels[0]!.y;
   const cells = new Map<string, Voxel>();
   // Loop bounds derived from filled cells so pack.ts is grid-size-independent
-  // (the ported 8³ version hardcoded GRID_SIZE here); +1 headroom lets the
-  // 2×2 peek at x+1/z+1 without dropping edge bricks.
+  // (the ported 8³ version hardcoded GRID_SIZE here).
   let maxX = 0;
   let maxZ = 0;
   for (const v of layerVoxels) {
@@ -19,6 +61,7 @@ export function packLayer(layerVoxels: Voxel[]): Brick[] {
     if (v.z > maxZ) maxZ = v.z;
   }
 
+  const candidates = candidateOrder(y);
   const consumed = new Set<string>();
   const bricks: Brick[] = [];
 
@@ -29,29 +72,32 @@ export function packLayer(layerVoxels: Voxel[]): Brick[] {
       const v = cells.get(k);
       if (!v) continue;
 
-      const v01 = cells.get(key(x + 1, z));
-      const v10 = cells.get(key(x, z + 1));
-      const v11 = cells.get(key(x + 1, z + 1));
-      const canPack2x2 =
-        v01 !== undefined &&
-        v10 !== undefined &&
-        v11 !== undefined &&
-        !consumed.has(key(x + 1, z)) &&
-        !consumed.has(key(x, z + 1)) &&
-        !consumed.has(key(x + 1, z + 1)) &&
-        v01.color === v.color &&
-        v10.color === v.color &&
-        v11.color === v.color;
-
-      if (canPack2x2) {
-        bricks.push({ x, y, z, w: 2, d: 2, color: v.color });
-        consumed.add(k);
-        consumed.add(key(x + 1, z));
-        consumed.add(key(x, z + 1));
-        consumed.add(key(x + 1, z + 1));
-      } else {
-        bricks.push({ x, y, z, w: 1, d: 1, color: v.color });
-        consumed.add(k);
+      // Candidates are pre-sorted most-common-first, so the first one that
+      // fits (same color, unconsumed, in-bounds for every covered cell) is
+      // the preferred legal brick for this anchor.
+      let placed: Footprint | null = null;
+      for (const c of candidates) {
+        let fits = true;
+        for (let i = 0; i < c.w && fits; i++) {
+          for (let j = 0; j < c.d && fits; j++) {
+            const ck = key(x + i, z + j);
+            if (consumed.has(ck)) { fits = false; break; }
+            const cv = cells.get(ck);
+            if (!cv || cv.color !== v.color) { fits = false; break; }
+          }
+        }
+        if (fits) {
+          placed = c;
+          break;
+        }
+      }
+      // candidates always includes 1x1, so placed is never null here.
+      const { w, d } = placed!;
+      bricks.push({ x, y, z, w, d, color: v.color });
+      for (let i = 0; i < w; i++) {
+        for (let j = 0; j < d; j++) {
+          consumed.add(key(x + i, z + j));
+        }
       }
     }
   }
