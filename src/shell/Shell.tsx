@@ -9,6 +9,8 @@ type Props = {
   /** Bumped by the caller on each new stage set, to replay the assembly. */
   stageTrigger: number;
   setNumber?: string;
+  /** Wordmark click — returns to idle (and re-rolls the stage's set). */
+  onHome: () => void;
   children: ReactNode;
 };
 
@@ -17,13 +19,21 @@ type Props = {
 // swaps (the idle form, the build log, or the booklet). The single black
 // rule between stage and content is the visible seam of the fixed-stage /
 // swappable-content split, and the one landmark shared by every state.
-export function Shell({ stageBricks, stageTrigger, setNumber, children }: Props) {
+export function Shell({
+  stageBricks,
+  stageTrigger,
+  setNumber,
+  onHome,
+  children,
+}: Props) {
   return (
     <div className="shell">
       <div className="shell__sheet">
         <header className="shell__masthead">
-          <span className="shell__mark">blawx</span>
-          {setNumber && <span className="shell__set">{setNumber}</span>}
+          <button type="button" className="shell__mark" onClick={onHome}>
+            Blawx
+          </button>
+          <span className="shell__tagline">{setNumber ?? 'LEGO generator'}</span>
         </header>
         <div className="shell__stage">
           <AnimatedStage

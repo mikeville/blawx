@@ -210,7 +210,12 @@ function AppMain() {
   }
 
   return (
-    <Shell stageBricks={stageBricks} stageTrigger={stageTrigger} setNumber={setNumber}>
+    <Shell
+      stageBricks={stageBricks}
+      stageTrigger={stageTrigger}
+      setNumber={setNumber}
+      onHome={reset}
+    >
       {content()}
     </Shell>
   );

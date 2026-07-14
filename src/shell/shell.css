@@ -28,20 +28,34 @@
   justify-content: space-between;
 }
 
+/* The wordmark doubles as the way home — a button, not a link, since the app
+   is one surface and "home" is a state reset, not a document. Styled to read
+   as pure type: no button chrome, only the pointer + hover tint say it acts. */
 .shell__mark {
+  padding: 0;
+  background: none;
+  border: none;
   font-family: var(--font-sans);
-  font-weight: var(--fw-black);
-  font-size: var(--t-display);
+  font-weight: var(--fw-bold);
+  font-size: 32px;
   line-height: var(--lh-tight);
   letter-spacing: var(--tracking-tight);
-  text-transform: lowercase;
   color: var(--ink);
+  cursor: pointer;
+  transition: color var(--dur-snap) var(--ease-step);
 }
 
-.shell__set {
-  font-family: var(--font-mono);
-  font-size: var(--t-caption);
+.shell__mark:hover {
   color: var(--ink-faint);
+}
+
+/* Right of the wordmark: the "LEGO generator" tagline while idle, or the
+   set number once a build resolves. Helvetica like the rest of the printed
+   surface — never mono. */
+.shell__tagline {
+  font-family: var(--font-sans);
+  font-size: var(--t-body);
+  color: var(--ink);
   font-variant-numeric: tabular-nums;
 }
 
