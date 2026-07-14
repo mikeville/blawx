@@ -10,11 +10,18 @@ the first billable Anthropic calls were made under Mike's sign-off
 system landed 2026-07-12** (see Phase 6 next-bets item 2). `../api/.dev.vars`
 is in the live config (REPLAY commented out); the :8787 wrangler process was
 bounced to load it 2026-07-12 (confirmed via cached-hit smoke test on
-`horse` — REPLAY not in the binding list). Any novel term typed at :5174 now bills `ANTHROPIC_API_KEY`
+`horse` — REPLAY not in the binding list). Any novel term typed at the local
+Vite port now bills `ANTHROPIC_API_KEY`
 (~$0.017/term incl. the Haiku color call, cached forever). **The 5 fresh/hr/IP
 rate limit is OFF locally as of 2026-07-13** (`RATE_LIMIT_OFF=1` in
 `../api/.dev.vars`, worker bounced same day) — Mike will say when to turn it
-back on; it stays mandatory for any real deploy. **Store path confirmed
+back on; it stays mandatory for any real deploy. **Dev CORS is now
+port-agnostic as of 2026-07-14** — `DEV_ALLOW_LOCALHOST=1` in
+`../api/.dev.vars` makes the worker accept any `localhost`/`127.0.0.1`
+origin, so Vite drifting off its usual port (a sibling session grabbed it)
+no longer surfaces as "couldn't reach the builder." The flag is `.dev.vars`
+only; a deployed worker honors `ALLOWED_ORIGINS` alone (now just
+`https://mikemake.com`). Bounce the worker after editing `.dev.vars`. **Store path confirmed
 working 2026-07-13** — a completed generation (`star`) persisted to local
 KV as expected; earlier "nothing cached" reports were 529 errors killing
 runs before the store step, not a store bug. **Known color caveats
@@ -318,13 +325,39 @@ the overlay call fails or is absent. As-built: `docs/build-log.md`
   log + distinct `no-source`/rate-limit/upstream failure copy). The copy
   paths are typed but not yet exercised in-browser (replay always succeeds);
   they get exercised for real when (a) goes live.
-- **(c) FLUX-schnell front sourcing on FA-index miss** — extends coverage
-  past the FA index. Needs Replicate (~$0.003/img, separate key, separate
-  sign-off) + a Worker-side image→mask downsample (the luminance path in
-  `silhouette.ts` is portable; no resvg needed for PNGs). Optional; not
-  required for the first live test.
-- **(d) Production ship** — create remote KV, deploy, seed4 remote, point
-  blawx2's build at it. Independent of live-gen: can ship cache-only first.
+- **(c) FLUX-schnell front sourcing on FA-index miss** — ✅ LANDED LOCALLY
+  2026-07-14. Non-FA terms now build instead of returning `no-source`.
+  As-built in `../api/`: `src/silhouette.ts` (pure PNG→16×16 mask, ported
+  from `scripts/lib/silhouette.ts`, `Uint8Array` not `Buffer`, `fast-png`
+  decode normalized to RGBA), `src/flux.ts` (`fluxFrontMask` — Replicate
+  `black-forest-labs/flux-schnell`, `Prefer: wait` + poll, generic silhouette
+  prompt), wired at `generate.ts` behind a new `callFlux` param that
+  `index.ts` builds only when `REPLICATE_API_TOKEN` is set (unset = old
+  `no-source` behavior, fully back-compat). Tests: 2 new silhouette unit
+  tests vs. real FLUX fixtures, 53/53 pass, tsc clean. **Verified live
+  ($0.02×2 under the sign-off):** `peanut` → 233 voxels (degraded — thin-
+  feature artifact, still renders), `submarine` → clean + colored. Both
+  cached. **Cold-start caveat:** the first call after the flux-schnell model
+  goes idle can take ~40s to boot; the initial live run failed on a cold
+  model, every warm call succeeded. Poll deadline bumped to 150s to absorb
+  it, but the reliable demo mitigation is to **fire one throwaway term to
+  warm the model right before screensharing**. Degraded-on-thin-features is
+  the known Lever B limitation, not a FLUX bug.
+- **(d) Production ship** — ✅ GREENLIT 2026-07-14. Create remote KV
+  (`wrangler kv namespace create CACHE`/`RL`), `wrangler secret put
+  ANTHROPIC_API_KEY`, `npm run deploy`, `seed4.ts` (no `--local`, $0) to
+  remote KV, point blawx2's build at the Worker URL via `VITE_BLAWX_API`.
+  **Frontend host: mikemake.com subpath** (via the subpath-deploy skill;
+  `ALLOWED_ORIGINS` already lists `https://mikemake.com`). **Gates:**
+  `wrangler login` (not currently authenticated) + a fresh sign-off for the
+  first live Anthropic spend on a public URL. Prod `vars`: `RATE_LIMIT_OFF`
+  unset (per-IP limit ON), `CACHE_ONLY` unset (live-gen on).
+  **Abuse posture (Mike 2026-07-14): per-IP limit only for launch** — the
+  5-fresh/hr/IP limit is the sole guard; a determined IP-rotating abuser can
+  run up the bill. **Deferred roadmap item: a global daily spend ceiling** (a
+  KV day-counter that reverts to cache-only past $N/day) — add before the
+  demo sees real traffic volume. Rung (c) and (d) are independent; fastest
+  path to a showable demo is (d) FA-live first, then layer (c) FLUX.
 
 **Cost-model constraint (still load-bearing):** the deployed Worker has
 no subscription route — every live gen bills `ANTHROPIC_API_KEY` directly
@@ -416,17 +449,64 @@ lands directly in the result.
    during the model wait, resolve assemble into the result scroll, zero
    console errors. As-built: `docs/build-log.md`.
 
+5. **Landing warmth + wordmark home.** ✅ Landed 2026-07-14 (demo-prep pass).
+   The idle surface was reading as a cold form: a numbered step ("1 / Name
+   your brick set") over a 2-col swatch grid of parts-legend picks. Softened
+   to a plain "Name your set" + a row of ≤5 outlined suggestion pills, and
+   the primary CTA became a yellow pill — the same pill at both ends of the
+   flow ("Generate set" / "Build another set"). New `--radius-pill` token is
+   the *only* rounding in the app; the manual interior stays strictly square,
+   so the rounding reads as a decision, not a default. Type: mono is now
+   reserved for the live build log (terminal output is the point there) and
+   never appears in the booklet — a real LEGO manual sets part counts and set
+   numbers in the same grotesque as everything else. The masthead gained a
+   "LEGO generator" tagline (replaced by the set number once a build
+   resolves), and the **wordmark is a button that returns to idle** and
+   re-rolls the stage's random set.
+
 **As-built log for Stages 0–4** (persistent-shell refactor, result-scroll
 restyle, streamed-log internals, stop-motion wiring, per-stage in-browser
 verification) is moved to `docs/build-log.md` (Phase 6). Nothing there is
 required to start the next action — it's archaeology, and the load-bearing
 bits are summarized in the stage lines above.
 
-**Next action — live gen is confirmed working end-to-end (2026-07-13:
-`star` ran a full pipeline to `done` and cached; `apple` painted a clean
-3-color front frame). The load-bearing open finding is the color-projection
-gap, below. The Worker is bounced and live; Mike's move is to decide how
-much the accent-color loss matters.**
+**Next action — INTERVIEW DEMO RUNNER IS SET UP (2026-07-14).** Mike is
+demoing this locally in an interview and needs it not to crash mid-session.
+Delivered: **`blawx.proj/demo-up.sh`** (outside both git repos) — starts the
+Worker backend on `:8787` + the **built** frontend (prod bundle, not the
+fragile dev server) on `:5280`, with a health-check watchdog that restarts
+either on crash/hang/child-death (verified: recovers a SIGKILL'd workerd in
+~9s). **Run it in a Terminal (not via Claude, which dies with the session):**
+`bash /Users/michaeldeal/-Repos/prototype/blawx.proj/demo-up.sh`, leave the
+window open. **Demo URL: `http://localhost:5280`.** `VITE_BLAWX_API` is baked
+to `http://localhost:8787` at build time (`.env.local`); rebuild
+(`npm run build` in blawx2) if that target changes. The old `:5179` dev
+server was killed (port clutter).
+
+FLUX (rung c) landed locally (see (c) bullet); non-FA terms source a
+silhouette (~$0.02/term, cached). **CONTENT reliability is a separate,
+still-open problem from server uptime:** flux-schnell cold-boots (~40s,
+sometimes `failed`) so live/novel terms are flaky in a demo — lean on cached
+terms, and the **curated pre-seed** (bake ~30-50 good terms into KV ahead of
+time) is the recommended fix, still un-chosen by Mike. Color: novel terms now
+get a deterministic bright fallback (not grey) when the paint overlay drops
+out (`color.ts`). Shape quality on thin/odd terms (rainbow, castle) is the
+known Lever B limit.
+
+Remaining, when Mike wants it (both deprioritized vs. the local demo):
+- **rung (d) production deploy** as a mikemake.com subpath — full step list
+  in the (d) bullet above. Immediate blocker: `wrangler login` not
+  authenticated; needs one live-spend sign-off for a public URL. The `../api`
+  FLUX + token work already done is deploy-ready (secret becomes
+  `wrangler secret put REPLICATE_API_TOKEN`).
+- **Curated pre-seed** (~30–50 known-good terms baked into KV ahead of time,
+  ~$0.50–1) — the recommended fix for the flux cold-boot flakiness above, and
+  the seed you'd want in remote KV anyway. Still un-chosen by Mike.
+
+Still-open (not blocking the deploy): the color-projection gap (live gen
+works end-to-end — `star`/`apple` confirmed 2026-07-13 — but accent colors
+mostly don't survive to the rendered grid). Full mechanism + three vetoable
+directions below.
 
 **Load-bearing finding (2026-07-13): accent colors mostly don't survive to
 the rendered grid.** The color model works, but column-projection
@@ -452,7 +532,7 @@ Housekeeping items still standing:
    (`nohup npx wrangler dev > /tmp/blawx-api-dev.log 2>&1 &` from `../api`).
    Confirmed live config via `GET :8787/api/generate?q=horse` → `x-cache:
    hit`, no `REPLAY` binding at boot.
-2. **Fresh FA-matched terms at :5174** bill ~$0.017 (≤2 Sonnet + 1 Haiku)
+2. **Fresh FA-matched terms** (typed at the local Vite port) bill ~$0.017 (≤2 Sonnet + 1 Haiku)
    under the standing <$5 allowance and cache on completion. Non-FA terms
    (`pig`, `submarine`) return `no-source` 404 ("no starting outline yet")
    — no fallback until FLUX rung (c) is built. Transient Anthropic 529s can
