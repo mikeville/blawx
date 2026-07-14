@@ -20,6 +20,8 @@ type Props = {
 const HEIGHT_RATIO: Record<BrickStyle, number> = {
   plate: PLATE_HEIGHT_RATIO,
   cube: 1.0,
+  // Full unit cube — see Brick.tsx for the brick-vs-plate height rationale.
+  brick: 1.0,
 };
 
 type Sortable = { brick: Brick; desaturated: boolean };
@@ -64,7 +66,7 @@ export function Scene({
   margin = 28,
   width,
   height,
-  style = 'plate',
+  style = 'brick',
   transformFor,
 }: Props) {
   const items: Sortable[] = [

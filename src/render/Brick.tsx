@@ -2,7 +2,7 @@ import type { Brick } from '../voxel/types.ts';
 import { project, UNIT, PLATE_HEIGHT_RATIO, STUD_RADIUS_RATIO, STUD_HEIGHT_RATIO } from './iso.ts';
 import { fillFor, OUTLINE } from './palette.ts';
 
-export type BrickStyle = 'plate' | 'cube';
+export type BrickStyle = 'plate' | 'cube' | 'brick';
 
 type Props = {
   brick: Brick;
@@ -24,19 +24,25 @@ const STROKE_RATIO = 0.04;
 const HEIGHT_RATIO: Record<BrickStyle, number> = {
   plate: PLATE_HEIGHT_RATIO,
   cube: 1.0,
+  // A real LEGO brick is ~1.2x as tall as a stud is wide and 3x a plate's
+  // height; we render it at a full unit cube (1.0) so stacked voxels read as
+  // stacked bricks while keeping the generated silhouette proportions (the
+  // 16x16 front mask is square). Resolves the old 0.8 plate ratio, which
+  // read ambiguously as brick-or-plate.
+  brick: 1.0,
 };
 
 function poly(points: Array<{ x: number; y: number }>): string {
   return points.map(p => `${p.x.toFixed(3)},${p.y.toFixed(3)}`).join(' ');
 }
 
-export function BrickShape({ brick, desaturated, unit = UNIT, style = 'plate' }: Props) {
+export function BrickShape({ brick, desaturated, unit = UNIT, style = 'brick' }: Props) {
   const { x: bx, y: by, z: bz, w, d, color } = brick;
   const stroke = unit * STROKE_RATIO;
   const heightRatio = HEIGHT_RATIO[style];
   const yBot = by * heightRatio;
   const yTop = (by + 1) * heightRatio;
-  const showStuds = style === 'plate';
+  const showStuds = style === 'plate' || style === 'brick';
 
   const TBL = project(bx,     yTop, bz,     unit);
   const TBR = project(bx + w, yTop, bz,     unit);
