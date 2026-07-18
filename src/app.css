@@ -1,0 +1,297 @@
+/* Internal instrument. Neutral on purpose: the renders are the only color
+   on the page, so nothing competes with the thing being judged. */
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: #fcfcfa;
+  color: #1c1c1a;
+  font: 13px/1.5 ui-monospace, 'SF Mono', Menlo, monospace;
+}
+
+main {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 28px 32px 96px;
+}
+
+h1 {
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  margin: 0;
+}
+
+h2 {
+  font-size: 13px;
+  font-weight: 600;
+  margin: 0;
+}
+
+.page-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  border-bottom: 1px solid #1c1c1a;
+  padding: 12px 0;
+  margin-bottom: 0;
+  position: sticky;
+  top: 0;
+  background: #fcfcfa;
+  z-index: 3;
+}
+
+.controls {
+  display: flex;
+  gap: 18px;
+}
+
+.controls label {
+  display: inline-flex;
+  gap: 6px;
+  align-items: center;
+  cursor: pointer;
+  user-select: none;
+}
+
+.run-controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 0;
+  margin-bottom: 4px;
+  border-bottom: 1px solid #e2e2da;
+  flex-wrap: wrap;
+  position: sticky;
+  /* Sits directly under .page-header (measured ~47px tall). */
+  top: 47px;
+  background: #fcfcfa;
+  z-index: 2;
+}
+
+.run-controls label {
+  display: inline-flex;
+  gap: 6px;
+  align-items: center;
+  color: #6f6f68;
+}
+
+.run-controls select,
+.run-controls input {
+  font: inherit;
+  font-size: 12px;
+  background: #fff;
+  border: 1px solid #c9c9c2;
+  border-radius: 2px;
+  padding: 2px 6px;
+  color: #1c1c1a;
+}
+
+.run-search {
+  min-width: 220px;
+}
+
+.run-count {
+  color: #9a9a90;
+  font-size: 11px;
+}
+
+.run-controls-spacer {
+  flex: 1;
+}
+
+.run {
+  margin-top: 24px;
+}
+
+.run-collapsed {
+  margin-top: 0;
+  border-bottom: 1px solid #f0f0ea;
+}
+
+.run > header {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  margin-bottom: 14px;
+}
+
+.run-collapsed > header {
+  margin-bottom: 0;
+  padding: 6px 0;
+}
+
+.run-toggle {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 6px;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  color: inherit;
+}
+
+.run-toggle:hover h2 {
+  text-decoration: underline;
+}
+
+.run-caret {
+  color: #9a9a90;
+  font-size: 10px;
+  width: 10px;
+  display: inline-block;
+}
+
+.run-info {
+  color: #6f6f68;
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.run-info strong {
+  color: #1c1c1a;
+}
+
+.run-date {
+  color: #1c1c1a;
+}
+
+.run-label {
+  color: #9a9a90;
+}
+
+button {
+  font: inherit;
+  font-size: 11px;
+  background: none;
+  border: 1px solid #c9c9c2;
+  border-radius: 2px;
+  padding: 2px 8px;
+  color: #6f6f68;
+  cursor: pointer;
+}
+
+button:hover {
+  border-color: #1c1c1a;
+  color: #1c1c1a;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  gap: 1px;
+  background: #e2e2da;
+  border: 1px solid #e2e2da;
+}
+
+.tile {
+  margin: 0;
+  background: #ffffff;
+  padding: 12px 12px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.tile-render {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 150px;
+}
+
+.tile-render svg {
+  max-width: 100%;
+  max-height: 220px;
+  height: auto;
+}
+
+.tile-masks {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+
+.tile-mask {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.tile-mask svg {
+  image-rendering: pixelated;
+  border: 1px solid #e2e2da;
+}
+
+.tile-mask span {
+  color: #9a9a90;
+  font-size: 9px;
+  letter-spacing: 0.02em;
+}
+
+.tile figcaption {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+
+.tile-name {
+  font-weight: 600;
+}
+
+.tile-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 8px;
+  color: #9a9a90;
+  font-size: 11px;
+}
+
+.warn {
+  color: #b04a00;
+  font-style: normal;
+}
+
+.verdict {
+  font-size: 11px;
+  padding: 0 6px;
+  border-radius: 2px;
+  border: 1px solid currentcolor;
+}
+
+.verdict-hit {
+  color: #2e7d32;
+}
+
+.verdict-close {
+  color: #a07400;
+}
+
+.verdict-miss {
+  color: #c8102e;
+}
+
+.errors {
+  color: #c8102e;
+  font-size: 11px;
+}
+
+.empty {
+  color: #6f6f68;
+  margin-top: 48px;
+}
+
+code {
+  background: #f0f0ea;
+  padding: 1px 4px;
+  border-radius: 2px;
+}

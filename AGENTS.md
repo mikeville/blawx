@@ -60,6 +60,145 @@ Geometry pipeline (Phases 1–4) is settled; canonical exemplars and settled
 decisions are recorded in "Phase 1–4: geometry pipeline" below, with the
 round-by-round journey in `docs/voxel-history.md`.
 
+## Output quality: measured facts, open questions (2026-07-18)
+
+**Why this section exists.** Mike's read is that some generated sets "look
+horrible," and this is a handoff to a higher-tier model to investigate. What
+follows is deliberately split into *observed facts* (verified in code or
+measured by a committed, $0, re-runnable audit) and *things I could NOT
+establish* (flagged as such). No fix is prescribed and no single root cause is
+asserted — the diagnosis is left open on purpose. Read the "What is NOT
+established" list as seriously as the facts.
+
+**Reproduce everything here:** `cd ../api && npx tsx scripts/audit-cache.ts`.
+It measures every cached grid with the Worker's own `analyze()` and prints the
+tables below. It reads local miniflare KV + `runs/*.json` only — no network,
+no model calls. Numbers below are from the local CACHE KV on 2026-07-18 (48
+entries); they will drift as the cache changes, so re-run rather than trust
+these verbatim.
+
+### Definitions (precise — several terms here are easy to misread)
+
+- **provenance** — how a cached entry was produced. `library` = pre-baked
+  seed4 grid (deterministic depth profile, no model); `live-FA` = generated on
+  a cache miss from a Font Awesome front mask; `live-FLUX` = generated on a
+  miss whose front mask came from FLUX (no FA icon existed). The audit derives
+  this per term (in the seed4 dir? → library; else FA index hit? → live-FA;
+  else → live-FLUX).
+- **component** (`analyze.ts`) — a 6-connected voxel blob. `components > 1`
+  means the model is in **physically separate pieces**. This is the one
+  **unambiguous** structural defect.
+- **float / floating voxel** (`analyze.ts`) — a voxel above `y=0` with **no
+  voxel directly beneath it**. This is an **overhang, not necessarily a
+  defect**: a tabletop overhangs its legs, so `table` is ~37% floats and
+  correct. High float % flags "lots of overhang," which matters for LEGO
+  buildability but does not by itself mean "looks bad." Do not treat float %
+  as a quality score. (Assumption, low-confidence: float % *may* correlate
+  with the ugly ones via disconnected debris, but the audit does not
+  demonstrate that.)
+- **degraded** — the Worker's own flag, set in `generate.ts:180` as
+  `components !== 1 || !touchesGround || voxels.length === 0`. So "degraded"
+  means "multi-piece, floating off the ground, or empty" — a **structural**
+  check only. It says nothing about whether the silhouette is recognizable.
+
+### Observed facts
+
+1. **The app ships two different geometry pipelines** (already documented
+   elsewhere in this file, restated because it's load-bearing here): cache
+   *hits* come from the deterministic-depth-profile library
+   (`runs/seed4-16char-mixed`, `model: none`); cache *misses* run the probe6
+   route (Sonnet designs side/top from the front mask). Both share the same
+   front-mask sourcing. A demo showing a cached set is showing the cheaper,
+   non-model route.
+
+2. **The controlled comparison shows the two depth routes are near-parity on
+   structure.** Six terms exist in both the library and the probe6 run — same
+   noun, same front mask, only the depth author differs:
+   - library (deterministic profile): 15.3% floats, 2/6 degraded
+   - probe6 (Sonnet-designed): 15.9% floats, 2/6 degraded
+   So "live generation is structurally worse than the library" is **not**
+   supported. The per-provenance gap in fact 3 is confounded by term
+   difficulty (the live terms are harder words: `castle`, `rainbow`,
+   `helicopter`), not by the route.
+
+3. **Structural degradation is widespread across ALL provenances, including
+   the pre-baked library** (measured, 2026-07-18):
+   | provenance | entries | degraded | floats |
+   |---|---|---|---|
+   | library | 29 | **9 (31%)** | 13.6% |
+   | live-FA | 11 | 6 (55%) | 18.4% |
+   | live-FLUX | 8 | 4 (50%) | 22.9% |
+   The library is **not** the clean baseline it's described as elsewhere in
+   this doc. 9 shipped library sets are multi-piece: `palm-tree` is in **8
+   disconnected components**, `octopus` in 3, plus `dragon`, `cat`, `mug`,
+   `snail`, `sailboat`, `ice-cream-cone`, `lighthouse`. The idle stage draws
+   its random "advertisement" set from this pool.
+
+4. **Library defects are invisible to every code path.** `seed4.ts` writes
+   `{grid}` only — it never runs `analyze()` ("these are curated grids") — so
+   no library entry carries a `degraded` flag or metrics at all (29/29 have no
+   stored metrics). The 9 degraded library sets are therefore **unflagged in
+   the cache**. Fact discovered the hard way: a first audit pass trusted the
+   stored `metrics`/`degraded` fields and reported the library as "0 degraded,
+   0 floats" — that was absent fields defaulting to zero, not clean data. The
+   committed audit measures every grid itself to avoid this trap.
+
+5. **The `degraded` flag changes nothing the user sees.** It is computed
+   (`generate.ts`), cached, sent as `x-degraded`, and parsed by
+   `generateClient.ts:72` into the client's result type — but `App.tsx` never
+   reads that field. There is **no quality gate anywhere**: the live path's one
+   retry is driven by the *mechanical* validator (front fidelity, depth cap,
+   top-slab), degraded results are cached anyway by design (`index.ts:229`),
+   and nothing rejects, reduces, or even labels a bad output. A bad grid is
+   permanent until its KV key is deleted.
+
+6. **Color: 39 of 48 cached sets are single-color; 42 of 48 are ≥90% one
+   color.** This is the color-projection gap documented at length below
+   ("Load-bearing finding … accent colors mostly don't survive"): voxel color
+   is taken from the front cell by column projection, so accent colors over
+   silhouette regions the geometry didn't voxel-fill vanish. The audit
+   confirms the *scale* of it — near-uniform color is the norm, not the
+   exception, across every provenance.
+
+7. **FA and FLUX front sources degrade at similar rates** (55% vs 50% in fact
+   3's small sample). This does **not** support the idea that FLUX's front
+   masks are the primary quality problem.
+
+8. **Code discrepancy worth a look (observed, effect unverified):** the live
+   FLUX prompt (`../api/src/flux.ts`) hardcodes `"...silhouette of a {noun},
+   side view..."` for *every* noun. The offline script that produced the
+   library's FLUX silhouettes (`scripts/gen-silhouettes.ts`) chose the view
+   **per noun** from a hand-authored table. Separately, the probe6 depth prompt
+   calls the given mask the *front* while FA icons are often side-profile
+   glyphs — so "front" in this pipeline may effectively mean "the canonical
+   recognizable silhouette," and the two prompts may describe different views.
+   Flagged as a discrepancy to investigate; the audit does **not** establish it
+   as a cause of anything.
+
+### What is NOT established (do not treat as known)
+
+- **No render has been looked at.** Everything above is structural metrics and
+  code reading. The specific terms Mike finds "horrible" have not been
+  identified, and whether they are even in the audited cache is unknown. The
+  single highest-value next step is almost certainly to look at actual renders
+  and correlate them with these metrics — the contact-sheet viewer (`npm run
+  dev`) is the tool.
+- **Whether structural degradation is the same thing as "looks horrible" is
+  unknown.** A single connected grounded blob can still be an unrecognizable
+  lump (`components === 1` says nothing about resemblance), and a multi-piece
+  set can still read fine visually. The correlation between the `degraded`
+  metric and Mike's perceptual complaint is **untested**.
+- **Root cause is deliberately not diagnosed.** Candidate independent
+  contributors, none ranked, none confirmed: front-mask sourcing (wrong icon,
+  e.g. the known `crab`→Cancer-glyph / `elephant`→GOP-logo traps; thin
+  features lost at the 16×16 downsample); depth authoring (profile or model);
+  the 1-voxel-per-cell blocky silhouette itself (the "Minecraft read," which
+  Lever B below is meant to address); color projection; and the absence of any
+  quality gate letting bad outputs through. More than one may be in play.
+- **Float % as a quality signal is an assumption, low-confidence.** See the
+  definition above — it measures overhang, which is legitimate for many
+  objects.
+
 ## Spend guardrail (load-bearing)
 
 **No direct Anthropic API calls during R&D.** All model interactions
