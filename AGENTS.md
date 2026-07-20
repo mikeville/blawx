@@ -4,200 +4,183 @@ Read `PLAN.md` for the project plan.
 
 ## Entry point
 
-**Open search / live-gen (Phase 5 rung a) went LIVE locally 2026-07-12** —
-the first billable Anthropic calls were made under Mike's sign-off
-(`helicopter` + `tractor`, ~2–4 Sonnet calls total, ≲$0.04). **The color
-system landed 2026-07-12** (see Phase 6 next-bets item 2). `../api/.dev.vars`
-is in the live config (REPLAY commented out); the :8787 wrangler process was
-bounced to load it 2026-07-12 (confirmed via cached-hit smoke test on
-`horse` — REPLAY not in the binding list). Any novel term typed at the local
-Vite port now bills `ANTHROPIC_API_KEY`
-(~$0.017/term incl. the Haiku color call, cached forever). **The 5 fresh/hr/IP
-rate limit is OFF locally as of 2026-07-13** (`RATE_LIMIT_OFF=1` in
-`../api/.dev.vars`, worker bounced same day) — Mike will say when to turn it
-back on; it stays mandatory for any real deploy. **Dev CORS is now
-port-agnostic as of 2026-07-14** — `DEV_ALLOW_LOCALHOST=1` in
-`../api/.dev.vars` makes the worker accept any `localhost`/`127.0.0.1`
-origin, so Vite drifting off its usual port (a sibling session grabbed it)
-no longer surfaces as "couldn't reach the builder." The flag is `.dev.vars`
-only; a deployed worker honors `ALLOWED_ORIGINS` alone (now just
-`https://mikemake.com`). Bounce the worker after editing `.dev.vars`. **Store path confirmed
-working 2026-07-13** — a completed generation (`star`) persisted to local
-KV as expected; earlier "nothing cached" reports were 529 errors killing
-runs before the store step, not a store bug. **Known color caveats
-(reconfirmed + expanded 2026-07-13) — two independent causes of
-single-color results:**
-  1. **Color call drops out** — the Haiku overlay fails intermittently
-     (transient Anthropic 529 overload window observed 2026-07-13, since
-     passed; also `parseOverlay` rejects any non-cell-exact repaint, which
-     thin/pointy silhouettes like `star` trip) → no `paint` frame → uniform
-     fallback color, cached as-is. Failure is swallowed silently by design.
-  2. **Projection loss (the bigger structural gap)** — even when the paint
-     call *succeeds* with a good multi-color silhouette, the final grid is
-     colored by column (`voxel color = front cell [15-y][x]`), so accent
-     colors over silhouette regions the 3D geometry didn't voxel-fill simply
-     vanish. Measured: `apple` painted a clean 3-color front (green leaves,
-     brown stem, red body) but stored as 420 red + 1 brown + 0 green — a red
-     blob, flagged `x-degraded`. The color prompt asks for accents on
-     identifying *details* (beak, wheels, trunk, stem) — exactly the thin
-     features that don't survive as voxels — so objects collapse toward
-     their dominant body color. Fix is a design decision, not a bug fix
-     (options logged in the Next action block; all vetoable).
+**Current state (2026-07-19):** live local generation is ON. The local
+Worker (`../api`, wrangler dev on :8787) bills `ANTHROPIC_API_KEY` for any
+novel term typed at the local Vite port (~$0.017/term FA-matched: ≤2 Sonnet
++ 1 Haiku color; +~$0.02 Replicate when FLUX sources the front). Every
+result caches to local KV forever. Mike granted a **standing allowance for
+spend below $5/session** (2026-07-12); above that, or for new spend shapes
+(batch seeding, A/B sweeps, deploy-side spend, Replicate batches),
+re-confirm per run. Restore `REPLAY=1` in `../api/.dev.vars` for
+$0-by-construction.
 
-  Separately, the entire seed4 shelf (incl. `horse`) predates the color
-  system — recolor via `api/scripts/color-library.ts --confirm-spend`
-  (~$0.06) then reseed, pending Mike's go-ahead. Note: `color-library.ts`
-  recolors the *front silhouette* only, so it's subject to the same
-  projection loss as live gen.
-Mike granted a **standing allowance for spend below $5/session** (2026-07-12)
-— above that, or for new spend shapes (batch seeding, A/B sweeps, Replicate),
-re-confirm per run. Restore `REPLAY=1` in `.dev.vars` for $0-by-construction.
-The Phase 6 front-end overhaul is complete through Stage 4; details in the
-Phase 6 block below. **Mike drives this thread with Fable's top-tier
-reasoning** — this doc records the facts; the approach is Fable's call.
+`../api/.dev.vars` live config: `RATE_LIMIT_OFF=1` (Mike says when the
+5-fresh/hr/IP limit goes back on; it stays mandatory for any real deploy)
+and `DEV_ALLOW_LOCALHOST=1` (any localhost port passes CORS in dev; a
+deployed worker honors `ALLOWED_ORIGINS` alone — currently
+`https://mikemake.com`). Bounce the worker after editing `.dev.vars`.
+Transient Anthropic 529 windows can kill runs mid-stream; retry.
 
-Geometry pipeline (Phases 1–4) is settled; canonical exemplars and settled
-decisions are recorded in "Phase 1–4: geometry pipeline" below, with the
-round-by-round journey in `docs/voxel-history.md`.
+**Interview demo runner:** `bash
+/Users/michaeldeal/-Repos/prototype/blawx.proj/demo-up.sh` in a Terminal
+(not via Claude — it dies with the session). Worker :8787 + built frontend
+:5280 behind a crash watchdog. Demo URL `http://localhost:5280`.
+`VITE_BLAWX_API` is baked at build time (`.env.local`) — rebuild blawx2 if
+the target changes. FLUX cold-boot (~40 s, sometimes `failed`) makes novel
+non-FA terms flaky in a demo: warm the model with a throwaway term first,
+lean on cached terms.
 
-## Output quality: measured facts, open questions (2026-07-18)
+**Known color caveats — most sets render near-single-color.** Two causes:
+(1) the Haiku paint overlay drops out (failure/rejected repaint → uniform
+fallback, cached as-is, silent by design); (2) the bigger structural gap —
+voxel color = front cell by column projection, so accents on thin
+un-voxeled features vanish (`apple`: clean 3-color paint stored as 420 red
++ 1 brown). Three vetoable fix directions are logged in the findings
+report below. The seed4 shelf predates the color system;
+`api/scripts/color-library.ts --confirm-spend` (~$0.06) + reseed is ready
+pending Mike's go-ahead (it recolors the front silhouette only, so it
+shares the projection loss).
 
-**Why this section exists.** Mike's read is that some generated sets "look
-horrible," and this is a handoff to a higher-tier model to investigate. What
-follows is deliberately split into *observed facts* (verified in code or
-measured by a committed, $0, re-runnable audit) and *things I could NOT
-establish* (flagged as such). No fix is prescribed and no single root cause is
-asserted — the diagnosis is left open on purpose. Read the "What is NOT
-established" list as seriously as the facts.
+**Read "Output quality — findings report (2026-07-19)" below before
+touching generation quality** — it supersedes all earlier quality notes
+(originals archived at `../blawx2-AGENTS-archive-2026-07-19.md`). Geometry
+pipeline (Phases 1–4) settled — canonical exemplars below, journey in
+`docs/voxel-history.md`. Phase 6 front-end complete through Stage 5 —
+as-built log in `docs/build-log.md`. **Mike drives this thread with
+Fable's top-tier reasoning** — this doc records the facts; the approach is
+Fable's call.
 
-**Reproduce everything here:** `cd ../api && npx tsx scripts/audit-cache.ts`.
-It measures every cached grid with the Worker's own `analyze()` and prints the
-tables below. It reads local miniflare KV + `runs/*.json` only — no network,
-no model calls. Numbers below are from the local CACHE KV on 2026-07-18 (48
-entries); they will drift as the cache changes, so re-run rather than trust
-these verbatim.
+## Output quality — findings report (2026-07-19)
 
-### Definitions (precise — several terms here are easy to misread)
+Why generated sets often don't look like their search term. Supersedes the
+2026-07-18 structural audit and its correction block (both archived
+verbatim in `../blawx2-AGENTS-archive-2026-07-19.md`). Method: rendered
+every cached grid (front-ortho + iso contact sheet, $0, local KV only) and
+traced each failure class back through the code — the render eyeball found
+what structural metrics could not. Structure numbers remain re-runnable
+via `cd ../api && npx tsx scripts/audit-cache.ts` (caveat: its provenance
+labels misclassify `grid.size === 8` entries as live).
 
-- **provenance** — how a cached entry was produced. `library` = pre-baked
-  seed4 grid (deterministic depth profile, no model); `live-FA` = generated on
-  a cache miss from a Font Awesome front mask; `live-FLUX` = generated on a
-  miss whose front mask came from FLUX (no FA icon existed). The audit derives
-  this per term (in the seed4 dir? → library; else FA index hit? → live-FA;
-  else → live-FLUX).
-- **component** (`analyze.ts`) — a 6-connected voxel blob. `components > 1`
-  means the model is in **physically separate pieces**. This is the one
-  **unambiguous** structural defect.
-- **float / floating voxel** (`analyze.ts`) — a voxel above `y=0` with **no
-  voxel directly beneath it**. This is an **overhang, not necessarily a
-  defect**: a tabletop overhangs its legs, so `table` is ~37% floats and
-  correct. High float % flags "lots of overhang," which matters for LEGO
-  buildability but does not by itself mean "looks bad." Do not treat float %
-  as a quality score. (Assumption, low-confidence: float % *may* correlate
-  with the ugly ones via disconnected debris, but the audit does not
-  demonstrate that.)
-- **degraded** — the Worker's own flag, set in `generate.ts:180` as
-  `components !== 1 || !touchesGround || voxels.length === 0`. So "degraded"
-  means "multi-piece, floating off the ground, or empty" — a **structural**
-  check only. It says nothing about whether the silhouette is recognizable.
+### Root causes, ranked by evidence
 
-### Observed facts
+1. **Cache contamination (was the worst offender; FIXED locally
+   2026-07-19).** Five KV entries — `flower`, `acorn`, `skyscraper`,
+   `ghost`, `human-body` — were 8³ grids from the retired prototype's
+   `baseline-llm` "failure reference" set, seeded by `api/scripts/seed.ts`
+   with hardcoded fake metrics (`components:1, floatingCount:0`,
+   unmeasured). Quarter-scale junk no current code path produced,
+   permanent until deleted. **Deleted from local KV 2026-07-19**; they
+   regenerate live on next search. `seed.ts` still exists — do not run it
+   against any KV that matters. Detection: `grid.size === 8`.
 
-1. **The app ships two different geometry pipelines** (already documented
-   elsewhere in this file, restated because it's load-bearing here): cache
-   *hits* come from the deterministic-depth-profile library
-   (`runs/seed4-16char-mixed`, `model: none`); cache *misses* run the probe6
-   route (Sonnet designs side/top from the front mask). Both share the same
-   front-mask sourcing. A demo showing a cached set is showing the cheaper,
-   non-model route.
+2. **FA term→icon semantic traps.** The 7,509-term lookup is FA's
+   alias/search metadata — "typing this should surface this icon in a
+   font picker," not "this icon depicts this noun." In the cache:
+   `grapes` was built from **wine-bottle**. Also live in the index:
+   `castle → chess-rook`, `skyscraper → building`, `crab → cancer`
+   (zodiac), `elephant → republican` (GOP logo). `castle` is the
+   canonical example that semantic failure is invisible to every stored
+   metric: wrong object, yet `components:1`, grounded, not degraded.
 
-2. **The controlled comparison shows the two depth routes are near-parity on
-   structure.** Six terms exist in both the library and the probe6 run — same
-   noun, same front mask, only the depth author differs:
-   - library (deterministic profile): 15.3% floats, 2/6 degraded
-   - probe6 (Sonnet-designed): 15.9% floats, 2/6 degraded
-   So "live generation is structurally worse than the library" is **not**
-   supported. The per-provenance gap in fact 3 is confounded by term
-   difficulty (the live terms are harder words: `castle`, `rainbow`,
-   `helicopter`), not by the route.
+3. **FA glyph fragmentation at 16×16 — 48% of the index.** 965/1,997
+   icon masks go multi-component after the downsample (glyph stripes,
+   gaps, outlines survive as disconnected chunks); 3,603/7,509 lookup
+   terms resolve to such an icon; 88 icons have <60 filled cells.
+   Because the front mask is authoritative and `repairFrontProtecting`
+   guarantees every front cell voxels, a fragmented mask **guarantees** a
+   multi-piece degraded set before any model call. Cached examples:
+   `candy-cane` (5 pieces), `rainbow` (4), `bowl` (2 — the icon's
+   floating garnish).
 
-3. **Structural degradation is widespread across ALL provenances, including
-   the pre-baked library** (measured, 2026-07-18):
-   | provenance | entries | degraded | floats |
-   |---|---|---|---|
-   | library | 29 | **9 (31%)** | 13.6% |
-   | live-FA | 11 | 6 (55%) | 18.4% |
-   | live-FLUX | 8 | 4 (50%) | 22.9% |
-   The library is **not** the clean baseline it's described as elsewhere in
-   this doc. 9 shipped library sets are multi-piece: `palm-tree` is in **8
-   disconnected components**, `octopus` in 3, plus `dragon`, `cat`, `mug`,
-   `snail`, `sailboat`, `ice-cream-cone`, `lighthouse`. The idle stage draws
-   its random "advertisement" set from this pool.
+4. **The live FLUX route ships uncurated — 4 of 5 real FLUX entries are
+   degraded** (`peanut`, `squid`, `submarine`, `pants`; `banana` clean).
+   The offline path that built the library had hand-authored
+   subject+view per noun, 4 candidates per noun, 512² previews, a human
+   pick, and dropped its misses (`ladder`, `flower`). Live `flux.ts` has
+   a generic `"a {noun}, side view"` prompt, one shot (second seed only
+   on API failure), `MIN_FILLED_CELLS = 20` (a readable 16³ front needs
+   ~100+ cells), no readability check, and discards the PNG + mask — so
+   failures can't even be diagnosed afterward.
 
-4. **Library defects are invisible to every code path.** `seed4.ts` writes
-   `{grid}` only — it never runs `analyze()` ("these are curated grids") — so
-   no library entry carries a `degraded` flag or metrics at all (29/29 have no
-   stored metrics). The 9 degraded library sets are therefore **unflagged in
-   the cache**. Fact discovered the hard way: a first audit pass trusted the
-   stored `metrics`/`degraded` fields and reported the library as "0 degraded,
-   0 floats" — that was absent fields defaulting to zero, not clean data. The
-   committed audit measures every grid itself to avoid this trap.
+5. **The recognizable view is never rendered.** By construction the
+   grid's straight-on front projection equals the source mask cell-exact
+   (verified: `helicopter`, `star`). The app only shows 30° iso (camera
+   along +(1,1,1) — the mirrored back view), where depth smears into the
+   silhouette: `bowl`/`star`/`helicopter` read fine front-on and as
+   unrecognizable masses in iso. Invisible to float/component metrics.
+   Contributor: Sonnet's stair-stepped per-part depth reads as rubble at
+   45°, where the library's smooth flat/inflate profiles don't — the
+   probe6-vs-library structural parity hid this perceptual gap.
 
-5. **The `degraded` flag changes nothing the user sees.** It is computed
-   (`generate.ts`), cached, sent as `x-degraded`, and parsed by
-   `generateClient.ts:72` into the client's result type — but `App.tsx` never
-   reads that field. There is **no quality gate anywhere**: the live path's one
-   retry is driven by the *mechanical* validator (front fidelity, depth cap,
-   top-slab), degraded results are cached anyway by design (`index.ts:229`),
-   and nothing rejects, reduces, or even labels a bad output. A bad grid is
-   permanent until its KV key is deleted.
+6. **Amplifier: no quality gate + permanent cache.** Nothing rejects,
+   retries, or labels a bad output (`x-degraded` is computed but unread
+   by the UI); degraded results cache forever by design.
 
-6. **Color: 39 of 48 cached sets are single-color; 42 of 48 are ≥90% one
-   color.** This is the color-projection gap documented at length below
-   ("Load-bearing finding … accent colors mostly don't survive"): voxel color
-   is taken from the front cell by column projection, so accent colors over
-   silhouette regions the geometry didn't voxel-fill vanish. The audit
-   confirms the *scale* of it — near-uniform color is the norm, not the
-   exception, across every provenance.
+### Why benchmarks looked good but live doesn't
 
-7. **FA and FLUX front sources degrade at similar rates** (55% vs 50% in fact
-   3's small sample). This does **not** support the idea that FLUX's front
-   masks are the primary quality problem.
+`seed4-16char-mixed` and `probe6-16char-sonnetdepth` validated
+**depth-under-curation**: hand-picked fronts (per-noun source hardcoded in
+`seed-library.ts`), human candidate selection on FLUX, misses dropped from
+the library, Mike's-eyeball QA gate on everything. The live product runs
+the same depth pipeline over an uncurated front funnel with no gate.
+Nothing regressed — human curation was doing the quality work, and it's
+exactly the part that didn't ship. probe6 only ever proved "Sonnet can add
+depth to a known-good silhouette"; that still holds (`tractor`, `banana`
+come out fine when the front is clean).
 
-8. **Code discrepancy worth a look (observed, effect unverified):** the live
-   FLUX prompt (`../api/src/flux.ts`) hardcodes `"...silhouette of a {noun},
-   side view..."` for *every* noun. The offline script that produced the
-   library's FLUX silhouettes (`scripts/gen-silhouettes.ts`) chose the view
-   **per noun** from a hand-authored table. Separately, the probe6 depth prompt
-   calls the given mask the *front* while FA icons are often side-profile
-   glyphs — so "front" in this pipeline may effectively mean "the canonical
-   recognizable silhouette," and the two prompts may describe different views.
-   Flagged as a discrepancy to investigate; the audit does **not** establish it
-   as a cause of anything.
+### Decisions (Mike, 2026-07-19)
 
-### What is NOT established (do not treat as known)
+- **FA vetted whitelist: approved.** Replace the raw alias table with a
+  vetted subset. Mechanical pass (drop fragmenting/sparse icons) is $0;
+  an optional one-time vision pass over surviving term↔icon pairs (~$2)
+  needs its own sign-off.
+- **Iso stays.** 30° (variants OK, but isometric). The front-on hero
+  moment is off the table for now — remedies for cause 5 must work
+  within an isometric presentation (e.g. smoother depth, angle variants).
+- **Per-term budget may stretch** past $0.01–0.02 when it buys visibly
+  better results (candidates, judge calls, retries). Cache-once
+  economics make this a one-time cost per term.
+- **Production is auto-pick only.** No human selection in the public
+  live path. Midjourney-style "generate k, user picks one" is a **pinned
+  fallback** to revisit if auto-judging falls short; human picking
+  remains fine for R&D and offline seeding.
+- **Probe7 greenlit — the "no-mask" hypothesis.** The silhouette-sourcing
+  apparatus exists because 2024-era LLM voxel authoring failed at 8³ in
+  the old repo; nobody had tested whether current Sonnet with the probe6
+  exemplar/validator machinery can author ALL THREE views from the noun
+  alone. If it can, the sourcing problem (traps, fragmentation, FLUX
+  flakiness) dissolves. Run: `runs/probe7-16char-nomask/` — 10 nouns
+  spanning the failure classes (comparables duck/fox/table; trap terms
+  grapes/castle/crab; FLUX-degraded submarine/peanut; thin-feature
+  helicopter; skyscraper). Executed via subscription subagents ($0,
+  Sonnet 5 with adaptive thinking — NOT the thinking-disabled runtime
+  profile; a positive result needs a thinking-disabled A/B before it
+  reshapes the Worker).
 
-- **No render has been looked at.** Everything above is structural metrics and
-  code reading. The specific terms Mike finds "horrible" have not been
-  identified, and whether they are even in the audited cache is unknown. The
-  single highest-value next step is almost certainly to look at actual renders
-  and correlate them with these metrics — the contact-sheet viewer (`npm run
-  dev`) is the tool.
-- **Whether structural degradation is the same thing as "looks horrible" is
-  unknown.** A single connected grounded blob can still be an unrecognizable
-  lump (`components === 1` says nothing about resemblance), and a multi-piece
-  set can still read fine visually. The correlation between the `degraded`
-  metric and Mike's perceptual complaint is **untested**.
-- **Root cause is deliberately not diagnosed.** Candidate independent
-  contributors, none ranked, none confirmed: front-mask sourcing (wrong icon,
-  e.g. the known `crab`→Cancer-glyph / `elephant`→GOP-logo traps; thin
-  features lost at the 16×16 downsample); depth authoring (profile or model);
-  the 1-voxel-per-cell blocky silhouette itself (the "Minecraft read," which
-  Lever B below is meant to address); color projection; and the absence of any
-  quality gate letting bad outputs through. More than one may be in play.
-- **Float % as a quality signal is an assumption, low-confidence.** See the
-  definition above — it measures overhang, which is legitimate for many
-  objects.
+  **Probe7 VERDICT (run 2026-07-19, same session): full authorship
+  works.** All 10 converted at ~production call profile (1 shot + 1
+  feedback retry); structure: **9/10 clean** (1 component, grounded;
+  only `crab` degraded, 2 comps via a claw disconnecting across depth) vs
+  56% degraded on real live-FA and 80% on real live-FLUX. Semantics
+  (Fable eyeball, contact sheet): clear wins over the current cache on
+  every trap/FLUX term — `castle` is an actual 3-tower castle (vs chess
+  rook), `grapes` a hanging cluster (vs wine bottle), `submarine` reads
+  as hull+sail+periscope (vs box + floating cube), `helicopter`/`peanut`
+  beat their degraded cached versions; parity on `table`/`duck` vs the
+  curated library; `fox` slightly below the curated FA fox; `skyscraper`
+  reads more ziggurat than skyscraper (recognizable, grounded, clean).
+  Caveats logged for the productionization decision: (1) **9/10 first
+  drafts made the same top-view z-mirror error** (top drawn back-to-front
+  inverted), burning the single retry on a mechanical fix — and one retry
+  (`skyscraper`) re-introduced it and was fixed by the Worker-equivalent
+  topZ flip; a 16³ exemplar or a sharper top-view convention line in the
+  prompt should reclaim the retry for quality; (2) adaptive thinking was
+  on (subscription route) — needs the thinking-disabled A/B at the real
+  cost profile (~2 Sonnet calls, est. $0.03–0.05/term with authored
+  front) before wiring into the Worker; (3) iso stair-step lumpiness is
+  unchanged from probe6 — full authorship fixes *what the object is*,
+  not the depth-texture aesthetics (that remains cause-5 work under the
+  iso-stays decision).
 
 ## Spend guardrail (load-bearing)
 
@@ -609,28 +592,32 @@ verification) is moved to `docs/build-log.md` (Phase 6). Nothing there is
 required to start the next action — it's archaeology, and the load-bearing
 bits are summarized in the stage lines above.
 
-**Next action — INTERVIEW DEMO RUNNER IS SET UP (2026-07-14).** Mike is
-demoing this locally in an interview and needs it not to crash mid-session.
-Delivered: **`blawx.proj/demo-up.sh`** (outside both git repos) — starts the
-Worker backend on `:8787` + the **built** frontend (prod bundle, not the
-fragile dev server) on `:5280`, with a health-check watchdog that restarts
-either on crash/hang/child-death (verified: recovers a SIGKILL'd workerd in
-~9s). **Run it in a Terminal (not via Claude, which dies with the session):**
-`bash /Users/michaeldeal/-Repos/prototype/blawx.proj/demo-up.sh`, leave the
-window open. **Demo URL: `http://localhost:5280`.** `VITE_BLAWX_API` is baked
-to `http://localhost:8787` at build time (`.env.local`); rebuild
-(`npm run build` in blawx2) if that target changes. The old `:5179` dev
-server was killed (port clutter).
+**Next action — productionize full authorship (probe7 verdict: works;
+see findings report).** In order, each vetoable: (1) prompt v2 — fix the
+top-view z-mirror convention (16³ exemplar or sharper wording) so the
+single retry stops being spent on it, re-verify on the probe7 nouns ($0
+via subscription subagents, resend same harness); (2) thinking-disabled
+A/B at the real runtime profile before touching the Worker; (3) decide
+the Worker reshape: authored front as primary route, FA/FLUX demoted to
+fallback or removed — entangles with the approved FA whitelist (still
+worth building if FA stays as a fallback or for the idle-stage library).
+Probe7 grids are viewable in the contact-sheet viewer (`npm run dev`,
+run `probe7-16char-nomask`).
+
+Demo runner (2026-07-14, still current): **`blawx.proj/demo-up.sh`**
+(outside both git repos) — Worker `:8787` + built frontend `:5280` with a
+health-check watchdog (recovers a SIGKILL'd workerd in ~9s). Run it in a
+Terminal, leave the window open; demo URL `http://localhost:5280`. The old
+`:5179` dev server was killed (port clutter).
 
 FLUX (rung c) landed locally (see (c) bullet); non-FA terms source a
-silhouette (~$0.02/term, cached). **CONTENT reliability is a separate,
-still-open problem from server uptime:** flux-schnell cold-boots (~40s,
-sometimes `failed`) so live/novel terms are flaky in a demo — lean on cached
-terms, and the **curated pre-seed** (bake ~30-50 good terms into KV ahead of
-time) is the recommended fix, still un-chosen by Mike. Color: novel terms now
-get a deterministic bright fallback (not grey) when the paint overlay drops
-out (`color.ts`). Shape quality on thin/odd terms (rainbow, castle) is the
-known Lever B limit.
+silhouette (~$0.02/term, cached) — but see findings-report cause 4: the
+live FLUX route is the weakest producer. flux-schnell cold-boots (~40s,
+sometimes `failed`) so live/novel terms are flaky in a demo — lean on
+cached terms, and the **curated pre-seed** (bake ~30-50 good terms into KV
+ahead of time) is the recommended demo fix, still un-chosen by Mike.
+Color: novel terms get a deterministic bright fallback (not grey) when the
+paint overlay drops out (`color.ts`).
 
 Remaining, when Mike wants it (both deprioritized vs. the local demo):
 - **rung (d) production deploy** as a mikemake.com subpath — full step list
