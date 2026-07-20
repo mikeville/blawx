@@ -1,0 +1,14 @@
+{
+  "id": "probe11-16char-effortlow",
+  "label": "probe11 16³ · no mask, prompt v2 — adaptive + effort low",
+  "date": "2026-07-20",
+  "pipeline": "probe10 rerun with thinking spend capped via effort: claude-sonnet-5, adaptive thinking, output_config {effort: low}, max_tokens 8192, prompt v2 verbatim. Single-shot + 1 feedback retry (retry-feedback.ts --max-depth=6), strict lift. Hypothesis: clean-lift rate stays ≥9/10 with thinking under ~1.5k tokens/call (~$0.02–0.05/term). Nouns failing at low escalate to a separate effort-medium run. Per-call usage in usage.json.",
+  "conditions": {
+    "grid": "16",
+    "encoding": "char",
+    "model": "claude-sonnet-5",
+    "prompt": "full-authorship v2 (identical to probe8/9/10)",
+    "source": "none — noun only",
+    "method": "single-shot + 1 deterministic-feedback retry; direct API, adaptive thinking + effort low — live spend, signed off 2026-07-20"
+  }
+}

@@ -256,6 +256,30 @@ come out fine when the front is clean).
   subscription subagents produced the same answers with far less
   visible deliberation.
 
+  **Probe11 (effort-capped adaptive, run 2026-07-20, live API, $1.59
+  actual across both arms): FALSIFIED — the effort lever is dead for
+  this task.** Same prompt v2. Arm 1, `effort: "low"` on all 10 nouns
+  ($0.75): **3/10 clean** (duck, castle, crab). The revealing pattern
+  is bimodal thinking spend — the 3 successes came from calls that
+  *ignored* the low setting and thought 6–7.5k tokens anyway, while
+  every call that actually stayed cheap (227–900 output tokens)
+  produced probe9-class garbage (malformed rows, z-mirrors, bounds
+  mismatches), and 2 calls still hit the 8k cap. Arm 2,
+  `effort: "medium"` on the 7 low-failures ($0.84): **2/7 recovered**
+  (submarine, peanut); 5/7 first calls hit the 8k cap outright.
+  Best-of pipeline (low, then medium): **5/10 clean** at ~$0.16/term
+  all-in — strictly worse than probe10's default effort on quality and
+  no cheaper. Net finding across probes 9–11: this task needs ~5k+
+  thinking tokens for clean output; capping via effort (or the 8k
+  max_tokens budget) produces failures, not cheaper successes. Live
+  full authorship on the direct API costs **~$0.10–0.20/term at
+  quality** — roughly 10× the $0.01–0.02 target — and there is no
+  remaining parameter lever to close that gap. Runs:
+  `runs/probe11-16char-effortlow/`, `runs/probe11-16char-effortmed/`
+  (per-call tokens in each `usage.json`; z-mirrored finals collapse to
+  zero-voxel hulls on the contact sheet — expected, the side/top depth
+  cells don't intersect). Cumulative session API spend: $3.32.
+
 ## Spend guardrail (load-bearing)
 
 **No direct Anthropic API calls during R&D.** All model interactions
@@ -666,29 +690,31 @@ verification) is moved to `docs/build-log.md` (Phase 6). Nothing there is
 required to start the next action — it's archaeology, and the load-bearing
 bits are summarized in the stage lines above.
 
-**Next action — productionize full authorship, step 4: find the effort
-level that holds quality.** State after 2026-07-20: prompt v2 works
-(probe8), thinking is load-bearing (probe9 — 0/10 clean without it),
-and adaptive-at-default-effort reproduces quality but costs
-~$0.2–0.4/term with most calls blowing an 8k output cap (probe10). The
-open question is whether a low effort setting keeps probe8-grade
-quality at an acceptable thinking spend. Remaining, each vetoable:
-(4a) **Effort-capped adaptive A/B** — same harness, `claude-sonnet-5`,
-     adaptive thinking + `output_config: {effort: "low"}` (and "medium"
-     on any low failures), `max_tokens` 8192. Hypothesis: clean-lift
-     rate stays ≥9/10 with thinking spend under ~1.5k tokens/call →
-     ~$0.02–0.05/term, inside the stretched budget. Falsified if
-     quality collapses toward probe9 or spend stays >4k tokens/call.
-     Est. ~$0.5–1.0 for the run — **cumulative session API spend is
-     already $1.73**, so this pushes past the ~$2 line and needs
-     explicit sign-off.
-(4b) **Decide the Worker reshape** once (4a) answers the cost question:
-     authored front (thinking on, effort-capped) as primary route,
-     FA/FLUX demoted to fallback or removed — entangles with the
-     approved FA whitelist.
-Probe grids viewable in the contact-sheet viewer (`npm run dev`, runs
-`probe8-16char-nomask` / `probe9-16char-nothink` /
-`probe10-16char-adaptive`).
+**Next action — the Worker-reshape decision (Mike's call; the probe
+series is complete).** The facts, all landed 2026-07-19/20: prompt v2
+authors clean sets (probe8: 10/10, subscription, $0); thinking is
+load-bearing (probe9: 0/10 without it); quality reproduces on the
+direct API but needs ~5k+ thinking tokens (probe10); no effort setting
+buys quality cheaper (probe11) — so **live full authorship costs
+~$0.10–0.20/term, ~10× target, with no parameter lever left.** Options,
+each vetoable, no recommendation implied:
+- **A — pay for it live.** Authored front as the live cache-miss route
+  at ~$0.10–0.20/term, leaning on cache-once economics (the "budget may
+  stretch" decision — though this is a 10× stretch, not 2×). FA/FLUX
+  demoted or dropped; simplest pipeline, best live quality.
+- **B — authored fronts offline, cache live.** Keep the live Worker
+  thinking-off and cheap (or cache-only); generate authored-front sets
+  via the $0 subscription route (probe8 harness) for the library and
+  the recommended ~30–50-term curated pre-seed. Live novel terms keep
+  FA/FLUX (with the approved whitelist) or return "not yet".
+- **C — hybrid.** B's offline authored library + A's paid authored
+  route only for cache-miss terms, possibly gated (rate limit already
+  exists: 5 fresh/hr/IP caps worst-case spend at ~$0.50–1.00/hr/IP).
+Whichever lands, the FA whitelist decision (approved) and the cause-5
+iso-lumpiness work are unaffected. Probe grids: contact-sheet viewer
+(`npm run dev`, runs `probe8-16char-nomask` / `probe9-16char-nothink` /
+`probe10-16char-adaptive` / `probe11-16char-effortlow` /
+`probe11-16char-effortmed`).
 
 Demo runner (2026-07-14, still current): **`blawx.proj/demo-up.sh`**
 (outside both git repos) — Worker `:8787` + built frontend `:5280` with a
