@@ -1,0 +1,14 @@
+{
+  "id": "probe7-16char-nomask",
+  "label": "probe7 16³ · no mask — sonnet authors all three views",
+  "date": "2026-07-19",
+  "pipeline": "full-authorship probe: NO sourced front mask — Sonnet designs front, side, and top from the noun alone (front rules: big/grounded/one-piece; depth cap 6; dog worked example), single-shot + 1 feedback retry (retry-feedback.ts --max-depth=6, self-consistency), strict lift. Probes whether the FA/FLUX silhouette-sourcing stage is necessary at all.",
+  "conditions": {
+    "grid": "16",
+    "encoding": "char",
+    "model": "claude-sonnet-5",
+    "prompt": "full-authorship v1 (canonical-front rules + depth cap 6 + dog worked example)",
+    "source": "none — noun only",
+    "method": "single-shot + 1 deterministic-feedback retry; run via subscription subagents ($0 actual, adaptive thinking on — NOT the thinking-disabled runtime profile; see run notes)"
+  }
+}
