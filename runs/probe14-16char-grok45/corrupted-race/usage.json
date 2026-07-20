@@ -1,0 +1,155 @@
+[
+  {
+    "noun": "castle",
+    "call": 1,
+    "ms": 202484,
+    "promptTokens": 1285,
+    "completionTokens": 163,
+    "reasoningTokens": 12219,
+    "finishReason": "stop"
+  },
+  {
+    "noun": "castle",
+    "call": 2,
+    "ms": 263514,
+    "promptTokens": 1567,
+    "completionTokens": 167,
+    "reasoningTokens": 15717,
+    "finishReason": "stop"
+  },
+  {
+    "noun": "crab",
+    "call": 1,
+    "ms": 241943,
+    "promptTokens": 1285,
+    "completionTokens": 207,
+    "reasoningTokens": 14906,
+    "finishReason": "stop"
+  },
+  {
+    "noun": "crab",
+    "call": 2,
+    "ms": 243935,
+    "promptTokens": 1611,
+    "completionTokens": 192,
+    "reasoningTokens": 14024,
+    "finishReason": "stop"
+  },
+  {
+    "noun": "duck",
+    "call": 1,
+    "ms": 362348,
+    "promptTokens": 1285,
+    "completionTokens": 180,
+    "reasoningTokens": 20218,
+    "finishReason": "stop"
+  },
+  {
+    "noun": "duck",
+    "call": 2,
+    "ms": 156783,
+    "promptTokens": 1556,
+    "completionTokens": 179,
+    "reasoningTokens": 11858,
+    "finishReason": "stop"
+  },
+  {
+    "noun": "fox",
+    "call": 1,
+    "ms": 540515,
+    "promptTokens": 1285,
+    "completionTokens": 198,
+    "reasoningTokens": 34703,
+    "finishReason": "stop"
+  },
+  {
+    "noun": "fox",
+    "call": 2,
+    "ms": 160959,
+    "promptTokens": 1617,
+    "completionTokens": 203,
+    "reasoningTokens": 9931,
+    "finishReason": "stop"
+  },
+  {
+    "noun": "grapes",
+    "call": 1,
+    "ms": 185033,
+    "promptTokens": 1286,
+    "completionTokens": 189,
+    "reasoningTokens": 11984,
+    "finishReason": "stop"
+  },
+  {
+    "noun": "grapes",
+    "call": 2,
+    "ms": 139959,
+    "promptTokens": 1566,
+    "completionTokens": 189,
+    "reasoningTokens": 9109,
+    "finishReason": "stop"
+  },
+  {
+    "noun": "helicopter",
+    "call": 1,
+    "ms": 363947,
+    "promptTokens": 1286,
+    "completionTokens": 189,
+    "reasoningTokens": 23933,
+    "finishReason": "stop"
+  },
+  {
+    "noun": "helicopter",
+    "call": 2,
+    "ms": 208059,
+    "promptTokens": 1594,
+    "completionTokens": 189,
+    "reasoningTokens": 11950,
+    "finishReason": "stop"
+  },
+  {
+    "noun": "peanut",
+    "call": 1,
+    "ms": 182261,
+    "promptTokens": 1286,
+    "completionTokens": 189,
+    "reasoningTokens": 11706,
+    "finishReason": "stop"
+  },
+  {
+    "noun": "skyscraper",
+    "call": 1,
+    "ms": 133430,
+    "promptTokens": 1289,
+    "completionTokens": 187,
+    "reasoningTokens": 7765,
+    "finishReason": "stop"
+  },
+  {
+    "noun": "skyscraper",
+    "call": 2,
+    "ms": 131319,
+    "promptTokens": 1602,
+    "completionTokens": 184,
+    "reasoningTokens": 6832,
+    "finishReason": "stop"
+  },
+  {
+    "noun": "submarine",
+    "call": 1,
+    "ms": 237340,
+    "promptTokens": 1286,
+    "completionTokens": 171,
+    "reasoningTokens": 12635,
+    "finishReason": "stop"
+  },
+  {
+    "noun": "submarine",
+    "call": 2,
+    "ms": 230728,
+    "promptTokens": 1548,
+    "completionTokens": 176,
+    "reasoningTokens": 11642,
+    "finishReason": "stop"
+  }
+]

@@ -1,0 +1,14 @@
+{
+  "id": "probe14-16char-grok45",
+  "label": "probe14 16³ · no mask, prompt v2 — grok-4.5 cross-vendor A/B",
+  "date": "2026-07-20",
+  "pipeline": "probe8's prompt v2 rerun byte-identical against xAI grok-4.5 (chat completions API, default reasoning, max_tokens 16384). Single-shot + 1 deterministic-feedback retry (retry-feedback.ts --max-depth=6), strict lift. Cross-vendor A/B vs probe8 (subscription Sonnet, 10/10 clean) and probe10 (API Sonnet): is full-authorship quality model-general, and is the thinking-token requirement task-intrinsic? Per-call tokens + wall-clock in usage.json.",
+  "conditions": {
+    "grid": "16",
+    "encoding": "char",
+    "model": "grok-4.5",
+    "prompt": "full-authorship v2 (byte-identical to probe8)",
+    "source": "none — noun only",
+    "method": "single-shot + 1 deterministic-feedback retry; direct xAI API calls, default reasoning, max_tokens 16384 — live spend on XAI_API_KEY, signed off 2026-07-20"
+  }
+}

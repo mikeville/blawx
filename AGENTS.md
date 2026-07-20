@@ -326,6 +326,35 @@ come out fine when the front is clean).
   `runs/probe13-16char-opusnothink/` (tokens + ms in `usage.json`).
   Cumulative session API spend: $4.63.
 
+  **Probe14 (grok-4.5 cross-vendor, run 2026-07-20, ~$4.30 actual —
+  see corrupted-run note): full-authorship quality is NOT
+  model-general; the depth convention is the cross-vendor wall.**
+  probe8's prompt v2 packet, byte-identical, against xAI grok-4.5
+  ($2/M in, $6/M out — cheaper than Sonnet 5) with default reasoning.
+  Result: **1/10 clean first drafts (peanut), 6/10 clean after retry**
+  (castle, duck, grapes, peanut, skyscraper, submarine — all
+  zero-loss lifts). The 4 failures (crab degraded to 86 voxels; fox,
+  helicopter, table collapse to empty strict hulls) are ALL the
+  z-mirror depth-convention disagreement — the exact error class the
+  v2 top-view anchoring eliminated on Sonnet — and grok fails to fix
+  it even when the retry feedback names the disagreement
+  deterministically. Reasoning spend: avg ~12.8k tokens/call (2.5× the
+  ~5k Sonnet threshold from probes 9–11), so the thinking requirement
+  is task-intrinsic, but reasoning volume doesn't buy convention
+  discipline. Also slow: 3–9 min/call, 97 min wall-clock for the run.
+  Net: Sonnet 5 stays the production route; grok-4.5 is not a viable
+  fallback at any price. Clean run cost $1.62. **Corrupted-run note:**
+  the first attempt ran as two accidental concurrent processes racing
+  on the same run dir (~$2.7 spent, outputs quarantined in
+  `runs/probe14-16char-grok45/corrupted-race/`, unusable for the A/B);
+  the scored run is a clean single-process rerun. Run:
+  `runs/probe14-16char-grok45/` (tokens + ms in `usage.json`; xAI
+  spend on Mike's XAI_API_KEY, not the Anthropic-key ledger).
+  Remaining untested levers unchanged: (a) anti-overthinking system
+  prompt with thinking ON (est. $0.5–1 on Sonnet 5); (b) other
+  non-Anthropic providers (Gemini/GPT keys needed) — though probe14
+  lowers the prior on (b).
+
 ## Spend guardrail (load-bearing)
 
 **No direct Anthropic API calls during R&D.** All model interactions
@@ -741,7 +770,9 @@ series is complete).** The facts, all landed 2026-07-19/20: prompt v2
 authors clean sets (probe8: 10/10, subscription, $0); thinking is
 load-bearing (probe9: 0/10 without it); quality reproduces on the
 direct API but needs ~5k+ thinking tokens (probe10); no effort setting
-buys quality cheaper (probe11) — so **live full authorship costs
+buys quality cheaper (probe11); grok-4.5 fails the depth convention
+4/10 even with ~13k reasoning tokens/call, so switching vendors is not
+the lever either (probe14) — so **live full authorship costs
 ~$0.10–0.20/term, ~10× target, with no parameter lever left.** Options,
 each vetoable, no recommendation implied:
 - **A — pay for it live.** Authored front as the live cache-miss route
