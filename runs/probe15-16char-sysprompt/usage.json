@@ -1,0 +1,202 @@
+[
+  {
+    "noun": "castle",
+    "call": 1,
+    "ms": 89876,
+    "in": 1678,
+    "out": 8192,
+    "thinkingChars": 0,
+    "textChars": 0,
+    "stopReason": "max_tokens"
+  },
+  {
+    "noun": "castle",
+    "call": 2,
+    "ms": 95936,
+    "in": 1873,
+    "out": 8192,
+    "thinkingChars": 0,
+    "textChars": 0,
+    "stopReason": "max_tokens"
+  },
+  {
+    "noun": "crab",
+    "call": 1,
+    "ms": 98890,
+    "in": 1678,
+    "out": 8192,
+    "thinkingChars": 0,
+    "textChars": 0,
+    "stopReason": "max_tokens"
+  },
+  {
+    "noun": "crab",
+    "call": 2,
+    "ms": 96579,
+    "in": 1873,
+    "out": 8192,
+    "thinkingChars": 0,
+    "textChars": 0,
+    "stopReason": "max_tokens"
+  },
+  {
+    "noun": "duck",
+    "call": 1,
+    "ms": 92639,
+    "in": 1678,
+    "out": 8192,
+    "thinkingChars": 0,
+    "textChars": 0,
+    "stopReason": "max_tokens"
+  },
+  {
+    "noun": "duck",
+    "call": 2,
+    "ms": 92871,
+    "in": 1873,
+    "out": 8192,
+    "thinkingChars": 0,
+    "textChars": 0,
+    "stopReason": "max_tokens"
+  },
+  {
+    "noun": "fox",
+    "call": 1,
+    "ms": 106224,
+    "in": 1678,
+    "out": 8192,
+    "thinkingChars": 0,
+    "textChars": 0,
+    "stopReason": "max_tokens"
+  },
+  {
+    "noun": "fox",
+    "call": 2,
+    "ms": 92144,
+    "in": 1873,
+    "out": 8192,
+    "thinkingChars": 0,
+    "textChars": 0,
+    "stopReason": "max_tokens"
+  },
+  {
+    "noun": "grapes",
+    "call": 1,
+    "ms": 92947,
+    "in": 1680,
+    "out": 8192,
+    "thinkingChars": 0,
+    "textChars": 0,
+    "stopReason": "max_tokens"
+  },
+  {
+    "noun": "grapes",
+    "call": 2,
+    "ms": 88241,
+    "in": 1875,
+    "out": 8192,
+    "thinkingChars": 0,
+    "textChars": 0,
+    "stopReason": "max_tokens"
+  },
+  {
+    "noun": "helicopter",
+    "call": 1,
+    "ms": 92904,
+    "in": 1682,
+    "out": 8192,
+    "thinkingChars": 0,
+    "textChars": 0,
+    "stopReason": "max_tokens"
+  },
+  {
+    "noun": "helicopter",
+    "call": 2,
+    "ms": 93831,
+    "in": 1877,
+    "out": 8192,
+    "thinkingChars": 0,
+    "textChars": 0,
+    "stopReason": "max_tokens"
+  },
+  {
+    "noun": "peanut",
+    "call": 1,
+    "ms": 87921,
+    "in": 1680,
+    "out": 8192,
+    "thinkingChars": 0,
+    "textChars": 0,
+    "stopReason": "max_tokens"
+  },
+  {
+    "noun": "peanut",
+    "call": 2,
+    "ms": 95806,
+    "in": 1875,
+    "out": 8192,
+    "thinkingChars": 0,
+    "textChars": 0,
+    "stopReason": "max_tokens"
+  },
+  {
+    "noun": "skyscraper",
+    "call": 1,
+    "ms": 89586,
+    "in": 1684,
+    "out": 8192,
+    "thinkingChars": 0,
+    "textChars": 0,
+    "stopReason": "max_tokens"
+  },
+  {
+    "noun": "skyscraper",
+    "call": 2,
+    "ms": 89083,
+    "in": 1879,
+    "out": 8192,
+    "thinkingChars": 0,
+    "textChars": 169,
+    "stopReason": "max_tokens"
+  },
+  {
+    "noun": "submarine",
+    "call": 1,
+    "ms": 88739,
+    "in": 1680,
+    "out": 8192,
+    "thinkingChars": 0,
+    "textChars": 0,
+    "stopReason": "max_tokens"
+  },
+  {
+    "noun": "submarine",
+    "call": 2,
+    "ms": 93739,
+    "in": 1875,
+    "out": 8192,
+    "thinkingChars": 0,
+    "textChars": 0,
+    "stopReason": "max_tokens"
+  },
+  {
+    "noun": "table",
+    "call": 1,
+    "ms": 44954,
+    "in": 1676,
+    "out": 3983,
+    "thinkingChars": 0,
+    "textChars": 881,
+    "stopReason": "end_turn"
+  },
+  {
+    "noun": "table",
+    "call": 2,
+    "ms": 50166,
+    "in": 2059,
+    "out": 3910,
+    "thinkingChars": 0,
+    "textChars": 881,
+    "stopReason": "end_turn"
+  }
+]

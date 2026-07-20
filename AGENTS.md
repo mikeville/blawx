@@ -355,6 +355,49 @@ come out fine when the front is clean).
   non-Anthropic providers (Gemini/GPT keys needed) — though probe14
   lowers the prior on (b).
 
+  **Probe15 (anti-overthinking system prompt, run 2026-07-20, $1.62
+  actual — over the $0.5–1 estimate; Mike signed off the run):
+  FALSIFIED — lever (a) is dead; the prompt-side series is exhausted.**
+  probe10's exact profile (claude-sonnet-5, adaptive thinking, default
+  effort, max_tokens 8192, streamed) with ONE change: a system prompt
+  asking for bounded single-pass deliberation ("think only as much as
+  the task needs… one careful pass plus a quick dimension check";
+  verbatim in `runs/probe15-16char-sysprompt/sysprompt.md`). Effect on
+  thinking spend: **none.** 18/20 calls burned the entire 8192-token
+  output budget on omitted-display thinking and emitted zero visible
+  text (`stopReason: max_tokens`, `textChars: 0`), ~90 s/call — the
+  same runaway as probe10, if anything worse: **1/10 nouns clean**
+  (table, both calls completed, final validates OK, zero-loss lift) vs
+  probe10's 3/10 completing within the cap. skyscraper's retry got 169
+  chars out before the cap; the other 8 nouns produced nothing on
+  either call. Run: `runs/probe15-16char-sysprompt/` (per-call tokens,
+  thinking/text char split, wall-clock in `usage.json`; runner
+  `scripts/run-probe15-sysprompt.ts`). 20 calls, 35.7k in / 155.3k
+  out. Net across probes 9–15: **on the raw API there is no known
+  configuration — parameter or prompt — that gets clean full
+  authorship below ~$0.10–0.20/term and ~1.5–3 min/term.** The
+  measured-but-untested refinement: raise max_tokens to ~16k
+  (streaming) so thinking has room and calls complete instead of
+  truncating — probe10's extrapolation prices that at ~$0.2–0.4/term
+  at default effort; it would firm up the real per-term price but
+  cannot plausibly get under ~$0.10.
+
+  **Session decisions (Mike, 2026-07-20)** — new constraints for the
+  Worker-reshape call, superseding the older $0.01–0.02 target for the
+  live-miss route: (1) **per-generation budget raised to ≤$0.20**,
+  gated by the per-IP rate limit, with a **BYOK prompt** (user enters
+  their own Anthropic key) past the cap — browser-direct calls via
+  Anthropic's CORS header discussed as the custody-free mechanics,
+  Worker still validates + caches results; (2) **nearest-neighbor
+  cache display approved as a direction** — on a miss, show the
+  semantically closest cached set while the real one builds (embedding
+  match, e.g. Workers AI bge-small bundled like fa-index; similarity
+  floor below which nothing is shown); (3) **pre-seed library plan
+  needs discussion before building** — selection criterion shifts from
+  "most likely terms" to "coverage of noun-space so every query has a
+  decent neighbor" (e.g. farthest-point sampling over ~200 candidate
+  nouns); (4) color work explicitly deferred to a later session.
+
 ## Spend guardrail (load-bearing)
 
 **No direct Anthropic API calls during R&D.** All model interactions
@@ -772,9 +815,14 @@ load-bearing (probe9: 0/10 without it); quality reproduces on the
 direct API but needs ~5k+ thinking tokens (probe10); no effort setting
 buys quality cheaper (probe11); grok-4.5 fails the depth convention
 4/10 even with ~13k reasoning tokens/call, so switching vendors is not
-the lever either (probe14) — so **live full authorship costs
-~$0.10–0.20/term, ~10× target, with no parameter lever left.** Options,
-each vetoable, no recommendation implied:
+the lever either (probe14); the anti-overthinking system prompt has
+zero effect on thinking spend (probe15: 1/10 clean, 18/20 calls cap
+out) — so **live full authorship costs ~$0.10–0.20/term and ~1.5–3
+min/term, with no parameter OR prompt lever left.** Under Mike's
+2026-07-20 decisions (≤$0.20/gen + IP cap + BYOK past cap;
+nearest-neighbor display; coverage-first pre-seed — see the probe15
+block), option A/C is affordable by fiat and **latency is the binding
+constraint**. Options, each vetoable, no recommendation implied:
 - **A — pay for it live.** Authored front as the live cache-miss route
   at ~$0.10–0.20/term, leaning on cache-once economics (the "budget may
   stretch" decision — though this is a 10× stretch, not 2×). FA/FLUX
