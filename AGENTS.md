@@ -280,6 +280,32 @@ come out fine when the front is clean).
   zero-voxel hulls on the contact sheet — expected, the side/top depth
   cells don't intersect). Cumulative session API spend: $3.32.
 
+  **Probe12 (conditioned-depth route priced at the API, run 2026-07-20,
+  $1.02 actual): the "middle route" is NOT in the middle — it's the
+  worst measured configuration.** The probe6 route (seed4 front given
+  verbatim, Sonnet designs side/top; prompt upgraded to depth-draw-v3 =
+  probe6 wording + probe8's v2 top-view fix + DOG_Z,
+  `scripts/make-probe12-prompts.ts`), direct API, adaptive thinking,
+  default effort, 8k output cap, 6 nouns. Result: **0/6 clean; every
+  single first call blew the 8k cap on thinking** (10/12 calls total),
+  ~$0.17/term truncated, and — the latency number the UX question was
+  asking — **85–100 seconds per call, ~3 minutes per term wall-clock.**
+  Giving the model the front does not reduce API thinking spend; if
+  anything it thinks more (verifying the given mask). Contrast: the
+  identical route on the subscription/Claude Code harness (probe6) was
+  clean in 1–3 calls. Load-bearing implication: the runaway is a
+  property of the raw-API adaptive-thinking profile on this task class,
+  not of which sub-task the model is given. All raw-API variants
+  measured (full authorship, effort-capped, conditioned-depth) land at
+  $0.10–0.20/term truncated-or-worse and 1–3 min/term. One untested
+  prompt-side lever, vetoable: an anti-overthinking **system prompt**
+  on the API call ("thinking adds latency; respond directly when…"),
+  which the probes never sent (subagents had Claude Code's system
+  prompt; raw API had none) — hypothesis: it tames thinking toward
+  probe8-subagent levels; est. ~$0.5–1 to test. Run:
+  `runs/probe12-16char-depthapi/` (per-call tokens + wall-clock ms in
+  `usage.json`). Cumulative session API spend: $4.34.
+
 ## Spend guardrail (load-bearing)
 
 **No direct Anthropic API calls during R&D.** All model interactions

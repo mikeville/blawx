@@ -1,0 +1,14 @@
+{
+  "id": "probe12-16char-depthapi",
+  "label": "probe12 16³ · sourced front + sonnet depth — API cost/latency",
+  "date": "2026-07-20",
+  "pipeline": "probe6 conditioned-depth route priced at the real runtime: seed4 front held verbatim (--trust-front), Sonnet designs side/top with the depth-draw-v3 prompt (probe6 wording + probe8 v2 top-view convention fix + DOG_Z exemplar), direct API (claude-sonnet-5, adaptive thinking, default effort, max_tokens 8192), single-shot + 1 feedback retry, strict lift. Per-call tokens AND wall-clock ms in usage.json — this run exists to measure per-term cost and latency for the Worker-reshape decision.",
+  "conditions": {
+    "grid": "16",
+    "encoding": "char",
+    "model": "claude-sonnet-5",
+    "prompt": "depth-draw-v3 (probe6 conditioned-depth + v2 top-view fix + DOG_Z)",
+    "source": "seed4 verbatim front (FA icon or FLUX PNG)",
+    "method": "single-shot + 1 deterministic-feedback retry (--trust-front --max-depth=6); direct API, adaptive thinking, default effort — live spend, signed off 2026-07-20"
+  }
+}
