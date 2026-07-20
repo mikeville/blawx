@@ -306,6 +306,26 @@ come out fine when the front is clean).
   `runs/probe12-16char-depthapi/` (per-call tokens + wall-clock ms in
   `usage.json`). Cumulative session API spend: $4.34.
 
+  **Probe13 (Opus 4.8 thinking-off, run 2026-07-20, $0.29 actual):
+  FALSIFIED — capability does not substitute for deliberation.** The
+  hypothesis was that Opus-tier raw capability could hold grid
+  discipline without thinking, landing at ~$0.03/term and ~10s (the
+  cost/latency numbers came out exactly as projected: $0.026–0.032/term,
+  8–14s wall-clock per term). Quality did not: **1/10 clean after
+  retry** (skyscraper), same failure classes as Sonnet thinking-off
+  (probe9) — wrong row counts, 15-char rows, cross-view width/height
+  mismatches; 4/10 finals collapse to zero-voxel hulls. Firm law for
+  this task, now confirmed at two model tiers: **no-thinking fails
+  regardless of capability tier; thinking-on costs $0.10–0.20/term and
+  1–3 min regardless of configuration.** Remaining untested levers, in
+  order of promise: (a) anti-overthinking system prompt with thinking
+  ON (the only known cheap-thinking configuration is the Claude Code
+  harness, which wraps the task in a large system prompt — est. $0.5–1
+  to test on Sonnet 5); (b) non-Anthropic providers via the same
+  portable probe8 packet (needs Mike's keys). Run:
+  `runs/probe13-16char-opusnothink/` (tokens + ms in `usage.json`).
+  Cumulative session API spend: $4.63.
+
 ## Spend guardrail (load-bearing)
 
 **No direct Anthropic API calls during R&D.** All model interactions

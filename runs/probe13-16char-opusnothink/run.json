@@ -1,0 +1,14 @@
+{
+  "id": "probe13-16char-opusnothink",
+  "label": "probe13 16³ · no mask, prompt v2 — opus 4.8, thinking off",
+  "date": "2026-07-20",
+  "pipeline": "probe8's prompt v2 rerun on claude-opus-4-8 with thinking off (parameter omitted — genuinely thinking-free on Opus, unlike Sonnet 5), max_tokens 2048, direct API. Single-shot + 1 feedback retry (retry-feedback.ts --max-depth=6), strict lift. Hypothesis: Opus-tier capability substitutes for Sonnet's 5-8k thinking tokens — clean masks with zero reasoning spend would land at ~$0.03-0.04/term and ~5-15s, the first configuration viable on both cost and latency. Per-call tokens + wall-clock ms in usage.json.",
+  "conditions": {
+    "grid": "16",
+    "encoding": "char",
+    "model": "claude-opus-4-8",
+    "prompt": "full-authorship v2 (identical to probe8)",
+    "source": "none — noun only",
+    "method": "single-shot + 1 deterministic-feedback retry; direct API, thinking OFF (param omitted) — live spend, signed off 2026-07-20"
+  }
+}
