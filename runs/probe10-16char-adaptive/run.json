@@ -1,0 +1,14 @@
+{
+  "id": "probe10-16char-adaptive",
+  "label": "probe10 16³ · no mask, prompt v2 — adaptive-thinking API A/B",
+  "date": "2026-07-20",
+  "pipeline": "probe8's prompt v2 rerun as direct API calls with adaptive thinking on (claude-sonnet-5, thinking adaptive, max_tokens 8192) — the true candidate runtime profile for the authored-front Worker route. Single-shot + 1 feedback retry (retry-feedback.ts --max-depth=6), strict lift. Measures whether probe8's subscription results reproduce over the API and what the thinking-token spend costs per term; per-call usage in usage.json.",
+  "conditions": {
+    "grid": "16",
+    "encoding": "char",
+    "model": "claude-sonnet-5",
+    "prompt": "full-authorship v2 (identical to probe8/probe9)",
+    "source": "none — noun only",
+    "method": "single-shot + 1 deterministic-feedback retry; direct API calls, adaptive thinking (Sonnet 5 default), max_tokens 8192 — live spend, signed off 2026-07-20"
+  }
+}

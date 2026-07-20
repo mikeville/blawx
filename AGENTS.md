@@ -232,6 +232,30 @@ come out fine when the front is clean).
   adaptive-thinking Sonnet calls, not the thinking-off profile the
   current Worker pipeline was tuned against.
 
+  **Probe10 (adaptive-thinking API A/B, run 2026-07-20, live API,
+  $1.61 actual): quality reproduces, cost does not.** Same prompt v2,
+  direct API, `claude-sonnet-5` + `thinking: {type: "adaptive"}` at
+  default effort, `max_tokens` 8192. Two findings. (1) **Quality:** the
+  3 nouns that completed within the cap (table, grapes, skyscraper) are
+  probe8-grade — zero-loss lifts, single component, grounded. Adaptive
+  thinking over the API reproduces the subscription results when it has
+  room. (2) **Cost/latency kills the naive wiring:** at default effort,
+  thinking consumed the entire 8192-token output budget on **8/10 first
+  calls and 7/10 retries** (empty answers — "front mask missing"), and
+  even the successes spent 2.6k–6.2k output tokens per call. Measured
+  per-term cost: $0.05 (skyscraper, 1 call) to $0.13 (table/grapes,
+  2 calls); the truncated nouns burned $0.19/term producing nothing.
+  Extrapolated full-budget default-effort cost: ~$0.2–0.4/term —
+   10–20× the $0.01–0.02 target and well past the stretched budget.
+  Run: `runs/probe10-16char-adaptive/` (per-call tokens in
+  `usage.json`; runner in session scratchpad, params in `run.json`).
+  20 calls, 102k in / 141k out, $1.61 at intro pricing — double the
+  sign-off estimate; cumulative session API spend $1.73. The obvious
+  untested lever: `output_config.effort` ("low"/"medium") to cap
+  thinking spend — Sonnet 5 respects effort strictly, and probe8's
+  subscription subagents produced the same answers with far less
+  visible deliberation.
+
 ## Spend guardrail (load-bearing)
 
 **No direct Anthropic API calls during R&D.** All model interactions
@@ -642,28 +666,29 @@ verification) is moved to `docs/build-log.md` (Phase 6). Nothing there is
 required to start the next action — it's archaeology, and the load-bearing
 bits are summarized in the stage lines above.
 
-**Next action — productionize full authorship, step 3: cost the
-adaptive profile, then decide the Worker reshape.** Steps (1) and (2)
-both landed 2026-07-19: prompt v2 works (probe8 verdict block above) and
-the thinking-disabled A/B is **falsified** (probe9 block above — 0/10
-clean without thinking vs 10/10 with; thinking is load-bearing).
-Consequence: full authorship in the Worker means adaptive-thinking
-Sonnet calls, a different cost/latency profile than the thinking-off
-pipeline the Worker was tuned against. Remaining, each vetoable:
-(3a) **Adaptive-thinking A/B at the API** — the true candidate runtime
-     profile (claude-sonnet-5, adaptive thinking, prompt v2, 1+1 calls).
-     Hypothesis: matches probe8's subscription results and lands at an
-     acceptable per-term cost (unknown thinking-token spend is the thing
-     being measured; rough guess $0.05–0.15/term). ~10–20 calls, est.
-     $0.30–0.80 total — new spend shape, needs its own sign-off.
-     Alternative: skip it and treat probe8's subscription evidence as
-     sufficient (same model, adaptive thinking — the main delta is
-     the Claude Code system prompt around the task).
-(3b) **Decide the Worker reshape:** authored front (thinking on) as
-     primary route, FA/FLUX demoted to fallback or removed — entangles
-     with the approved FA whitelist and now with the (3a) cost answer.
+**Next action — productionize full authorship, step 4: find the effort
+level that holds quality.** State after 2026-07-20: prompt v2 works
+(probe8), thinking is load-bearing (probe9 — 0/10 clean without it),
+and adaptive-at-default-effort reproduces quality but costs
+~$0.2–0.4/term with most calls blowing an 8k output cap (probe10). The
+open question is whether a low effort setting keeps probe8-grade
+quality at an acceptable thinking spend. Remaining, each vetoable:
+(4a) **Effort-capped adaptive A/B** — same harness, `claude-sonnet-5`,
+     adaptive thinking + `output_config: {effort: "low"}` (and "medium"
+     on any low failures), `max_tokens` 8192. Hypothesis: clean-lift
+     rate stays ≥9/10 with thinking spend under ~1.5k tokens/call →
+     ~$0.02–0.05/term, inside the stretched budget. Falsified if
+     quality collapses toward probe9 or spend stays >4k tokens/call.
+     Est. ~$0.5–1.0 for the run — **cumulative session API spend is
+     already $1.73**, so this pushes past the ~$2 line and needs
+     explicit sign-off.
+(4b) **Decide the Worker reshape** once (4a) answers the cost question:
+     authored front (thinking on, effort-capped) as primary route,
+     FA/FLUX demoted to fallback or removed — entangles with the
+     approved FA whitelist.
 Probe grids viewable in the contact-sheet viewer (`npm run dev`, runs
-`probe8-16char-nomask` / `probe9-16char-nothink`).
+`probe8-16char-nomask` / `probe9-16char-nothink` /
+`probe10-16char-adaptive`).
 
 Demo runner (2026-07-14, still current): **`blawx.proj/demo-up.sh`**
 (outside both git repos) — Worker `:8787` + built frontend `:5280` with a
