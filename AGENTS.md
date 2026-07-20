@@ -182,6 +182,36 @@ come out fine when the front is clean).
   not the depth-texture aesthetics (that remains cause-5 work under the
   iso-stays decision).
 
+  **Probe8 (prompt v2, run 2026-07-19): the z-mirror is fixed; 10/10
+  clean structure.** Root cause confirmed: probe7's dog exemplar had a
+  front-back **symmetric** top view — it carried zero signal about the
+  back-to-front row convention, so the model had to guess. Prompt v2 =
+  new `DOG_Z` exemplar (head hugs the front half of the depth, tail the
+  back half, so the top view itself demonstrates the convention;
+  `scripts/exemplars.ts`, validated zero-loss) + explicit back/front row
+  anchoring in the top-view line (`scripts/make-probe8-prompts.ts`).
+  Same 10 nouns, same call profile (subscription subagents, $0,
+  adaptive thinking — A/A vs probe7). Results: depth-convention errors
+  on first drafts **9/10 → 3/10** (2 true mirrors: skyscraper, grapes;
+  1 centered offset: castle). **4/10 first drafts fully clean** (duck,
+  fox, submarine, peanut needed no retry at all, vs ~1/10 in probe7);
+  the other 3 retries were spent on real quality fixes (table footprint,
+  crab and helicopter hollow front cells) — the retry is substantially
+  reclaimed for quality. Structure: **10/10 single component, grounded,
+  zero reprojection loss** (except crab front loss 1.75%, cosmetic) —
+  probe7's one degrader (crab, disconnected claw) is now clean.
+  Semantics (Fable eyeball on the iso renders): parity-or-better vs
+  probe7 — castle is a real 2-tower castle with battlements and a gate,
+  helicopter reads rotor slab + cabin + tail + skids, table and fox are
+  notably clean, peanut properly two-lobed, submarine hull + sail +
+  periscope; skyscraper still reads ziggurat; iso stair-step lumpiness
+  unchanged (cause-5 work). Residual: skyscraper's final top view still
+  trips the advisory slab-footprint heuristic (box-shaped object —
+  arguably a false positive for towers). Artifacts:
+  `runs/probe8-16char-nomask/` (`responses-call1/` holds first drafts
+  for the convention-error tally; viewer run `probe8-16char-nomask`).
+  Prompt v2 is the candidate production prompt.
+
 ## Spend guardrail (load-bearing)
 
 **No direct Anthropic API calls during R&D.** All model interactions
@@ -592,17 +622,27 @@ verification) is moved to `docs/build-log.md` (Phase 6). Nothing there is
 required to start the next action — it's archaeology, and the load-bearing
 bits are summarized in the stage lines above.
 
-**Next action — productionize full authorship (probe7 verdict: works;
-see findings report).** In order, each vetoable: (1) prompt v2 — fix the
-top-view z-mirror convention (16³ exemplar or sharper wording) so the
-single retry stops being spent on it, re-verify on the probe7 nouns ($0
-via subscription subagents, resend same harness); (2) thinking-disabled
-A/B at the real runtime profile before touching the Worker; (3) decide
-the Worker reshape: authored front as primary route, FA/FLUX demoted to
-fallback or removed — entangles with the approved FA whitelist (still
-worth building if FA stays as a fallback or for the idle-stage library).
-Probe7 grids are viewable in the contact-sheet viewer (`npm run dev`,
-run `probe7-16char-nomask`).
+**Next action — productionize full authorship, step 2: the
+thinking-disabled A/B.** Step (1) prompt v2 landed 2026-07-19 — see the
+probe8 verdict block above (z-mirror 9/10 → 3/10 first-draft
+depth-convention errors, 10/10 clean structure, retry reclaimed for
+quality); prompt v2 (`scripts/make-probe8-prompts.ts` + the `DOG_Z`
+exemplar) is the candidate production prompt. Remaining, in order, each
+vetoable:
+(2) **Thinking-disabled A/B at the real runtime profile.** Hypothesis:
+    prompt-v2 results hold with thinking off (~2 Sonnet calls,
+    est. $0.03–0.05/term); falsified if clean-structure or
+    convention-error rates regress materially vs probe8. The
+    subscription subagent route can't turn thinking off, so this is the
+    first step that needs live API calls — ~10–20 Sonnet calls, well
+    under $1 total, but it still needs Mike's spend sign-off under the
+    R&D guardrail before anything is wired.
+(3) **Decide the Worker reshape:** authored front as primary route,
+    FA/FLUX demoted to fallback or removed — entangles with the
+    approved FA whitelist (still worth building if FA stays as a
+    fallback or for the idle-stage library).
+Probe7/probe8 grids are viewable in the contact-sheet viewer
+(`npm run dev`, runs `probe7-16char-nomask` / `probe8-16char-nomask`).
 
 Demo runner (2026-07-14, still current): **`blawx.proj/demo-up.sh`**
 (outside both git repos) — Worker `:8787` + built frontend `:5280` with a
