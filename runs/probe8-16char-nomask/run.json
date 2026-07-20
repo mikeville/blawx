@@ -1,0 +1,14 @@
+{
+  "id": "probe8-16char-nomask",
+  "label": "probe8 16³ · no mask, prompt v2 — top-view z-convention fix",
+  "date": "2026-07-19",
+  "pipeline": "probe7 rerun with prompt v2: z-asymmetric dog exemplar (head front / tail back so the top view demonstrates the back-to-front row convention) + sharpened top-view wording. Otherwise identical: no sourced front mask, Sonnet authors all three views from the noun alone, single-shot + 1 feedback retry (retry-feedback.ts --max-depth=6), strict lift. Measures whether the 9/10 top-view z-mirror first drafts disappear, reclaiming the retry for quality.",
+  "conditions": {
+    "grid": "16",
+    "encoding": "char",
+    "model": "claude-sonnet-5",
+    "prompt": "full-authorship v2 (canonical-front rules + depth cap 6 + z-asymmetric dog exemplar + explicit top-view back-to-front anchoring)",
+    "source": "none — noun only",
+    "method": "single-shot + 1 deterministic-feedback retry; run via subscription subagents ($0 actual, adaptive thinking on — same profile as probe7 for A/A comparability)"
+  }
+}

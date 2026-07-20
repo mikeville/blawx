@@ -121,4 +121,46 @@ export const CARP: Exemplar = {
   ],
 };
 
-export const EXEMPLARS: Exemplar[] = [DOG, SPARROW, CARP];
+// probe8 variant of DOG with a z-ASYMMETRIC top view: the head hugs the
+// front half of the depth (z:2-3) and the tail the back half (z:4-5), so the
+// top view itself demonstrates the back-to-front row convention. DOG's top
+// is front-back symmetric and carries no information about that convention —
+// the suspected cause of probe7's 9/10 top-view z-mirror first drafts.
+// DOG is kept untouched so probe6/probe7 prompt scripts stay reproducible.
+export const DOG_Z: Exemplar = {
+  label: 'dog-z',
+  bodyPlan: 'quadruped',
+  bounds: 'bounds x:0-7 y:0-7 z:2-5',
+  front: [
+    '##......',
+    '##.....#',
+    '########',
+    '########',
+    '.#....#.',
+    '.#....#.',
+    '.#....#.',
+    '.#....#.',
+  ],
+  side: [
+    '..##....',
+    '..####..',
+    '..####..',
+    '..####..',
+    '..#..#..',
+    '..#..#..',
+    '..#..#..',
+    '..#..#..',
+  ],
+  top: [
+    '........',
+    '........',
+    '.#######',
+    '.#######',
+    '#######.',
+    '#######.',
+    '........',
+    '........',
+  ],
+};
+
+export const EXEMPLARS: Exemplar[] = [DOG, SPARROW, CARP, DOG_Z];
