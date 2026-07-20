@@ -212,6 +212,26 @@ come out fine when the front is clean).
   for the convention-error tally; viewer run `probe8-16char-nomask`).
   Prompt v2 is the candidate production prompt.
 
+  **Probe9 (thinking-disabled A/B, run 2026-07-19, live API, $0.12
+  actual): FALSIFIED — thinking is load-bearing for full authorship.**
+  Same prompt v2, same 10 nouns, called at the exact runtime profile
+  (`claude-sonnet-5`, `thinking: {type: "disabled"}`, `max_tokens`
+  2048 — mirroring `../api/src/index.ts`), single-shot + 1 feedback
+  retry. Result: **0/10 mechanically clean after the retry** (probe8:
+  10/10 clean lifts). The dominant failure is basic: rows that aren't
+  16 characters (e.g. table's front rows are literally 15 chars) — the
+  model can't hold the row-width constraint without thinking, and
+  retries reintroduce the same class. Lifted anyway for the contact
+  sheet: massive reprojection losses (up to 0.9; probe8 was 0.0
+  everywhere) and up to 26 malformed rows per response. Run:
+  `runs/probe9-16char-nothink/` (prompts copied verbatim from probe8;
+  runner script lived in the session scratchpad, not the repo — call
+  params are recorded in `run.json`). 20 calls, 35.8k in / 4.5k out,
+  ~$0.12 at Sonnet 5 intro pricing. Implication: the authored-front
+  route must run with thinking ON, so its real cost profile is
+  adaptive-thinking Sonnet calls, not the thinking-off profile the
+  current Worker pipeline was tuned against.
+
 ## Spend guardrail (load-bearing)
 
 **No direct Anthropic API calls during R&D.** All model interactions
@@ -622,27 +642,28 @@ verification) is moved to `docs/build-log.md` (Phase 6). Nothing there is
 required to start the next action — it's archaeology, and the load-bearing
 bits are summarized in the stage lines above.
 
-**Next action — productionize full authorship, step 2: the
-thinking-disabled A/B.** Step (1) prompt v2 landed 2026-07-19 — see the
-probe8 verdict block above (z-mirror 9/10 → 3/10 first-draft
-depth-convention errors, 10/10 clean structure, retry reclaimed for
-quality); prompt v2 (`scripts/make-probe8-prompts.ts` + the `DOG_Z`
-exemplar) is the candidate production prompt. Remaining, in order, each
-vetoable:
-(2) **Thinking-disabled A/B at the real runtime profile.** Hypothesis:
-    prompt-v2 results hold with thinking off (~2 Sonnet calls,
-    est. $0.03–0.05/term); falsified if clean-structure or
-    convention-error rates regress materially vs probe8. The
-    subscription subagent route can't turn thinking off, so this is the
-    first step that needs live API calls — ~10–20 Sonnet calls, well
-    under $1 total, but it still needs Mike's spend sign-off under the
-    R&D guardrail before anything is wired.
-(3) **Decide the Worker reshape:** authored front as primary route,
-    FA/FLUX demoted to fallback or removed — entangles with the
-    approved FA whitelist (still worth building if FA stays as a
-    fallback or for the idle-stage library).
-Probe7/probe8 grids are viewable in the contact-sheet viewer
-(`npm run dev`, runs `probe7-16char-nomask` / `probe8-16char-nomask`).
+**Next action — productionize full authorship, step 3: cost the
+adaptive profile, then decide the Worker reshape.** Steps (1) and (2)
+both landed 2026-07-19: prompt v2 works (probe8 verdict block above) and
+the thinking-disabled A/B is **falsified** (probe9 block above — 0/10
+clean without thinking vs 10/10 with; thinking is load-bearing).
+Consequence: full authorship in the Worker means adaptive-thinking
+Sonnet calls, a different cost/latency profile than the thinking-off
+pipeline the Worker was tuned against. Remaining, each vetoable:
+(3a) **Adaptive-thinking A/B at the API** — the true candidate runtime
+     profile (claude-sonnet-5, adaptive thinking, prompt v2, 1+1 calls).
+     Hypothesis: matches probe8's subscription results and lands at an
+     acceptable per-term cost (unknown thinking-token spend is the thing
+     being measured; rough guess $0.05–0.15/term). ~10–20 calls, est.
+     $0.30–0.80 total — new spend shape, needs its own sign-off.
+     Alternative: skip it and treat probe8's subscription evidence as
+     sufficient (same model, adaptive thinking — the main delta is
+     the Claude Code system prompt around the task).
+(3b) **Decide the Worker reshape:** authored front (thinking on) as
+     primary route, FA/FLUX demoted to fallback or removed — entangles
+     with the approved FA whitelist and now with the (3a) cost answer.
+Probe grids viewable in the contact-sheet viewer (`npm run dev`, runs
+`probe8-16char-nomask` / `probe9-16char-nothink`).
 
 Demo runner (2026-07-14, still current): **`blawx.proj/demo-up.sh`**
 (outside both git repos) — Worker `:8787` + built frontend `:5280` with a

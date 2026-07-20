@@ -1,0 +1,14 @@
+{
+  "id": "probe9-16char-nothink",
+  "label": "probe9 16³ · no mask, prompt v2 — thinking-disabled A/B",
+  "date": "2026-07-19",
+  "pipeline": "probe8 rerun at the real runtime profile: identical prompt v2 (copied verbatim from probe8), but called via the Anthropic API with thinking disabled — claude-sonnet-5, thinking {type: disabled}, max_tokens 2048, mirroring ../api/src/index.ts. Single-shot + 1 feedback retry (retry-feedback.ts --max-depth=6), strict lift. Measures whether probe8's clean-structure and depth-convention rates hold without thinking.",
+  "conditions": {
+    "grid": "16",
+    "encoding": "char",
+    "model": "claude-sonnet-5",
+    "prompt": "full-authorship v2 (identical to probe8)",
+    "source": "none — noun only",
+    "method": "single-shot + 1 deterministic-feedback retry; direct API calls, thinking DISABLED (real runtime profile) — live spend, signed off 2026-07-19"
+  }
+}
