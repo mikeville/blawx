@@ -1,0 +1,6 @@
+{
+ "id": "judge1-cache-eval",
+ "label": "auto-judge validation vs cache ground truth",
+ "date": "2026-07-20",
+ "pipeline": "43 cached grids rendered (scripts/render-cache.ts), Fable-eyeball ground truth, two Sonnet judge designs (conditioned rubric + 4-way forced choice) via subscription subagents; agreement scored against labels. Renders regenerate deterministically from local KV; grid-hashes.json pins the graded inputs."
+}

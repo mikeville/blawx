@@ -1,0 +1,674 @@
+{
+ "bird": {
+  "gridHash": "33a01951be86",
+  "vox": 254,
+  "comps": 1,
+  "ground": true,
+  "floats": 56,
+  "bricks": 42,
+  "footprints": {
+   "2x2": 10,
+   "1x2": 5,
+   "2x4": 24,
+   "1x4": 3
+  },
+  "steps": 13,
+  "isoHash": "04f2f7720d59"
+ },
+ "car": {
+  "gridHash": "fa1859e79046",
+  "vox": 750,
+  "comps": 1,
+  "ground": true,
+  "floats": 132,
+  "bricks": 108,
+  "footprints": {
+   "2x4": 83,
+   "2x2": 11,
+   "1x4": 7,
+   "1x2": 7
+  },
+  "steps": 22,
+  "isoHash": "aa5cc69aa6f9"
+ },
+ "cat": {
+  "gridHash": "021a8a30cb32",
+  "vox": 550,
+  "comps": 2,
+  "ground": true,
+  "floats": 60,
+  "bricks": 80,
+  "footprints": {
+   "2x4": 60,
+   "1x4": 12,
+   "2x2": 3,
+   "1x2": 5
+  },
+  "steps": 16,
+  "isoHash": "ec361a9d6caf"
+ },
+ "chair": {
+  "gridHash": "df9c94aa27ad",
+  "vox": 448,
+  "comps": 1,
+  "ground": true,
+  "floats": 56,
+  "bricks": 62,
+  "footprints": {
+   "2x4": 50,
+   "1x4": 12
+  },
+  "steps": 18,
+  "isoHash": "cd9a18c5ab19"
+ },
+ "dragon": {
+  "gridHash": "343e6f32a2f8",
+  "vox": 534,
+  "comps": 2,
+  "ground": true,
+  "floats": 114,
+  "bricks": 77,
+  "footprints": {
+   "2x4": 58,
+   "1x4": 10,
+   "2x2": 6,
+   "1x2": 3
+  },
+  "steps": 18,
+  "isoHash": "66d4648c270d"
+ },
+ "duck": {
+  "gridHash": "118ad86ad6e9",
+  "vox": 272,
+  "comps": 1,
+  "ground": true,
+  "floats": 60,
+  "bricks": 38,
+  "footprints": {
+   "2x2": 4,
+   "1x2": 2,
+   "2x4": 31,
+   "1x4": 1
+  },
+  "steps": 12,
+  "isoHash": "7ad153c89220"
+ },
+ "fish": {
+  "gridHash": "dcc47d135f49",
+  "vox": 608,
+  "comps": 1,
+  "ground": true,
+  "floats": 98,
+  "bricks": 90,
+  "footprints": {
+   "2x4": 66,
+   "1x2": 8,
+   "1x4": 8,
+   "2x2": 8
+  },
+  "steps": 22,
+  "isoHash": "a616b44304a7"
+ },
+ "fox": {
+  "gridHash": "2de3bcc27342",
+  "vox": 366,
+  "comps": 1,
+  "ground": true,
+  "floats": 58,
+  "bricks": 53,
+  "footprints": {
+   "2x2": 7,
+   "1x2": 3,
+   "2x4": 40,
+   "1x4": 3
+  },
+  "steps": 16,
+  "isoHash": "459134046403"
+ },
+ "frog": {
+  "gridHash": "33e09f37558e",
+  "vox": 594,
+  "comps": 1,
+  "ground": true,
+  "floats": 82,
+  "bricks": 84,
+  "footprints": {
+   "2x4": 66,
+   "1x4": 12,
+   "2x2": 3,
+   "1x2": 3
+  },
+  "steps": 20,
+  "isoHash": "8b7c47cfd012"
+ },
+ "hat": {
+  "gridHash": "a3a69d96e3e8",
+  "vox": 392,
+  "comps": 1,
+  "ground": true,
+  "floats": 48,
+  "bricks": 52,
+  "footprints": {
+   "2x4": 46,
+   "1x4": 6
+  },
+  "steps": 13,
+  "isoHash": "eece9d3701bc"
+ },
+ "horse": {
+  "gridHash": "552d61f2ad20",
+  "vox": 468,
+  "comps": 1,
+  "ground": true,
+  "floats": 88,
+  "bricks": 77,
+  "footprints": {
+   "2x2": 12,
+   "1x2": 12,
+   "2x4": 46,
+   "1x4": 7
+  },
+  "steps": 20,
+  "isoHash": "37a41abe3325"
+ },
+ "house": {
+  "gridHash": "90ab7504bf11",
+  "vox": 1360,
+  "comps": 1,
+  "ground": true,
+  "floats": 64,
+  "bricks": 176,
+  "footprints": {
+   "2x4": 164,
+   "1x4": 12
+  },
+  "steps": 38,
+  "isoHash": "1a3c6cdd6b23"
+ },
+ "ice-cream-cone": {
+  "gridHash": "2cc988d3191c",
+  "vox": 384,
+  "comps": 2,
+  "ground": true,
+  "floats": 56,
+  "bricks": 48,
+  "footprints": {
+   "2x4": 48
+  },
+  "steps": 11,
+  "isoHash": "2d3bfbb5b64d"
+ },
+ "lighthouse": {
+  "gridHash": "1bc544cffc42",
+  "vox": 252,
+  "comps": 2,
+  "ground": true,
+  "floats": 12,
+  "bricks": 32,
+  "footprints": {
+   "2x4": 31,
+   "1x4": 1
+  },
+  "steps": 14,
+  "isoHash": "ed4ebf81c8e5"
+ },
+ "love": {
+  "gridHash": "a5f2c1f8a29a",
+  "vox": 832,
+  "comps": 1,
+  "ground": true,
+  "floats": 88,
+  "bricks": 105,
+  "footprints": {
+   "2x4": 103,
+   "2x2": 2
+  },
+  "steps": 20,
+  "isoHash": "9fecd0e2afa9"
+ },
+ "mug": {
+  "gridHash": "5a989720c1ae",
+  "vox": 620,
+  "comps": 2,
+  "ground": true,
+  "floats": 68,
+  "bricks": 82,
+  "footprints": {
+   "2x4": 73,
+   "1x4": 9
+  },
+  "steps": 21,
+  "isoHash": "14d360b877c5"
+ },
+ "mushroom": {
+  "gridHash": "f244acd8a617",
+  "vox": 612,
+  "comps": 1,
+  "ground": true,
+  "floats": 56,
+  "bricks": 82,
+  "footprints": {
+   "2x4": 71,
+   "1x4": 11
+  },
+  "steps": 22,
+  "isoHash": "feb350266079"
+ },
+ "octopus": {
+  "gridHash": "b8db23e95e3d",
+  "vox": 290,
+  "comps": 3,
+  "ground": true,
+  "floats": 114,
+  "bricks": 53,
+  "footprints": {
+   "1x2": 15,
+   "2x2": 4,
+   "2x4": 27,
+   "1x4": 7
+  },
+  "steps": 16,
+  "isoHash": "780e16c44d76"
+ },
+ "palm-tree": {
+  "gridHash": "354df95f1d27",
+  "vox": 248,
+  "comps": 8,
+  "ground": true,
+  "floats": 92,
+  "bricks": 39,
+  "footprints": {
+   "2x4": 23,
+   "1x4": 16
+  },
+  "steps": 17,
+  "isoHash": "4d5d9b8c86bb"
+ },
+ "penguin": {
+  "gridHash": "a9d586d7cea0",
+  "vox": 296,
+  "comps": 1,
+  "ground": true,
+  "floats": 36,
+  "bricks": 47,
+  "footprints": {
+   "2x2": 7,
+   "1x2": 8,
+   "2x4": 31,
+   "1x4": 1
+  },
+  "steps": 16,
+  "isoHash": "8f380e6195a1"
+ },
+ "robot": {
+  "gridHash": "c7c8b1e13777",
+  "vox": 768,
+  "comps": 1,
+  "ground": true,
+  "floats": 96,
+  "bricks": 109,
+  "footprints": {
+   "2x4": 87,
+   "2x2": 6,
+   "1x4": 8,
+   "1x2": 8
+  },
+  "steps": 25,
+  "isoHash": "80a923a83c7e"
+ },
+ "rocket-ship": {
+  "gridHash": "c271e220845d",
+  "vox": 272,
+  "comps": 1,
+  "ground": true,
+  "floats": 24,
+  "bricks": 36,
+  "footprints": {
+   "1x4": 4,
+   "2x4": 32
+  },
+  "steps": 15,
+  "isoHash": "11360c8293d9"
+ },
+ "rooster": {
+  "gridHash": "f05609861207",
+  "vox": 390,
+  "comps": 1,
+  "ground": true,
+  "floats": 56,
+  "bricks": 61,
+  "footprints": {
+   "2x2": 12,
+   "1x2": 5,
+   "2x4": 39,
+   "1x4": 5
+  },
+  "steps": 16,
+  "isoHash": "b3e60cb8dca3"
+ },
+ "sailboat": {
+  "gridHash": "92e3c9d18215",
+  "vox": 254,
+  "comps": 2,
+  "ground": true,
+  "floats": 30,
+  "bricks": 43,
+  "footprints": {
+   "2x4": 24,
+   "2x2": 12,
+   "1x2": 7
+  },
+  "steps": 15,
+  "isoHash": "3bd1ab8a775d"
+ },
+ "snail": {
+  "gridHash": "f2a022f78b91",
+  "vox": 400,
+  "comps": 2,
+  "ground": true,
+  "floats": 48,
+  "bricks": 54,
+  "footprints": {
+   "2x4": 46,
+   "1x4": 8
+  },
+  "steps": 12,
+  "isoHash": "a5a7f8cbcc7b"
+ },
+ "spider": {
+  "gridHash": "1fe17bad0c6d",
+  "vox": 471,
+  "comps": 1,
+  "ground": true,
+  "floats": 0,
+  "bricks": 131,
+  "footprints": {
+   "2x2": 14,
+   "1x4": 36,
+   "2x4": 21,
+   "1x2": 43,
+   "1x1": 17
+  },
+  "steps": 33,
+  "isoHash": "f8acad85376c"
+ },
+ "sword": {
+  "gridHash": "25b10186b472",
+  "vox": 58,
+  "comps": 1,
+  "ground": true,
+  "floats": 6,
+  "bricks": 14,
+  "footprints": {
+   "1x2": 1,
+   "2x2": 12,
+   "2x4": 1
+  },
+  "steps": 14,
+  "isoHash": "181585283411"
+ },
+ "table": {
+  "gridHash": "35e1f9c1b650",
+  "vox": 228,
+  "comps": 1,
+  "ground": true,
+  "floats": 84,
+  "bricks": 40,
+  "footprints": {
+   "1x4": 6,
+   "1x2": 6,
+   "2x4": 20,
+   "2x2": 8
+  },
+  "steps": 9,
+  "isoHash": "9f5e5bddf3cb"
+ },
+ "tree": {
+  "gridHash": "46a4d908d0de",
+  "vox": 556,
+  "comps": 1,
+  "ground": true,
+  "floats": 64,
+  "bricks": 75,
+  "footprints": {
+   "1x4": 11,
+   "2x4": 64
+  },
+  "steps": 23,
+  "isoHash": "ce1b0e610aa4"
+ },
+ "helicopter": {
+  "gridHash": "8953f24eaba4",
+  "vox": 521,
+  "comps": 2,
+  "ground": true,
+  "floats": 148,
+  "bricks": 82,
+  "footprints": {
+   "2x4": 54,
+   "2x2": 6,
+   "1x1": 3,
+   "1x4": 12,
+   "1x2": 7
+  },
+  "steps": 21,
+  "isoHash": "bb5fc45f8159"
+ },
+ "tractor": {
+  "gridHash": "50e56bc002cf",
+  "vox": 525,
+  "comps": 1,
+  "ground": true,
+  "floats": 110,
+  "bricks": 120,
+  "footprints": {
+   "1x2": 21,
+   "2x2": 12,
+   "1x1": 23,
+   "2x4": 39,
+   "1x4": 25
+  },
+  "steps": 29,
+  "isoHash": "80721da90433"
+ },
+ "castle": {
+  "gridHash": "96af001b96d2",
+  "vox": 464,
+  "comps": 1,
+  "ground": true,
+  "floats": 16,
+  "bricks": 60,
+  "footprints": {
+   "2x4": 56,
+   "1x4": 4
+  },
+  "steps": 12,
+  "isoHash": "39b1b70b5b3a"
+ },
+ "apple": {
+  "gridHash": "4010ab1db1b3",
+  "vox": 421,
+  "comps": 4,
+  "ground": true,
+  "floats": 21,
+  "bricks": 102,
+  "footprints": {
+   "1x1": 17,
+   "2x4": 30,
+   "2x2": 20,
+   "1x4": 7,
+   "1x2": 28
+  },
+  "steps": 23,
+  "isoHash": "05205ad5cf1a"
+ },
+ "star": {
+  "gridHash": "7508c3b46dd0",
+  "vox": 466,
+  "comps": 1,
+  "ground": true,
+  "floats": 74,
+  "bricks": 95,
+  "footprints": {
+   "2x2": 9,
+   "1x4": 19,
+   "2x4": 38,
+   "1x2": 21,
+   "1x1": 8
+  },
+  "steps": 24,
+  "isoHash": "dd68becd1f9e"
+ },
+ "grapes": {
+  "gridHash": "638678c21bf1",
+  "vox": 278,
+  "comps": 1,
+  "ground": true,
+  "floats": 66,
+  "bricks": 43,
+  "footprints": {
+   "2x2": 2,
+   "2x4": 29,
+   "1x4": 8,
+   "1x2": 2,
+   "1x1": 2
+  },
+  "steps": 13,
+  "isoHash": "efa43a08d31e"
+ },
+ "candy-cane": {
+  "gridHash": "56338f064ebb",
+  "vox": 334,
+  "comps": 5,
+  "ground": true,
+  "floats": 127,
+  "bricks": 76,
+  "footprints": {
+   "2x4": 27,
+   "1x2": 24,
+   "1x1": 10,
+   "1x4": 10,
+   "2x2": 5
+  },
+  "steps": 18,
+  "isoHash": "3dded40039d1"
+ },
+ "bowl": {
+  "gridHash": "377a020abdec",
+  "vox": 866,
+  "comps": 2,
+  "ground": true,
+  "floats": 164,
+  "bricks": 169,
+  "footprints": {
+   "2x4": 85,
+   "2x2": 6,
+   "1x4": 16,
+   "1x2": 36,
+   "1x1": 26
+  },
+  "steps": 40,
+  "isoHash": "98daa8f8940e"
+ },
+ "peanut": {
+  "gridHash": "131a0447bfdc",
+  "vox": 233,
+  "comps": 2,
+  "ground": true,
+  "floats": 85,
+  "bricks": 42,
+  "footprints": {
+   "1x4": 13,
+   "1x1": 5,
+   "1x2": 2,
+   "2x4": 21,
+   "2x2": 1
+  },
+  "steps": 10,
+  "isoHash": "8f99c8e26665"
+ },
+ "submarine": {
+  "gridHash": "92d8d061a453",
+  "vox": 223,
+  "comps": 2,
+  "ground": true,
+  "floats": 42,
+  "bricks": 52,
+  "footprints": {
+   "2x4": 18,
+   "1x4": 9,
+   "1x1": 11,
+   "1x2": 12,
+   "2x2": 2
+  },
+  "steps": 10,
+  "isoHash": "c60b9d2727dd"
+ },
+ "pants": {
+  "gridHash": "975c147b1bc0",
+  "vox": 269,
+  "comps": 2,
+  "ground": true,
+  "floats": 15,
+  "bricks": 63,
+  "footprints": {
+   "2x4": 22,
+   "1x2": 13,
+   "1x1": 15,
+   "2x2": 9,
+   "1x4": 4
+  },
+  "steps": 18,
+  "isoHash": "c4c2ac270450"
+ },
+ "banana": {
+  "gridHash": "fcadeb506700",
+  "vox": 321,
+  "comps": 1,
+  "ground": true,
+  "floats": 58,
+  "bricks": 56,
+  "footprints": {
+   "1x4": 11,
+   "1x1": 5,
+   "2x4": 31,
+   "1x2": 6,
+   "2x2": 3
+  },
+  "steps": 16,
+  "isoHash": "d8b849615bea"
+ },
+ "rainbow": {
+  "gridHash": "d527f34eb359",
+  "vox": 266,
+  "comps": 4,
+  "ground": true,
+  "floats": 57,
+  "bricks": 61,
+  "footprints": {
+   "2x4": 22,
+   "1x4": 10,
+   "1x2": 21,
+   "1x1": 8
+  },
+  "steps": 15,
+  "isoHash": "15bda84807ef"
+ },
+ "squid": {
+  "gridHash": "dc5aa7472043",
+  "vox": 462,
+  "comps": 4,
+  "ground": true,
+  "floats": 147,
+  "bricks": 95,
+  "footprints": {
+   "1x4": 15,
+   "1x2": 22,
+   "1x1": 10,
+   "2x4": 39,
+   "2x2": 9
+  },
+  "steps": 23,
+  "isoHash": "ffb47c6674d9"
+ }
+}

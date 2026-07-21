@@ -1,0 +1,217 @@
+{
+ "apple": {
+  "iso": 3,
+  "front": 5,
+  "class": "clean"
+ },
+ "banana": {
+  "iso": 4,
+  "front": 5,
+  "class": "clean"
+ },
+ "bird": {
+  "iso": 4,
+  "front": 5,
+  "class": "clean"
+ },
+ "bowl": {
+  "iso": 2,
+  "front": 3,
+  "class": "iso-smear"
+ },
+ "candy-cane": {
+  "iso": 1,
+  "front": 2,
+  "class": "fragmented"
+ },
+ "car": {
+  "iso": 4,
+  "front": 5,
+  "class": "clean"
+ },
+ "castle": {
+  "iso": 1,
+  "front": 2,
+  "class": "semantic-trap"
+ },
+ "cat": {
+  "iso": 4,
+  "front": 5,
+  "class": "clean"
+ },
+ "chair": {
+  "iso": 3,
+  "front": 4,
+  "class": "clean-marginal"
+ },
+ "dragon": {
+  "iso": 2,
+  "front": 4,
+  "class": "iso-smear"
+ },
+ "duck": {
+  "iso": 4,
+  "front": 5,
+  "class": "clean"
+ },
+ "fish": {
+  "iso": 2,
+  "front": 5,
+  "class": "iso-smear"
+ },
+ "fox": {
+  "iso": 4,
+  "front": 5,
+  "class": "clean"
+ },
+ "frog": {
+  "iso": 3,
+  "front": 4,
+  "class": "clean-marginal"
+ },
+ "grapes": {
+  "iso": 1,
+  "front": 2,
+  "class": "semantic-trap"
+ },
+ "hat": {
+  "iso": 4,
+  "front": 5,
+  "class": "clean"
+ },
+ "helicopter": {
+  "iso": 2,
+  "front": 4,
+  "class": "degraded-structure"
+ },
+ "horse": {
+  "iso": 3,
+  "front": 4,
+  "class": "clean-marginal"
+ },
+ "house": {
+  "iso": 5,
+  "front": 5,
+  "class": "clean"
+ },
+ "ice-cream-cone": {
+  "iso": 2,
+  "front": 3,
+  "class": "degraded-structure"
+ },
+ "lighthouse": {
+  "iso": 4,
+  "front": 4,
+  "class": "clean"
+ },
+ "love": {
+  "iso": 4,
+  "front": 5,
+  "class": "clean"
+ },
+ "mug": {
+  "iso": 3,
+  "front": 5,
+  "class": "degraded-structure"
+ },
+ "mushroom": {
+  "iso": 2,
+  "front": 3,
+  "class": "iso-smear"
+ },
+ "octopus": {
+  "iso": 2,
+  "front": 4,
+  "class": "iso-smear"
+ },
+ "palm-tree": {
+  "iso": 2,
+  "front": 4,
+  "class": "iso-smear"
+ },
+ "pants": {
+  "iso": 2,
+  "front": 4,
+  "class": "flux-degraded"
+ },
+ "peanut": {
+  "iso": 1,
+  "front": 2,
+  "class": "flux-degraded"
+ },
+ "penguin": {
+  "iso": 4,
+  "front": 5,
+  "class": "clean"
+ },
+ "rainbow": {
+  "iso": 1,
+  "front": 3,
+  "class": "fragmented"
+ },
+ "robot": {
+  "iso": 4,
+  "front": 4,
+  "class": "clean"
+ },
+ "rocket-ship": {
+  "iso": 4,
+  "front": 5,
+  "class": "clean"
+ },
+ "rooster": {
+  "iso": 4,
+  "front": 5,
+  "class": "clean"
+ },
+ "sailboat": {
+  "iso": 4,
+  "front": 5,
+  "class": "clean"
+ },
+ "snail": {
+  "iso": 4,
+  "front": 4,
+  "class": "clean"
+ },
+ "spider": {
+  "iso": 3,
+  "front": 2,
+  "class": "clean-marginal"
+ },
+ "squid": {
+  "iso": 1,
+  "front": 1,
+  "class": "flux-degraded"
+ },
+ "star": {
+  "iso": 2,
+  "front": 5,
+  "class": "iso-smear"
+ },
+ "submarine": {
+  "iso": 3,
+  "front": 4,
+  "class": "degraded-structure"
+ },
+ "sword": {
+  "iso": 4,
+  "front": 5,
+  "class": "clean"
+ },
+ "table": {
+  "iso": 5,
+  "front": 4,
+  "class": "clean"
+ },
+ "tractor": {
+  "iso": 4,
+  "front": 5,
+  "class": "clean"
+ },
+ "tree": {
+  "iso": 5,
+  "front": 5,
+  "class": "clean"
+ }
+}

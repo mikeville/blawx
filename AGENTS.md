@@ -532,6 +532,60 @@ locally, gitignored). Findings:
   display will occasionally show a confidently-wrong lexical
   neighbor regardless of gate choice.
 
+## Self-improvement loop (H-J / H-BT, run 2026-07-20, $0 API)
+
+Direction (Mike, brainstorm 2026-07-20): make the system self-improving
+without slowing the serve path. Eval placement decision: **the only
+blocking gate stays the deterministic validator**; all judgment-grade
+evaluation happens in hindsight, on already-served results, feeding a
+background improve-and-replace loop (cache ratchet → demand-driven
+growth → exemplar flywheel). Every loop is contingent on an automated
+quality signal, so that was the first bet.
+
+**H-J — "a Sonnet judge reproduces the eyeball verdicts" — result:
+falsified as a hard gate, supported as a regeneration ranker.** Method
+and full numbers: `runs/judge1-cache-eval/RESULTS.md`. All 43 cached
+sets rendered (`scripts/render-cache.ts`, new) and eyeball-labeled
+(16 bad / 7 marginal / 20 good); two single-vote Sonnet judge designs
+via subscription subagents. Conditioned rubric: **77% binary agreement,
+tau 0.61** — under the ~90% gate bar. Forced-choice identification: 81%
+(89% on good sets). Composite (deterministic structure ∪ judge) catches
+**14/16 bad including both semantic traps** at the cost of 11
+false-bads — cheap wrongness (a false-bad wastes a $0 subscription
+re-gen), so the composite is fit for **ranking/queueing background
+regeneration now**, not for blocking anything. Known accuracy levers,
+untested: 3-vote panels, magnitude-threshold on the components signal
+(raw `comps !== 1` false-flags cosmetic 1-voxel fragments on
+cat/lighthouse/sailboat/snail), better renders (spider's front-ortho
+renders near-blank; robot reads as ghost). The run directory doubles as
+the **judge benchmark**: future judge designs must beat 77%/0.61 on it
+before being trusted with gating; new human verdicts should be appended
+to `ground-truth.json` so the benchmark grows with use.
+
+**H-BT — deterministic backtest harness — landed.**
+`scripts/backtest-cache.ts` replays every cached grid through the
+deterministic layer (analyze → pack → steps → iso render) and diffs
+structural fingerprints against the committed
+`scripts/backtest-baseline.json` (43 terms, verified zero-diff on
+write). Any future geometry/packing/render change gets a free
+regression check over real data: `npx tsx scripts/backtest-cache.ts`
+(exit 2 on behavior diff; input-grid hashes distinguish code diffs from
+cache churn — re-run `--write` to adopt intended changes).
+
+**Provenance gap (blocks full-pipeline backtesting):** cache entries
+store only `{grid, metrics}` — the front mask, FLUX PNG, and raw model
+responses are discarded at generation time. The Worker should persist
+those per entry (KV side-keys or metadata) so misses can be diagnosed
+and model-layer changes replayed against historical inputs. Roadmap
+item for the Worker-reshape; costs nothing per entry beyond storage.
+
+**Vetoable next bets, in dependency order:** (1) H-D — background
+improver on the ~16 judge-flagged sets: k candidate re-gens each on the
+probe8 subscription profile, composite-ranked, challenger replaces
+incumbent only if it wins and incumbents are kept for rollback;
+(2) 3-vote judge panel A/B against the judge1 benchmark; (3) wire
+`x-degraded`+judge verdict into a `provisional` flag the UI can show.
+
 ## Spend guardrail (load-bearing)
 
 **No direct Anthropic API calls during R&D.** All model interactions
