@@ -15,10 +15,17 @@ import { pipeline } from '@huggingface/transformers';
 import { normalizeQuery } from './lib/normalize.ts';
 
 const DIR = new URL('../data/seed-pool/', import.meta.url).pathname;
-// Floor band calibrated on probe pairs: castle→palace (good stand-in) sims 0.649,
-// castle→chess (bad stand-in) 0.532, duck→goose 0.772 in this space.
+// SEED_POOL_MODEL=Xenova/bge-base-en-v1.5 runs the same analysis in another
+// embedding space; non-default models get suffixed output filenames so spaces
+// can be compared side by side. Floors/gates are NOT comparable across models —
+// each space has its own similarity scale.
+const MODEL = process.env.SEED_POOL_MODEL ?? 'Xenova/bge-small-en-v1.5';
+const DIM = { 'Xenova/bge-small-en-v1.5': 384, 'Xenova/bge-base-en-v1.5': 768, 'Xenova/bge-large-en-v1.5': 1024 }[MODEL];
+if (!DIM) throw new Error(`unknown model ${MODEL}`);
+const SUFFIX = MODEL === 'Xenova/bge-small-en-v1.5' ? '' : '-' + MODEL.split('/')[1].replace('-en-v1.5', '');
+// Floor band calibrated on probe pairs in the bge-small space: castle→palace
+// (good stand-in) 0.649, castle→chess (bad stand-in) 0.532, duck→goose 0.772.
 const FLOORS = [0.55, 0.6, 0.65, 0.7, 0.75];
-const DIM = 384;
 
 interface Candidate {
   term: string;
@@ -54,14 +61,14 @@ if (tier1Missing.length > 0) {
 // ---- embeddings (cached — the model download is ~30 MB, the encode ~1 min) ----
 
 const allTerms = [...new Set([...poolTerms, ...tier1, ...holdout])];
-const cachePath = DIR + '.cache-embeddings.json';
+const cachePath = DIR + `.cache-embeddings${SUFFIX}.json`;
 let cache: Record<string, number[]> = {};
 if (existsSync(cachePath)) cache = JSON.parse(readFileSync(cachePath, 'utf8'));
 const missing = allTerms.filter((t) => !cache[t]);
 
 if (missing.length > 0) {
-  console.log(`embedding ${missing.length} terms with Xenova/bge-small-en-v1.5 …`);
-  const extractor = await pipeline('feature-extraction', 'Xenova/bge-small-en-v1.5');
+  console.log(`embedding ${missing.length} terms with ${MODEL} …`);
+  const extractor = await pipeline('feature-extraction', MODEL);
   const BATCH = 64;
   for (let i = 0; i < missing.length; i += BATCH) {
     const batch = missing.slice(i, i + BATCH);
@@ -189,13 +196,13 @@ const holdoutRows = holdout.map((q) => {
 
 // ---- outputs ----
 
-writeFileSync(DIR + 'seed-list.json', JSON.stringify({ model: 'bge-small-en-v1.5', tier1Count: tier1.length, seeds }, null, 1));
+writeFileSync(DIR + `seed-list${SUFFIX}.json`, JSON.stringify({ model: MODEL, tier1Count: tier1.length, seeds }, null, 1));
 
 const lines: string[] = [];
 lines.push('# Covering-number report — pre-seed library');
 lines.push('');
 lines.push(`Pool: ${poolTerms.length} filtered candidates. Tier 1: ${tier1.length} seeds placed first.`);
-lines.push('Embedding: bge-small-en-v1.5 (production NN space), cosine similarity.');
+lines.push(`Embedding: ${MODEL}, cosine similarity.`);
 lines.push('');
 lines.push('| similarity floor | seeds needed (incl. Tier 1) | FPS additions beyond Tier 1 |');
 lines.push('|---|---|---|');
@@ -243,8 +250,8 @@ for (const f of FLOORS) {
   lines.push(`- floor ${f.toFixed(2)}: ${within}/${holdoutRows.length} holdout queries within floor (of the final ${seeds.length}-seed list)`);
 }
 lines.push('');
-writeFileSync(DIR + 'covering-report.md', lines.join('\n'));
+writeFileSync(DIR + `covering-report${SUFFIX}.md`, lines.join('\n'));
 
 console.log(`\npool ${poolTerms.length}, seeds ${seeds.length} (tier1 ${tier1.length})`);
 for (const f of FLOORS) console.log(`floor ${f}: covering number ${coveringNumbers.get(f) ?? 'not reached'}`);
-console.log(`report: data/seed-pool/covering-report.md`);
+console.log(`report: data/seed-pool/covering-report${SUFFIX}.md`);

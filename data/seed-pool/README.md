@@ -21,8 +21,11 @@ nearest-neighbor stand-in while its real set generates.
 - `tier1.txt` — the head list placed as seeds before farthest-point sampling starts.
 - `holdout.txt` — plausible queries deliberately not drawn from the pool, for
   coverage validation.
-- `seed-list.json`, `covering-report.md` — outputs of `npx tsx scripts/seed-pool.ts`:
+- `seed-list.json`, `covering-report.md` — outputs of `npm run seed-pool`:
   the ordered seed list and measured covering numbers at several similarity floors.
+  `SEED_POOL_MODEL=Xenova/bge-base-en-v1.5 npm run seed-pool` re-measures in another
+  embedding space with `-bge-base`-suffixed outputs (similarity scales are per-model;
+  don't compare floors across spaces).
 
 ## Method
 

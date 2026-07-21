@@ -531,6 +531,37 @@ locally, gitignored). Findings:
   (cleat/cleaver .923 > leopard/lion .872). Known residual: the NN
   display will occasionally show a confidently-wrong lexical
   neighbor regardless of gate choice.
+- **Model-swap A/B (bge-base + bge-large, run 2026-07-20, $0):
+  FALSIFIED as an artifact fix.** Each space fixes some artifact
+  pairs and mints new ones — base drops cleat→cleaver to .693 (below
+  its good band) but produces rattle→rattlesnake .789,
+  dartboard→washboard .699, machine gun→staple gun .741. The
+  substring-noise class is intrinsic to this model family on
+  bare-word inputs, not a capacity problem. **bge-small stays the
+  production space** (smallest, matches the planned Workers AI
+  binding, no demonstrated quality win from larger). bge-base
+  covering numbers (own similarity scale — NOT comparable to
+  bge-small's): 79 @ 0.55, 114 @ 0.60, 293 @ 0.65, 652 @ 0.70,
+  957 @ 0.75; full report `covering-report-bge-base.md`. Any space
+  can be re-measured via `SEED_POOL_MODEL=Xenova/<model> npm run
+  seed-pool` (suffixed outputs, side-by-side).
+
+**Next action — seed the Tier-1 library (good fresh-session task;
+agreed 2026-07-20).** Generate authored-front sets at $0 via the
+probe8 subscription-subagent harness (prompt v2 —
+`scripts/make-probe8-prompts.ts` pattern with the `DOG_Z` exemplar;
+convert via `scripts/convert-response.ts`, validate via
+`scripts/retry-feedback.ts` with the Worker-equivalent settings;
+every batch dir needs `run.json`) for the **50 Tier-1 terms not
+already in the seed4 library** — `data/seed-pool/tier1.txt` minus
+the seed4 nouns, i.e. everything from `dog` onward in that file.
+Batch ~10–12 terms per round with contact-sheet viewer QA between
+batches (Mike's eyeball is the gate). Explicitly out of scope until
+their own sign-off: regenerating the 29 existing seed4 terms
+authored-front (vetoable separate pass), KV baking, color (deferred
+2026-07-20), and the FPS-tail seeds beyond Tier 1 (blocked on Mike
+picking the (library size, display gate) operating point from the
+covering-report tables).
 
 ## Self-improvement loop (H-J / H-BT, run 2026-07-20, $0 API)
 
@@ -996,7 +1027,15 @@ verification) is moved to `docs/build-log.md` (Phase 6). Nothing there is
 required to start the next action — it's archaeology, and the load-bearing
 bits are summarized in the stage lines above.
 
-**Next action — the Worker-reshape decision (Mike's call; the probe
+**Next action: seed the Tier-1 library** — see the "Next action" block
+at the end of the pre-seed section above (50 terms, probe8 harness,
+$0). The Worker-reshape decision below is **deferred by Mike's
+2026-07-20 direction**: option B's core (offline authored library +
+cheap live path) is common to all three branches, so seeding proceeds
+now and the A-vs-C live-miss-route choice binds only when deploy is
+next.
+
+**The Worker-reshape decision (Mike's call; the probe
 series is complete).** The facts, all landed 2026-07-19/20: prompt v2
 authors clean sets (probe8: 10/10, subscription, $0); thinking is
 load-bearing (probe9: 0/10 without it); quality reproduces on the
