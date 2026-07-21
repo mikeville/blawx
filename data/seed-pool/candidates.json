@@ -1,0 +1,15690 @@
+[
+{
+"term": "aardvark",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "abacus",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "accordion",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "acorn",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "air conditioner",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "air mattress",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "blob"
+},
+{
+"term": "air pump",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "other: no distinct canonical shape"
+},
+{
+"term": "airbag",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "blob"
+},
+{
+"term": "airboat",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "aircraft carrier",
+"sources": [
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "airplane",
+"sources": [
+"firstwords",
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "alarm clock",
+"sources": [
+"quickdraw"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "album",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "flat"
+},
+{
+"term": "alligator",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "almond",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "aloe",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "alpaca",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "altar",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "aluminum foil",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "material"
+},
+{
+"term": "amber",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "material"
+},
+{
+"term": "ambulance",
+"sources": [
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "amplifier",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "anchor",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "angel",
+"sources": [
+"quickdraw"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "animal migration",
+"sources": [
+"quickdraw"
+],
+"verdict": "drop",
+"tag": "abstract"
+},
+{
+"term": "ankle",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "bodypart"
+},
+{
+"term": "anklet",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "thin"
+},
+{
+"term": "ant",
+"sources": [
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "anteater",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "antelope",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "antenna",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "thin"
+},
+{
+"term": "anvil",
+"sources": [
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "appetizer",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "abstract"
+},
+{
+"term": "apple",
+"sources": [
+"firstwords",
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "apple tree",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "applesauce",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "material"
+},
+{
+"term": "apron",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "aquarium",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "arch",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "arm",
+"sources": [
+"quickdraw",
+"things"
+],
+"verdict": "drop",
+"tag": "bodypart"
+},
+{
+"term": "armor",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "arrow",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "artichoke",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "arugula",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "material"
+},
+{
+"term": "ashtray",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "asparagus",
+"sources": [
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "avocado",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "awning",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "axe",
+"sources": [
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "baby",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "backdrop",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "scene"
+},
+{
+"term": "backgammon",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "backpack",
+"sources": [
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "backscratcher",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "thin"
+},
+{
+"term": "bacon",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "material"
+},
+{
+"term": "badge",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "flat"
+},
+{
+"term": "badger",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "bag",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "bagel",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "bagpipe",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "baklava",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "blob"
+},
+{
+"term": "balance beam",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "ball",
+"sources": [
+"firstwords",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "balloon",
+"sources": [
+"firstwords",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "ballot box",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "bamboo",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "banana",
+"sources": [
+"firstwords",
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "banana peel",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "banana split",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "bandage",
+"sources": [
+"quickdraw",
+"things"
+],
+"verdict": "drop",
+"tag": "flat"
+},
+{
+"term": "bandanna",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "flat"
+},
+{
+"term": "banjo",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "bank",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "other: generic building, no distinct shape"
+},
+{
+"term": "banner",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "flat"
+},
+{
+"term": "barbed wire",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "thin"
+},
+{
+"term": "barbell",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "barcode",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "flat"
+},
+{
+"term": "bark",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "material"
+},
+{
+"term": "barn",
+"sources": [
+"firstwords",
+"quickdraw"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "barnacle",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "blob"
+},
+{
+"term": "barrel",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "barrette",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "blob"
+},
+{
+"term": "baseball",
+"sources": [
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "baseball bat",
+"sources": [
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "baseball glove",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "basil",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "material"
+},
+{
+"term": "basket",
+"sources": [
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "basketball",
+"sources": [
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "basketball hoop",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "bassinet",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "bassoon",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "bat",
+"sources": [
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "bathmat",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "flat"
+},
+{
+"term": "bathrobe",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "bathtub",
+"sources": [
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "baton",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "thin"
+},
+{
+"term": "batter",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "material"
+},
+{
+"term": "battery",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "bazooka",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "beach",
+"sources": [
+"quickdraw"
+],
+"verdict": "drop",
+"tag": "scene"
+},
+{
+"term": "beachball",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "bead",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "blob"
+},
+{
+"term": "beaker",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "bean",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "beanbag",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "blob"
+},
+{
+"term": "beanie",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "bear",
+"sources": [
+"firstwords",
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "beard",
+"sources": [
+"quickdraw",
+"things"
+],
+"verdict": "drop",
+"tag": "bodypart"
+},
+{
+"term": "beaver",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "bed",
+"sources": [
+"firstwords",
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "bedpan",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "blob"
+},
+{
+"term": "bedpost",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "thin"
+},
+{
+"term": "bee",
+"sources": [
+"firstwords",
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "beehive",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "beer",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "beet",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "beetle",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "bell",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "bell pepper",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "belt",
+"sources": [
+"quickdraw",
+"things"
+],
+"verdict": "drop",
+"tag": "thin"
+},
+{
+"term": "belt buckle",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "flat"
+},
+{
+"term": "bench",
+"sources": [
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "berry",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "bib",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "bicycle",
+"sources": [
+"firstwords",
+"quickdraw"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "bike",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "bikini",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "flat"
+},
+{
+"term": "bin",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "binder",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "binoculars",
+"sources": [
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "bird",
+"sources": [
+"firstwords",
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "birdbath",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "birdcage",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "birdhouse",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "birthday cake",
+"sources": [
+"firstwords",
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "biscuit",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "bison",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "blackberry",
+"sources": [
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "blanket",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "flat"
+},
+{
+"term": "blazer",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "blender",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "blimp",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "blind",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "flat"
+},
+{
+"term": "blinder",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "other: too small, ambiguous shape"
+},
+{
+"term": "blindfold",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "flat"
+},
+{
+"term": "block",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "blouse",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "blower",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "blowfish",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "blowgun",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "thin"
+},
+{
+"term": "blowtorch",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "blueberry",
+"sources": [
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "boa",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "boar",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "board",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "flat"
+},
+{
+"term": "board game",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "boat",
+"sources": [
+"firstwords",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "bobsled",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "bok choy",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "bolo tie",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "thin"
+},
+{
+"term": "bologna",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "flat"
+},
+{
+"term": "bolt",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "bomb",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "bone",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "bongo",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "bonnet",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "bonsai",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "book",
+"sources": [
+"firstwords",
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "bookmark",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "flat"
+},
+{
+"term": "bookshelf",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "boomerang",
+"sources": [
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "boot",
+"sources": [
+"firstwords",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "bottle",
+"sources": [
+"firstwords",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "bottle opener",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "bottlecap",
+"sources": [
+"quickdraw"
+],
+"verdict": "drop",
+"tag": "flat"
+},
+{
+"term": "boulder",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "blob"
+},
+{
+"term": "bouquet",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "bow",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "bowl",
+"sources": [
+"firstwords",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "bowler hat",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "bowling ball",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "bowtie",
+"sources": [
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "box",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "boxer shorts",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "boxing gloves",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "boy",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "bra",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "blob"
+},
+{
+"term": "brace",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "other: ambiguous, no single canonical shape"
+},
+{
+"term": "bracelet",
+"sources": [
+"quickdraw",
+"things"
+],
+"verdict": "drop",
+"tag": "thin"
+},
+{
+"term": "bracket",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "other: generic hardware, no distinct shape"
+},
+{
+"term": "braid",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "thin"
+},
+{
+"term": "brain",
+"sources": [
+"quickdraw"
+],
+"verdict": "drop",
+"tag": "bodypart"
+},
+{
+"term": "brake",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "other: mechanical part, not standalone object"
+},
+{
+"term": "branch",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "thin"
+},
+{
+"term": "brass knuckles",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "bread",
+"sources": [
+"firstwords",
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "breadbox",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "breadstick",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "thin"
+},
+{
+"term": "breakfast",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "abstract"
+},
+{
+"term": "breathalyzer",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "other: no distinct canonical shape"
+},
+{
+"term": "brick",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "bridge",
+"sources": [
+"quickdraw"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "briefcase",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "broccoli",
+"sources": [
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "brooch",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "flat"
+},
+{
+"term": "broom",
+"sources": [
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "brownie",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "blob"
+},
+{
+"term": "brush",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "brussels sprouts",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "bubble",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "other: indistinguishable from a generic sphere"
+},
+{
+"term": "bubble wrap",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "material"
+},
+{
+"term": "bucket",
+"sources": [
+"firstwords",
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "buckle",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "flat"
+},
+{
+"term": "buffet",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "bug",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "buggy",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "bull",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "bulldozer",
+"sources": [
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "bullet",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "bulletin board",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "flat"
+},
+{
+"term": "bulletproof vest",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "bumper",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "other: car part, not standalone object"
+},
+{
+"term": "bun",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "bungee",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "thin"
+},
+{
+"term": "bunkbed",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "buoy",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "burner",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "other: stove component, not standalone object"
+},
+{
+"term": "burrito",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "bus",
+"sources": [
+"firstwords",
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "bush",
+"sources": [
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "butter",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "material"
+},
+{
+"term": "butterfly",
+"sources": [
+"firstwords",
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "button",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "flat"
+},
+{
+"term": "cabbage",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "cabinet",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "cable",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "thin"
+},
+{
+"term": "cactus",
+"sources": [
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "cage",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "cake",
+"sources": [
+"firstwords",
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "cake mix",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "other: reads as a generic box"
+},
+{
+"term": "calamari",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "material"
+},
+{
+"term": "calculator",
+"sources": [
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "calendar",
+"sources": [
+"quickdraw"
+],
+"verdict": "drop",
+"tag": "flat"
+},
+{
+"term": "calf",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "calzone",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "camcorder",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "camel",
+"sources": [
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "camera",
+"sources": [
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "camera lens",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "camouflage",
+"sources": [
+"quickdraw"
+],
+"verdict": "drop",
+"tag": "flat"
+},
+{
+"term": "camper",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "campfire",
+"sources": [
+"quickdraw"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "can",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "can opener",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "candelabra",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "candle",
+"sources": [
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "candlestick",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "candy",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "candy bar",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "candy cane",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "cane",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "canister",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "cannon",
+"sources": [
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "cannonball",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "other: indistinguishable from a generic ball"
+},
+{
+"term": "canoe",
+"sources": [
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "cantaloupe",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "canvas",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "flat"
+},
+{
+"term": "cap",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "cape",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "car",
+"sources": [
+"firstwords",
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "car door",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "other: car part, not standalone object"
+},
+{
+"term": "car seat",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "caramel",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "material"
+},
+{
+"term": "card",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "flat"
+},
+{
+"term": "cardboard",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "material"
+},
+{
+"term": "cardigan",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "cardinal",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "carousel",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "carriage",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "carrot",
+"sources": [
+"firstwords",
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "cart",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "cash machine",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "cash register",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "cashew",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "casserole",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "material"
+},
+{
+"term": "cassette",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "castle",
+"sources": [
+"firstwords",
+"quickdraw"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "cat",
+"sources": [
+"firstwords",
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "catapult",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "caterpillar",
+"sources": [
+"firstwords",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "catfish",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "cauliflower",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "caviar",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "material"
+},
+{
+"term": "cd player",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "ceiling fan",
+"sources": [
+"quickdraw"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "celery",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "cell phone",
+"sources": [
+"quickdraw"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "cello",
+"sources": [
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "cellphone",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "cement mixer",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "centerpiece",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "abstract"
+},
+{
+"term": "centrifuge",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "other: obscure shape, not lay-recognizable"
+},
+{
+"term": "cereal",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "other: reads as a generic box"
+},
+{
+"term": "chain",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "thin"
+},
+{
+"term": "chainsaw",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "chair",
+"sources": [
+"firstwords",
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "chalice",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "chalk",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "thin"
+},
+{
+"term": "chalkboard",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "flat"
+},
+{
+"term": "champagne",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "chandelier",
+"sources": [
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "chaps",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "flat"
+},
+{
+"term": "charcoal",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "material"
+},
+{
+"term": "charger",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "chariot",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "checkbook",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "checkers",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "abstract"
+},
+{
+"term": "cheese",
+"sources": [
+"firstwords",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "cheeseburger",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "cheesecake",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "cheetah",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "cherry",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "chess piece",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "chessboard",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "chest",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "chick",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "chicken",
+"sources": [
+"firstwords",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "chicken wire",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "material"
+},
+{
+"term": "chickpea",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "blob"
+},
+{
+"term": "chihuahua",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "chili",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "chime",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "chimney",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "chin",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "bodypart"
+},
+{
+"term": "chinaware",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "other: generic dish category, no single shape"
+},
+{
+"term": "chinchilla",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "chip",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "blob"
+},
+{
+"term": "chipmunk",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "chips",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "material"
+},
+{
+"term": "chisel",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "chive",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "thin"
+},
+{
+"term": "chocolate",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "chopsticks",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "thin"
+},
+{
+"term": "christmas card",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "flat"
+},
+{
+"term": "christmas tree",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "church",
+"sources": [
+"quickdraw"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "chute",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "cigar",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "cigarette",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "thin"
+},
+{
+"term": "cigarette butt",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "blob"
+},
+{
+"term": "cigarette holder",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "thin"
+},
+{
+"term": "cilantro",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "material"
+},
+{
+"term": "cinnamon",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "material"
+},
+{
+"term": "circle",
+"sources": [
+"quickdraw"
+],
+"verdict": "drop",
+"tag": "flat"
+},
+{
+"term": "clam",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "clarinet",
+"sources": [
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "clasp",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "blob"
+},
+{
+"term": "clay",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "material"
+},
+{
+"term": "cleat",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "cleaver",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "clipboard",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "clipper",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "cloak",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "clock",
+"sources": [
+"firstwords",
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "closet",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "clothes",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "other: no single canonical shape"
+},
+{
+"term": "clothesline",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "thin"
+},
+{
+"term": "clothespin",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "cloud",
+"sources": [
+"firstwords",
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "clove",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "blob"
+},
+{
+"term": "clover",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "coal",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "material"
+},
+{
+"term": "coaster",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "flat"
+},
+{
+"term": "coat",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "coat rack",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "cobra",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "cockatoo",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "cockroach",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "cocktail",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "coconut",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "cocoon",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "coffee",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "material"
+},
+{
+"term": "coffee bean",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "blob"
+},
+{
+"term": "coffee cup",
+"sources": [
+"quickdraw"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "coffee filter",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "material"
+},
+{
+"term": "coffee pot",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "coffee table",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "coffeemaker",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "coffin",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "coil",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "coin",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "flat"
+},
+{
+"term": "coleslaw",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "material"
+},
+{
+"term": "collar",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "thin"
+},
+{
+"term": "column",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "comb",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "thin"
+},
+{
+"term": "combination lock",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "comic book",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "compass",
+"sources": [
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "compost",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "material"
+},
+{
+"term": "computer",
+"sources": [
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "computer screen",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "confetti",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "material"
+},
+{
+"term": "contact lens",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "blob"
+},
+{
+"term": "container",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "other: too generic, no single canonical shape"
+},
+{
+"term": "cooker",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "other: too vague, spans many appliance shapes"
+},
+{
+"term": "cookie",
+"sources": [
+"firstwords",
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "cookie cutter",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "thin"
+},
+{
+"term": "cookie sheet",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "cooler",
+"sources": [
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "coop",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "copier",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "coral",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "cord",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "thin"
+},
+{
+"term": "cordon bleu",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "blob"
+},
+{
+"term": "cork",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "corkboard",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "flat"
+},
+{
+"term": "corkscrew",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "corn",
+"sources": [
+"firstwords",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "cornbread",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "cornhusk",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "material"
+},
+{
+"term": "cornmeal",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "material"
+},
+{
+"term": "cornucopia",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "corsage",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "blob"
+},
+{
+"term": "corset",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "costume",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "other: too generic/varied, no single shape"
+},
+{
+"term": "cot",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "cotton candy",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "couch",
+"sources": [
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "cougar",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "counter",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "coverall",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "cow",
+"sources": [
+"firstwords",
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "coyote",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "crab",
+"sources": [
+"firstwords",
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "cracker",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "flat"
+},
+{
+"term": "cranberry",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "blob"
+},
+{
+"term": "crane",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "crank",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "blob"
+},
+{
+"term": "crate",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "crayfish",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "crayon",
+"sources": [
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "cream",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "material"
+},
+{
+"term": "cream cheese",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "material"
+},
+{
+"term": "credit card",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "flat"
+},
+{
+"term": "creme brulee",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "blob"
+},
+{
+"term": "crepe",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "flat"
+},
+{
+"term": "crib",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "crocodile",
+"sources": [
+"quickdraw"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "croissant",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "cross",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "crossbow",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "crouton",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "blob"
+},
+{
+"term": "crow",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "crowbar",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "crown",
+"sources": [
+"firstwords",
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "crucifix",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "cruise ship",
+"sources": [
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "crumb",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "blob"
+},
+{
+"term": "crutch",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "crystal",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "crystal ball",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "cuckoo clock",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "cucumber",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "cufflink",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "blob"
+},
+{
+"term": "cummerbund",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "thin"
+},
+{
+"term": "cup",
+"sources": [
+"firstwords",
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "cupcake",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "curb",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "other: infrastructure edge, not standalone object"
+},
+{
+"term": "curling iron",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "curry",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "material"
+},
+{
+"term": "curtain",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "cushion",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "cutting board",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "cymbal",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "flat"
+},
+{
+"term": "dagger",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "daisy",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "dalmatian",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "dandelion",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "dart",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "thin"
+},
+{
+"term": "dartboard",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "dashboard",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "other: vehicle component, not standalone"
+},
+{
+"term": "deer",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "defibrillator",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "denture",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "blob"
+},
+{
+"term": "deodorant",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "desk",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "dessert",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "other: category, not single object"
+},
+{
+"term": "detonator",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "dial",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "blob"
+},
+{
+"term": "diamond",
+"sources": [
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "diaper",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "blob"
+},
+{
+"term": "dice",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "digger",
+"sources": [
+"firstwords"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "dinosaur",
+"sources": [
+"firstwords"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "dip",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "material"
+},
+{
+"term": "dirt bike",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "dish",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "flat"
+},
+{
+"term": "dishrag",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "flat"
+},
+{
+"term": "dishwasher",
+"sources": [
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "dishwashing liquid",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "diskette",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "diving board",
+"sources": [
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "dog",
+"sources": [
+"firstwords",
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "dogfood",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "material"
+},
+{
+"term": "doghouse",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "doily",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "flat"
+},
+{
+"term": "doll",
+"sources": [
+"firstwords",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "dollhouse",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "dolly",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "dolphin",
+"sources": [
+"firstwords",
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "domino",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "donkey",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "donut",
+"sources": [
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "door",
+"sources": [
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "doorbell",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "doorhandle",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "doorknob",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "doorknocker",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "doormat",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "flat"
+},
+{
+"term": "doorstop",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "dough",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "material"
+},
+{
+"term": "dragon",
+"sources": [
+"firstwords",
+"quickdraw"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "dragonfly",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "drain",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "other: fixture, not standalone object"
+},
+{
+"term": "drawer",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "dreidel",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "dress",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "dresser",
+"sources": [
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "drill",
+"sources": [
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "drink",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "other: generic, no canonical shape"
+},
+{
+"term": "drum",
+"sources": [
+"firstwords",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "drums",
+"sources": [
+"quickdraw"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "drumstick",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "dryer",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "duck",
+"sources": [
+"firstwords",
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "duckling",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "duct",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "other: building component, not standalone"
+},
+{
+"term": "duct tape",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "duffel bag",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "dumbbell",
+"sources": [
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "dumbwaiter",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "blob"
+},
+{
+"term": "dumpling",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "dumpster",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "duster",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "dustpan",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "dynamite",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "eagle",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "ear",
+"sources": [
+"quickdraw",
+"things"
+],
+"verdict": "drop",
+"tag": "bodypart"
+},
+{
+"term": "earplug",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "blob"
+},
+{
+"term": "earring",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "blob"
+},
+{
+"term": "earwig",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "easel",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "easter egg",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "eclair",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "eel",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "egg",
+"sources": [
+"firstwords",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "egg roll",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "eggbeater",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "eggnog",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "material"
+},
+{
+"term": "eggplant",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "eggshell",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "blob"
+},
+{
+"term": "eiffel tower",
+"sources": [
+"quickdraw"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "elbow",
+"sources": [
+"quickdraw",
+"things"
+],
+"verdict": "drop",
+"tag": "bodypart"
+},
+{
+"term": "electric chair",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "elephant",
+"sources": [
+"firstwords",
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "emerald",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "enchilada",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "blob"
+},
+{
+"term": "engine",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "envelope",
+"sources": [
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "eraser",
+"sources": [
+"quickdraw",
+"things"
+],
+"verdict": "drop",
+"tag": "blob"
+},
+{
+"term": "espresso",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "material"
+},
+{
+"term": "exerciser",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "other: vague, no single canonical shape"
+},
+{
+"term": "exhaust pipe",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "extinguisher",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "eye",
+"sources": [
+"quickdraw",
+"things"
+],
+"verdict": "drop",
+"tag": "bodypart"
+},
+{
+"term": "eye patch",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "flat"
+},
+{
+"term": "eyedropper",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "eyeglasses",
+"sources": [
+"quickdraw"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "eyeliner",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "blob"
+},
+{
+"term": "eyepiece",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "blob"
+},
+{
+"term": "face",
+"sources": [
+"quickdraw",
+"things"
+],
+"verdict": "drop",
+"tag": "bodypart"
+},
+{
+"term": "face mask",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "fan",
+"sources": [
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "fast food",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "other: category, not single object"
+},
+{
+"term": "faucet",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "feather",
+"sources": [
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "fence",
+"sources": [
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "fencepost",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "fern",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "ferret",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "ferris wheel",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "ferry",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "fig",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "figurine",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "other: too generic, figurine of what"
+},
+{
+"term": "file",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "filing cabinet",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "film",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "flat"
+},
+{
+"term": "filter",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "other: too generic/vague, filter of what"
+},
+{
+"term": "finger",
+"sources": [
+"quickdraw",
+"things"
+],
+"verdict": "drop",
+"tag": "bodypart"
+},
+{
+"term": "fingerprint",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "flat"
+},
+{
+"term": "fire",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "abstract"
+},
+{
+"term": "fire alarm",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "fire hydrant",
+"sources": [
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "fire pit",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "fire truck",
+"sources": [
+"firstwords"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "firecracker",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "fireplace",
+"sources": [
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "firetruck",
+"sources": [
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "firewood",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "material"
+},
+{
+"term": "fireworks",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "abstract"
+},
+{
+"term": "first aid kit",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "fish",
+"sources": [
+"firstwords",
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "fishbowl",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "fishhook",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "thin"
+},
+{
+"term": "fishing pole",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "thin"
+},
+{
+"term": "fishnet stockings",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "thin"
+},
+{
+"term": "flag",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "flagpole",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "flamethrower",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "flamingo",
+"sources": [
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "flan",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "blob"
+},
+{
+"term": "flashbulb",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "blob"
+},
+{
+"term": "flashlight",
+"sources": [
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "flask",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "flatiron",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "flip flop",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "flip flops",
+"sources": [
+"quickdraw"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "flipper",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "float",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "other: too vague, multiple unrelated shapes"
+},
+{
+"term": "floor lamp",
+"sources": [
+"quickdraw"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "floss",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "thin"
+},
+{
+"term": "flour",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "material"
+},
+{
+"term": "flower",
+"sources": [
+"firstwords",
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "flute",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "fly",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "flying saucer",
+"sources": [
+"quickdraw"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "flypaper",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "thin"
+},
+{
+"term": "flyswatter",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "foam",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "material"
+},
+{
+"term": "folder",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "flat"
+},
+{
+"term": "fondue",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "food processor",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "foot",
+"sources": [
+"quickdraw",
+"things"
+],
+"verdict": "drop",
+"tag": "bodypart"
+},
+{
+"term": "football",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "football helmet",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "footbath",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "footprint",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "flat"
+},
+{
+"term": "footrest",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "fork",
+"sources": [
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "forklift",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "fossil",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "fountain pen",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "fox",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "frame",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "flat"
+},
+{
+"term": "freezer",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "french fries",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "french horn",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "frisbee",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "frog",
+"sources": [
+"firstwords",
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "fruit",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "other: no single canonical shape, too generic"
+},
+{
+"term": "fruitcake",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "frying pan",
+"sources": [
+"quickdraw"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "fudge",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "blob"
+},
+{
+"term": "fungus",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "material"
+},
+{
+"term": "funnel",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "fur coat",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "furnace",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "fuse",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "blob"
+},
+{
+"term": "gallows",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "game",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "abstract"
+},
+{
+"term": "garbage",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "material"
+},
+{
+"term": "garbage truck",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "garden",
+"sources": [
+"quickdraw"
+],
+"verdict": "drop",
+"tag": "scene"
+},
+{
+"term": "garden hose",
+"sources": [
+"quickdraw"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "gargoyle",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "garlic",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "garter",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "thin"
+},
+{
+"term": "gas mask",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "gasket",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "flat"
+},
+{
+"term": "gate",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "gauge",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "gauze",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "material"
+},
+{
+"term": "gavel",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "gazelle",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "gear",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "gearshift",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "gel",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "material"
+},
+{
+"term": "gem",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "generator",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "gift",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "ginger",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "gingerbread man",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "giraffe",
+"sources": [
+"firstwords",
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "girl",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "glass",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "glasses",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "globe",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "glove",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "glue",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "go kart",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "goalpost",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "goat",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "goatee",
+"sources": [
+"quickdraw"
+],
+"verdict": "drop",
+"tag": "bodypart"
+},
+{
+"term": "goblet",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "goggles",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "gold",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "material"
+},
+{
+"term": "goldfish",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "golf cart",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "golf club",
+"sources": [
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "gondola",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "gong",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "goose",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "gopher",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "gorilla",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "gourd",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "graffiti",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "flat"
+},
+{
+"term": "grain",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "material"
+},
+{
+"term": "gramophone",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "granite",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "material"
+},
+{
+"term": "granola",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "material"
+},
+{
+"term": "grape",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "blob"
+},
+{
+"term": "grapefruit",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "grapes",
+"sources": [
+"firstwords",
+"quickdraw"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "grapevine",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "grass",
+"sources": [
+"quickdraw",
+"things"
+],
+"verdict": "drop",
+"tag": "material"
+},
+{
+"term": "grasshopper",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "grate",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "flat"
+},
+{
+"term": "grater",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "gravel",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "material"
+},
+{
+"term": "gravestone",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "gravy",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "material"
+},
+{
+"term": "great wall of china",
+"sources": [
+"quickdraw"
+],
+"verdict": "drop",
+"tag": "scene"
+},
+{
+"term": "green beans",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "grenade",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "grill",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "grille",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "flat"
+},
+{
+"term": "grinder",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "grits",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "material"
+},
+{
+"term": "groundhog",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "guacamole",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "material"
+},
+{
+"term": "guardrail",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "guillotine",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "guinea pig",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "guitar",
+"sources": [
+"firstwords",
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "gum",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "blob"
+},
+{
+"term": "gumball",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "blob"
+},
+{
+"term": "gumdrop",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "gun",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "gurney",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "gutter",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "thin"
+},
+{
+"term": "gyro",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "gyroscope",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "hail",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "material"
+},
+{
+"term": "hair",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "bodypart"
+},
+{
+"term": "hairbrush",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "hairdryer",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "hairnet",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "thin"
+},
+{
+"term": "hairpin",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "thin"
+},
+{
+"term": "hairspray",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "ham",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "hamburger",
+"sources": [
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "hammer",
+"sources": [
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "hammock",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "thin"
+},
+{
+"term": "hamster",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "hand",
+"sources": [
+"quickdraw",
+"things"
+],
+"verdict": "drop",
+"tag": "bodypart"
+},
+{
+"term": "handbrake",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "thin"
+},
+{
+"term": "handcuff",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "handkerchief",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "flat"
+},
+{
+"term": "handle",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "other: generic part, not standalone"
+},
+{
+"term": "handlebar",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "thin"
+},
+{
+"term": "handprint",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "flat"
+},
+{
+"term": "hanger",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "hard disk",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "harmonica",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "harness",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "thin"
+},
+{
+"term": "harp",
+"sources": [
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "hash",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "material"
+},
+{
+"term": "hat",
+"sources": [
+"firstwords",
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "hatbox",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "hatchet",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "hawk",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "hay",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "material"
+},
+{
+"term": "headband",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "thin"
+},
+{
+"term": "headdress",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "headlamp",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "headlight",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "headphones",
+"sources": [
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "headrest",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "headscarf",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "flat"
+},
+{
+"term": "headset",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "hearing aid",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "blob"
+},
+{
+"term": "hearse",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "heater",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "hedge",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "hedgehog",
+"sources": [
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "helicopter",
+"sources": [
+"firstwords",
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "helmet",
+"sources": [
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "hexagon",
+"sources": [
+"quickdraw"
+],
+"verdict": "drop",
+"tag": "flat"
+},
+{
+"term": "highchair",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "highlighter",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "hinge",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "blob"
+},
+{
+"term": "hip",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "bodypart"
+},
+{
+"term": "hippopotamus",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "hobbyhorse",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "hockey puck",
+"sources": [
+"quickdraw"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "hockey stick",
+"sources": [
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "hoe",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "hole",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "abstract"
+},
+{
+"term": "holster",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "home plate",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "honey",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "material"
+},
+{
+"term": "honeycomb",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "honeypot",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "hood",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "other: generic part, not standalone"
+},
+{
+"term": "hoodie",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "hook",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "hookah",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "hopscotch",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "flat"
+},
+{
+"term": "horn",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "horse",
+"sources": [
+"firstwords",
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "horseshoe",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "hose",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "hospital",
+"sources": [
+"quickdraw"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "hot air balloon",
+"sources": [
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "hot chocolate",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "hot dog",
+"sources": [
+"quickdraw"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "hot tub",
+"sources": [
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "hot water bottle",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "hotdog",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "hotplate",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "hourglass",
+"sources": [
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "house",
+"sources": [
+"firstwords",
+"quickdraw"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "house plant",
+"sources": [
+"quickdraw"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "hovercraft",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "hubcap",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "hula hoop",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "hummingbird",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "hummus",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "material"
+},
+{
+"term": "humvee",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "hurricane",
+"sources": [
+"quickdraw"
+],
+"verdict": "drop",
+"tag": "abstract"
+},
+{
+"term": "hydrant",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "hyena",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "ice",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "material"
+},
+{
+"term": "ice cream",
+"sources": [
+"firstwords",
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "ice cream cone",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "ice cube",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "ice pack",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "icemaker",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "icepick",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "iceskate",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "icicle",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "iguana",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "incense",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "thin"
+},
+{
+"term": "incubator",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "inhaler",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "ink",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "material"
+},
+{
+"term": "inkwell",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "insole",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "flat"
+},
+{
+"term": "iron",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "ironing board",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "ivy",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "thin"
+},
+{
+"term": "jack",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "jacket",
+"sources": [
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "jackhammer",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "jail",
+"sources": [
+"quickdraw"
+],
+"verdict": "drop",
+"tag": "scene"
+},
+{
+"term": "jalapeno",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "jam",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "jar",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "javelin",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "jeans",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "jeep",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "jelly bean",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "blob"
+},
+{
+"term": "jellyfish",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "jersey",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "jet",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "jetski",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "jewel",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "jewelry",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "other: generic category, no single shape"
+},
+{
+"term": "jigsaw puzzle",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "joystick",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "jug",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "juice",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "material"
+},
+{
+"term": "juicer",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "jukebox",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "jump rope",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "thin"
+},
+{
+"term": "jumpsuit",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "kale",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "kaleidoscope",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "kangaroo",
+"sources": [
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "kayak",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "kazoo",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "kebab",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "keg",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "ketchup",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "kettle",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "key",
+"sources": [
+"firstwords",
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "keyboard",
+"sources": [
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "keyhole",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "flat"
+},
+{
+"term": "kilt",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "kimono",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "kite",
+"sources": [
+"firstwords",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "kitten",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "kiwi",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "knee",
+"sources": [
+"quickdraw",
+"things"
+],
+"verdict": "drop",
+"tag": "bodypart"
+},
+{
+"term": "kneepad",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "knife",
+"sources": [
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "knitting",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "activity"
+},
+{
+"term": "knitting needle",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "thin"
+},
+{
+"term": "knob",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "blob"
+},
+{
+"term": "knot",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "abstract"
+},
+{
+"term": "koala",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "lab coat",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "ladder",
+"sources": [
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "ladle",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "ladybug",
+"sources": [
+"firstwords",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "lamb",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "lamb chop",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "lamp",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "lamppost",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "lampshade",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "landmine",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "lantern",
+"sources": [
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "lanyard",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "thin"
+},
+{
+"term": "laptop",
+"sources": [
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "lasagna",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "laser pointer",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "latch",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "other: generic hardware part, not standalone"
+},
+{
+"term": "latte",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "laundry basket",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "lava",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "material"
+},
+{
+"term": "lavender",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "lawnmower",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "leaf",
+"sources": [
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "leash",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "thin"
+},
+{
+"term": "lectern",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "leech",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "blob"
+},
+{
+"term": "leek",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "leg",
+"sources": [
+"quickdraw",
+"things"
+],
+"verdict": "drop",
+"tag": "bodypart"
+},
+{
+"term": "leggings",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "lego",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "ip"
+},
+{
+"term": "lemon",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "lemonade",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "lens",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "blob"
+},
+{
+"term": "leopard",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "leotard",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "letter opener",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "lettuce",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "license plate",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "flat"
+},
+{
+"term": "licorice",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "lid",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "other: generic part, not standalone"
+},
+{
+"term": "life jacket",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "lifesaver",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "light bulb",
+"sources": [
+"quickdraw"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "light switch",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "flat"
+},
+{
+"term": "lightbulb",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "lighter",
+"sources": [
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "lighthouse",
+"sources": [
+"quickdraw"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "lightning",
+"sources": [
+"quickdraw"
+],
+"verdict": "drop",
+"tag": "abstract"
+},
+{
+"term": "lightning bug",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "lime",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "limousine",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "line",
+"sources": [
+"quickdraw"
+],
+"verdict": "drop",
+"tag": "flat"
+},
+{
+"term": "lingerie",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "other: clothing category, no single garment shape"
+},
+{
+"term": "lion",
+"sources": [
+"firstwords",
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "lip balm",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "lip gloss",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "lipstick",
+"sources": [
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "lizard",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "llama",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "lobster",
+"sources": [
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "lock",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "locker",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "locket",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "log",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "loincloth",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "blob"
+},
+{
+"term": "lollipop",
+"sources": [
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "loom",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "blob"
+},
+{
+"term": "loveseat",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "luggage",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "lumber",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "material"
+},
+{
+"term": "lunchbox",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "macadamia",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "macaroni",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "machete",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "machine gun",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "maggot",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "blob"
+},
+{
+"term": "magnet",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "magnifier",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "magnifying glass",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "mail",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "abstract"
+},
+{
+"term": "mailbox",
+"sources": [
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "makeup",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "other: category of products, not a single object"
+},
+{
+"term": "mallet",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "man",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "manatee",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "mandolin",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "mango",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "manhole",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "flat"
+},
+{
+"term": "mannequin",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "mantle",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "other: architectural fixture, not standalone object"
+},
+{
+"term": "map",
+"sources": [
+"quickdraw",
+"things"
+],
+"verdict": "drop",
+"tag": "flat"
+},
+{
+"term": "maple syrup",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "material"
+},
+{
+"term": "marble",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "blob"
+},
+{
+"term": "margarita",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "marijuana",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "marker",
+"sources": [
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "marmalade",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "material"
+},
+{
+"term": "marshmallow",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "mascara",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "mashed potato",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "material"
+},
+{
+"term": "mask",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "mast",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "blob"
+},
+{
+"term": "mat",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "flat"
+},
+{
+"term": "match",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "matchbox",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "matches",
+"sources": [
+"quickdraw"
+],
+"verdict": "drop",
+"tag": "blob"
+},
+{
+"term": "mattress",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "measuring cup",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "meat",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "material"
+},
+{
+"term": "meat grinder",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "meatball",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "blob"
+},
+{
+"term": "meatloaf",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "medal",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "meerkat",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "megaphone",
+"sources": [
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "melon",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "memory stick",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "blob"
+},
+{
+"term": "mermaid",
+"sources": [
+"quickdraw"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "metal detector",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "metronome",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "microphone",
+"sources": [
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "microscope",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "microwave",
+"sources": [
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "milk",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "material"
+},
+{
+"term": "milkshake",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "minivan",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "mint",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "blob"
+},
+{
+"term": "mirror",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "missile",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "mistletoe",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "blob"
+},
+{
+"term": "mitten",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "mixer",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "moccasin",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "modem",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "blob"
+},
+{
+"term": "mold",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "material"
+},
+{
+"term": "mole",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "mona lisa",
+"sources": [
+"quickdraw"
+],
+"verdict": "drop",
+"tag": "flat"
+},
+{
+"term": "money",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "abstract"
+},
+{
+"term": "mongoose",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "monkey",
+"sources": [
+"firstwords",
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "moon",
+"sources": [
+"firstwords",
+"quickdraw"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "moose",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "mop",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "mosquito",
+"sources": [
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "mosquito net",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "blob"
+},
+{
+"term": "moss",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "material"
+},
+{
+"term": "moth",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "motherboard",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "flat"
+},
+{
+"term": "motorbike",
+"sources": [
+"quickdraw"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "motorcycle",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "mountain",
+"sources": [
+"quickdraw"
+],
+"verdict": "drop",
+"tag": "scene"
+},
+{
+"term": "mouse",
+"sources": [
+"firstwords",
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "mousepad",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "flat"
+},
+{
+"term": "mousetrap",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "mousse",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "material"
+},
+{
+"term": "moustache",
+"sources": [
+"quickdraw"
+],
+"verdict": "drop",
+"tag": "bodypart"
+},
+{
+"term": "mouth",
+"sources": [
+"quickdraw",
+"things"
+],
+"verdict": "drop",
+"tag": "bodypart"
+},
+{
+"term": "mouthpiece",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "blob"
+},
+{
+"term": "mud",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "material"
+},
+{
+"term": "muff",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "blob"
+},
+{
+"term": "muffin",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "mug",
+"sources": [
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "mulberry",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "mulch",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "material"
+},
+{
+"term": "mullet",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "other: ambiguous term (hairstyle vs fish), no clear single shape"
+},
+{
+"term": "mushroom",
+"sources": [
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "music box",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "mussel",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "mustache",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "bodypart"
+},
+{
+"term": "mustard",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "material"
+},
+{
+"term": "nacho",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "flat"
+},
+{
+"term": "nail",
+"sources": [
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "nail clippers",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "nail file",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "thin"
+},
+{
+"term": "nail polish",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "napkin",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "flat"
+},
+{
+"term": "napkin ring",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "navel",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "bodypart"
+},
+{
+"term": "neck",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "bodypart"
+},
+{
+"term": "necklace",
+"sources": [
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "needle",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "thin"
+},
+{
+"term": "nest",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "net",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "flat"
+},
+{
+"term": "nightshirt",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "nightstand",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "noisemaker",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "noodle",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "thin"
+},
+{
+"term": "noose",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "thin"
+},
+{
+"term": "nose",
+"sources": [
+"quickdraw",
+"things"
+],
+"verdict": "drop",
+"tag": "bodypart"
+},
+{
+"term": "notebook",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "notepad",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "nut",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "blob"
+},
+{
+"term": "nutcracker",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "oar",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "oatmeal",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "material"
+},
+{
+"term": "ocean",
+"sources": [
+"quickdraw"
+],
+"verdict": "drop",
+"tag": "scene"
+},
+{
+"term": "octagon",
+"sources": [
+"quickdraw"
+],
+"verdict": "drop",
+"tag": "flat"
+},
+{
+"term": "octopus",
+"sources": [
+"firstwords",
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "odometer",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "blob"
+},
+{
+"term": "oil",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "material"
+},
+{
+"term": "oilcan",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "okra",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "olive",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "omelet",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "material"
+},
+{
+"term": "onion",
+"sources": [
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "orange",
+"sources": [
+"firstwords",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "orange rind",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "blob"
+},
+{
+"term": "orangutan",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "orchid",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "organ",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "origami",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "abstract"
+},
+{
+"term": "ostrich",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "otter",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "ottoman",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "outfit",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "other: assortment of clothing, no single shape"
+},
+{
+"term": "outlet",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "flat"
+},
+{
+"term": "oven",
+"sources": [
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "overalls",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "owl",
+"sources": [
+"firstwords",
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "oyster",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "pacifier",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "paddle",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "padlock",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "paint",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "material"
+},
+{
+"term": "paint can",
+"sources": [
+"quickdraw"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "paintbrush",
+"sources": [
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "painting",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "flat"
+},
+{
+"term": "pajamas",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "palette",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "pallet",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "palm tree",
+"sources": [
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "pan",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "pancake",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "panda",
+"sources": [
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "panther",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "panties",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "pants",
+"sources": [
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "pantsuit",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "pantyhose",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "thin"
+},
+{
+"term": "papaya",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "paper",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "flat"
+},
+{
+"term": "paper bag",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "paper clip",
+"sources": [
+"quickdraw"
+],
+"verdict": "drop",
+"tag": "thin"
+},
+{
+"term": "paper plate",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "paper towel",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "paperclip",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "thin"
+},
+{
+"term": "paperweight",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "blob"
+},
+{
+"term": "parachute",
+"sources": [
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "parfait",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "parking meter",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "parrot",
+"sources": [
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "parsley",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "blob"
+},
+{
+"term": "passport",
+"sources": [
+"quickdraw"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "pasta",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "other: category term, no single canonical shape"
+},
+{
+"term": "pastry",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "other: category term, no single canonical shape"
+},
+{
+"term": "patch",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "flat"
+},
+{
+"term": "patty",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "flat"
+},
+{
+"term": "payphone",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "pea",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "blob"
+},
+{
+"term": "peach",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "peacock",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "peanut",
+"sources": [
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "peanut butter",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "material"
+},
+{
+"term": "pear",
+"sources": [
+"firstwords",
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "pearl",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "blob"
+},
+{
+"term": "peas",
+"sources": [
+"quickdraw"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "pecan",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "pedal",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "blob"
+},
+{
+"term": "pedometer",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "blob"
+},
+{
+"term": "peeler",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "peg",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "blob"
+},
+{
+"term": "pelican",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "pen",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "pencil",
+"sources": [
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "pencil sharpener",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "pendulum",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "blob"
+},
+{
+"term": "penguin",
+"sources": [
+"firstwords",
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "penholder",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "penlight",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "pennant",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "pepper",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "pepper mill",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "peppermint",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "blob"
+},
+{
+"term": "pepperoni",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "flat"
+},
+{
+"term": "perfume",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "periscope",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "pesto",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "material"
+},
+{
+"term": "pet food",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "material"
+},
+{
+"term": "petal",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "flat"
+},
+{
+"term": "petri dish",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "pheasant",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "phone",
+"sources": [
+"firstwords",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "phone booth",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "photo booth",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "photograph",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "flat"
+},
+{
+"term": "piano",
+"sources": [
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "pickax",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "pickle",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "pickup truck",
+"sources": [
+"quickdraw"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "picture frame",
+"sources": [
+"quickdraw"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "pie",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "piecrust",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "pig",
+"sources": [
+"firstwords",
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "pigeon",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "piggy bank",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "piglet",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "pill",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "blob"
+},
+{
+"term": "pillbox",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "pillow",
+"sources": [
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "pin",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "thin"
+},
+{
+"term": "pinball",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "pincushion",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "pine needle",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "thin"
+},
+{
+"term": "pine tree",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "pineapple",
+"sources": [
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "pinecone",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "ping pong table",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "pinwheel",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "pipe",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "pistachio",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "pita",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "pitcher",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "pitchfork",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "pizza",
+"sources": [
+"firstwords",
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "place mat",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "flat"
+},
+{
+"term": "plant",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "plaster cast",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "plastic film",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "flat"
+},
+{
+"term": "plate",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "platypus",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "playing card",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "flat"
+},
+{
+"term": "playpen",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "pliers",
+"sources": [
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "plug",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "plum",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "plunger",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "pocket",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "other: garment feature, not a standalone object"
+},
+{
+"term": "pocket watch",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "pocketknife",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "pogo stick",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "poinsettia",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "poker",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "polar bear",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "polaroid",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "pole",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "blob"
+},
+{
+"term": "police car",
+"sources": [
+"firstwords",
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "polisher",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "blob"
+},
+{
+"term": "polo shirt",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "polygraph",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "blob"
+},
+{
+"term": "pom pom",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "blob"
+},
+{
+"term": "pomegranate",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "pond",
+"sources": [
+"quickdraw"
+],
+"verdict": "drop",
+"tag": "scene"
+},
+{
+"term": "pony",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "poodle",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "pool",
+"sources": [
+"quickdraw"
+],
+"verdict": "drop",
+"tag": "scene"
+},
+{
+"term": "pool table",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "popcorn",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "poppy",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "popsicle",
+"sources": [
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "porcupine",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "porthole",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "flat"
+},
+{
+"term": "possum",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "postcard",
+"sources": [
+"quickdraw"
+],
+"verdict": "drop",
+"tag": "flat"
+},
+{
+"term": "poster",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "flat"
+},
+{
+"term": "pot",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "potato",
+"sources": [
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "potholder",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "flat"
+},
+{
+"term": "pothole",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "other: a hole, not a physical object"
+},
+{
+"term": "potpie",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "potpourri",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "material"
+},
+{
+"term": "powder",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "material"
+},
+{
+"term": "power line",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "thin"
+},
+{
+"term": "power outlet",
+"sources": [
+"quickdraw"
+],
+"verdict": "drop",
+"tag": "flat"
+},
+{
+"term": "praying mantis",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "pretzel",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "printer",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "prism",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "projector",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "propeller",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "prune",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "blob"
+},
+{
+"term": "puck",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "pudding",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "material"
+},
+{
+"term": "puddle",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "flat"
+},
+{
+"term": "puffin",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "pug",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "pulley",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "pulpit",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "pump",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "pumpkin",
+"sources": [
+"firstwords",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "punch",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "punching bag",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "puppet",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "puppy",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "purse",
+"sources": [
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "quad",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "quesadilla",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "quiche",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "quill",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "thin"
+},
+{
+"term": "quilt",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "flat"
+},
+{
+"term": "rabbit",
+"sources": [
+"firstwords",
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "raccoon",
+"sources": [
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "racehorse",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "rack",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "racket",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "radar",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "radiator",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "radio",
+"sources": [
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "radish",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "raft",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "rag",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "material"
+},
+{
+"term": "railing",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "thin"
+},
+{
+"term": "rain",
+"sources": [
+"quickdraw"
+],
+"verdict": "drop",
+"tag": "abstract"
+},
+{
+"term": "rain gauge",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "rainbow",
+"sources": [
+"quickdraw"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "raincoat",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "raisin",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "blob"
+},
+{
+"term": "rake",
+"sources": [
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "ram",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "ramp",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "raspberry",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "blob"
+},
+{
+"term": "rat",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "ratchet",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "rattle",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "rattlesnake",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "ravioli",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "razor",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "razor blade",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "thin"
+},
+{
+"term": "ready meal",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "other: packaged food category, no canonical shape"
+},
+{
+"term": "rearview mirror",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "recliner",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "record",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "flat"
+},
+{
+"term": "record player",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "recorder",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "red carpet",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "flat"
+},
+{
+"term": "reel",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "refrigerator",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "reindeer",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "remote control",
+"sources": [
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "retainer",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "thin"
+},
+{
+"term": "revolver",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "revolving door",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "rhinoceros",
+"sources": [
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "rhubarb",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "ribbon",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "thin"
+},
+{
+"term": "rice",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "material"
+},
+{
+"term": "rickshaw",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "rifle",
+"sources": [
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "rim",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "ring",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "riser",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "other: generic platform, no distinct silhouette"
+},
+{
+"term": "river",
+"sources": [
+"quickdraw"
+],
+"verdict": "drop",
+"tag": "scene"
+},
+{
+"term": "road sign",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "roadsweeper",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "robe",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "robot",
+"sources": [
+"firstwords",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "rock",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "rocket",
+"sources": [
+"firstwords",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "rocking chair",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "rocking horse",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "roll",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "roller",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "roller coaster",
+"sources": [
+"quickdraw",
+"things"
+],
+"verdict": "drop",
+"tag": "scene"
+},
+{
+"term": "rollerblade",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "rollerskate",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "rollerskates",
+"sources": [
+"quickdraw"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "rolling pin",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "roof rack",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "rooster",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "root",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "thin"
+},
+{
+"term": "rope",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "thin"
+},
+{
+"term": "rosary",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "thin"
+},
+{
+"term": "rose",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "roulette wheel",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "router",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "rubber band",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "thin"
+},
+{
+"term": "ruby",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "rudder",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "thin"
+},
+{
+"term": "rug",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "flat"
+},
+{
+"term": "ruler",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "thin"
+},
+{
+"term": "rust",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "material"
+},
+{
+"term": "saddle",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "safety pin",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "thin"
+},
+{
+"term": "saffron",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "material"
+},
+{
+"term": "sail",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "flat"
+},
+{
+"term": "sailboat",
+"sources": [
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "salad",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "material"
+},
+{
+"term": "salami",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "saltshaker",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "sand",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "material"
+},
+{
+"term": "sandal",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "sandbag",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "sandbox",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "sandcastle",
+"sources": [
+"firstwords",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "sandpaper",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "material"
+},
+{
+"term": "sandwich",
+"sources": [
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "sarcophagus",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "sardine",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "satellite",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "satellite dish",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "sauce",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "material"
+},
+{
+"term": "saucer",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "sauerkraut",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "material"
+},
+{
+"term": "sausage",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "saw",
+"sources": [
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "sawhorse",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "saxophone",
+"sources": [
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "scaffold",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "scene"
+},
+{
+"term": "scaffolding",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "scene"
+},
+{
+"term": "scale",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "scallion",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "thin"
+},
+{
+"term": "scallop",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "scalpel",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "thin"
+},
+{
+"term": "scanner",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "scarecrow",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "scarf",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "thin"
+},
+{
+"term": "school bus",
+"sources": [
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "scissors",
+"sources": [
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "scone",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "scoop",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "scooter",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "scoreboard",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "scorpion",
+"sources": [
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "scrabble",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "ip"
+},
+{
+"term": "scrambled egg",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "material"
+},
+{
+"term": "scraper",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "screen",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "flat"
+},
+{
+"term": "screw",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "thin"
+},
+{
+"term": "screwdriver",
+"sources": [
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "scuba",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "other: ambiguous gear category, not a single object"
+},
+{
+"term": "sea turtle",
+"sources": [
+"quickdraw"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "sea urchin",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "seafood",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "abstract"
+},
+{
+"term": "seagull",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "seahorse",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "seal",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "seaplane",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "seatbelt",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "thin"
+},
+{
+"term": "seaweed",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "thin"
+},
+{
+"term": "see saw",
+"sources": [
+"quickdraw"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "seed",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "blob"
+},
+{
+"term": "seesaw",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "seismograph",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "sequin",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "flat"
+},
+{
+"term": "sewage",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "material"
+},
+{
+"term": "sewing kit",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "sewing machine",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "shaker",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "shark",
+"sources": [
+"firstwords",
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "shaving cream",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "material"
+},
+{
+"term": "shawl",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "flat"
+},
+{
+"term": "shears",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "thin"
+},
+{
+"term": "sheath",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "thin"
+},
+{
+"term": "sheep",
+"sources": [
+"firstwords",
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "sheet",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "flat"
+},
+{
+"term": "shelf",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "shell",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "shield",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "ship",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "shirt",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "shoe",
+"sources": [
+"firstwords",
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "shoe polish",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "blob"
+},
+{
+"term": "shoehorn",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "thin"
+},
+{
+"term": "shoelace",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "thin"
+},
+{
+"term": "shopping basket",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "shopping cart",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "shortbread",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "shorts",
+"sources": [
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "shoulder",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "bodypart"
+},
+{
+"term": "shovel",
+"sources": [
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "shower",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "scene"
+},
+{
+"term": "shower cap",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "shower curtain",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "flat"
+},
+{
+"term": "showerhead",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "shredder",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "shrimp",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "shuffleboard",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "shutter",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "flat"
+},
+{
+"term": "sickle",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "sidecar",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "sifter",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "silicone",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "material"
+},
+{
+"term": "silverware",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "other: category of items, no single shape"
+},
+{
+"term": "sim card",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "thin"
+},
+{
+"term": "sink",
+"sources": [
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "siren",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "skateboard",
+"sources": [
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "skeleton",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "skewer",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "thin"
+},
+{
+"term": "ski",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "thin"
+},
+{
+"term": "ski boots",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "ski lift",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "scene"
+},
+{
+"term": "ski pole",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "thin"
+},
+{
+"term": "skin",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "bodypart"
+},
+{
+"term": "skirt",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "skull",
+"sources": [
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "skunk",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "skyscraper",
+"sources": [
+"quickdraw"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "sled",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "sledgehammer",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "sleeping bag",
+"sources": [
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "slicer",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "slide",
+"sources": [
+"firstwords",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "slime",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "material"
+},
+{
+"term": "sling",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "thin"
+},
+{
+"term": "slingshot",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "slipper",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "slot",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "other: not a physical object"
+},
+{
+"term": "slot machine",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "sloth",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "slug",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "smiley face",
+"sources": [
+"quickdraw"
+],
+"verdict": "drop",
+"tag": "flat"
+},
+{
+"term": "smoke alarm",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "smoothie",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "material"
+},
+{
+"term": "snack",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "abstract"
+},
+{
+"term": "snail",
+"sources": [
+"firstwords",
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "snake",
+"sources": [
+"firstwords",
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "snorkel",
+"sources": [
+"quickdraw",
+"things"
+],
+"verdict": "drop",
+"tag": "thin"
+},
+{
+"term": "snow",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "material"
+},
+{
+"term": "snowball",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "snowboard",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "snowflake",
+"sources": [
+"quickdraw"
+],
+"verdict": "drop",
+"tag": "flat"
+},
+{
+"term": "snowman",
+"sources": [
+"firstwords",
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "snowmobile",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "snowplow",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "snowshoe",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "snowsuit",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "soap",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "blob"
+},
+{
+"term": "soccer ball",
+"sources": [
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "sock",
+"sources": [
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "soda",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "soda fountain",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "sofa bed",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "solar panel",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "soldering iron",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "sombrero",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "sonogram",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "flat"
+},
+{
+"term": "sorbet",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "souffle",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "soup",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "material"
+},
+{
+"term": "soy sauce",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "material"
+},
+{
+"term": "space shuttle",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "spacesuit",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "spaghetti",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "thin"
+},
+{
+"term": "spam",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "spareribs",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "spark plug",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "sparkler",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "thin"
+},
+{
+"term": "spatula",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "speaker",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "spear",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "thin"
+},
+{
+"term": "speedboat",
+"sources": [
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "speedometer",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "spider",
+"sources": [
+"firstwords",
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "spider web",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "thin"
+},
+{
+"term": "spinach",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "material"
+},
+{
+"term": "splinter",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "thin"
+},
+{
+"term": "sponge",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "blob"
+},
+{
+"term": "spool",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "spoon",
+"sources": [
+"firstwords",
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "spout",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "thin"
+},
+{
+"term": "spreadsheet",
+"sources": [
+"quickdraw"
+],
+"verdict": "drop",
+"tag": "abstract"
+},
+{
+"term": "spring roll",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "springboard",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "sprinkler",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "sprouts",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "material"
+},
+{
+"term": "spur",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "thin"
+},
+{
+"term": "square",
+"sources": [
+"quickdraw"
+],
+"verdict": "drop",
+"tag": "flat"
+},
+{
+"term": "squash",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "squeegee",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "squid",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "squiggle",
+"sources": [
+"quickdraw"
+],
+"verdict": "drop",
+"tag": "flat"
+},
+{
+"term": "squirrel",
+"sources": [
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "squirt gun",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "stained glass",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "flat"
+},
+{
+"term": "stair",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "blob"
+},
+{
+"term": "stairs",
+"sources": [
+"quickdraw"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "stake",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "thin"
+},
+{
+"term": "stalagmite",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "stamp",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "staple",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "thin"
+},
+{
+"term": "staple gun",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "stapler",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "star",
+"sources": [
+"firstwords",
+"quickdraw"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "star fruit",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "starfish",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "station wagon",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "statue",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "steak",
+"sources": [
+"quickdraw",
+"things"
+],
+"verdict": "drop",
+"tag": "material"
+},
+{
+"term": "steamroller",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "steering wheel",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "stem",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "other: generic plant part, no distinct shape"
+},
+{
+"term": "step stool",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "stereo",
+"sources": [
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "stethoscope",
+"sources": [
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "stew",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "material"
+},
+{
+"term": "stick",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "sticker",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "flat"
+},
+{
+"term": "stiletto",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "stilt",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "stingray",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "stir fry",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "material"
+},
+{
+"term": "stirrup",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "stitches",
+"sources": [
+"quickdraw"
+],
+"verdict": "drop",
+"tag": "thin"
+},
+{
+"term": "stockings",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "stomach",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "bodypart"
+},
+{
+"term": "stool",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "stop sign",
+"sources": [
+"quickdraw"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "stopwatch",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "stove",
+"sources": [
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "straightjacket",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "strainer",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "strap",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "other: generic component, no standalone shape"
+},
+{
+"term": "straw",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "thin"
+},
+{
+"term": "strawberry",
+"sources": [
+"firstwords",
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "streetlight",
+"sources": [
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "stretcher",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "string bean",
+"sources": [
+"quickdraw"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "string cheese",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "stroller",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "stuffing",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "material"
+},
+{
+"term": "stump",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "submarine",
+"sources": [
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "subway",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "sugar cube",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "suit",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "suitcase",
+"sources": [
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "sun",
+"sources": [
+"firstwords",
+"quickdraw"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "sundae",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "sundial",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "sunflower",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "sunglasses",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "sunroof",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "other: car component, not standalone"
+},
+{
+"term": "surfboard",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "sushi",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "suspenders",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "thin"
+},
+{
+"term": "swab",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "thin"
+},
+{
+"term": "swan",
+"sources": [
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "sweater",
+"sources": [
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "sweatsuit",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "sweeper",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "sweet potato",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "swimming pool",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "scene"
+},
+{
+"term": "swimsuit",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "swing",
+"sources": [
+"firstwords",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "swing set",
+"sources": [
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "switch",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "blob"
+},
+{
+"term": "swizzle stick",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "thin"
+},
+{
+"term": "sword",
+"sources": [
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "swordfish",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "syringe",
+"sources": [
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "syrup",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "material"
+},
+{
+"term": "t shirt",
+"sources": [
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "tab",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "other: too small/generic, no distinct shape"
+},
+{
+"term": "table",
+"sources": [
+"firstwords",
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "tablecloth",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "flat"
+},
+{
+"term": "tablet",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "tack",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "thin"
+},
+{
+"term": "tackle",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "other: ambiguous term (activity or object)"
+},
+{
+"term": "taco",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "tadpole",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "taffy",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "material"
+},
+{
+"term": "tag",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "flat"
+},
+{
+"term": "taillight",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "other: car component, not standalone"
+},
+{
+"term": "tamale",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "tambourine",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "tank",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "tape",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "tape measure",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "tape recorder",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "tapestry",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "flat"
+},
+{
+"term": "tarantula",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "target",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "flat"
+},
+{
+"term": "tarp",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "flat"
+},
+{
+"term": "tattoo",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "flat"
+},
+{
+"term": "taxi",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "tea",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "material"
+},
+{
+"term": "teabag",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "teacup",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "teapot",
+"sources": [
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "teddy bear",
+"sources": [
+"firstwords",
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "tee",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "other: ambiguous term, likely golf tee (too thin)"
+},
+{
+"term": "teepee",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "telegraph",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "telephone",
+"sources": [
+"quickdraw"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "telephone pole",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "telescope",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "television",
+"sources": [
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "tennis ball",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "tennis racquet",
+"sources": [
+"quickdraw"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "tent",
+"sources": [
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "terrarium",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "test tube",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "thermometer",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "thermos",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "thermostat",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "blob"
+},
+{
+"term": "thimble",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "thorn",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "thin"
+},
+{
+"term": "thread",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "thin"
+},
+{
+"term": "throne",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "thumb",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "bodypart"
+},
+{
+"term": "thumbtack",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "tiara",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "tick",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "blob"
+},
+{
+"term": "ticktacktoe",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "flat"
+},
+{
+"term": "tie",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "tiger",
+"sources": [
+"firstwords",
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "tile",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "flat"
+},
+{
+"term": "timer",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "tinsel",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "material"
+},
+{
+"term": "tiramisu",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "toad",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "toast",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "toaster",
+"sources": [
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "toaster oven",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "toe",
+"sources": [
+"quickdraw",
+"things"
+],
+"verdict": "drop",
+"tag": "bodypart"
+},
+{
+"term": "toga",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "toilet",
+"sources": [
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "toilet paper",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "tomato",
+"sources": [
+"firstwords",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "tomato sauce",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "material"
+},
+{
+"term": "tongs",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "tongue",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "bodypart"
+},
+{
+"term": "tool",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "abstract"
+},
+{
+"term": "toolbox",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "tooth",
+"sources": [
+"quickdraw",
+"things"
+],
+"verdict": "drop",
+"tag": "bodypart"
+},
+{
+"term": "toothbrush",
+"sources": [
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "toothpaste",
+"sources": [
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "toothpick",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "thin"
+},
+{
+"term": "top hat",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "torch",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "tornado",
+"sources": [
+"quickdraw"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "torpedo",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "torso",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "bodypart"
+},
+{
+"term": "tortellini",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "tortilla",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "flat"
+},
+{
+"term": "tostada",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "flat"
+},
+{
+"term": "totem pole",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "toucan",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "touchpad",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "flat"
+},
+{
+"term": "towel",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "flat"
+},
+{
+"term": "towel rack",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "toy",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "abstract"
+},
+{
+"term": "tractor",
+"sources": [
+"firstwords",
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "traffic light",
+"sources": [
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "trailer",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "train",
+"sources": [
+"firstwords",
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "train car",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "train set",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "other: collection/scene, not a single object"
+},
+{
+"term": "trampoline",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "trap",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "other: generic/ambiguous category, no fixed shape"
+},
+{
+"term": "trapdoor",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "trashcan",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "tray",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "treadmill",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "treasure",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "abstract"
+},
+{
+"term": "tree",
+"sources": [
+"firstwords",
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "tree trunk",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "triangle",
+"sources": [
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "tricycle",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "trident",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "trigger",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "other: gun component, not standalone"
+},
+{
+"term": "tripod",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "trolley",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "trombone",
+"sources": [
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "trophy",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "trough",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "trowel",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "truck",
+"sources": [
+"firstwords",
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "trumpet",
+"sources": [
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "trunk",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "tuba",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "tube top",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "tugboat",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "tulip",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "tumbleweed",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "tuning fork",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "thin"
+},
+{
+"term": "tupperware",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "turban",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "turbine",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "turf",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "material"
+},
+{
+"term": "turkey",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "turnstile",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "turntable",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "turtle",
+"sources": [
+"firstwords",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "turtleneck",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "tuxedo",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "tweezers",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "thin"
+},
+{
+"term": "twig",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "thin"
+},
+{
+"term": "typewriter",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "ukulele",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "umbrella",
+"sources": [
+"firstwords",
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "undershirt",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "underwear",
+"sources": [
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "unicycle",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "uniform",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "urinal",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "urn",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "vacuum",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "valve",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "blob"
+},
+{
+"term": "van",
+"sources": [
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "vase",
+"sources": [
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "vegetable",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "abstract"
+},
+{
+"term": "veil",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "flat"
+},
+{
+"term": "velcro",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "material"
+},
+{
+"term": "vending machine",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "vent",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "flat"
+},
+{
+"term": "vest",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "vial",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "videocassette",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "videogame",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "abstract"
+},
+{
+"term": "viewfinder",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "other: camera component, not standalone"
+},
+{
+"term": "violin",
+"sources": [
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "vise",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "visor",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "volleyball",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "vulture",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "wafer",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "flat"
+},
+{
+"term": "waffle",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "waffle iron",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "wagon",
+"sources": [
+"firstwords",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "walker",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "wall",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "other: architectural element, not standalone"
+},
+{
+"term": "wallet",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "wallpaper",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "flat"
+},
+{
+"term": "walnut",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "walrus",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "wand",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "thin"
+},
+{
+"term": "warthog",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "washboard",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "washcloth",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "flat"
+},
+{
+"term": "washing machine",
+"sources": [
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "wasp",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "watch",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "water bottle",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "water cooler",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "water filter",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "blob"
+},
+{
+"term": "water fountain",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "water heater",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "watering can",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "watermelon",
+"sources": [
+"firstwords",
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "waterslide",
+"sources": [
+"quickdraw"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "waterwheel",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "wax",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "material"
+},
+{
+"term": "wax paper",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "flat"
+},
+{
+"term": "weasel",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "weather vane",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "webcam",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "blob"
+},
+{
+"term": "wedding cake",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "wedge",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "other: ambiguous generic shape term"
+},
+{
+"term": "weed",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "other: no canonical shape"
+},
+{
+"term": "wetsuit",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "whale",
+"sources": [
+"firstwords",
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "wheat",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "material"
+},
+{
+"term": "wheel",
+"sources": [
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "wheelbarrow",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "wheelchair",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "whip",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "thin"
+},
+{
+"term": "whipped cream",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "material"
+},
+{
+"term": "whisk",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "whistle",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "whiteboard",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "flat"
+},
+{
+"term": "whoopee cushion",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "wick",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "thin"
+},
+{
+"term": "wig",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "wind chimes",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "windmill",
+"sources": [
+"quickdraw"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "window",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "flat"
+},
+{
+"term": "windowsill",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "other: architectural component, not standalone"
+},
+{
+"term": "windshield",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "other: car component, not standalone"
+},
+{
+"term": "windshield wiper",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "other: car component, not standalone"
+},
+{
+"term": "windsock",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "wine",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "material"
+},
+{
+"term": "wine bottle",
+"sources": [
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "wine cooler",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "wine glass",
+"sources": [
+"quickdraw"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "wineglass",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "wing",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "bodypart"
+},
+{
+"term": "wire",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "thin"
+},
+{
+"term": "wire cutters",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "wok",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "wolf",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "woman",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "wood",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "material"
+},
+{
+"term": "wooden leg",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "workbench",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "worm",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "wrap",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "wrapping paper",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "flat"
+},
+{
+"term": "wreath",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "wreck",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "other: no canonical shape, generic wreckage"
+},
+{
+"term": "wrench",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "wrist",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "bodypart"
+},
+{
+"term": "wristwatch",
+"sources": [
+"quickdraw"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "xylophone",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "yacht",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "yak",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "yarn",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "yo yo",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "yoga",
+"sources": [
+"quickdraw"
+],
+"verdict": "drop",
+"tag": "activity"
+},
+{
+"term": "yogurt",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "yoke",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "yolk",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "blob"
+},
+{
+"term": "zebra",
+"sources": [
+"firstwords",
+"quickdraw",
+"things"
+],
+"verdict": "keep",
+"tag": null
+},
+{
+"term": "zigzag",
+"sources": [
+"quickdraw"
+],
+"verdict": "drop",
+"tag": "flat"
+},
+{
+"term": "zipper",
+"sources": [
+"things"
+],
+"verdict": "drop",
+"tag": "thin"
+},
+{
+"term": "zucchini",
+"sources": [
+"things"
+],
+"verdict": "keep",
+"tag": null
+}
+]

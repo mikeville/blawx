@@ -1,0 +1,85 @@
+# Tier 1 head — placed as seeds before FPS runs (H2).
+# = the seed4 cached library (they're the demo chips and already built) +
+# the elicitation bare-noun head + obvious top-demand terms.
+# seed4 library (cached sets, demo chips)
+bird
+car
+cat
+chair
+dragon
+duck
+fish
+fox
+frog
+hat
+horse
+house
+ice cream cone
+lighthouse
+heart
+mug
+mushroom
+octopus
+palm tree
+penguin
+robot
+rocket ship
+rooster
+sailboat
+snail
+spider
+sword
+table
+tree
+# elicitation bare-noun head (elicit1, 2026-07-20)
+dog
+coffee cup
+birthday cake
+fire truck
+dinosaur
+rose
+castle
+# top-demand adds
+airplane
+train
+boat
+truck
+bus
+bicycle
+motorcycle
+helicopter
+tractor
+submarine
+elephant
+bear
+rabbit
+lion
+tiger
+monkey
+whale
+shark
+dolphin
+turtle
+owl
+butterfly
+bee
+crab
+snowman
+pumpkin
+flower
+sun
+star
+apple
+banana
+pizza
+hamburger
+guitar
+camera
+skyscraper
+bridge
+windmill
+crown
+key
+umbrella
+teddy bear
+eiffel tower

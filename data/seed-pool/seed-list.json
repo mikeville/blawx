@@ -1,0 +1,4901 @@
+{
+ "model": "bge-small-en-v1.5",
+ "tier1Count": 79,
+ "seeds": [
+  {
+   "term": "bird",
+   "tier": "tier1",
+   "radiusBefore": null
+  },
+  {
+   "term": "car",
+   "tier": "tier1",
+   "radiusBefore": null
+  },
+  {
+   "term": "cat",
+   "tier": "tier1",
+   "radiusBefore": null
+  },
+  {
+   "term": "chair",
+   "tier": "tier1",
+   "radiusBefore": null
+  },
+  {
+   "term": "dragon",
+   "tier": "tier1",
+   "radiusBefore": null
+  },
+  {
+   "term": "duck",
+   "tier": "tier1",
+   "radiusBefore": null
+  },
+  {
+   "term": "fish",
+   "tier": "tier1",
+   "radiusBefore": null
+  },
+  {
+   "term": "fox",
+   "tier": "tier1",
+   "radiusBefore": null
+  },
+  {
+   "term": "frog",
+   "tier": "tier1",
+   "radiusBefore": null
+  },
+  {
+   "term": "hat",
+   "tier": "tier1",
+   "radiusBefore": null
+  },
+  {
+   "term": "horse",
+   "tier": "tier1",
+   "radiusBefore": null
+  },
+  {
+   "term": "house",
+   "tier": "tier1",
+   "radiusBefore": null
+  },
+  {
+   "term": "ice cream cone",
+   "tier": "tier1",
+   "radiusBefore": null
+  },
+  {
+   "term": "lighthouse",
+   "tier": "tier1",
+   "radiusBefore": null
+  },
+  {
+   "term": "heart",
+   "tier": "tier1",
+   "radiusBefore": null
+  },
+  {
+   "term": "mug",
+   "tier": "tier1",
+   "radiusBefore": null
+  },
+  {
+   "term": "mushroom",
+   "tier": "tier1",
+   "radiusBefore": null
+  },
+  {
+   "term": "octopus",
+   "tier": "tier1",
+   "radiusBefore": null
+  },
+  {
+   "term": "palm tree",
+   "tier": "tier1",
+   "radiusBefore": null
+  },
+  {
+   "term": "penguin",
+   "tier": "tier1",
+   "radiusBefore": null
+  },
+  {
+   "term": "robot",
+   "tier": "tier1",
+   "radiusBefore": null
+  },
+  {
+   "term": "rocket ship",
+   "tier": "tier1",
+   "radiusBefore": null
+  },
+  {
+   "term": "rooster",
+   "tier": "tier1",
+   "radiusBefore": null
+  },
+  {
+   "term": "sailboat",
+   "tier": "tier1",
+   "radiusBefore": null
+  },
+  {
+   "term": "snail",
+   "tier": "tier1",
+   "radiusBefore": null
+  },
+  {
+   "term": "spider",
+   "tier": "tier1",
+   "radiusBefore": null
+  },
+  {
+   "term": "sword",
+   "tier": "tier1",
+   "radiusBefore": null
+  },
+  {
+   "term": "table",
+   "tier": "tier1",
+   "radiusBefore": null
+  },
+  {
+   "term": "tree",
+   "tier": "tier1",
+   "radiusBefore": null
+  },
+  {
+   "term": "dog",
+   "tier": "tier1",
+   "radiusBefore": null
+  },
+  {
+   "term": "coffee cup",
+   "tier": "tier1",
+   "radiusBefore": null
+  },
+  {
+   "term": "birthday cake",
+   "tier": "tier1",
+   "radiusBefore": null
+  },
+  {
+   "term": "fire truck",
+   "tier": "tier1",
+   "radiusBefore": null
+  },
+  {
+   "term": "dinosaur",
+   "tier": "tier1",
+   "radiusBefore": null
+  },
+  {
+   "term": "rose",
+   "tier": "tier1",
+   "radiusBefore": null
+  },
+  {
+   "term": "castle",
+   "tier": "tier1",
+   "radiusBefore": null
+  },
+  {
+   "term": "airplane",
+   "tier": "tier1",
+   "radiusBefore": null
+  },
+  {
+   "term": "train",
+   "tier": "tier1",
+   "radiusBefore": null
+  },
+  {
+   "term": "boat",
+   "tier": "tier1",
+   "radiusBefore": null
+  },
+  {
+   "term": "truck",
+   "tier": "tier1",
+   "radiusBefore": null
+  },
+  {
+   "term": "bus",
+   "tier": "tier1",
+   "radiusBefore": null
+  },
+  {
+   "term": "bicycle",
+   "tier": "tier1",
+   "radiusBefore": null
+  },
+  {
+   "term": "motorcycle",
+   "tier": "tier1",
+   "radiusBefore": null
+  },
+  {
+   "term": "helicopter",
+   "tier": "tier1",
+   "radiusBefore": null
+  },
+  {
+   "term": "tractor",
+   "tier": "tier1",
+   "radiusBefore": null
+  },
+  {
+   "term": "submarine",
+   "tier": "tier1",
+   "radiusBefore": null
+  },
+  {
+   "term": "elephant",
+   "tier": "tier1",
+   "radiusBefore": null
+  },
+  {
+   "term": "bear",
+   "tier": "tier1",
+   "radiusBefore": null
+  },
+  {
+   "term": "rabbit",
+   "tier": "tier1",
+   "radiusBefore": null
+  },
+  {
+   "term": "lion",
+   "tier": "tier1",
+   "radiusBefore": null
+  },
+  {
+   "term": "tiger",
+   "tier": "tier1",
+   "radiusBefore": null
+  },
+  {
+   "term": "monkey",
+   "tier": "tier1",
+   "radiusBefore": null
+  },
+  {
+   "term": "whale",
+   "tier": "tier1",
+   "radiusBefore": null
+  },
+  {
+   "term": "shark",
+   "tier": "tier1",
+   "radiusBefore": null
+  },
+  {
+   "term": "dolphin",
+   "tier": "tier1",
+   "radiusBefore": null
+  },
+  {
+   "term": "turtle",
+   "tier": "tier1",
+   "radiusBefore": null
+  },
+  {
+   "term": "owl",
+   "tier": "tier1",
+   "radiusBefore": null
+  },
+  {
+   "term": "butterfly",
+   "tier": "tier1",
+   "radiusBefore": null
+  },
+  {
+   "term": "bee",
+   "tier": "tier1",
+   "radiusBefore": null
+  },
+  {
+   "term": "crab",
+   "tier": "tier1",
+   "radiusBefore": null
+  },
+  {
+   "term": "snowman",
+   "tier": "tier1",
+   "radiusBefore": null
+  },
+  {
+   "term": "pumpkin",
+   "tier": "tier1",
+   "radiusBefore": null
+  },
+  {
+   "term": "flower",
+   "tier": "tier1",
+   "radiusBefore": null
+  },
+  {
+   "term": "sun",
+   "tier": "tier1",
+   "radiusBefore": null
+  },
+  {
+   "term": "star",
+   "tier": "tier1",
+   "radiusBefore": null
+  },
+  {
+   "term": "apple",
+   "tier": "tier1",
+   "radiusBefore": null
+  },
+  {
+   "term": "banana",
+   "tier": "tier1",
+   "radiusBefore": null
+  },
+  {
+   "term": "pizza",
+   "tier": "tier1",
+   "radiusBefore": null
+  },
+  {
+   "term": "hamburger",
+   "tier": "tier1",
+   "radiusBefore": null
+  },
+  {
+   "term": "guitar",
+   "tier": "tier1",
+   "radiusBefore": null
+  },
+  {
+   "term": "camera",
+   "tier": "tier1",
+   "radiusBefore": null
+  },
+  {
+   "term": "skyscraper",
+   "tier": "tier1",
+   "radiusBefore": null
+  },
+  {
+   "term": "bridge",
+   "tier": "tier1",
+   "radiusBefore": null
+  },
+  {
+   "term": "windmill",
+   "tier": "tier1",
+   "radiusBefore": null
+  },
+  {
+   "term": "crown",
+   "tier": "tier1",
+   "radiusBefore": null
+  },
+  {
+   "term": "key",
+   "tier": "tier1",
+   "radiusBefore": null
+  },
+  {
+   "term": "umbrella",
+   "tier": "tier1",
+   "radiusBefore": null
+  },
+  {
+   "term": "teddy bear",
+   "tier": "tier1",
+   "radiusBefore": null
+  },
+  {
+   "term": "eiffel tower",
+   "tier": "tier1",
+   "radiusBefore": null
+  },
+  {
+   "term": "plaster cast",
+   "tier": "fps",
+   "radiusBefore": 0.48882102697315594
+  },
+  {
+   "term": "piggy bank",
+   "tier": "fps",
+   "radiusBefore": 0.4888340731605936
+  },
+  {
+   "term": "quesadilla",
+   "tier": "fps",
+   "radiusBefore": 0.4892837409464593
+  },
+  {
+   "term": "wire cutters",
+   "tier": "fps",
+   "radiusBefore": 0.4970706784217433
+  },
+  {
+   "term": "gondola",
+   "tier": "fps",
+   "radiusBefore": 0.5084435553580248
+  },
+  {
+   "term": "bulletproof vest",
+   "tier": "fps",
+   "radiusBefore": 0.5124792457535555
+  },
+  {
+   "term": "rollerskates",
+   "tier": "fps",
+   "radiusBefore": 0.5150509054455126
+  },
+  {
+   "term": "pillbox",
+   "tier": "fps",
+   "radiusBefore": 0.5188900943305618
+  },
+  {
+   "term": "lifesaver",
+   "tier": "fps",
+   "radiusBefore": 0.5189686357204579
+  },
+  {
+   "term": "landmine",
+   "tier": "fps",
+   "radiusBefore": 0.523961248784818
+  },
+  {
+   "term": "pickax",
+   "tier": "fps",
+   "radiusBefore": 0.5245082594202338
+  },
+  {
+   "term": "dreidel",
+   "tier": "fps",
+   "radiusBefore": 0.5252762875241664
+  },
+  {
+   "term": "parfait",
+   "tier": "fps",
+   "radiusBefore": 0.5273419456202666
+  },
+  {
+   "term": "tiramisu",
+   "tier": "fps",
+   "radiusBefore": 0.5284036440038931
+  },
+  {
+   "term": "chisel",
+   "tier": "fps",
+   "radiusBefore": 0.5314465145336587
+  },
+  {
+   "term": "phone booth",
+   "tier": "fps",
+   "radiusBefore": 0.5321543875290801
+  },
+  {
+   "term": "dumbbell",
+   "tier": "fps",
+   "radiusBefore": 0.5352153887407637
+  },
+  {
+   "term": "flatiron",
+   "tier": "fps",
+   "radiusBefore": 0.5362095899031628
+  },
+  {
+   "term": "golf club",
+   "tier": "fps",
+   "radiusBefore": 0.5391103870031427
+  },
+  {
+   "term": "spareribs",
+   "tier": "fps",
+   "radiusBefore": 0.539273404848889
+  },
+  {
+   "term": "noisemaker",
+   "tier": "fps",
+   "radiusBefore": 0.5406370659560684
+  },
+  {
+   "term": "lip balm",
+   "tier": "fps",
+   "radiusBefore": 0.5411468368634635
+  },
+  {
+   "term": "nutcracker",
+   "tier": "fps",
+   "radiusBefore": 0.5412665764881837
+  },
+  {
+   "term": "inkwell",
+   "tier": "fps",
+   "radiusBefore": 0.5436005520204334
+  },
+  {
+   "term": "cornucopia",
+   "tier": "fps",
+   "radiusBefore": 0.5439437058726003
+  },
+  {
+   "term": "sifter",
+   "tier": "fps",
+   "radiusBefore": 0.544090443552825
+  },
+  {
+   "term": "stalagmite",
+   "tier": "fps",
+   "radiusBefore": 0.5444251662099976
+  },
+  {
+   "term": "sleeping bag",
+   "tier": "fps",
+   "radiusBefore": 0.5459180824216096
+  },
+  {
+   "term": "gas mask",
+   "tier": "fps",
+   "radiusBefore": 0.5461527276467842
+  },
+  {
+   "term": "flip flops",
+   "tier": "fps",
+   "radiusBefore": 0.5470056512081057
+  },
+  {
+   "term": "candelabra",
+   "tier": "fps",
+   "radiusBefore": 0.547804004308233
+  },
+  {
+   "term": "gavel",
+   "tier": "fps",
+   "radiusBefore": 0.547808594064879
+  },
+  {
+   "term": "wok",
+   "tier": "fps",
+   "radiusBefore": 0.5480108653450266
+  },
+  {
+   "term": "boxer shorts",
+   "tier": "fps",
+   "radiusBefore": 0.5487152718334405
+  },
+  {
+   "term": "slot machine",
+   "tier": "fps",
+   "radiusBefore": 0.5501419005573902
+  },
+  {
+   "term": "calzone",
+   "tier": "fps",
+   "radiusBefore": 0.5502926251811175
+  },
+  {
+   "term": "toga",
+   "tier": "fps",
+   "radiusBefore": 0.5517688561339141
+  },
+  {
+   "term": "footbath",
+   "tier": "fps",
+   "radiusBefore": 0.5519356841257363
+  },
+  {
+   "term": "tape measure",
+   "tier": "fps",
+   "radiusBefore": 0.5521563205371702
+  },
+  {
+   "term": "pinecone",
+   "tier": "fps",
+   "radiusBefore": 0.5529386263001232
+  },
+  {
+   "term": "kiwi",
+   "tier": "fps",
+   "radiusBefore": 0.5532610961820882
+  },
+  {
+   "term": "boa",
+   "tier": "fps",
+   "radiusBefore": 0.5537073771349782
+  },
+  {
+   "term": "tuxedo",
+   "tier": "fps",
+   "radiusBefore": 0.5539054492817388
+  },
+  {
+   "term": "french horn",
+   "tier": "fps",
+   "radiusBefore": 0.5539575403873659
+  },
+  {
+   "term": "dumpster",
+   "tier": "fps",
+   "radiusBefore": 0.554536340165852
+  },
+  {
+   "term": "fencepost",
+   "tier": "fps",
+   "radiusBefore": 0.5552543774878396
+  },
+  {
+   "term": "stethoscope",
+   "tier": "fps",
+   "radiusBefore": 0.5563850866373647
+  },
+  {
+   "term": "scarecrow",
+   "tier": "fps",
+   "radiusBefore": 0.5572337208348813
+  },
+  {
+   "term": "sled",
+   "tier": "fps",
+   "radiusBefore": 0.5608738756498983
+  },
+  {
+   "term": "sorbet",
+   "tier": "fps",
+   "radiusBefore": 0.5620407842502934
+  },
+  {
+   "term": "overalls",
+   "tier": "fps",
+   "radiusBefore": 0.562094195866025
+  },
+  {
+   "term": "dryer",
+   "tier": "fps",
+   "radiusBefore": 0.5632382496605631
+  },
+  {
+   "term": "pincushion",
+   "tier": "fps",
+   "radiusBefore": 0.565135091590316
+  },
+  {
+   "term": "hot tub",
+   "tier": "fps",
+   "radiusBefore": 0.5666731267810662
+  },
+  {
+   "term": "sarcophagus",
+   "tier": "fps",
+   "radiusBefore": 0.5669732014875675
+  },
+  {
+   "term": "pogo stick",
+   "tier": "fps",
+   "radiusBefore": 0.5670174523348464
+  },
+  {
+   "term": "tennis racquet",
+   "tier": "fps",
+   "radiusBefore": 0.567701483304726
+  },
+  {
+   "term": "squirt gun",
+   "tier": "fps",
+   "radiusBefore": 0.5678828074561824
+  },
+  {
+   "term": "salami",
+   "tier": "fps",
+   "radiusBefore": 0.5693610695922854
+  },
+  {
+   "term": "eclair",
+   "tier": "fps",
+   "radiusBefore": 0.5694262041511802
+  },
+  {
+   "term": "jigsaw puzzle",
+   "tier": "fps",
+   "radiusBefore": 0.5699037629692938
+  },
+  {
+   "term": "humvee",
+   "tier": "fps",
+   "radiusBefore": 0.5703693366056104
+  },
+  {
+   "term": "baseball glove",
+   "tier": "fps",
+   "radiusBefore": 0.5705032659419861
+  },
+  {
+   "term": "stop sign",
+   "tier": "fps",
+   "radiusBefore": 0.5705834170026793
+  },
+  {
+   "term": "gargoyle",
+   "tier": "fps",
+   "radiusBefore": 0.5711249148881105
+  },
+  {
+   "term": "copier",
+   "tier": "fps",
+   "radiusBefore": 0.5723846545014338
+  },
+  {
+   "term": "thimble",
+   "tier": "fps",
+   "radiusBefore": 0.5724686568531359
+  },
+  {
+   "term": "platypus",
+   "tier": "fps",
+   "radiusBefore": 0.5728034070656884
+  },
+  {
+   "term": "praying mantis",
+   "tier": "fps",
+   "radiusBefore": 0.5733649727285197
+  },
+  {
+   "term": "coat rack",
+   "tier": "fps",
+   "radiusBefore": 0.5733913888787635
+  },
+  {
+   "term": "blimp",
+   "tier": "fps",
+   "radiusBefore": 0.5737215290675514
+  },
+  {
+   "term": "turnstile",
+   "tier": "fps",
+   "radiusBefore": 0.5743545742729924
+  },
+  {
+   "term": "eyeglasses",
+   "tier": "fps",
+   "radiusBefore": 0.5749642221149647
+  },
+  {
+   "term": "crowbar",
+   "tier": "fps",
+   "radiusBefore": 0.5753243458205368
+  },
+  {
+   "term": "jalapeno",
+   "tier": "fps",
+   "radiusBefore": 0.575743129726665
+  },
+  {
+   "term": "ski boots",
+   "tier": "fps",
+   "radiusBefore": 0.5757701121837292
+  },
+  {
+   "term": "warthog",
+   "tier": "fps",
+   "radiusBefore": 0.5762033243976662
+  },
+  {
+   "term": "wristwatch",
+   "tier": "fps",
+   "radiusBefore": 0.5769087436701477
+  },
+  {
+   "term": "beachball",
+   "tier": "fps",
+   "radiusBefore": 0.5782395717252544
+  },
+  {
+   "term": "okra",
+   "tier": "fps",
+   "radiusBefore": 0.5783951224489665
+  },
+  {
+   "term": "flask",
+   "tier": "fps",
+   "radiusBefore": 0.5789405269215526
+  },
+  {
+   "term": "sewing kit",
+   "tier": "fps",
+   "radiusBefore": 0.5790050790205705
+  },
+  {
+   "term": "spam",
+   "tier": "fps",
+   "radiusBefore": 0.5796308813383337
+  },
+  {
+   "term": "skunk",
+   "tier": "fps",
+   "radiusBefore": 0.5797687725737878
+  },
+  {
+   "term": "kaleidoscope",
+   "tier": "fps",
+   "radiusBefore": 0.5805657216361686
+  },
+  {
+   "term": "cotton candy",
+   "tier": "fps",
+   "radiusBefore": 0.5807638195973827
+  },
+  {
+   "term": "weather vane",
+   "tier": "fps",
+   "radiusBefore": 0.5810993867169799
+  },
+  {
+   "term": "gyro",
+   "tier": "fps",
+   "radiusBefore": 0.5818536572311688
+  },
+  {
+   "term": "tamale",
+   "tier": "fps",
+   "radiusBefore": 0.5820251736466783
+  },
+  {
+   "term": "woman",
+   "tier": "fps",
+   "radiusBefore": 0.5824031601373347
+  },
+  {
+   "term": "loveseat",
+   "tier": "fps",
+   "radiusBefore": 0.5824312707036499
+  },
+  {
+   "term": "crucifix",
+   "tier": "fps",
+   "radiusBefore": 0.5825439205586787
+  },
+  {
+   "term": "bazooka",
+   "tier": "fps",
+   "radiusBefore": 0.5825804023116236
+  },
+  {
+   "term": "dustpan",
+   "tier": "fps",
+   "radiusBefore": 0.5826640807053827
+  },
+  {
+   "term": "crutch",
+   "tier": "fps",
+   "radiusBefore": 0.5827902430127898
+  },
+  {
+   "term": "gearshift",
+   "tier": "fps",
+   "radiusBefore": 0.5829616940596897
+  },
+  {
+   "term": "bulldozer",
+   "tier": "fps",
+   "radiusBefore": 0.5831002853431633
+  },
+  {
+   "term": "hairspray",
+   "tier": "fps",
+   "radiusBefore": 0.5831437945206795
+  },
+  {
+   "term": "quiche",
+   "tier": "fps",
+   "radiusBefore": 0.5838651910090527
+  },
+  {
+   "term": "seesaw",
+   "tier": "fps",
+   "radiusBefore": 0.5845990703627335
+  },
+  {
+   "term": "life jacket",
+   "tier": "fps",
+   "radiusBefore": 0.5851402417526038
+  },
+  {
+   "term": "amplifier",
+   "tier": "fps",
+   "radiusBefore": 0.5855434771481398
+  },
+  {
+   "term": "paintbrush",
+   "tier": "fps",
+   "radiusBefore": 0.5858878741256746
+  },
+  {
+   "term": "straightjacket",
+   "tier": "fps",
+   "radiusBefore": 0.5861173808354605
+  },
+  {
+   "term": "brussels sprouts",
+   "tier": "fps",
+   "radiusBefore": 0.5863312410013053
+  },
+  {
+   "term": "hovercraft",
+   "tier": "fps",
+   "radiusBefore": 0.5865525507421967
+  },
+  {
+   "term": "buggy",
+   "tier": "fps",
+   "radiusBefore": 0.5868027988734449
+  },
+  {
+   "term": "hula hoop",
+   "tier": "fps",
+   "radiusBefore": 0.5869072042638
+  },
+  {
+   "term": "sickle",
+   "tier": "fps",
+   "radiusBefore": 0.5876379342447631
+  },
+  {
+   "term": "vulture",
+   "tier": "fps",
+   "radiusBefore": 0.5879492146131877
+  },
+  {
+   "term": "exhaust pipe",
+   "tier": "fps",
+   "radiusBefore": 0.5882422405125646
+  },
+  {
+   "term": "acorn",
+   "tier": "fps",
+   "radiusBefore": 0.5883647853957958
+  },
+  {
+   "term": "telegraph",
+   "tier": "fps",
+   "radiusBefore": 0.5885094062596303
+  },
+  {
+   "term": "spool",
+   "tier": "fps",
+   "radiusBefore": 0.5885249148317954
+  },
+  {
+   "term": "possum",
+   "tier": "fps",
+   "radiusBefore": 0.5894314119037771
+  },
+  {
+   "term": "doorhandle",
+   "tier": "fps",
+   "radiusBefore": 0.5895276414412702
+  },
+  {
+   "term": "incubator",
+   "tier": "fps",
+   "radiusBefore": 0.5897546205466727
+  },
+  {
+   "term": "moccasin",
+   "tier": "fps",
+   "radiusBefore": 0.5907136740723243
+  },
+  {
+   "term": "pencil sharpener",
+   "tier": "fps",
+   "radiusBefore": 0.5908522029611649
+  },
+  {
+   "term": "bowtie",
+   "tier": "fps",
+   "radiusBefore": 0.5909754099422614
+  },
+  {
+   "term": "hoe",
+   "tier": "fps",
+   "radiusBefore": 0.5911506478631444
+  },
+  {
+   "term": "honeypot",
+   "tier": "fps",
+   "radiusBefore": 0.5912061325553906
+  },
+  {
+   "term": "waterslide",
+   "tier": "fps",
+   "radiusBefore": 0.5914117686624911
+  },
+  {
+   "term": "ratchet",
+   "tier": "fps",
+   "radiusBefore": 0.5914679765711501
+  },
+  {
+   "term": "polo shirt",
+   "tier": "fps",
+   "radiusBefore": 0.5917093201169739
+  },
+  {
+   "term": "cuckoo clock",
+   "tier": "fps",
+   "radiusBefore": 0.5919664634209049
+  },
+  {
+   "term": "antelope",
+   "tier": "fps",
+   "radiusBefore": 0.592152449478491
+  },
+  {
+   "term": "highchair",
+   "tier": "fps",
+   "radiusBefore": 0.5923425196500829
+  },
+  {
+   "term": "ram",
+   "tier": "fps",
+   "radiusBefore": 0.5931576090844355
+  },
+  {
+   "term": "metronome",
+   "tier": "fps",
+   "radiusBefore": 0.5932096220094139
+  },
+  {
+   "term": "mongoose",
+   "tier": "fps",
+   "radiusBefore": 0.593716893783816
+  },
+  {
+   "term": "soldering iron",
+   "tier": "fps",
+   "radiusBefore": 0.5948416359427471
+  },
+  {
+   "term": "bassinet",
+   "tier": "fps",
+   "radiusBefore": 0.5948718941460095
+  },
+  {
+   "term": "seismograph",
+   "tier": "fps",
+   "radiusBefore": 0.5952684537888466
+  },
+  {
+   "term": "bobsled",
+   "tier": "fps",
+   "radiusBefore": 0.5952692795057166
+  },
+  {
+   "term": "satellite dish",
+   "tier": "fps",
+   "radiusBefore": 0.5967772298618778
+  },
+  {
+   "term": "pocketknife",
+   "tier": "fps",
+   "radiusBefore": 0.5969068728830446
+  },
+  {
+   "term": "grapevine",
+   "tier": "fps",
+   "radiusBefore": 0.596916451579351
+  },
+  {
+   "term": "kneepad",
+   "tier": "fps",
+   "radiusBefore": 0.596934247224513
+  },
+  {
+   "term": "stiletto",
+   "tier": "fps",
+   "radiusBefore": 0.5970657800387016
+  },
+  {
+   "term": "cockroach",
+   "tier": "fps",
+   "radiusBefore": 0.5971845183297712
+  },
+  {
+   "term": "aardvark",
+   "tier": "fps",
+   "radiusBefore": 0.5979011226844815
+  },
+  {
+   "term": "easter egg",
+   "tier": "fps",
+   "radiusBefore": 0.5980181343243023
+  },
+  {
+   "term": "tumbleweed",
+   "tier": "fps",
+   "radiusBefore": 0.5982011829905398
+  },
+  {
+   "term": "football",
+   "tier": "fps",
+   "radiusBefore": 0.5990305784789928
+  },
+  {
+   "term": "hydrant",
+   "tier": "fps",
+   "radiusBefore": 0.5994385299879469
+  },
+  {
+   "term": "glue",
+   "tier": "fps",
+   "radiusBefore": 0.5995799242907054
+  },
+  {
+   "term": "defibrillator",
+   "tier": "fps",
+   "radiusBefore": 0.5996453315939935
+  },
+  {
+   "term": "forklift",
+   "tier": "fps",
+   "radiusBefore": 0.5996778888243893
+  },
+  {
+   "term": "cash register",
+   "tier": "fps",
+   "radiusBefore": 0.6004807860909825
+  },
+  {
+   "term": "gurney",
+   "tier": "fps",
+   "radiusBefore": 0.6009967704832979
+  },
+  {
+   "term": "scone",
+   "tier": "fps",
+   "radiusBefore": 0.6010644912135477
+  },
+  {
+   "term": "pallet",
+   "tier": "fps",
+   "radiusBefore": 0.6015755092494085
+  },
+  {
+   "term": "stroller",
+   "tier": "fps",
+   "radiusBefore": 0.6017783956719835
+  },
+  {
+   "term": "backgammon",
+   "tier": "fps",
+   "radiusBefore": 0.6018798982905862
+  },
+  {
+   "term": "ostrich",
+   "tier": "fps",
+   "radiusBefore": 0.6021153809844385
+  },
+  {
+   "term": "lamb chop",
+   "tier": "fps",
+   "radiusBefore": 0.6022772710842138
+  },
+  {
+   "term": "flyswatter",
+   "tier": "fps",
+   "radiusBefore": 0.6022848342461787
+  },
+  {
+   "term": "altar",
+   "tier": "fps",
+   "radiusBefore": 0.6025770800349778
+  },
+  {
+   "term": "dishwashing liquid",
+   "tier": "fps",
+   "radiusBefore": 0.6028828828961301
+  },
+  {
+   "term": "coop",
+   "tier": "fps",
+   "radiusBefore": 0.6030180618314913
+  },
+  {
+   "term": "mulberry",
+   "tier": "fps",
+   "radiusBefore": 0.6031503664572906
+  },
+  {
+   "term": "router",
+   "tier": "fps",
+   "radiusBefore": 0.6033238605627068
+  },
+  {
+   "term": "lectern",
+   "tier": "fps",
+   "radiusBefore": 0.6034744540938899
+  },
+  {
+   "term": "metal detector",
+   "tier": "fps",
+   "radiusBefore": 0.603557039085012
+  },
+  {
+   "term": "deodorant",
+   "tier": "fps",
+   "radiusBefore": 0.6041874419611337
+  },
+  {
+   "term": "diving board",
+   "tier": "fps",
+   "radiusBefore": 0.6043474585215882
+  },
+  {
+   "term": "videocassette",
+   "tier": "fps",
+   "radiusBefore": 0.6046026305565576
+  },
+  {
+   "term": "oilcan",
+   "tier": "fps",
+   "radiusBefore": 0.6052407527716466
+  },
+  {
+   "term": "cashew",
+   "tier": "fps",
+   "radiusBefore": 0.6058111873361053
+  },
+  {
+   "term": "diskette",
+   "tier": "fps",
+   "radiusBefore": 0.6060394766879098
+  },
+  {
+   "term": "cookie sheet",
+   "tier": "fps",
+   "radiusBefore": 0.6061203315063429
+  },
+  {
+   "term": "gravestone",
+   "tier": "fps",
+   "radiusBefore": 0.60650639348054
+  },
+  {
+   "term": "gazelle",
+   "tier": "fps",
+   "radiusBefore": 0.6067273505375957
+  },
+  {
+   "term": "piecrust",
+   "tier": "fps",
+   "radiusBefore": 0.6070162810762065
+  },
+  {
+   "term": "jumpsuit",
+   "tier": "fps",
+   "radiusBefore": 0.6070788471347863
+  },
+  {
+   "term": "mitten",
+   "tier": "fps",
+   "radiusBefore": 0.6077329509692511
+  },
+  {
+   "term": "computer screen",
+   "tier": "fps",
+   "radiusBefore": 0.6081194080236215
+  },
+  {
+   "term": "chinchilla",
+   "tier": "fps",
+   "radiusBefore": 0.6082638807530204
+  },
+  {
+   "term": "record player",
+   "tier": "fps",
+   "radiusBefore": 0.6082855564299435
+  },
+  {
+   "term": "locket",
+   "tier": "fps",
+   "radiusBefore": 0.6086282945954364
+  },
+  {
+   "term": "chipmunk",
+   "tier": "fps",
+   "radiusBefore": 0.6091431552467561
+  },
+  {
+   "term": "sombrero",
+   "tier": "fps",
+   "radiusBefore": 0.6091724883152235
+  },
+  {
+   "term": "cobra",
+   "tier": "fps",
+   "radiusBefore": 0.6092289648530382
+  },
+  {
+   "term": "rickshaw",
+   "tier": "fps",
+   "radiusBefore": 0.6093729364143411
+  },
+  {
+   "term": "pitchfork",
+   "tier": "fps",
+   "radiusBefore": 0.6106501175539765
+  },
+  {
+   "term": "corkscrew",
+   "tier": "fps",
+   "radiusBefore": 0.6106630772778209
+  },
+  {
+   "term": "mannequin",
+   "tier": "fps",
+   "radiusBefore": 0.6108806009333794
+  },
+  {
+   "term": "llama",
+   "tier": "fps",
+   "radiusBefore": 0.6108886570747938
+  },
+  {
+   "term": "margarita",
+   "tier": "fps",
+   "radiusBefore": 0.6111347819670858
+  },
+  {
+   "term": "visor",
+   "tier": "fps",
+   "radiusBefore": 0.6111432895440881
+  },
+  {
+   "term": "grenade",
+   "tier": "fps",
+   "radiusBefore": 0.6119266486315692
+  },
+  {
+   "term": "syringe",
+   "tier": "fps",
+   "radiusBefore": 0.61215791706539
+  },
+  {
+   "term": "tortellini",
+   "tier": "fps",
+   "radiusBefore": 0.612175094207899
+  },
+  {
+   "term": "ramp",
+   "tier": "fps",
+   "radiusBefore": 0.6122083835538699
+  },
+  {
+   "term": "frying pan",
+   "tier": "fps",
+   "radiusBefore": 0.6123816461170977
+  },
+  {
+   "term": "stirrup",
+   "tier": "fps",
+   "radiusBefore": 0.6124508112173445
+  },
+  {
+   "term": "ravioli",
+   "tier": "fps",
+   "radiusBefore": 0.6125091209047575
+  },
+  {
+   "term": "meerkat",
+   "tier": "fps",
+   "radiusBefore": 0.6127390240572345
+  },
+  {
+   "term": "cocoon",
+   "tier": "fps",
+   "radiusBefore": 0.6130599781057403
+  },
+  {
+   "term": "comic book",
+   "tier": "fps",
+   "radiusBefore": 0.6131866191245557
+  },
+  {
+   "term": "globe",
+   "tier": "fps",
+   "radiusBefore": 0.6133756741547133
+  },
+  {
+   "term": "furnace",
+   "tier": "fps",
+   "radiusBefore": 0.6133861587110614
+  },
+  {
+   "term": "kebab",
+   "tier": "fps",
+   "radiusBefore": 0.6135315166938904
+  },
+  {
+   "term": "punch",
+   "tier": "fps",
+   "radiusBefore": 0.6138469762125113
+  },
+  {
+   "term": "remote control",
+   "tier": "fps",
+   "radiusBefore": 0.6140350598551891
+  },
+  {
+   "term": "bagel",
+   "tier": "fps",
+   "radiusBefore": 0.6143707629169485
+  },
+  {
+   "term": "crib",
+   "tier": "fps",
+   "radiusBefore": 0.6145617762831632
+  },
+  {
+   "term": "ceiling fan",
+   "tier": "fps",
+   "radiusBefore": 0.614666486610981
+  },
+  {
+   "term": "dandelion",
+   "tier": "fps",
+   "radiusBefore": 0.6147121687018444
+  },
+  {
+   "term": "cape",
+   "tier": "fps",
+   "radiusBefore": 0.6157703551114864
+  },
+  {
+   "term": "thumbtack",
+   "tier": "fps",
+   "radiusBefore": 0.6160771713605833
+  },
+  {
+   "term": "pomegranate",
+   "tier": "fps",
+   "radiusBefore": 0.6164688765954727
+  },
+  {
+   "term": "spark plug",
+   "tier": "fps",
+   "radiusBefore": 0.6165593871621998
+  },
+  {
+   "term": "marshmallow",
+   "tier": "fps",
+   "radiusBefore": 0.6166291084606266
+  },
+  {
+   "term": "headset",
+   "tier": "fps",
+   "radiusBefore": 0.6167145332121857
+  },
+  {
+   "term": "radio",
+   "tier": "fps",
+   "radiusBefore": 0.6169581910491787
+  },
+  {
+   "term": "nail clippers",
+   "tier": "fps",
+   "radiusBefore": 0.6172093546740673
+  },
+  {
+   "term": "guillotine",
+   "tier": "fps",
+   "radiusBefore": 0.6177736189887207
+  },
+  {
+   "term": "jack",
+   "tier": "fps",
+   "radiusBefore": 0.6179702473455532
+  },
+  {
+   "term": "jetski",
+   "tier": "fps",
+   "radiusBefore": 0.6181209915608645
+  },
+  {
+   "term": "scale",
+   "tier": "fps",
+   "radiusBefore": 0.6182212422473585
+  },
+  {
+   "term": "canister",
+   "tier": "fps",
+   "radiusBefore": 0.6188802654674834
+  },
+  {
+   "term": "garden hose",
+   "tier": "fps",
+   "radiusBefore": 0.6189493984421413
+  },
+  {
+   "term": "gallows",
+   "tier": "fps",
+   "radiusBefore": 0.6189651275569629
+  },
+  {
+   "term": "macadamia",
+   "tier": "fps",
+   "radiusBefore": 0.6190084347653378
+  },
+  {
+   "term": "hookah",
+   "tier": "fps",
+   "radiusBefore": 0.619102468634724
+  },
+  {
+   "term": "wreath",
+   "tier": "fps",
+   "radiusBefore": 0.6192013749393627
+  },
+  {
+   "term": "earwig",
+   "tier": "fps",
+   "radiusBefore": 0.6194368791065934
+  },
+  {
+   "term": "teepee",
+   "tier": "fps",
+   "radiusBefore": 0.6194619665124568
+  },
+  {
+   "term": "gong",
+   "tier": "fps",
+   "radiusBefore": 0.620474816110523
+  },
+  {
+   "term": "chalice",
+   "tier": "fps",
+   "radiusBefore": 0.6206953872181022
+  },
+  {
+   "term": "cleaver",
+   "tier": "fps",
+   "radiusBefore": 0.6216375908080114
+  },
+  {
+   "term": "windsock",
+   "tier": "fps",
+   "radiusBefore": 0.6216553441113187
+  },
+  {
+   "term": "yo yo",
+   "tier": "fps",
+   "radiusBefore": 0.6219671069893976
+  },
+  {
+   "term": "napkin ring",
+   "tier": "fps",
+   "radiusBefore": 0.6221744464447361
+  },
+  {
+   "term": "calculator",
+   "tier": "fps",
+   "radiusBefore": 0.6222124674242228
+  },
+  {
+   "term": "jeans",
+   "tier": "fps",
+   "radiusBefore": 0.6222857088772867
+  },
+  {
+   "term": "gopher",
+   "tier": "fps",
+   "radiusBefore": 0.6222976301045656
+  },
+  {
+   "term": "green beans",
+   "tier": "fps",
+   "radiusBefore": 0.6223670585475264
+  },
+  {
+   "term": "pulley",
+   "tier": "fps",
+   "radiusBefore": 0.6225214030582771
+  },
+  {
+   "term": "quad",
+   "tier": "fps",
+   "radiusBefore": 0.6227144365818232
+  },
+  {
+   "term": "turban",
+   "tier": "fps",
+   "radiusBefore": 0.6227739830936285
+  },
+  {
+   "term": "digger",
+   "tier": "fps",
+   "radiusBefore": 0.6228151271795904
+  },
+  {
+   "term": "kimono",
+   "tier": "fps",
+   "radiusBefore": 0.6229433781803333
+  },
+  {
+   "term": "bunkbed",
+   "tier": "fps",
+   "radiusBefore": 0.6230292921105409
+  },
+  {
+   "term": "compass",
+   "tier": "fps",
+   "radiusBefore": 0.6231779132723666
+  },
+  {
+   "term": "groundhog",
+   "tier": "fps",
+   "radiusBefore": 0.6235437400505234
+  },
+  {
+   "term": "ginger",
+   "tier": "fps",
+   "radiusBefore": 0.6235516087435203
+  },
+  {
+   "term": "hippopotamus",
+   "tier": "fps",
+   "radiusBefore": 0.6236413550893333
+  },
+  {
+   "term": "steamroller",
+   "tier": "fps",
+   "radiusBefore": 0.6241202418235143
+  },
+  {
+   "term": "mop",
+   "tier": "fps",
+   "radiusBefore": 0.6241907751827529
+  },
+  {
+   "term": "radiator",
+   "tier": "fps",
+   "radiusBefore": 0.6242741457253266
+  },
+  {
+   "term": "awning",
+   "tier": "fps",
+   "radiusBefore": 0.6248738578557803
+  },
+  {
+   "term": "hatchet",
+   "tier": "fps",
+   "radiusBefore": 0.6249515582642367
+  },
+  {
+   "term": "lighter",
+   "tier": "fps",
+   "radiusBefore": 0.6257656084840126
+  },
+  {
+   "term": "balance beam",
+   "tier": "fps",
+   "radiusBefore": 0.6263892352487342
+  },
+  {
+   "term": "lasagna",
+   "tier": "fps",
+   "radiusBefore": 0.6264909465434932
+  },
+  {
+   "term": "egg roll",
+   "tier": "fps",
+   "radiusBefore": 0.6269284679919136
+  },
+  {
+   "term": "walker",
+   "tier": "fps",
+   "radiusBefore": 0.6272409399875006
+  },
+  {
+   "term": "stingray",
+   "tier": "fps",
+   "radiusBefore": 0.6272956895049714
+  },
+  {
+   "term": "hubcap",
+   "tier": "fps",
+   "radiusBefore": 0.6274144613773684
+  },
+  {
+   "term": "rearview mirror",
+   "tier": "fps",
+   "radiusBefore": 0.6275222350124748
+  },
+  {
+   "term": "speaker",
+   "tier": "fps",
+   "radiusBefore": 0.6279959874121198
+  },
+  {
+   "term": "artichoke",
+   "tier": "fps",
+   "radiusBefore": 0.6280230351425667
+  },
+  {
+   "term": "cheetah",
+   "tier": "fps",
+   "radiusBefore": 0.6281367987699079
+  },
+  {
+   "term": "rattlesnake",
+   "tier": "fps",
+   "radiusBefore": 0.6290247643584962
+  },
+  {
+   "term": "parking meter",
+   "tier": "fps",
+   "radiusBefore": 0.6295230168502224
+  },
+  {
+   "term": "clarinet",
+   "tier": "fps",
+   "radiusBefore": 0.6297098271490312
+  },
+  {
+   "term": "goblet",
+   "tier": "fps",
+   "radiusBefore": 0.6300315729154724
+  },
+  {
+   "term": "ferris wheel",
+   "tier": "fps",
+   "radiusBefore": 0.630300850281727
+  },
+  {
+   "term": "tiara",
+   "tier": "fps",
+   "radiusBefore": 0.6307598823467452
+  },
+  {
+   "term": "trailer",
+   "tier": "fps",
+   "radiusBefore": 0.6307652041536029
+  },
+  {
+   "term": "padlock",
+   "tier": "fps",
+   "radiusBefore": 0.630918756133909
+  },
+  {
+   "term": "charger",
+   "tier": "fps",
+   "radiusBefore": 0.6309331680955933
+  },
+  {
+   "term": "treadmill",
+   "tier": "fps",
+   "radiusBefore": 0.6309448385931109
+  },
+  {
+   "term": "payphone",
+   "tier": "fps",
+   "radiusBefore": 0.6309659858069139
+  },
+  {
+   "term": "taco",
+   "tier": "fps",
+   "radiusBefore": 0.6312417953328514
+  },
+  {
+   "term": "thermos",
+   "tier": "fps",
+   "radiusBefore": 0.6312905739209825
+  },
+  {
+   "term": "test tube",
+   "tier": "fps",
+   "radiusBefore": 0.6315336351882057
+  },
+  {
+   "term": "smoke alarm",
+   "tier": "fps",
+   "radiusBefore": 0.6315939905270397
+  },
+  {
+   "term": "radish",
+   "tier": "fps",
+   "radiusBefore": 0.6316050457512377
+  },
+  {
+   "term": "pacifier",
+   "tier": "fps",
+   "radiusBefore": 0.631708613053375
+  },
+  {
+   "term": "jersey",
+   "tier": "fps",
+   "radiusBefore": 0.6318065912822193
+  },
+  {
+   "term": "string bean",
+   "tier": "fps",
+   "radiusBefore": 0.6321144606177178
+  },
+  {
+   "term": "scallop",
+   "tier": "fps",
+   "radiusBefore": 0.632204944205143
+  },
+  {
+   "term": "blueberry",
+   "tier": "fps",
+   "radiusBefore": 0.6322495880337694
+  },
+  {
+   "term": "filing cabinet",
+   "tier": "fps",
+   "radiusBefore": 0.6323481297917918
+  },
+  {
+   "term": "extinguisher",
+   "tier": "fps",
+   "radiusBefore": 0.6326050913557077
+  },
+  {
+   "term": "passport",
+   "tier": "fps",
+   "radiusBefore": 0.6326305941132134
+  },
+  {
+   "term": "grater",
+   "tier": "fps",
+   "radiusBefore": 0.6326328749759182
+  },
+  {
+   "term": "iguana",
+   "tier": "fps",
+   "radiusBefore": 0.6330063399585856
+  },
+  {
+   "term": "tornado",
+   "tier": "fps",
+   "radiusBefore": 0.633150338089869
+  },
+  {
+   "term": "shopping cart",
+   "tier": "fps",
+   "radiusBefore": 0.633192188594888
+  },
+  {
+   "term": "bathrobe",
+   "tier": "fps",
+   "radiusBefore": 0.6332327669878812
+  },
+  {
+   "term": "pelican",
+   "tier": "fps",
+   "radiusBefore": 0.6337553938239393
+  },
+  {
+   "term": "cougar",
+   "tier": "fps",
+   "radiusBefore": 0.6340083064797084
+  },
+  {
+   "term": "rhinoceros",
+   "tier": "fps",
+   "radiusBefore": 0.6342198149348341
+  },
+  {
+   "term": "trowel",
+   "tier": "fps",
+   "radiusBefore": 0.6342510158018189
+  },
+  {
+   "term": "chute",
+   "tier": "fps",
+   "radiusBefore": 0.6342624174508722
+  },
+  {
+   "term": "catapult",
+   "tier": "fps",
+   "radiusBefore": 0.6343139489449139
+  },
+  {
+   "term": "flagpole",
+   "tier": "fps",
+   "radiusBefore": 0.6344525052808511
+  },
+  {
+   "term": "sweatsuit",
+   "tier": "fps",
+   "radiusBefore": 0.6345787580933804
+  },
+  {
+   "term": "brick",
+   "tier": "fps",
+   "radiusBefore": 0.6347286173021058
+  },
+  {
+   "term": "pug",
+   "tier": "fps",
+   "radiusBefore": 0.6347800531981768
+  },
+  {
+   "term": "pitcher",
+   "tier": "fps",
+   "radiusBefore": 0.6353261375829459
+  },
+  {
+   "term": "waffle",
+   "tier": "fps",
+   "radiusBefore": 0.6353657656670791
+  },
+  {
+   "term": "ladybug",
+   "tier": "fps",
+   "radiusBefore": 0.6354642688799982
+  },
+  {
+   "term": "buoy",
+   "tier": "fps",
+   "radiusBefore": 0.6354871043368375
+  },
+  {
+   "term": "fountain pen",
+   "tier": "fps",
+   "radiusBefore": 0.6356875684787143
+  },
+  {
+   "term": "oar",
+   "tier": "fps",
+   "radiusBefore": 0.6358918362714784
+  },
+  {
+   "term": "drums",
+   "tier": "fps",
+   "radiusBefore": 0.6363773959427841
+  },
+  {
+   "term": "biscuit",
+   "tier": "fps",
+   "radiusBefore": 0.6366608475320682
+  },
+  {
+   "term": "rolling pin",
+   "tier": "fps",
+   "radiusBefore": 0.6367641859571488
+  },
+  {
+   "term": "slingshot",
+   "tier": "fps",
+   "radiusBefore": 0.6367855949931693
+  },
+  {
+   "term": "cement mixer",
+   "tier": "fps",
+   "radiusBefore": 0.637561907705166
+  },
+  {
+   "term": "grasshopper",
+   "tier": "fps",
+   "radiusBefore": 0.6376448237088542
+  },
+  {
+   "term": "briefcase",
+   "tier": "fps",
+   "radiusBefore": 0.6380871777591112
+  },
+  {
+   "term": "volleyball",
+   "tier": "fps",
+   "radiusBefore": 0.638786632922527
+  },
+  {
+   "term": "otter",
+   "tier": "fps",
+   "radiusBefore": 0.6389065314171544
+  },
+  {
+   "term": "fondue",
+   "tier": "fps",
+   "radiusBefore": 0.6393548111086916
+  },
+  {
+   "term": "toilet paper",
+   "tier": "fps",
+   "radiusBefore": 0.6394882552522692
+  },
+  {
+   "term": "porcupine",
+   "tier": "fps",
+   "radiusBefore": 0.6401465781139033
+  },
+  {
+   "term": "candlestick",
+   "tier": "fps",
+   "radiusBefore": 0.6407306531563651
+  },
+  {
+   "term": "sugar cube",
+   "tier": "fps",
+   "radiusBefore": 0.6409693491303856
+  },
+  {
+   "term": "prism",
+   "tier": "fps",
+   "radiusBefore": 0.6410004012319804
+  },
+  {
+   "term": "sweeper",
+   "tier": "fps",
+   "radiusBefore": 0.6414099620324901
+  },
+  {
+   "term": "reindeer",
+   "tier": "fps",
+   "radiusBefore": 0.6418650378360476
+  },
+  {
+   "term": "machete",
+   "tier": "fps",
+   "radiusBefore": 0.6418859149861618
+  },
+  {
+   "term": "spatula",
+   "tier": "fps",
+   "radiusBefore": 0.6419297872929076
+  },
+  {
+   "term": "statue",
+   "tier": "fps",
+   "radiusBefore": 0.6419348301378756
+  },
+  {
+   "term": "clam",
+   "tier": "fps",
+   "radiusBefore": 0.6420485831494417
+  },
+  {
+   "term": "cage",
+   "tier": "fps",
+   "radiusBefore": 0.6421384480682232
+  },
+  {
+   "term": "ferret",
+   "tier": "fps",
+   "radiusBefore": 0.6424450701346618
+  },
+  {
+   "term": "dalmatian",
+   "tier": "fps",
+   "radiusBefore": 0.6428822263655246
+  },
+  {
+   "term": "eyedropper",
+   "tier": "fps",
+   "radiusBefore": 0.6433774333088462
+  },
+  {
+   "term": "revolver",
+   "tier": "fps",
+   "radiusBefore": 0.643677011705456
+  },
+  {
+   "term": "hotplate",
+   "tier": "fps",
+   "radiusBefore": 0.6437424733569153
+  },
+  {
+   "term": "angel",
+   "tier": "fps",
+   "radiusBefore": 0.6437484262798775
+  },
+  {
+   "term": "cloak",
+   "tier": "fps",
+   "radiusBefore": 0.6439002761547173
+  },
+  {
+   "term": "plunger",
+   "tier": "fps",
+   "radiusBefore": 0.6440016270275464
+  },
+  {
+   "term": "curtain",
+   "tier": "fps",
+   "radiusBefore": 0.6446087509398146
+  },
+  {
+   "term": "koala",
+   "tier": "fps",
+   "radiusBefore": 0.6446292211245168
+  },
+  {
+   "term": "ballot box",
+   "tier": "fps",
+   "radiusBefore": 0.6446510849446905
+  },
+  {
+   "term": "anvil",
+   "tier": "fps",
+   "radiusBefore": 0.6447657196869646
+  },
+  {
+   "term": "step stool",
+   "tier": "fps",
+   "radiusBefore": 0.6450506008217032
+  },
+  {
+   "term": "whoopee cushion",
+   "tier": "fps",
+   "radiusBefore": 0.6451141943829847
+  },
+  {
+   "term": "cigar",
+   "tier": "fps",
+   "radiusBefore": 0.6451448143748012
+  },
+  {
+   "term": "unicycle",
+   "tier": "fps",
+   "radiusBefore": 0.6457200956557555
+  },
+  {
+   "term": "cantaloupe",
+   "tier": "fps",
+   "radiusBefore": 0.6457594533469285
+  },
+  {
+   "term": "almond",
+   "tier": "fps",
+   "radiusBefore": 0.6460950132151482
+  },
+  {
+   "term": "chariot",
+   "tier": "fps",
+   "radiusBefore": 0.6462478021819597
+  },
+  {
+   "term": "sea urchin",
+   "tier": "fps",
+   "radiusBefore": 0.64633907853213
+  },
+  {
+   "term": "cardigan",
+   "tier": "fps",
+   "radiusBefore": 0.6467849454694282
+  },
+  {
+   "term": "bell pepper",
+   "tier": "fps",
+   "radiusBefore": 0.6467926294398231
+  },
+  {
+   "term": "clothespin",
+   "tier": "fps",
+   "radiusBefore": 0.6469578153716357
+  },
+  {
+   "term": "crayfish",
+   "tier": "fps",
+   "radiusBefore": 0.6470447215678599
+  },
+  {
+   "term": "kilt",
+   "tier": "fps",
+   "radiusBefore": 0.6470940507703924
+  },
+  {
+   "term": "tongs",
+   "tier": "fps",
+   "radiusBefore": 0.6472747192799773
+  },
+  {
+   "term": "croissant",
+   "tier": "fps",
+   "radiusBefore": 0.6474470377063308
+  },
+  {
+   "term": "generator",
+   "tier": "fps",
+   "radiusBefore": 0.64772152800097
+  },
+  {
+   "term": "toaster oven",
+   "tier": "fps",
+   "radiusBefore": 0.6479340771627535
+  },
+  {
+   "term": "stereo",
+   "tier": "fps",
+   "radiusBefore": 0.6479704755672729
+  },
+  {
+   "term": "violin",
+   "tier": "fps",
+   "radiusBefore": 0.6480172881420518
+  },
+  {
+   "term": "gumdrop",
+   "tier": "fps",
+   "radiusBefore": 0.6481260362104333
+  },
+  {
+   "term": "milkshake",
+   "tier": "fps",
+   "radiusBefore": 0.6485736542046104
+  },
+  {
+   "term": "dice",
+   "tier": "fps",
+   "radiusBefore": 0.6488779167282258
+  },
+  {
+   "term": "goalpost",
+   "tier": "fps",
+   "radiusBefore": 0.6493366345929438
+  },
+  {
+   "term": "balloon",
+   "tier": "fps",
+   "radiusBefore": 0.6496410039022216
+  },
+  {
+   "term": "clipboard",
+   "tier": "fps",
+   "radiusBefore": 0.649875181657449
+  },
+  {
+   "term": "pita",
+   "tier": "fps",
+   "radiusBefore": 0.6500186672434646
+  },
+  {
+   "term": "coffin",
+   "tier": "fps",
+   "radiusBefore": 0.650167272695763
+  },
+  {
+   "term": "match",
+   "tier": "fps",
+   "radiusBefore": 0.6501721966053977
+  },
+  {
+   "term": "anteater",
+   "tier": "fps",
+   "radiusBefore": 0.650480286099038
+  },
+  {
+   "term": "seal",
+   "tier": "fps",
+   "radiusBefore": 0.6505237046155227
+  },
+  {
+   "term": "asparagus",
+   "tier": "fps",
+   "radiusBefore": 0.6507513900191458
+  },
+  {
+   "term": "man",
+   "tier": "fps",
+   "radiusBefore": 0.6508597706767331
+  },
+  {
+   "term": "notebook",
+   "tier": "fps",
+   "radiusBefore": 0.650887535926649
+  },
+  {
+   "term": "pillow",
+   "tier": "fps",
+   "radiusBefore": 0.6509265580743403
+  },
+  {
+   "term": "counter",
+   "tier": "fps",
+   "radiusBefore": 0.651223620761207
+  },
+  {
+   "term": "wine cooler",
+   "tier": "fps",
+   "radiusBefore": 0.6512846721479577
+  },
+  {
+   "term": "cauliflower",
+   "tier": "fps",
+   "radiusBefore": 0.6513281410766937
+  },
+  {
+   "term": "javelin",
+   "tier": "fps",
+   "radiusBefore": 0.6513590236944703
+  },
+  {
+   "term": "ham",
+   "tier": "fps",
+   "radiusBefore": 0.6514870013930942
+  },
+  {
+   "term": "typewriter",
+   "tier": "fps",
+   "radiusBefore": 0.6516297392932257
+  },
+  {
+   "term": "celery",
+   "tier": "fps",
+   "radiusBefore": 0.6516505041795698
+  },
+  {
+   "term": "coverall",
+   "tier": "fps",
+   "radiusBefore": 0.651784035495924
+  },
+  {
+   "term": "bongo",
+   "tier": "fps",
+   "radiusBefore": 0.6521107233855503
+  },
+  {
+   "term": "microscope",
+   "tier": "fps",
+   "radiusBefore": 0.6529460020794934
+  },
+  {
+   "term": "rhubarb",
+   "tier": "fps",
+   "radiusBefore": 0.6531666324388088
+  },
+  {
+   "term": "projector",
+   "tier": "fps",
+   "radiusBefore": 0.6532393125894813
+  },
+  {
+   "term": "icicle",
+   "tier": "fps",
+   "radiusBefore": 0.653425303890392
+  },
+  {
+   "term": "hedge",
+   "tier": "fps",
+   "radiusBefore": 0.6535700491862675
+  },
+  {
+   "term": "licorice",
+   "tier": "fps",
+   "radiusBefore": 0.6536240459804672
+  },
+  {
+   "term": "pulpit",
+   "tier": "fps",
+   "radiusBefore": 0.6536506486008501
+  },
+  {
+   "term": "papaya",
+   "tier": "fps",
+   "radiusBefore": 0.6537247011424564
+  },
+  {
+   "term": "flying saucer",
+   "tier": "fps",
+   "radiusBefore": 0.6544389121124494
+  },
+  {
+   "term": "poinsettia",
+   "tier": "fps",
+   "radiusBefore": 0.6544609035961577
+  },
+  {
+   "term": "camper",
+   "tier": "fps",
+   "radiusBefore": 0.654477760452658
+  },
+  {
+   "term": "zebra",
+   "tier": "fps",
+   "radiusBefore": 0.6544827718678295
+  },
+  {
+   "term": "sidecar",
+   "tier": "fps",
+   "radiusBefore": 0.6546804601829703
+  },
+  {
+   "term": "laser pointer",
+   "tier": "fps",
+   "radiusBefore": 0.6552986622281773
+  },
+  {
+   "term": "solar panel",
+   "tier": "fps",
+   "radiusBefore": 0.6552992250590126
+  },
+  {
+   "term": "trampoline",
+   "tier": "fps",
+   "radiusBefore": 0.6554230397479701
+  },
+  {
+   "term": "soda fountain",
+   "tier": "fps",
+   "radiusBefore": 0.6557040190355143
+  },
+  {
+   "term": "speedometer",
+   "tier": "fps",
+   "radiusBefore": 0.6557720341018782
+  },
+  {
+   "term": "teabag",
+   "tier": "fps",
+   "radiusBefore": 0.6559621904346311
+  },
+  {
+   "term": "buffet",
+   "tier": "fps",
+   "radiusBefore": 0.6561203095795245
+  },
+  {
+   "term": "wig",
+   "tier": "fps",
+   "radiusBefore": 0.6561334003993322
+  },
+  {
+   "term": "ice pack",
+   "tier": "fps",
+   "radiusBefore": 0.6562927170302033
+  },
+  {
+   "term": "wheelbarrow",
+   "tier": "fps",
+   "radiusBefore": 0.6563546102696445
+  },
+  {
+   "term": "frisbee",
+   "tier": "fps",
+   "radiusBefore": 0.6565135287184465
+  },
+  {
+   "term": "blazer",
+   "tier": "fps",
+   "radiusBefore": 0.6565622728630303
+  },
+  {
+   "term": "sweet potato",
+   "tier": "fps",
+   "radiusBefore": 0.656602124279858
+  },
+  {
+   "term": "lightning bug",
+   "tier": "fps",
+   "radiusBefore": 0.6567926804406602
+  },
+  {
+   "term": "totem pole",
+   "tier": "fps",
+   "radiusBefore": 0.6571030865051277
+  },
+  {
+   "term": "mascara",
+   "tier": "fps",
+   "radiusBefore": 0.6571658464922856
+  },
+  {
+   "term": "hyena",
+   "tier": "fps",
+   "radiusBefore": 0.6576977497236183
+  },
+  {
+   "term": "cornbread",
+   "tier": "fps",
+   "radiusBefore": 0.6580038931777825
+  },
+  {
+   "term": "workbench",
+   "tier": "fps",
+   "radiusBefore": 0.6584705774525816
+  },
+  {
+   "term": "uniform",
+   "tier": "fps",
+   "radiusBefore": 0.6585091301592286
+  },
+  {
+   "term": "gift",
+   "tier": "fps",
+   "radiusBefore": 0.6587244895554821
+  },
+  {
+   "term": "girl",
+   "tier": "fps",
+   "radiusBefore": 0.6589974151480599
+  },
+  {
+   "term": "meat grinder",
+   "tier": "fps",
+   "radiusBefore": 0.6589991251848687
+  },
+  {
+   "term": "aircraft carrier",
+   "tier": "fps",
+   "radiusBefore": 0.6592454484553734
+  },
+  {
+   "term": "aloe",
+   "tier": "fps",
+   "radiusBefore": 0.6594986756434451
+  },
+  {
+   "term": "detonator",
+   "tier": "fps",
+   "radiusBefore": 0.6596488416647066
+  },
+  {
+   "term": "blowtorch",
+   "tier": "fps",
+   "radiusBefore": 0.6597498354706888
+  },
+  {
+   "term": "eggbeater",
+   "tier": "fps",
+   "radiusBefore": 0.6597645642736141
+  },
+  {
+   "term": "crossbow",
+   "tier": "fps",
+   "radiusBefore": 0.6603028638566937
+  },
+  {
+   "term": "staple gun",
+   "tier": "fps",
+   "radiusBefore": 0.6603216270024295
+  },
+  {
+   "term": "kite",
+   "tier": "fps",
+   "radiusBefore": 0.660713139989977
+  },
+  {
+   "term": "seagull",
+   "tier": "fps",
+   "radiusBefore": 0.6610891067073741
+  },
+  {
+   "term": "abacus",
+   "tier": "fps",
+   "radiusBefore": 0.6614570718237099
+  },
+  {
+   "term": "plum",
+   "tier": "fps",
+   "radiusBefore": 0.6616012088586871
+  },
+  {
+   "term": "jewel",
+   "tier": "fps",
+   "radiusBefore": 0.6618639194137524
+  },
+  {
+   "term": "jukebox",
+   "tier": "fps",
+   "radiusBefore": 0.6619255895324798
+  },
+  {
+   "term": "popcorn",
+   "tier": "fps",
+   "radiusBefore": 0.6619326779001719
+  },
+  {
+   "term": "dynamite",
+   "tier": "fps",
+   "radiusBefore": 0.6620142824522138
+  },
+  {
+   "term": "candy bar",
+   "tier": "fps",
+   "radiusBefore": 0.6622302937693512
+  },
+  {
+   "term": "peeler",
+   "tier": "fps",
+   "radiusBefore": 0.6623134118427113
+  },
+  {
+   "term": "shaker",
+   "tier": "fps",
+   "radiusBefore": 0.6625124470126165
+  },
+  {
+   "term": "playpen",
+   "tier": "fps",
+   "radiusBefore": 0.662600923534132
+  },
+  {
+   "term": "tripod",
+   "tier": "fps",
+   "radiusBefore": 0.6629434521370744
+  },
+  {
+   "term": "giraffe",
+   "tier": "fps",
+   "radiusBefore": 0.6632570414414174
+  },
+  {
+   "term": "flamingo",
+   "tier": "fps",
+   "radiusBefore": 0.6633888133410791
+  },
+  {
+   "term": "boomerang",
+   "tier": "fps",
+   "radiusBefore": 0.6635834056029661
+  },
+  {
+   "term": "magnifier",
+   "tier": "fps",
+   "radiusBefore": 0.6635945230183478
+  },
+  {
+   "term": "brass knuckles",
+   "tier": "fps",
+   "radiusBefore": 0.6637391778323563
+  },
+  {
+   "term": "block",
+   "tier": "fps",
+   "radiusBefore": 0.6638219503296087
+  },
+  {
+   "term": "cross",
+   "tier": "fps",
+   "radiusBefore": 0.6639073818525554
+  },
+  {
+   "term": "coyote",
+   "tier": "fps",
+   "radiusBefore": 0.6641104224217076
+  },
+  {
+   "term": "propeller",
+   "tier": "fps",
+   "radiusBefore": 0.6644507291962162
+  },
+  {
+   "term": "orangutan",
+   "tier": "fps",
+   "radiusBefore": 0.6646084553306348
+  },
+  {
+   "term": "ruby",
+   "tier": "fps",
+   "radiusBefore": 0.6646435418786594
+  },
+  {
+   "term": "anchor",
+   "tier": "fps",
+   "radiusBefore": 0.6646525394031378
+  },
+  {
+   "term": "ottoman",
+   "tier": "fps",
+   "radiusBefore": 0.6646899555204867
+  },
+  {
+   "term": "raccoon",
+   "tier": "fps",
+   "radiusBefore": 0.6648925196934848
+  },
+  {
+   "term": "xylophone",
+   "tier": "fps",
+   "radiusBefore": 0.6650751932000718
+  },
+  {
+   "term": "wind chimes",
+   "tier": "fps",
+   "radiusBefore": 0.6652115082823347
+  },
+  {
+   "term": "rain gauge",
+   "tier": "fps",
+   "radiusBefore": 0.6653463270451134
+  },
+  {
+   "term": "letter opener",
+   "tier": "fps",
+   "radiusBefore": 0.665808610514016
+  },
+  {
+   "term": "gate",
+   "tier": "fps",
+   "radiusBefore": 0.6664088721019734
+  },
+  {
+   "term": "jar",
+   "tier": "fps",
+   "radiusBefore": 0.6670543096105045
+  },
+  {
+   "term": "trophy",
+   "tier": "fps",
+   "radiusBefore": 0.6671849313795118
+  },
+  {
+   "term": "wooden leg",
+   "tier": "fps",
+   "radiusBefore": 0.6676343056461205
+  },
+  {
+   "term": "harmonica",
+   "tier": "fps",
+   "radiusBefore": 0.6676933844337093
+  },
+  {
+   "term": "vial",
+   "tier": "fps",
+   "radiusBefore": 0.6677065228432362
+  },
+  {
+   "term": "manatee",
+   "tier": "fps",
+   "radiusBefore": 0.6677373644059049
+  },
+  {
+   "term": "stretcher",
+   "tier": "fps",
+   "radiusBefore": 0.6679772926826268
+  },
+  {
+   "term": "polaroid",
+   "tier": "fps",
+   "radiusBefore": 0.6681727415157909
+  },
+  {
+   "term": "gourd",
+   "tier": "fps",
+   "radiusBefore": 0.6684961912470114
+  },
+  {
+   "term": "mosquito",
+   "tier": "fps",
+   "radiusBefore": 0.6687553150443566
+  },
+  {
+   "term": "ambulance",
+   "tier": "fps",
+   "radiusBefore": 0.6687700264682795
+  },
+  {
+   "term": "magnet",
+   "tier": "fps",
+   "radiusBefore": 0.6689406455623255
+  },
+  {
+   "term": "watermelon",
+   "tier": "fps",
+   "radiusBefore": 0.6693165129005603
+  },
+  {
+   "term": "bookshelf",
+   "tier": "fps",
+   "radiusBefore": 0.669604657038515
+  },
+  {
+   "term": "boy",
+   "tier": "fps",
+   "radiusBefore": 0.6696165017425574
+  },
+  {
+   "term": "slide",
+   "tier": "fps",
+   "radiusBefore": 0.6699324496539157
+  },
+  {
+   "term": "periscope",
+   "tier": "fps",
+   "radiusBefore": 0.6700347387276389
+  },
+  {
+   "term": "soccer ball",
+   "tier": "fps",
+   "radiusBefore": 0.6702470508910544
+  },
+  {
+   "term": "roadsweeper",
+   "tier": "fps",
+   "radiusBefore": 0.670328835322398
+  },
+  {
+   "term": "puffin",
+   "tier": "fps",
+   "radiusBefore": 0.6703979745515593
+  },
+  {
+   "term": "faucet",
+   "tier": "fps",
+   "radiusBefore": 0.6705581633347852
+  },
+  {
+   "term": "shield",
+   "tier": "fps",
+   "radiusBefore": 0.6718614047738446
+  },
+  {
+   "term": "potpie",
+   "tier": "fps",
+   "radiusBefore": 0.6722476612146892
+  },
+  {
+   "term": "tupperware",
+   "tier": "fps",
+   "radiusBefore": 0.6722762489370553
+  },
+  {
+   "term": "freezer",
+   "tier": "fps",
+   "radiusBefore": 0.6723340511725887
+  },
+  {
+   "term": "sandbox",
+   "tier": "fps",
+   "radiusBefore": 0.6723697019110686
+  },
+  {
+   "term": "garlic",
+   "tier": "fps",
+   "radiusBefore": 0.6723796163959713
+  },
+  {
+   "term": "cherry",
+   "tier": "fps",
+   "radiusBefore": 0.6724605213991952
+  },
+  {
+   "term": "whistle",
+   "tier": "fps",
+   "radiusBefore": 0.6726113612141154
+  },
+  {
+   "term": "poker",
+   "tier": "fps",
+   "radiusBefore": 0.6727139999662985
+  },
+  {
+   "term": "food processor",
+   "tier": "fps",
+   "radiusBefore": 0.6729916340594343
+  },
+  {
+   "term": "donut",
+   "tier": "fps",
+   "radiusBefore": 0.6733786032774222
+  },
+  {
+   "term": "squirrel",
+   "tier": "fps",
+   "radiusBefore": 0.6735357790510161
+  },
+  {
+   "term": "bok choy",
+   "tier": "fps",
+   "radiusBefore": 0.6737022064914834
+  },
+  {
+   "term": "siren",
+   "tier": "fps",
+   "radiusBefore": 0.6742231439297712
+  },
+  {
+   "term": "laundry basket",
+   "tier": "fps",
+   "radiusBefore": 0.6742767234133599
+  },
+  {
+   "term": "television",
+   "tier": "fps",
+   "radiusBefore": 0.6750144086192792
+  },
+  {
+   "term": "wolf",
+   "tier": "fps",
+   "radiusBefore": 0.6752000336274576
+  },
+  {
+   "term": "sock",
+   "tier": "fps",
+   "radiusBefore": 0.6752987105378744
+  },
+  {
+   "term": "yogurt",
+   "tier": "fps",
+   "radiusBefore": 0.6755195253225523
+  },
+  {
+   "term": "mallet",
+   "tier": "fps",
+   "radiusBefore": 0.6758642572863857
+  },
+  {
+   "term": "tulip",
+   "tier": "fps",
+   "radiusBefore": 0.67593370009104
+  },
+  {
+   "term": "joystick",
+   "tier": "fps",
+   "radiusBefore": 0.675981275205794
+  },
+  {
+   "term": "organ",
+   "tier": "fps",
+   "radiusBefore": 0.6761805501407557
+  },
+  {
+   "term": "pump",
+   "tier": "fps",
+   "radiusBefore": 0.6761955487148117
+  },
+  {
+   "term": "arch",
+   "tier": "fps",
+   "radiusBefore": 0.676481875592268
+  },
+  {
+   "term": "alpaca",
+   "tier": "fps",
+   "radiusBefore": 0.6768269557791076
+  },
+  {
+   "term": "marker",
+   "tier": "fps",
+   "radiusBefore": 0.6773644484625392
+  },
+  {
+   "term": "battery",
+   "tier": "fps",
+   "radiusBefore": 0.6775192194895331
+  },
+  {
+   "term": "dragonfly",
+   "tier": "fps",
+   "radiusBefore": 0.677615553113139
+  },
+  {
+   "term": "headlight",
+   "tier": "fps",
+   "radiusBefore": 0.6776773187058311
+  },
+  {
+   "term": "wallet",
+   "tier": "fps",
+   "radiusBefore": 0.6776888838034774
+  },
+  {
+   "term": "radar",
+   "tier": "fps",
+   "radiusBefore": 0.6779068734326174
+  },
+  {
+   "term": "hearse",
+   "tier": "fps",
+   "radiusBefore": 0.6779272883155085
+  },
+  {
+   "term": "file",
+   "tier": "fps",
+   "radiusBefore": 0.6787085208407853
+  },
+  {
+   "term": "headdress",
+   "tier": "fps",
+   "radiusBefore": 0.678900812755043
+  },
+  {
+   "term": "watch",
+   "tier": "fps",
+   "radiusBefore": 0.679144534781959
+  },
+  {
+   "term": "swing",
+   "tier": "fps",
+   "radiusBefore": 0.6791657415181532
+  },
+  {
+   "term": "tank",
+   "tier": "fps",
+   "radiusBefore": 0.6794331996835397
+  },
+  {
+   "term": "scraper",
+   "tier": "fps",
+   "radiusBefore": 0.6794597231392941
+  },
+  {
+   "term": "mouse",
+   "tier": "fps",
+   "radiusBefore": 0.6795119057152401
+  },
+  {
+   "term": "snowshoe",
+   "tier": "fps",
+   "radiusBefore": 0.6796252834318889
+  },
+  {
+   "term": "leotard",
+   "tier": "fps",
+   "radiusBefore": 0.679629022551636
+  },
+  {
+   "term": "dolly",
+   "tier": "fps",
+   "radiusBefore": 0.6796433969831969
+  },
+  {
+   "term": "trough",
+   "tier": "fps",
+   "radiusBefore": 0.6797772732098867
+  },
+  {
+   "term": "apron",
+   "tier": "fps",
+   "radiusBefore": 0.6798004255659158
+  },
+  {
+   "term": "alligator",
+   "tier": "fps",
+   "radiusBefore": 0.6799546864978012
+  },
+  {
+   "term": "chimney",
+   "tier": "fps",
+   "radiusBefore": 0.6800695323175673
+  },
+  {
+   "term": "broccoli",
+   "tier": "fps",
+   "radiusBefore": 0.6802653509906172
+  },
+  {
+   "term": "minivan",
+   "tier": "fps",
+   "radiusBefore": 0.6805796281802117
+  },
+  {
+   "term": "walrus",
+   "tier": "fps",
+   "radiusBefore": 0.6808917675708495
+  },
+  {
+   "term": "cot",
+   "tier": "fps",
+   "radiusBefore": 0.6814517553734306
+  },
+  {
+   "term": "snowplow",
+   "tier": "fps",
+   "radiusBefore": 0.6815633566880808
+  },
+  {
+   "term": "crayon",
+   "tier": "fps",
+   "radiusBefore": 0.681846597793759
+  },
+  {
+   "term": "beanie",
+   "tier": "fps",
+   "radiusBefore": 0.681865333959696
+  },
+  {
+   "term": "gear",
+   "tier": "fps",
+   "radiusBefore": 0.6819053771587615
+  },
+  {
+   "term": "meatloaf",
+   "tier": "fps",
+   "radiusBefore": 0.682108088310134
+  },
+  {
+   "term": "tarantula",
+   "tier": "fps",
+   "radiusBefore": 0.6824682661631054
+  },
+  {
+   "term": "dresser",
+   "tier": "fps",
+   "radiusBefore": 0.6829226089287315
+  },
+  {
+   "term": "waterwheel",
+   "tier": "fps",
+   "radiusBefore": 0.6830363625748308
+  },
+  {
+   "term": "floor lamp",
+   "tier": "fps",
+   "radiusBefore": 0.6830694349877895
+  },
+  {
+   "term": "nest",
+   "tier": "fps",
+   "radiusBefore": 0.6834046440325078
+  },
+  {
+   "term": "revolving door",
+   "tier": "fps",
+   "radiusBefore": 0.6834429261160814
+  },
+  {
+   "term": "chandelier",
+   "tier": "fps",
+   "radiusBefore": 0.683462532317297
+  },
+  {
+   "term": "pheasant",
+   "tier": "fps",
+   "radiusBefore": 0.6836253053610098
+  },
+  {
+   "term": "bagpipe",
+   "tier": "fps",
+   "radiusBefore": 0.6836614738723987
+  },
+  {
+   "term": "binder",
+   "tier": "fps",
+   "radiusBefore": 0.6839353035251009
+  },
+  {
+   "term": "emerald",
+   "tier": "fps",
+   "radiusBefore": 0.6842197330670368
+  },
+  {
+   "term": "fig",
+   "tier": "fps",
+   "radiusBefore": 0.6843474410472082
+  },
+  {
+   "term": "hospital",
+   "tier": "fps",
+   "radiusBefore": 0.6846292973459848
+  },
+  {
+   "term": "avocado",
+   "tier": "fps",
+   "radiusBefore": 0.6850708554025362
+  },
+  {
+   "term": "marijuana",
+   "tier": "fps",
+   "radiusBefore": 0.6851114499361937
+  },
+  {
+   "term": "corset",
+   "tier": "fps",
+   "radiusBefore": 0.6857384626519832
+  },
+  {
+   "term": "rock",
+   "tier": "fps",
+   "radiusBefore": 0.6860688130323309
+  },
+  {
+   "term": "terrarium",
+   "tier": "fps",
+   "radiusBefore": 0.6865496894509369
+  },
+  {
+   "term": "reel",
+   "tier": "fps",
+   "radiusBefore": 0.6867366760033732
+  },
+  {
+   "term": "bowl",
+   "tier": "fps",
+   "radiusBefore": 0.6870024317086821
+  },
+  {
+   "term": "urinal",
+   "tier": "fps",
+   "radiusBefore": 0.6871580796186912
+  },
+  {
+   "term": "dartboard",
+   "tier": "fps",
+   "radiusBefore": 0.6874571682941428
+  },
+  {
+   "term": "torpedo",
+   "tier": "fps",
+   "radiusBefore": 0.6874870475825388
+  },
+  {
+   "term": "subway",
+   "tier": "fps",
+   "radiusBefore": 0.6880215028469713
+  },
+  {
+   "term": "turbine",
+   "tier": "fps",
+   "radiusBefore": 0.6880723052587301
+  },
+  {
+   "term": "hockey stick",
+   "tier": "fps",
+   "radiusBefore": 0.6885998509076022
+  },
+  {
+   "term": "hobbyhorse",
+   "tier": "fps",
+   "radiusBefore": 0.6887410125494531
+  },
+  {
+   "term": "chili",
+   "tier": "fps",
+   "radiusBefore": 0.6888044834959536
+  },
+  {
+   "term": "highlighter",
+   "tier": "fps",
+   "radiusBefore": 0.6888113385370717
+  },
+  {
+   "term": "raincoat",
+   "tier": "fps",
+   "radiusBefore": 0.6888207340579738
+  },
+  {
+   "term": "inhaler",
+   "tier": "fps",
+   "radiusBefore": 0.6892777772730617
+  },
+  {
+   "term": "missile",
+   "tier": "fps",
+   "radiusBefore": 0.6897962702502256
+  },
+  {
+   "term": "kangaroo",
+   "tier": "fps",
+   "radiusBefore": 0.6898410210396221
+  },
+  {
+   "term": "lawnmower",
+   "tier": "fps",
+   "radiusBefore": 0.6900090974642374
+  },
+  {
+   "term": "boar",
+   "tier": "fps",
+   "radiusBefore": 0.6900252537376129
+  },
+  {
+   "term": "sandal",
+   "tier": "fps",
+   "radiusBefore": 0.6903388995722979
+  },
+  {
+   "term": "hotdog",
+   "tier": "fps",
+   "radiusBefore": 0.6904288906876296
+  },
+  {
+   "term": "cell phone",
+   "tier": "fps",
+   "radiusBefore": 0.6904843711756129
+  },
+  {
+   "term": "lemonade",
+   "tier": "fps",
+   "radiusBefore": 0.6905071760216435
+  },
+  {
+   "term": "chess piece",
+   "tier": "fps",
+   "radiusBefore": 0.6907208378181156
+  },
+  {
+   "term": "steering wheel",
+   "tier": "fps",
+   "radiusBefore": 0.6907529550999536
+  },
+  {
+   "term": "basketball",
+   "tier": "fps",
+   "radiusBefore": 0.6909924895551972
+  },
+  {
+   "term": "trunk",
+   "tier": "fps",
+   "radiusBefore": 0.691545800670188
+  },
+  {
+   "term": "souffle",
+   "tier": "fps",
+   "radiusBefore": 0.6916123982646756
+  },
+  {
+   "term": "beaker",
+   "tier": "fps",
+   "radiusBefore": 0.6917505322632195
+  },
+  {
+   "term": "handcuff",
+   "tier": "fps",
+   "radiusBefore": 0.6917735477176024
+  },
+  {
+   "term": "mussel",
+   "tier": "fps",
+   "radiusBefore": 0.6918945600361694
+  },
+  {
+   "term": "squeegee",
+   "tier": "fps",
+   "radiusBefore": 0.6919274677795721
+  },
+  {
+   "term": "razor",
+   "tier": "fps",
+   "radiusBefore": 0.6919786849476081
+  },
+  {
+   "term": "toothpaste",
+   "tier": "fps",
+   "radiusBefore": 0.6921839860502407
+  },
+  {
+   "term": "cucumber",
+   "tier": "fps",
+   "radiusBefore": 0.6921856366485286
+  },
+  {
+   "term": "pennant",
+   "tier": "fps",
+   "radiusBefore": 0.6921862468833122
+  },
+  {
+   "term": "shredder",
+   "tier": "fps",
+   "radiusBefore": 0.692243962195968
+  },
+  {
+   "term": "cloud",
+   "tier": "fps",
+   "radiusBefore": 0.6923291164416331
+  },
+  {
+   "term": "hard disk",
+   "tier": "fps",
+   "radiusBefore": 0.6923816946400916
+  },
+  {
+   "term": "honeycomb",
+   "tier": "fps",
+   "radiusBefore": 0.6924156348135564
+  },
+  {
+   "term": "bonsai",
+   "tier": "fps",
+   "radiusBefore": 0.6924180671186597
+  },
+  {
+   "term": "bush",
+   "tier": "fps",
+   "radiusBefore": 0.6924312349201915
+  },
+  {
+   "term": "locker",
+   "tier": "fps",
+   "radiusBefore": 0.6929253875218905
+  },
+  {
+   "term": "pliers",
+   "tier": "fps",
+   "radiusBefore": 0.6929581490851843
+  },
+  {
+   "term": "hourglass",
+   "tier": "fps",
+   "radiusBefore": 0.6930708639327602
+  },
+  {
+   "term": "pajamas",
+   "tier": "fps",
+   "radiusBefore": 0.6932289158723864
+  },
+  {
+   "term": "peach",
+   "tier": "fps",
+   "radiusBefore": 0.6934143754811819
+  },
+  {
+   "term": "shower cap",
+   "tier": "fps",
+   "radiusBefore": 0.6936131835318461
+  },
+  {
+   "term": "doghouse",
+   "tier": "fps",
+   "radiusBefore": 0.6937125474126449
+  },
+  {
+   "term": "bib",
+   "tier": "fps",
+   "radiusBefore": 0.6938286203274756
+  },
+  {
+   "term": "guardrail",
+   "tier": "fps",
+   "radiusBefore": 0.6940230356041138
+  },
+  {
+   "term": "lollipop",
+   "tier": "fps",
+   "radiusBefore": 0.694099702144295
+  },
+  {
+   "term": "puppet",
+   "tier": "fps",
+   "radiusBefore": 0.6943088284076482
+  },
+  {
+   "term": "bamboo",
+   "tier": "fps",
+   "radiusBefore": 0.6944353906889169
+  },
+  {
+   "term": "trapdoor",
+   "tier": "fps",
+   "radiusBefore": 0.6947233074077401
+  },
+  {
+   "term": "screwdriver",
+   "tier": "fps",
+   "radiusBefore": 0.6947458688084317
+  },
+  {
+   "term": "log",
+   "tier": "fps",
+   "radiusBefore": 0.6947839737656505
+  },
+  {
+   "term": "tomato",
+   "tier": "fps",
+   "radiusBefore": 0.6949390957649693
+  },
+  {
+   "term": "whisk",
+   "tier": "fps",
+   "radiusBefore": 0.6949767959712332
+  },
+  {
+   "term": "crane",
+   "tier": "fps",
+   "radiusBefore": 0.694985893251883
+  },
+  {
+   "term": "telescope",
+   "tier": "fps",
+   "radiusBefore": 0.6952763727594434
+  },
+  {
+   "term": "skirt",
+   "tier": "fps",
+   "radiusBefore": 0.695508396769974
+  },
+  {
+   "term": "orange",
+   "tier": "fps",
+   "radiusBefore": 0.6955626792099039
+  },
+  {
+   "term": "undershirt",
+   "tier": "fps",
+   "radiusBefore": 0.6955840091514989
+  },
+  {
+   "term": "sprinkler",
+   "tier": "fps",
+   "radiusBefore": 0.6957430106688942
+  },
+  {
+   "term": "sledgehammer",
+   "tier": "fps",
+   "radiusBefore": 0.6958868073118089
+  },
+  {
+   "term": "ferry",
+   "tier": "fps",
+   "radiusBefore": 0.6962315838944391
+  },
+  {
+   "term": "go kart",
+   "tier": "fps",
+   "radiusBefore": 0.6963852134133709
+  },
+  {
+   "term": "tablet",
+   "tier": "fps",
+   "radiusBefore": 0.6965528865196925
+  },
+  {
+   "term": "scoreboard",
+   "tier": "fps",
+   "radiusBefore": 0.6965586764726427
+  },
+  {
+   "term": "flamethrower",
+   "tier": "fps",
+   "radiusBefore": 0.6968962535266219
+  },
+  {
+   "term": "skeleton",
+   "tier": "fps",
+   "radiusBefore": 0.6969407774715162
+  },
+  {
+   "term": "rainbow",
+   "tier": "fps",
+   "radiusBefore": 0.696959619039548
+  },
+  {
+   "term": "ladder",
+   "tier": "fps",
+   "radiusBefore": 0.6969715596532354
+  },
+  {
+   "term": "sardine",
+   "tier": "fps",
+   "radiusBefore": 0.6971587766552522
+  },
+  {
+   "term": "roulette wheel",
+   "tier": "fps",
+   "radiusBefore": 0.6974926968827855
+  },
+  {
+   "term": "mandolin",
+   "tier": "fps",
+   "radiusBefore": 0.6976816892570934
+  },
+  {
+   "term": "checkbook",
+   "tier": "fps",
+   "radiusBefore": 0.6980156656073572
+  },
+  {
+   "term": "coil",
+   "tier": "fps",
+   "radiusBefore": 0.6981301298932197
+  },
+  {
+   "term": "bin",
+   "tier": "fps",
+   "radiusBefore": 0.6981332982348344
+  },
+  {
+   "term": "curling iron",
+   "tier": "fps",
+   "radiusBefore": 0.6982944948807174
+  },
+  {
+   "term": "weasel",
+   "tier": "fps",
+   "radiusBefore": 0.6986940784882728
+  },
+  {
+   "term": "water bottle",
+   "tier": "fps",
+   "radiusBefore": 0.6986945410966363
+  },
+  {
+   "term": "macaroni",
+   "tier": "fps",
+   "radiusBefore": 0.6987496458983832
+  },
+  {
+   "term": "raft",
+   "tier": "fps",
+   "radiusBefore": 0.6990147735783532
+  },
+  {
+   "term": "muffin",
+   "tier": "fps",
+   "radiusBefore": 0.6990658941471665
+  },
+  {
+   "term": "kayak",
+   "tier": "fps",
+   "radiusBefore": 0.6991751315119927
+  },
+  {
+   "term": "ketchup",
+   "tier": "fps",
+   "radiusBefore": 0.6993275228362096
+  },
+  {
+   "term": "urn",
+   "tier": "fps",
+   "radiusBefore": 0.6994567966276728
+  },
+  {
+   "term": "engine",
+   "tier": "fps",
+   "radiusBefore": 0.6994865452981613
+  },
+  {
+   "term": "swan",
+   "tier": "fps",
+   "radiusBefore": 0.6995534029262782
+  },
+  {
+   "term": "hawk",
+   "tier": "fps",
+   "radiusBefore": 0.6997897004911637
+  },
+  {
+   "term": "church",
+   "tier": "fps",
+   "radiusBefore": 0.6998122589706937
+  },
+  {
+   "term": "piglet",
+   "tier": "fps",
+   "radiusBefore": 0.6998287904606811
+  },
+  {
+   "term": "beetle",
+   "tier": "fps",
+   "radiusBefore": 0.7007477640804207
+  },
+  {
+   "term": "bat",
+   "tier": "fps",
+   "radiusBefore": 0.7008329237231556
+  },
+  {
+   "term": "rat",
+   "tier": "fps",
+   "radiusBefore": 0.7009095426267361
+  },
+  {
+   "term": "throne",
+   "tier": "fps",
+   "radiusBefore": 0.7009291985676198
+  },
+  {
+   "term": "torch",
+   "tier": "fps",
+   "radiusBefore": 0.7009523949302037
+  },
+  {
+   "term": "horseshoe",
+   "tier": "fps",
+   "radiusBefore": 0.7012555086752303
+  },
+  {
+   "term": "stump",
+   "tier": "fps",
+   "radiusBefore": 0.7016539196800821
+  },
+  {
+   "term": "eggplant",
+   "tier": "fps",
+   "radiusBefore": 0.7017031620200962
+  },
+  {
+   "term": "arrow",
+   "tier": "fps",
+   "radiusBefore": 0.7017120693118316
+  },
+  {
+   "term": "poppy",
+   "tier": "fps",
+   "radiusBefore": 0.7017293182805426
+  },
+  {
+   "term": "sloth",
+   "tier": "fps",
+   "radiusBefore": 0.7023816060191235
+  },
+  {
+   "term": "french fries",
+   "tier": "fps",
+   "radiusBefore": 0.7025728831992818
+  },
+  {
+   "term": "stamp",
+   "tier": "fps",
+   "radiusBefore": 0.7026085826290206
+  },
+  {
+   "term": "crystal",
+   "tier": "fps",
+   "radiusBefore": 0.7027712065707659
+  },
+  {
+   "term": "lab coat",
+   "tier": "fps",
+   "radiusBefore": 0.702924352087506
+  },
+  {
+   "term": "tambourine",
+   "tier": "fps",
+   "radiusBefore": 0.702933898711036
+  },
+  {
+   "term": "tray",
+   "tier": "fps",
+   "radiusBefore": 0.7030834165042713
+  },
+  {
+   "term": "sundial",
+   "tier": "fps",
+   "radiusBefore": 0.7033536549138903
+  },
+  {
+   "term": "fruitcake",
+   "tier": "fps",
+   "radiusBefore": 0.7034911390811442
+  },
+  {
+   "term": "blackberry",
+   "tier": "fps",
+   "radiusBefore": 0.7036523495691308
+  },
+  {
+   "term": "tie",
+   "tier": "fps",
+   "radiusBefore": 0.7037547817991617
+  },
+  {
+   "term": "grill",
+   "tier": "fps",
+   "radiusBefore": 0.7037689710491853
+  },
+  {
+   "term": "air conditioner",
+   "tier": "fps",
+   "radiusBefore": 0.7042682130756679
+  },
+  {
+   "term": "jug",
+   "tier": "fps",
+   "radiusBefore": 0.7044014091911366
+  },
+  {
+   "term": "barrel",
+   "tier": "fps",
+   "radiusBefore": 0.7047684058909621
+  },
+  {
+   "term": "grapefruit",
+   "tier": "fps",
+   "radiusBefore": 0.70478440107489
+  },
+  {
+   "term": "burrito",
+   "tier": "fps",
+   "radiusBefore": 0.7049064911951992
+  },
+  {
+   "term": "station wagon",
+   "tier": "fps",
+   "radiusBefore": 0.704917187315646
+  },
+  {
+   "term": "accordion",
+   "tier": "fps",
+   "radiusBefore": 0.7050681345570091
+  },
+  {
+   "term": "bassoon",
+   "tier": "fps",
+   "radiusBefore": 0.7052130423560283
+  },
+  {
+   "term": "juicer",
+   "tier": "fps",
+   "radiusBefore": 0.7054328259800601
+  },
+  {
+   "term": "hanger",
+   "tier": "fps",
+   "radiusBefore": 0.7055974548646126
+  },
+  {
+   "term": "sawhorse",
+   "tier": "fps",
+   "radiusBefore": 0.7056047777762771
+  },
+  {
+   "term": "piano",
+   "tier": "fps",
+   "radiusBefore": 0.7057670682401628
+  },
+  {
+   "term": "can",
+   "tier": "fps",
+   "radiusBefore": 0.7058444606868635
+  },
+  {
+   "term": "axe",
+   "tier": "fps",
+   "radiusBefore": 0.7059982872768458
+  },
+  {
+   "term": "flipper",
+   "tier": "fps",
+   "radiusBefore": 0.7060663954037198
+  },
+  {
+   "term": "sushi",
+   "tier": "fps",
+   "radiusBefore": 0.7061572020908089
+  },
+  {
+   "term": "nightshirt",
+   "tier": "fps",
+   "radiusBefore": 0.7061998771415182
+  },
+  {
+   "term": "space shuttle",
+   "tier": "fps",
+   "radiusBefore": 0.7062279134715665
+  },
+  {
+   "term": "pretzel",
+   "tier": "fps",
+   "radiusBefore": 0.7062610502319963
+  },
+  {
+   "term": "goat",
+   "tier": "fps",
+   "radiusBefore": 0.7063184143211704
+  },
+  {
+   "term": "kale",
+   "tier": "fps",
+   "radiusBefore": 0.7063574976613932
+  },
+  {
+   "term": "blender",
+   "tier": "fps",
+   "radiusBefore": 0.7068970284197083
+  },
+  {
+   "term": "yarn",
+   "tier": "fps",
+   "radiusBefore": 0.7069846658840924
+  },
+  {
+   "term": "rake",
+   "tier": "fps",
+   "radiusBefore": 0.7070058183903819
+  },
+  {
+   "term": "couch",
+   "tier": "fps",
+   "radiusBefore": 0.7072373621137209
+  },
+  {
+   "term": "vacuum",
+   "tier": "fps",
+   "radiusBefore": 0.7073463049948249
+  },
+  {
+   "term": "flute",
+   "tier": "fps",
+   "radiusBefore": 0.7074344544917144
+  },
+  {
+   "term": "turntable",
+   "tier": "fps",
+   "radiusBefore": 0.7076124183311576
+  },
+  {
+   "term": "picture frame",
+   "tier": "fps",
+   "radiusBefore": 0.708182321775621
+  },
+  {
+   "term": "cheese",
+   "tier": "fps",
+   "radiusBefore": 0.7082881306794195
+  },
+  {
+   "term": "trident",
+   "tier": "fps",
+   "radiusBefore": 0.7090517947783224
+  },
+  {
+   "term": "clover",
+   "tier": "fps",
+   "radiusBefore": 0.7095087404376665
+  },
+  {
+   "term": "moon",
+   "tier": "fps",
+   "radiusBefore": 0.7099632314583743
+  },
+  {
+   "term": "vending machine",
+   "tier": "fps",
+   "radiusBefore": 0.7099717793323969
+  },
+  {
+   "term": "eel",
+   "tier": "fps",
+   "radiusBefore": 0.7102864072004815
+  },
+  {
+   "term": "icemaker",
+   "tier": "fps",
+   "radiusBefore": 0.7103479993343619
+  },
+  {
+   "term": "lamppost",
+   "tier": "fps",
+   "radiusBefore": 0.7104110935631109
+  },
+  {
+   "term": "barn",
+   "tier": "fps",
+   "radiusBefore": 0.7105143537836072
+  },
+  {
+   "term": "easel",
+   "tier": "fps",
+   "radiusBefore": 0.711480320389436
+  },
+  {
+   "term": "baby",
+   "tier": "fps",
+   "radiusBefore": 0.7115184506968993
+  },
+  {
+   "term": "panther",
+   "tier": "fps",
+   "radiusBefore": 0.7115780857250914
+  },
+  {
+   "term": "washing machine",
+   "tier": "fps",
+   "radiusBefore": 0.711747027937822
+  },
+  {
+   "term": "snowboard",
+   "tier": "fps",
+   "radiusBefore": 0.712125415566804
+  },
+  {
+   "term": "slipper",
+   "tier": "fps",
+   "radiusBefore": 0.7121914543081922
+  },
+  {
+   "term": "jeep",
+   "tier": "fps",
+   "radiusBefore": 0.7124852652051265
+  },
+  {
+   "term": "wasp",
+   "tier": "fps",
+   "radiusBefore": 0.7125097491036151
+  },
+  {
+   "term": "lunchbox",
+   "tier": "fps",
+   "radiusBefore": 0.7127879775886576
+  },
+  {
+   "term": "duct tape",
+   "tier": "fps",
+   "radiusBefore": 0.7130706167228907
+  },
+  {
+   "term": "leaf",
+   "tier": "fps",
+   "radiusBefore": 0.7133632588288592
+  },
+  {
+   "term": "ashtray",
+   "tier": "fps",
+   "radiusBefore": 0.7135703793014202
+  },
+  {
+   "term": "mango",
+   "tier": "fps",
+   "radiusBefore": 0.7137596758573147
+  },
+  {
+   "term": "mole",
+   "tier": "fps",
+   "radiusBefore": 0.7140677027678249
+  },
+  {
+   "term": "peanut",
+   "tier": "fps",
+   "radiusBefore": 0.7142557951042907
+  },
+  {
+   "term": "sheep",
+   "tier": "fps",
+   "radiusBefore": 0.7143655119522382
+  },
+  {
+   "term": "banjo",
+   "tier": "fps",
+   "radiusBefore": 0.7144669261036721
+  },
+  {
+   "term": "shuffleboard",
+   "tier": "fps",
+   "radiusBefore": 0.7146942575301227
+  },
+  {
+   "term": "gingerbread man",
+   "tier": "fps",
+   "radiusBefore": 0.7147328792626899
+  },
+  {
+   "term": "cello",
+   "tier": "fps",
+   "radiusBefore": 0.714757897622709
+  },
+  {
+   "term": "boot",
+   "tier": "fps",
+   "radiusBefore": 0.7149822515580913
+  },
+  {
+   "term": "bench",
+   "tier": "fps",
+   "radiusBefore": 0.714989711873557
+  },
+  {
+   "term": "champagne",
+   "tier": "fps",
+   "radiusBefore": 0.7153622873586051
+  },
+  {
+   "term": "sink",
+   "tier": "fps",
+   "radiusBefore": 0.7155148991182265
+  },
+  {
+   "term": "drill",
+   "tier": "fps",
+   "radiusBefore": 0.7157967738372668
+  },
+  {
+   "term": "pistachio",
+   "tier": "fps",
+   "radiusBefore": 0.7160697075404483
+  },
+  {
+   "term": "chihuahua",
+   "tier": "fps",
+   "radiusBefore": 0.7160827529337271
+  },
+  {
+   "term": "guinea pig",
+   "tier": "fps",
+   "radiusBefore": 0.7162388758469228
+  },
+  {
+   "term": "diamond",
+   "tier": "fps",
+   "radiusBefore": 0.7162760495946833
+  },
+  {
+   "term": "olive",
+   "tier": "fps",
+   "radiusBefore": 0.7164627201936771
+  },
+  {
+   "term": "spoon",
+   "tier": "fps",
+   "radiusBefore": 0.7165612999681095
+  },
+  {
+   "term": "jellyfish",
+   "tier": "fps",
+   "radiusBefore": 0.716587048564212
+  },
+  {
+   "term": "beaver",
+   "tier": "fps",
+   "radiusBefore": 0.7166355931124555
+  },
+  {
+   "term": "chainsaw",
+   "tier": "fps",
+   "radiusBefore": 0.716763572801637
+  },
+  {
+   "term": "eagle",
+   "tier": "fps",
+   "radiusBefore": 0.7180287429210044
+  },
+  {
+   "term": "shell",
+   "tier": "fps",
+   "radiusBefore": 0.7181338327164823
+  },
+  {
+   "term": "dagger",
+   "tier": "fps",
+   "radiusBefore": 0.7182851203894706
+  },
+  {
+   "term": "snowball",
+   "tier": "fps",
+   "radiusBefore": 0.7183328126892967
+  },
+  {
+   "term": "vase",
+   "tier": "fps",
+   "radiusBefore": 0.7186718291849545
+  },
+  {
+   "term": "microphone",
+   "tier": "fps",
+   "radiusBefore": 0.7189776713866864
+  },
+  {
+   "term": "worm",
+   "tier": "fps",
+   "radiusBefore": 0.7193026309752444
+  },
+  {
+   "term": "suit",
+   "tier": "fps",
+   "radiusBefore": 0.719326811302226
+  },
+  {
+   "term": "zucchini",
+   "tier": "fps",
+   "radiusBefore": 0.7193950723972814
+  },
+  {
+   "term": "swordfish",
+   "tier": "fps",
+   "radiusBefore": 0.7202912007971702
+  },
+  {
+   "term": "traffic light",
+   "tier": "fps",
+   "radiusBefore": 0.7203697599506984
+  },
+  {
+   "term": "recliner",
+   "tier": "fps",
+   "radiusBefore": 0.72059704278883
+  },
+  {
+   "term": "lime",
+   "tier": "fps",
+   "radiusBefore": 0.72072264790677
+  },
+  {
+   "term": "medal",
+   "tier": "fps",
+   "radiusBefore": 0.7208450790309093
+  },
+  {
+   "term": "lavender",
+   "tier": "fps",
+   "radiusBefore": 0.7208602638606444
+  },
+  {
+   "term": "racket",
+   "tier": "fps",
+   "radiusBefore": 0.7211692996021066
+  },
+  {
+   "term": "cutting board",
+   "tier": "fps",
+   "radiusBefore": 0.7214658272366163
+  },
+  {
+   "term": "microwave",
+   "tier": "fps",
+   "radiusBefore": 0.7217618132983279
+  },
+  {
+   "term": "hummingbird",
+   "tier": "fps",
+   "radiusBefore": 0.722199637867201
+  },
+  {
+   "term": "nail polish",
+   "tier": "fps",
+   "radiusBefore": 0.7222702512710296
+  },
+  {
+   "term": "wheelchair",
+   "tier": "fps",
+   "radiusBefore": 0.7224208599212788
+  },
+  {
+   "term": "bull",
+   "tier": "fps",
+   "radiusBefore": 0.7227416076142897
+  },
+  {
+   "term": "machine gun",
+   "tier": "fps",
+   "radiusBefore": 0.7227859905750078
+  },
+  {
+   "term": "lantern",
+   "tier": "fps",
+   "radiusBefore": 0.7228323785437415
+  },
+  {
+   "term": "dirt bike",
+   "tier": "fps",
+   "radiusBefore": 0.7228369030217314
+  },
+  {
+   "term": "chocolate",
+   "tier": "fps",
+   "radiusBefore": 0.7231798311446577
+  },
+  {
+   "term": "fern",
+   "tier": "fps",
+   "radiusBefore": 0.7234834177036832
+  },
+  {
+   "term": "candy cane",
+   "tier": "fps",
+   "radiusBefore": 0.7235045066835285
+  },
+  {
+   "term": "rim",
+   "tier": "fps",
+   "radiusBefore": 0.7236894297397808
+  },
+  {
+   "term": "bison",
+   "tier": "fps",
+   "radiusBefore": 0.7238983411850028
+  },
+  {
+   "term": "stockings",
+   "tier": "fps",
+   "radiusBefore": 0.7239529092557098
+  },
+  {
+   "term": "water heater",
+   "tier": "fps",
+   "radiusBefore": 0.7243454615254808
+  },
+  {
+   "term": "doll",
+   "tier": "fps",
+   "radiusBefore": 0.7245211666775948
+  },
+  {
+   "term": "fork",
+   "tier": "fps",
+   "radiusBefore": 0.7245358028138664
+  },
+  {
+   "term": "paper plate",
+   "tier": "fps",
+   "radiusBefore": 0.7247198669840664
+  },
+  {
+   "term": "t shirt",
+   "tier": "fps",
+   "radiusBefore": 0.7248193838398498
+  },
+  {
+   "term": "shovel",
+   "tier": "fps",
+   "radiusBefore": 0.7248966470727146
+  },
+  {
+   "term": "parachute",
+   "tier": "fps",
+   "radiusBefore": 0.7249349240660801
+  },
+  {
+   "term": "tuba",
+   "tier": "fps",
+   "radiusBefore": 0.7251270252483577
+  },
+  {
+   "term": "firecracker",
+   "tier": "fps",
+   "radiusBefore": 0.7252064613351112
+  },
+  {
+   "term": "backpack",
+   "tier": "fps",
+   "radiusBefore": 0.725232034020099
+  },
+  {
+   "term": "campfire",
+   "tier": "fps",
+   "radiusBefore": 0.7254672642662319
+  },
+  {
+   "term": "popsicle",
+   "tier": "fps",
+   "radiusBefore": 0.7254804077368763
+  },
+  {
+   "term": "pear",
+   "tier": "fps",
+   "radiusBefore": 0.7256217382763286
+  },
+  {
+   "term": "dress",
+   "tier": "fps",
+   "radiusBefore": 0.7259485820197683
+  },
+  {
+   "term": "daisy",
+   "tier": "fps",
+   "radiusBefore": 0.725987900884147
+  },
+  {
+   "term": "snowmobile",
+   "tier": "fps",
+   "radiusBefore": 0.7260085015347832
+  },
+  {
+   "term": "keg",
+   "tier": "fps",
+   "radiusBefore": 0.726200335400511
+  },
+  {
+   "term": "tent",
+   "tier": "fps",
+   "radiusBefore": 0.7262379502092609
+  },
+  {
+   "term": "perfume",
+   "tier": "fps",
+   "radiusBefore": 0.726949450454256
+  },
+  {
+   "term": "panties",
+   "tier": "fps",
+   "radiusBefore": 0.7272893793473062
+  },
+  {
+   "term": "chicken",
+   "tier": "fps",
+   "radiusBefore": 0.7274838726583713
+  },
+  {
+   "term": "nightstand",
+   "tier": "fps",
+   "radiusBefore": 0.7276152616708534
+  },
+  {
+   "term": "combination lock",
+   "tier": "fps",
+   "radiusBefore": 0.7276415872811819
+  },
+  {
+   "term": "strawberry",
+   "tier": "fps",
+   "radiusBefore": 0.7278582235606162
+  },
+  {
+   "term": "stove",
+   "tier": "fps",
+   "radiusBefore": 0.7281197193288844
+  },
+  {
+   "term": "lettuce",
+   "tier": "fps",
+   "radiusBefore": 0.7283003388461846
+  },
+  {
+   "term": "wrench",
+   "tier": "fps",
+   "radiusBefore": 0.7283387137007997
+  },
+  {
+   "term": "cactus",
+   "tier": "fps",
+   "radiusBefore": 0.7287325945969683
+  },
+  {
+   "term": "chime",
+   "tier": "fps",
+   "radiusBefore": 0.7287754655276145
+  },
+  {
+   "term": "knife",
+   "tier": "fps",
+   "radiusBefore": 0.729008727040498
+  },
+  {
+   "term": "cockatoo",
+   "tier": "fps",
+   "radiusBefore": 0.7291748236716136
+  },
+  {
+   "term": "oyster",
+   "tier": "fps",
+   "radiusBefore": 0.7292968348247231
+  },
+  {
+   "term": "pecan",
+   "tier": "fps",
+   "radiusBefore": 0.7293943528993272
+  },
+  {
+   "term": "mattress",
+   "tier": "fps",
+   "radiusBefore": 0.7294393171274695
+  },
+  {
+   "term": "poodle",
+   "tier": "fps",
+   "radiusBefore": 0.7295207868846943
+  },
+  {
+   "term": "lightbulb",
+   "tier": "fps",
+   "radiusBefore": 0.7295909327783819
+  },
+  {
+   "term": "board game",
+   "tier": "fps",
+   "radiusBefore": 0.7296362664147807
+  },
+  {
+   "term": "squash",
+   "tier": "fps",
+   "radiusBefore": 0.7296637243127251
+  },
+  {
+   "term": "megaphone",
+   "tier": "fps",
+   "radiusBefore": 0.7298966534690017
+  },
+  {
+   "term": "binoculars",
+   "tier": "fps",
+   "radiusBefore": 0.7302663293936177
+  },
+  {
+   "term": "bolt",
+   "tier": "fps",
+   "radiusBefore": 0.7306138439529661
+  },
+  {
+   "term": "saltshaker",
+   "tier": "fps",
+   "radiusBefore": 0.7312310099924871
+  },
+  {
+   "term": "coral",
+   "tier": "fps",
+   "radiusBefore": 0.7313820591059637
+  },
+  {
+   "term": "ukulele",
+   "tier": "fps",
+   "radiusBefore": 0.7316077592440594
+  },
+  {
+   "term": "armor",
+   "tier": "fps",
+   "radiusBefore": 0.7317318848449317
+  },
+  {
+   "term": "blouse",
+   "tier": "fps",
+   "radiusBefore": 0.7317328575200638
+  },
+  {
+   "term": "crow",
+   "tier": "fps",
+   "radiusBefore": 0.7318302807272306
+  },
+  {
+   "term": "robe",
+   "tier": "fps",
+   "radiusBefore": 0.7318507938017396
+  },
+  {
+   "term": "paper bag",
+   "tier": "fps",
+   "radiusBefore": 0.7319522586057727
+  },
+  {
+   "term": "pineapple",
+   "tier": "fps",
+   "radiusBefore": 0.7319703736146993
+  },
+  {
+   "term": "telephone pole",
+   "tier": "fps",
+   "radiusBefore": 0.7321147529227404
+  },
+  {
+   "term": "doorstop",
+   "tier": "fps",
+   "radiusBefore": 0.732412350740333
+  },
+  {
+   "term": "scooter",
+   "tier": "fps",
+   "radiusBefore": 0.732735262850862
+  },
+  {
+   "term": "closet",
+   "tier": "fps",
+   "radiusBefore": 0.7328314589770072
+  },
+  {
+   "term": "caterpillar",
+   "tier": "fps",
+   "radiusBefore": 0.7330282708517835
+  },
+  {
+   "term": "cd player",
+   "tier": "fps",
+   "radiusBefore": 0.733039843794133
+  },
+  {
+   "term": "donkey",
+   "tier": "fps",
+   "radiusBefore": 0.7335452805584842
+  },
+  {
+   "term": "hook",
+   "tier": "fps",
+   "radiusBefore": 0.7337920878645577
+  },
+  {
+   "term": "triangle",
+   "tier": "fps",
+   "radiusBefore": 0.7338544157809769
+  },
+  {
+   "term": "trombone",
+   "tier": "fps",
+   "radiusBefore": 0.7354969733855565
+  },
+  {
+   "term": "yoke",
+   "tier": "fps",
+   "radiusBefore": 0.7354980555470065
+  },
+  {
+   "term": "mermaid",
+   "tier": "fps",
+   "radiusBefore": 0.735719859340947
+  },
+  {
+   "term": "peacock",
+   "tier": "fps",
+   "radiusBefore": 0.7359383214179289
+  },
+  {
+   "term": "pinwheel",
+   "tier": "fps",
+   "radiusBefore": 0.7362184463045292
+  },
+  {
+   "term": "scanner",
+   "tier": "fps",
+   "radiusBefore": 0.7363648509345609
+  },
+  {
+   "term": "bomb",
+   "tier": "fps",
+   "radiusBefore": 0.7366183725330274
+  },
+  {
+   "term": "carriage",
+   "tier": "fps",
+   "radiusBefore": 0.7369703861692491
+  },
+  {
+   "term": "jam",
+   "tier": "fps",
+   "radiusBefore": 0.7371859615959425
+  },
+  {
+   "term": "iceskate",
+   "tier": "fps",
+   "radiusBefore": 0.7371883184750194
+  },
+  {
+   "term": "walnut",
+   "tier": "fps",
+   "radiusBefore": 0.7372950122339935
+  },
+  {
+   "term": "scorpion",
+   "tier": "fps",
+   "radiusBefore": 0.7373005018528432
+  },
+  {
+   "term": "bullet",
+   "tier": "fps",
+   "radiusBefore": 0.7374046462398971
+  },
+  {
+   "term": "petri dish",
+   "tier": "fps",
+   "radiusBefore": 0.7376883835697866
+  },
+  {
+   "term": "hammer",
+   "tier": "fps",
+   "radiusBefore": 0.7377659719440991
+  },
+  {
+   "term": "sunflower",
+   "tier": "fps",
+   "radiusBefore": 0.7384272769909879
+  },
+  {
+   "term": "washboard",
+   "tier": "fps",
+   "radiusBefore": 0.7384917343313363
+  },
+  {
+   "term": "turtleneck",
+   "tier": "fps",
+   "radiusBefore": 0.7386491874218178
+  },
+  {
+   "term": "golf cart",
+   "tier": "fps",
+   "radiusBefore": 0.7388170909049714
+  },
+  {
+   "term": "lizard",
+   "tier": "fps",
+   "radiusBefore": 0.7388940874616198
+  },
+  {
+   "term": "wineglass",
+   "tier": "fps",
+   "radiusBefore": 0.7393628610651573
+  },
+  {
+   "term": "tricycle",
+   "tier": "fps",
+   "radiusBefore": 0.7393800173097351
+  },
+  {
+   "term": "toucan",
+   "tier": "fps",
+   "radiusBefore": 0.739451420166058
+  },
+  {
+   "term": "timer",
+   "tier": "fps",
+   "radiusBefore": 0.7396144537326249
+  },
+  {
+   "term": "goggles",
+   "tier": "fps",
+   "radiusBefore": 0.739871604640802
+  },
+  {
+   "term": "icepick",
+   "tier": "fps",
+   "radiusBefore": 0.7399232728256354
+  },
+  {
+   "term": "taxi",
+   "tier": "fps",
+   "radiusBefore": 0.7404237924646127
+  },
+  {
+   "term": "stopwatch",
+   "tier": "fps",
+   "radiusBefore": 0.7412449787391333
+  },
+  {
+   "term": "penholder",
+   "tier": "fps",
+   "radiusBefore": 0.7412620627080427
+  },
+  {
+   "term": "first aid kit",
+   "tier": "fps",
+   "radiusBefore": 0.7414204109091698
+  },
+  {
+   "term": "leek",
+   "tier": "fps",
+   "radiusBefore": 0.7415793245218393
+  },
+  {
+   "term": "printer",
+   "tier": "fps",
+   "radiusBefore": 0.7421219719797506
+  },
+  {
+   "term": "box",
+   "tier": "fps",
+   "radiusBefore": 0.7422223265756966
+  },
+  {
+   "term": "iron",
+   "tier": "fps",
+   "radiusBefore": 0.7423847814825895
+  },
+  {
+   "term": "latte",
+   "tier": "fps",
+   "radiusBefore": 0.7427978355468863
+  },
+  {
+   "term": "puck",
+   "tier": "fps",
+   "radiusBefore": 0.7428641153450884
+  },
+  {
+   "term": "palette",
+   "tier": "fps",
+   "radiusBefore": 0.7429579864532915
+  },
+  {
+   "term": "limousine",
+   "tier": "fps",
+   "radiusBefore": 0.7431954157656999
+  },
+  {
+   "term": "trolley",
+   "tier": "fps",
+   "radiusBefore": 0.7434363979218621
+  },
+  {
+   "term": "holster",
+   "tier": "fps",
+   "radiusBefore": 0.7435202380815117
+  },
+  {
+   "term": "seahorse",
+   "tier": "fps",
+   "radiusBefore": 0.7435820494484382
+  },
+  {
+   "term": "yak",
+   "tier": "fps",
+   "radiusBefore": 0.7441868862745095
+  },
+  {
+   "term": "beer",
+   "tier": "fps",
+   "radiusBefore": 0.7442316009217204
+  },
+  {
+   "term": "turkey",
+   "tier": "fps",
+   "radiusBefore": 0.7442710614077708
+  },
+  {
+   "term": "moose",
+   "tier": "fps",
+   "radiusBefore": 0.744398936210937
+  },
+  {
+   "term": "crate",
+   "tier": "fps",
+   "radiusBefore": 0.7445319183712
+  },
+  {
+   "term": "blowfish",
+   "tier": "fps",
+   "radiusBefore": 0.7445715417437473
+  },
+  {
+   "term": "watering can",
+   "tier": "fps",
+   "radiusBefore": 0.744641808626923
+  },
+  {
+   "term": "hedgehog",
+   "tier": "fps",
+   "radiusBefore": 0.7449434882991087
+  },
+  {
+   "term": "ladle",
+   "tier": "fps",
+   "radiusBefore": 0.7450901045531333
+  },
+  {
+   "term": "tadpole",
+   "tier": "fps",
+   "radiusBefore": 0.7451730744946214
+  },
+  {
+   "term": "slicer",
+   "tier": "fps",
+   "radiusBefore": 0.7454156561462919
+  },
+  {
+   "term": "pie",
+   "tier": "fps",
+   "radiusBefore": 0.7455128077003047
+  },
+  {
+   "term": "book",
+   "tier": "fps",
+   "radiusBefore": 0.7455297486799979
+  },
+  {
+   "term": "luggage",
+   "tier": "fps",
+   "radiusBefore": 0.7459077022656101
+  },
+  {
+   "term": "sausage",
+   "tier": "fps",
+   "radiusBefore": 0.7462427685372773
+  },
+  {
+   "term": "moth",
+   "tier": "fps",
+   "radiusBefore": 0.7462512444962723
+  },
+  {
+   "term": "doorbell",
+   "tier": "fps",
+   "radiusBefore": 0.7463228282666563
+  },
+  {
+   "term": "starfish",
+   "tier": "fps",
+   "radiusBefore": 0.7465024386404765
+  },
+  {
+   "term": "footrest",
+   "tier": "fps",
+   "radiusBefore": 0.7465601339461327
+  },
+  {
+   "term": "sundae",
+   "tier": "fps",
+   "radiusBefore": 0.7473281567243311
+  },
+  {
+   "term": "ant",
+   "tier": "fps",
+   "radiusBefore": 0.7484597621032787
+  },
+  {
+   "term": "cabbage",
+   "tier": "fps",
+   "radiusBefore": 0.7490136419264907
+  },
+  {
+   "term": "kettle",
+   "tier": "fps",
+   "radiusBefore": 0.7491593958048498
+  },
+  {
+   "term": "purse",
+   "tier": "fps",
+   "radiusBefore": 0.7493089841657927
+  },
+  {
+   "term": "fishbowl",
+   "tier": "fps",
+   "radiusBefore": 0.749628517506916
+  }
+ ]
+}

@@ -488,11 +488,49 @@ the repo). Findings:
   as human ones. Directional prior only, until live miss logs (H4)
   exist.
 
-**Next artifact:** candidate-pool file + embedding/FPS script that
-outputs the seed list and measured covering numbers at a few candidate
-similarity floors. The normalization layer above is now part of that
-scope (normalize before embedding, and apply the same normalizer to
-live queries).
+**Covering numbers measured (2026-07-20, $0 — local bge-small via
+transformers.js, same model Workers AI serves as
+`@cf/baai/bge-small-en-v1.5`).** Artifacts: `data/seed-pool/`
+(vendored source lists, `candidates.json`, `tier1.txt`, `holdout.txt`,
+`seed-list.json`, `covering-report.md` — the full pair tables live
+there), `scripts/lib/normalize.ts` (the query normalizer, pure +
+Worker-portable; applied identically to pool terms and live queries),
+`scripts/seed-pool.ts` (`npm run seed-pool`; embeddings cached
+locally, gitignored). Findings:
+
+- **Pool (H1):** Quick Draw 345 ∪ THINGS 1,854 ∪ ~110 authored
+  first-words → 1,916 deduped terms; Sonnet-subagent buildability
+  filter (16³ seed-worthiness criteria, spot-reviewed) kept **1,316**
+  — not the predicted ~400–600. Deliberate: the filter drops junk
+  *classes* (thin/material/flat/bodypart/blob…); FPS handles
+  redundancy, so over-inclusion in the sampling domain is harmless.
+- **Covering numbers (H2), Tier-1 = 79 head terms placed first:**
+  **113 seeds @ floor 0.55, 228 @ 0.60, 449 @ 0.65, 729 @ 0.70,
+  979 @ 0.75.** The "~200 library" prediction corresponds to floor
+  0.60.
+- **The floor and the display gate cannot be the same number.**
+  Eyeballed pairs: ≥~0.75 sims are defensible stand-ins
+  (pickup truck→truck .850, leopard→lion .787, teacup→coffee cup
+  .750); the 0.60–0.70 band is a coin flip (knife→sword .712 good;
+  microwave→radar .722, cow→dog .748, laptop→airplane .650 bad);
+  ≤0.60 is junk-prone (toga→fish .552). But covering the pool at
+  floor 0.75 takes 979 seeds — the whole pool. Decoupled trade
+  (gate-coverage table in the report): a **228-seed library gives
+  only 33% of remaining queries a ≥0.70 neighbor** (15% at ≥0.75); a
+  449-seed library gives 58% at ≥0.70. So the real knob-set is
+  (library size, display gate, show-nothing rate), not one floor.
+- **Holdout (19 out-of-pool queries vs the full seed list):** the
+  long tail lands well — koi fish→fish .737, race car→car .797,
+  t rex→dinosaur .803, morel mushroom→mushroom .745; the miss class
+  is exotic-specific terms (monstera deliciosa→margarita .592).
+- **Lexical-artifact caveat, survives ANY gate:** bge-small on bare
+  words has substring noise — cleat→cleaver **.823**, fork→forklift
+  .725, bat→battery .701 — above sims of genuinely good pairs. A
+  "a photo of a X" embedding template was tested and **falsified**:
+  it compresses the whole range upward and bad pairs rise *more*
+  (cleat/cleaver .923 > leopard/lion .872). Known residual: the NN
+  display will occasionally show a confidently-wrong lexical
+  neighbor regardless of gate choice.
 
 ## Spend guardrail (load-bearing)
 

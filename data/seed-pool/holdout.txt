@@ -1,0 +1,25 @@
+# Coverage validation queries (H2/"Coverage validation" in AGENTS.md): plausible
+# user queries deliberately NOT drawn from the candidate pool — tests coverage
+# against queries, not against the pool sampled from. Specialist long-tail items
+# come from the elicit1 run (2026-07-20). Entries that turn out to be pool
+# members are auto-excluded by scripts/seed-pool.ts.
+monstera deliciosa
+morel mushroom
+duck confit
+crate engine
+golden retriever
+pirate ship
+space station
+t rex
+grand piano
+race car
+garden gnome
+viking ship
+koi fish
+bonsai tree
+mars rover
+tugboat
+water tower
+gingerbread house
+dune buggy
+observatory

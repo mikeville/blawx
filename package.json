@@ -10,7 +10,8 @@
     "test": "tsx --test src/bench/*.test.ts src/voxel/*.test.ts",
     "preview": "vite preview",
     "relift": "tsx scripts/relift.ts",
-    "fa-index": "tsx scripts/build-fa-index.ts"
+    "fa-index": "tsx scripts/build-fa-index.ts",
+    "seed-pool": "tsx scripts/seed-pool.ts"
   },
   "dependencies": {
     "react": "^19.2.7",
@@ -18,6 +19,7 @@
   },
   "devDependencies": {
     "@fortawesome/fontawesome-free": "^7.3.0",
+    "@huggingface/transformers": "^4.2.0",
     "@resvg/resvg-js": "^2.6.2",
     "@types/node": "^24.13.2",
     "@types/pngjs": "^6.0.5",

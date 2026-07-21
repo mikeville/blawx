@@ -25,3 +25,6 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# seed-pool local embedding cache
+data/seed-pool/.cache-embeddings.json
