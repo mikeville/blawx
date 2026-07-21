@@ -398,6 +398,102 @@ come out fine when the front is clean).
   decent neighbor" (e.g. farthest-point sampling over ~200 candidate
   nouns); (4) color work explicitly deferred to a later session.
 
+## Pre-seed library plan (framing approved 2026-07-20)
+
+Mike signed off on the framing + hypotheses below; each H is still
+individually vetoable at build time.
+
+**Two jobs, opposite selection pressures.** A pre-seeded term is either
+(a) a **direct hit** — instant result; value scales with query
+probability mass — or (b) a **neighbor stand-in** — covers the
+generation wait via the approved NN-cache display; value scales with
+coverage of noun-space. The structural fact that resolves the tension:
+**the cache self-populates along the real query distribution** (every
+live miss becomes a permanent hit), so head-selection errors
+self-correct with traffic while coverage holes only fill if someone
+queries into one and waits. Pre-seeding's durable job is (b); (a) only
+bootstraps day one. Also load-bearing: **the UI shapes the
+distribution** — suggestion chips / autocomplete over cached terms
+convert would-be misses into hits, so selection and presentation are
+one system.
+
+**Hypotheses:**
+
+- **H1 — candidate pool.** Google Quick, Draw! categories (345 nouns
+  with proven mass demand-to-depict) ∪ THINGS dataset (1,854
+  psychology-normed concrete nameable objects) ∪ children's
+  first-words/picture-book lists, deduped, filtered to 16³-buildable
+  classes → ~400–600 candidates. No deeper user research needed beyond
+  enumerating failure classes (proper nouns/IP, abstract nouns, verbs,
+  multi-word phrases — those need a policy, not seeds).
+- **H2 — selection.** Tier 1 head (~50–80 top-demand terms, including
+  whatever the demo chips will show) + farthest-point sampling over
+  the candidate cloud **seeded with Tier 1 already placed**, computed
+  in the production embedding space (bge-small — coverage geometry
+  must match the space the NN display searches). Stopping rule: sample
+  until every candidate sits within the NN-display similarity floor of
+  some seed — the same number serves as display cutoff and stopping
+  criterion, so library size = the measured covering number at that
+  radius (~200 is a prediction to check, not an input). Tune the floor
+  by eyeballing pairs: embedding distance is semantic, not visual
+  (castle→palace is a good stand-in; castle→chess is not).
+- **H3 — presentation.** Chips + autocomplete move enough query mass
+  to hits that head-selection precision barely matters.
+- **H4 — iteration.** Log live misses; the empirical distribution
+  drives all growth after v1. Pre-seed v1 is a bootstrap, not a
+  monument.
+
+**Coverage validation:** hold out plausible queries (e.g. unselected
+Quick Draw categories) and check they land within the floor — tests
+coverage against queries, not against the pool sampled from.
+
+**Economics:** seeding runs on the probe8 subscription-subagent
+profile ($0 API); library size is bounded by per-set QA eyeball time,
+not dollars.
+
+**Elicitation experiment (run 2026-07-20, 20 subscription subagents,
+$0):** 20 personas (professionals skimming a demo, social-link
+visitors, kids/parents, hobbyists, edge-testers) each asked cold for
+their first 3 search-box queries in order + 1 mischievous query. Raw
+verbatim results: `../elicit1-results-2026-07-20.json` (kept outside
+the repo). Findings:
+
+- **Query FORM is the headline, not vocabulary — almost nobody types a
+  bare noun.** Of 60 first queries: 15 are personal/possessive ("my
+  cat", "my name", "my boss", "my dog rex", a company logo), ~14 are
+  franchise/proper nouns (millennium falcon ×3, minecraft creeper ×2,
+  death star, lightsaber, eiffel tower ×2, "1969 camaro ss"), 3 are
+  noun+scene phrases ("a fox reading a book"), and most in-scope nouns
+  arrive wrapped in articles ("a house", "a dinosaur"). **New pipeline
+  requirement surfaced:** a normalization layer (lowercase, strip
+  articles/possessives, extract head noun) in front of both exact
+  cache lookup and NN matching — it converts a large fraction of these
+  to pool hits ("my dog rex" → dog).
+- **The bare-noun head that remains matches the H1 pool:** cat ×5,
+  house ×4, dog ×4, dragon, dinosaur, birthday cake, fire truck,
+  rocket ship, chair, rose, coffee cup, lighthouse — recurring across
+  unrelated personas.
+- **Specialist long-tail validates the NN-coverage job:** "monstera
+  deliciosa", "morel mushroom", "duck confit", "ls3 crate engine" want
+  a decent neighbor (plant/mushroom/food/engine), not a seed.
+- **Failure classes, now with concrete examples needing policy calls:**
+  personalization ("my name", "my logo" — un-seedable); IP/franchise
+  (brick-culture priming makes these a top class); functional/motion
+  demands (6/20 mischief queries are "fully functional X with moving
+  parts"); scale/count demands ("exactly 1 million bricks");
+  scatology/profanity (5/20 mischief); injection strings (`<script>`,
+  SQL) — needs standard input hygiene, not policy.
+- **Caveats:** synthetic (Sonnet role-play), n=20; repeats like
+  dragon / eiffel tower / death star may reflect model priors as much
+  as human ones. Directional prior only, until live miss logs (H4)
+  exist.
+
+**Next artifact:** candidate-pool file + embedding/FPS script that
+outputs the seed list and measured covering numbers at a few candidate
+similarity floors. The normalization layer above is now part of that
+scope (normalize before embedding, and apply the same normalizer to
+live queries).
+
 ## Spend guardrail (load-bearing)
 
 **No direct Anthropic API calls during R&D.** All model interactions
