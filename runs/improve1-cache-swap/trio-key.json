@@ -1,0 +1,527 @@
+{
+ "apple-v1": {
+  "source": "challenger-b",
+  "vox": 572,
+  "comps": 1,
+  "ground": true,
+  "floats": 45
+ },
+ "apple-v2": {
+  "source": "challenger-a",
+  "vox": 550,
+  "comps": 1,
+  "ground": true,
+  "floats": 56
+ },
+ "apple-v3": {
+  "source": "incumbent",
+  "vox": 421,
+  "comps": 4,
+  "ground": true,
+  "floats": 21
+ },
+ "bowl-v1": {
+  "source": "challenger-a",
+  "vox": 336,
+  "comps": 1,
+  "ground": true,
+  "floats": 52
+ },
+ "bowl-v2": {
+  "source": "incumbent",
+  "vox": 866,
+  "comps": 2,
+  "ground": true,
+  "floats": 164
+ },
+ "bowl-v3": {
+  "source": "challenger-b",
+  "vox": 423,
+  "comps": 1,
+  "ground": true,
+  "floats": 44
+ },
+ "candy-cane-v1": {
+  "source": "challenger-b",
+  "vox": 216,
+  "comps": 1,
+  "ground": true,
+  "floats": 18
+ },
+ "candy-cane-v2": {
+  "source": "challenger-a",
+  "vox": 141,
+  "comps": 1,
+  "ground": true,
+  "floats": 10
+ },
+ "candy-cane-v3": {
+  "source": "incumbent",
+  "vox": 334,
+  "comps": 5,
+  "ground": true,
+  "floats": 127
+ },
+ "castle-v1": {
+  "source": "incumbent",
+  "vox": 464,
+  "comps": 1,
+  "ground": true,
+  "floats": 16
+ },
+ "castle-v2": {
+  "source": "challenger-b",
+  "vox": 700,
+  "comps": 1,
+  "ground": true,
+  "floats": 6
+ },
+ "castle-v3": {
+  "source": "challenger-a",
+  "vox": 740,
+  "comps": 1,
+  "ground": true,
+  "floats": 4
+ },
+ "cat-v1": {
+  "source": "challenger-a",
+  "vox": 678,
+  "comps": 1,
+  "ground": true,
+  "floats": 46
+ },
+ "cat-v2": {
+  "source": "incumbent",
+  "vox": 550,
+  "comps": 2,
+  "ground": true,
+  "floats": 60
+ },
+ "cat-v3": {
+  "source": "challenger-b",
+  "vox": 309,
+  "comps": 1,
+  "ground": true,
+  "floats": 54
+ },
+ "dragon-v1": {
+  "source": "incumbent",
+  "vox": 534,
+  "comps": 2,
+  "ground": true,
+  "floats": 114
+ },
+ "dragon-v2": {
+  "source": "challenger-a",
+  "vox": 533,
+  "comps": 1,
+  "ground": true,
+  "floats": 56
+ },
+ "dragon-v3": {
+  "source": "challenger-b",
+  "vox": 552,
+  "comps": 1,
+  "ground": true,
+  "floats": 57
+ },
+ "duck-v1": {
+  "source": "incumbent",
+  "vox": 272,
+  "comps": 1,
+  "ground": true,
+  "floats": 60
+ },
+ "duck-v2": {
+  "source": "challenger-a",
+  "vox": 556,
+  "comps": 1,
+  "ground": true,
+  "floats": 59
+ },
+ "duck-v3": {
+  "source": "challenger-b",
+  "vox": 442,
+  "comps": 1,
+  "ground": true,
+  "floats": 50
+ },
+ "frog-v1": {
+  "source": "challenger-b",
+  "vox": 572,
+  "comps": 1,
+  "ground": true,
+  "floats": 66
+ },
+ "frog-v2": {
+  "source": "incumbent",
+  "vox": 594,
+  "comps": 1,
+  "ground": true,
+  "floats": 82
+ },
+ "frog-v3": {
+  "source": "challenger-a",
+  "vox": 648,
+  "comps": 1,
+  "ground": true,
+  "floats": 54
+ },
+ "grapes-v1": {
+  "source": "incumbent",
+  "vox": 278,
+  "comps": 1,
+  "ground": true,
+  "floats": 66
+ },
+ "grapes-v2": {
+  "source": "challenger-b",
+  "vox": 634,
+  "comps": 1,
+  "ground": true,
+  "floats": 74
+ },
+ "grapes-v3": {
+  "source": "challenger-a",
+  "vox": 598,
+  "comps": 1,
+  "ground": true,
+  "floats": 60
+ },
+ "helicopter-v1": {
+  "source": "challenger-a",
+  "vox": 490,
+  "comps": 1,
+  "ground": true,
+  "floats": 79
+ },
+ "helicopter-v2": {
+  "source": "challenger-b",
+  "vox": 622,
+  "comps": 1,
+  "ground": true,
+  "floats": 85
+ },
+ "helicopter-v3": {
+  "source": "incumbent",
+  "vox": 521,
+  "comps": 2,
+  "ground": true,
+  "floats": 148
+ },
+ "ice-cream-cone-v1": {
+  "source": "incumbent",
+  "vox": 384,
+  "comps": 2,
+  "ground": true,
+  "floats": 56
+ },
+ "ice-cream-cone-v2": {
+  "source": "challenger-a",
+  "vox": 324,
+  "comps": 1,
+  "ground": true,
+  "floats": 36
+ },
+ "ice-cream-cone-v3": {
+  "source": "challenger-b",
+  "vox": 400,
+  "comps": 1,
+  "ground": true,
+  "floats": 52
+ },
+ "lighthouse-v1": {
+  "source": "challenger-b",
+  "vox": 373,
+  "comps": 1,
+  "ground": true,
+  "floats": 9
+ },
+ "lighthouse-v2": {
+  "source": "challenger-a",
+  "vox": 440,
+  "comps": 1,
+  "ground": true,
+  "floats": 24
+ },
+ "lighthouse-v3": {
+  "source": "incumbent",
+  "vox": 252,
+  "comps": 2,
+  "ground": true,
+  "floats": 12
+ },
+ "mug-v1": {
+  "source": "challenger-b",
+  "vox": 738,
+  "comps": 1,
+  "ground": true,
+  "floats": 21
+ },
+ "mug-v2": {
+  "source": "incumbent",
+  "vox": 620,
+  "comps": 2,
+  "ground": true,
+  "floats": 68
+ },
+ "mug-v3": {
+  "source": "challenger-a",
+  "vox": 544,
+  "comps": 1,
+  "ground": true,
+  "floats": 22
+ },
+ "octopus-v1": {
+  "source": "challenger-a",
+  "vox": 576,
+  "comps": 1,
+  "ground": true,
+  "floats": 58
+ },
+ "octopus-v2": {
+  "source": "challenger-b",
+  "vox": 719,
+  "comps": 1,
+  "ground": true,
+  "floats": 67
+ },
+ "octopus-v3": {
+  "source": "incumbent",
+  "vox": 290,
+  "comps": 3,
+  "ground": true,
+  "floats": 114
+ },
+ "palm-tree-v1": {
+  "source": "challenger-b",
+  "vox": 194,
+  "comps": 1,
+  "ground": true,
+  "floats": 62
+ },
+ "palm-tree-v2": {
+  "source": "challenger-a",
+  "vox": 428,
+  "comps": 1,
+  "ground": true,
+  "floats": 60
+ },
+ "palm-tree-v3": {
+  "source": "incumbent",
+  "vox": 248,
+  "comps": 8,
+  "ground": true,
+  "floats": 92
+ },
+ "pants-v1": {
+  "source": "incumbent",
+  "vox": 269,
+  "comps": 2,
+  "ground": true,
+  "floats": 15
+ },
+ "pants-v2": {
+  "source": "challenger-a",
+  "vox": 512,
+  "comps": 1,
+  "ground": true,
+  "floats": 32
+ },
+ "pants-v3": {
+  "source": "challenger-b",
+  "vox": 512,
+  "comps": 1,
+  "ground": true,
+  "floats": 32
+ },
+ "peanut-v1": {
+  "source": "challenger-a",
+  "vox": 424,
+  "comps": 1,
+  "ground": false,
+  "floats": 60
+ },
+ "peanut-v2": {
+  "source": "incumbent",
+  "vox": 233,
+  "comps": 2,
+  "ground": true,
+  "floats": 85
+ },
+ "peanut-v3": {
+  "source": "challenger-b",
+  "vox": 472,
+  "comps": 1,
+  "ground": true,
+  "floats": 52
+ },
+ "rainbow-v1": {
+  "source": "challenger-b",
+  "vox": 212,
+  "comps": 1,
+  "ground": true,
+  "floats": 16
+ },
+ "rainbow-v2": {
+  "source": "incumbent",
+  "vox": 266,
+  "comps": 4,
+  "ground": true,
+  "floats": 57
+ },
+ "rainbow-v3": {
+  "source": "challenger-a",
+  "vox": 280,
+  "comps": 1,
+  "ground": true,
+  "floats": 36
+ },
+ "robot-v1": {
+  "source": "incumbent",
+  "vox": 768,
+  "comps": 1,
+  "ground": true,
+  "floats": 96
+ },
+ "robot-v2": {
+  "source": "challenger-a",
+  "vox": 496,
+  "comps": 1,
+  "ground": true,
+  "floats": 40
+ },
+ "robot-v3": {
+  "source": "challenger-b",
+  "vox": 444,
+  "comps": 1,
+  "ground": true,
+  "floats": 52
+ },
+ "sailboat-v1": {
+  "source": "challenger-b",
+  "vox": 330,
+  "comps": 1,
+  "ground": true,
+  "floats": 32
+ },
+ "sailboat-v2": {
+  "source": "challenger-a",
+  "vox": 383,
+  "comps": 1,
+  "ground": true,
+  "floats": 48
+ },
+ "sailboat-v3": {
+  "source": "incumbent",
+  "vox": 254,
+  "comps": 2,
+  "ground": true,
+  "floats": 30
+ },
+ "snail-v1": {
+  "source": "incumbent",
+  "vox": 400,
+  "comps": 2,
+  "ground": true,
+  "floats": 48
+ },
+ "snail-v2": {
+  "source": "challenger-a",
+  "vox": 288,
+  "comps": 1,
+  "ground": true,
+  "floats": 6
+ },
+ "snail-v3": {
+  "source": "challenger-b",
+  "vox": 663,
+  "comps": 1,
+  "ground": true,
+  "floats": 73
+ },
+ "spider-v1": {
+  "source": "incumbent",
+  "vox": 471,
+  "comps": 1,
+  "ground": true,
+  "floats": 0
+ },
+ "spider-v2": {
+  "source": "challenger-a",
+  "vox": 446,
+  "comps": 1,
+  "ground": true,
+  "floats": 40
+ },
+ "spider-v3": {
+  "source": "challenger-b",
+  "vox": 460,
+  "comps": 1,
+  "ground": true,
+  "floats": 118
+ },
+ "squid-v1": {
+  "source": "incumbent",
+  "vox": 462,
+  "comps": 4,
+  "ground": true,
+  "floats": 147
+ },
+ "squid-v2": {
+  "source": "challenger-a",
+  "vox": 608,
+  "comps": 1,
+  "ground": true,
+  "floats": 56
+ },
+ "squid-v3": {
+  "source": "challenger-b",
+  "vox": 433,
+  "comps": 1,
+  "ground": true,
+  "floats": 89
+ },
+ "star-v1": {
+  "source": "challenger-a",
+  "vox": 550,
+  "comps": 1,
+  "ground": true,
+  "floats": 82
+ },
+ "star-v2": {
+  "source": "challenger-b",
+  "vox": 324,
+  "comps": 1,
+  "ground": true,
+  "floats": 58
+ },
+ "star-v3": {
+  "source": "incumbent",
+  "vox": 466,
+  "comps": 1,
+  "ground": true,
+  "floats": 74
+ },
+ "submarine-v1": {
+  "source": "challenger-b",
+  "vox": 428,
+  "comps": 1,
+  "ground": true,
+  "floats": 44
+ },
+ "submarine-v2": {
+  "source": "incumbent",
+  "vox": 223,
+  "comps": 2,
+  "ground": true,
+  "floats": 42
+ },
+ "submarine-v3": {
+  "source": "challenger-a",
+  "vox": 517,
+  "comps": 1,
+  "ground": true,
+  "floats": 48
+ }
+}

@@ -1,0 +1,6 @@
+{
+ "id": "improve1-cache-swap",
+ "label": "H-D improver — challenger vs incumbent swap on judge1-flagged terms",
+ "date": "2026-07-20",
+ "pipeline": "25 judge1-composite-flagged cache terms; 2 probe8-full-authorship challengers each (runs/improve1-16char-a/-b, subscription subagents, $0); blind 9-voter Sonnet panel ranked shuffled trios (Borda), deterministic structure guard, ties/losses keep incumbent; 20 winners written to local KV with provenance tags, incumbents backed up verbatim in incumbents/."
+}

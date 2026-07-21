@@ -610,12 +610,33 @@ those per entry (KV side-keys or metadata) so misses can be diagnosed
 and model-layer changes replayed against historical inputs. Roadmap
 item for the Worker-reshape; costs nothing per entry beyond storage.
 
-**Vetoable next bets, in dependency order:** (1) H-D — background
-improver on the ~16 judge-flagged sets: k candidate re-gens each on the
-probe8 subscription profile, composite-ranked, challenger replaces
-incumbent only if it wins and incumbents are kept for rollback;
-(2) 3-vote judge panel A/B against the judge1 benchmark; (3) wire
-`x-degraded`+judge verdict into a `provisional` flag the UI can show.
+**H-D — background improver — RAN 2026-07-20 (same session, $0 API):
+the flywheel raises quality; it does not churn.** Full write-up:
+`runs/improve1-cache-swap/RESULTS.md`. All 25 composite-flagged terms
+got 2 full-authorship challengers each (probe8 prompt v2, subscription
+subagents; `runs/improve1-16char-a`/`-b`); a blind 9-voter Sonnet
+panel ranked shuffled challenger-vs-incumbent trios (Borda, 3
+votes/term); structure guard + ties-keep-incumbent; Fable eyeball on
+all winners before the swap. Outcome: **20/25 replaced in local KV**
+(provenance-tagged, verbatim incumbent backups in the run dir), 5
+kept. Safety held: duck's canonical set won its panel; the airborne
+peanut challenger was vote-winner but structure-blocked. Both
+semantic traps fixed (castle, grapes); candy-cane/rainbow no longer
+fragments. Residuals: fish + mushroom never flagged (judge1 blind
+spots), peanut still bad, bowl weakest accept, candy-cane now blue
+(paint overlay not re-run — color session item). Methodology drift
+worth knowing: gen subagents wrote projection code instead of
+freehand masks (48/50 first-draft-clean — an agents-with-tools
+property, not a prompt gain; also a candidate Worker miss-path
+architecture: author-via-code + deterministic validation).
+
+**Vetoable next bets, in dependency order:** (1) judge2 — 3-vote
+panel + fragment-magnitude structure signal, A/B against the judge1
+benchmark (target >77%/0.61; it gates nothing until it wins there);
+(2) re-run the improver on the residuals (fish, mushroom, peanut,
+bowl) once judge2 lands; (3) wire `x-degraded`+judge verdict into a
+`provisional` flag the UI can show; (4) color session: re-run the
+paint overlay on the 20 replaced sets (candy-cane first).
 
 ## Spend guardrail (load-bearing)
 

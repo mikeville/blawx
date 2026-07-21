@@ -1,0 +1,427 @@
+{
+ "apple": {
+  "votes": {
+   "v1": 6,
+   "v2": 3,
+   "v3": 0
+  },
+  "incumbent": "v3",
+  "winner": "v1",
+  "winner_source": "challenger-b",
+  "winner_struct_ok": true,
+  "replace": true,
+  "notes": [
+   "upright rounded body with a clean stepped leaf/stem silhouette",
+   "rounded, tapering body with stem reads cleanest as a whole apple",
+   "roundest, most tapered apple body with clear stem+leaf up top"
+  ]
+ },
+ "bowl": {
+  "votes": {
+   "v1": 5,
+   "v3": 4,
+   "v2": 0
+  },
+  "incumbent": "v2",
+  "winner": "v1",
+  "winner_source": "challenger-a",
+  "winner_struct_ok": true,
+  "replace": true,
+  "notes": [
+   "smooth tapered profile reads clearly as an inverted bowl",
+   "wide-to-narrow tapered profile reads as a bowl with no disconnects",
+   "shallow wide-mouth taper reads as a bowl; v2's rim is a disconnected floating chunk"
+  ]
+ },
+ "candy-cane": {
+  "votes": {
+   "v2": 5,
+   "v1": 4,
+   "v3": 0
+  },
+  "incumbent": "v3",
+  "winner": "v2",
+  "winner_source": "challenger-a",
+  "winner_struct_ok": true,
+  "replace": true,
+  "notes": [
+   "gradual stepped curve reads as a cane hook; v3 splits into disconnected floating chunks",
+   "solid connected hook-and-shaft silhouette reads clearly as a cane",
+   "smooth stepped curve at the hook reads as a classic cane"
+  ]
+ },
+ "castle": {
+  "votes": {
+   "v3": 5,
+   "v2": 4,
+   "v1": 0
+  },
+  "incumbent": "v1",
+  "winner": "v3",
+  "winner_source": "challenger-a",
+  "winner_struct_ok": true,
+  "replace": true,
+  "notes": [
+   "crenellated towers plus an archway read unmistakably as a castle",
+   "twin towers, crenellations, and gate read clearly as a castle",
+   "crisp W-shaped battlements plus a gate opening read clearly as a castle"
+  ]
+ },
+ "cat": {
+  "votes": {
+   "v3": 6,
+   "v1": 2,
+   "v2": 1
+  },
+  "incumbent": "v2",
+  "winner": "v3",
+  "winner_source": "challenger-b",
+  "winner_struct_ok": true,
+  "replace": true,
+  "notes": [
+   "clean pointed ears, tail, and four legs read immediately as a cat",
+   "ears, arched tail, and four legs give a classic side-view cat pose",
+   "ears, curled tail and legs all connect into one clean cat silhouette"
+  ]
+ },
+ "dragon": {
+  "votes": {
+   "v3": 6,
+   "v2": 3,
+   "v1": 0
+  },
+  "incumbent": "v1",
+  "winner": "v3",
+  "winner_source": "challenger-b",
+  "winner_struct_ok": true,
+  "replace": true,
+  "notes": [
+   "spiky back ridge and legged body read as a dragon/creature; v1 breaks into two disconnected blobs",
+   "spine ridge, neck, and legs form a coherent dragon body",
+   "spiky dorsal ridge and legs read as a dragon; v1 breaks apart into disconnected pieces"
+  ]
+ },
+ "duck": {
+  "votes": {
+   "v1": 6,
+   "v3": 3,
+   "v2": 0
+  },
+  "incumbent": "v1",
+  "winner": "v1",
+  "winner_source": "incumbent",
+  "winner_struct_ok": true,
+  "replace": false,
+  "notes": [
+   "classic bill-and-tail-feather silhouette reads instantly as a duck",
+   "beak, head, and tapered tail feathers read unmistakably as a duck",
+   "classic side-profile duck with beak, rounded body and tail"
+  ]
+ },
+ "frog": {
+  "votes": {
+   "v1": 6,
+   "v3": 2,
+   "v2": 1
+  },
+  "incumbent": "v2",
+  "winner": "v1",
+  "winner_source": "challenger-b",
+  "winner_struct_ok": true,
+  "replace": true,
+  "notes": [
+   "bulging eye bumps and four splayed legs read clearly as a sitting frog",
+   "two eye bumps and four squat legs give a classic frog silhouette",
+   "symmetric eye bumps and four splayed legs give the cleanest frog read"
+  ]
+ },
+ "grapes": {
+  "votes": {
+   "v3": 5,
+   "v2": 4,
+   "v1": 0
+  },
+  "incumbent": "v1",
+  "winner": "v3",
+  "winner_source": "challenger-a",
+  "winner_struct_ok": true,
+  "replace": true,
+  "notes": [
+   "rounded, tiered cluster with a single stem reads as a grape bunch",
+   "diamond-tapered cluster with a single stem reads as a grape bunch",
+   "diamond-shaped cluster with stem and leaf reads as a grape bunch"
+  ]
+ },
+ "helicopter": {
+  "votes": {
+   "v1": 6,
+   "v2": 3,
+   "v3": 0
+  },
+  "incumbent": "v3",
+  "winner": "v1",
+  "winner_source": "challenger-a",
+  "winner_struct_ok": true,
+  "replace": true,
+  "notes": [
+   "v1's rotor-topped fuselage reads clearest as a helicopter body in iso; v3's iso collapses into disconnected-looking horizontal slabs despite a great front view",
+   "crisp top rotor bar, boxy cabin, and tail fin read immediately as a helicopter in both views",
+   "clean connected fuselage with legible rotor, tail boom, and skids"
+  ]
+ },
+ "ice-cream-cone": {
+  "votes": {
+   "v2": 6,
+   "v3": 3,
+   "v1": 0
+  },
+  "incumbent": "v1",
+  "winner": "v2",
+  "winner_source": "challenger-a",
+  "winner_struct_ok": true,
+  "replace": true,
+  "notes": [
+   "v2 keeps a wide flat scoop tapering cleanly to a single cone point, the most classic cone silhouette",
+   "rounded scoop tapers cleanly to a point, unlike v1's flat non-tapering base",
+   "single tapering mass from scoop swirl to cone tip, no gap between scoop and cone"
+  ]
+ },
+ "lighthouse": {
+  "votes": {
+   "v2": 5,
+   "v1": 3,
+   "v3": 1
+  },
+  "incumbent": "v3",
+  "winner": "v2",
+  "winner_source": "challenger-a",
+  "winner_struct_ok": true,
+  "replace": true,
+  "notes": [
+   "v1's tapered pyramidal tower plus an attached keeper's-house wing reads as a complete lighthouse scene",
+   "classic flared base, tapering tower, gallery deck and lantern cap read instantly as a lighthouse",
+   "coherent tapering tower with tiered gallery decks and solid base"
+  ]
+ },
+ "mug": {
+  "votes": {
+   "v2": 6,
+   "v3": 2,
+   "v1": 1
+  },
+  "incumbent": "v2",
+  "winner": "v2",
+  "winner_source": "incumbent",
+  "winner_struct_ok": false,
+  "replace": false,
+  "notes": [
+   "v2 is the only version with an actual perforated handle loop, the defining mug feature",
+   "only version with a visible open handle loop, the clearest grip-hole silhouette",
+   "only version with a true enclosed handle hole, the key mug signifier"
+  ]
+ },
+ "octopus": {
+  "votes": {
+   "v1": 6,
+   "v2": 3,
+   "v3": 0
+  },
+  "incumbent": "v3",
+  "winner": "v1",
+  "winner_source": "challenger-a",
+  "winner_struct_ok": true,
+  "replace": true,
+  "notes": [
+   "v1 has a clean dome head with evenly spaced trailing tentacles; v3 lies flat with holes punched through the mass, reading more like a blob than an octopus",
+   "rounded dome head with five evenly dangling tentacles gives the cleanest classic octopus silhouette",
+   "symmetric dome head with evenly spaced dangling tentacles"
+  ]
+ },
+ "palm-tree": {
+  "votes": {
+   "v1": 6,
+   "v2": 3,
+   "v3": 0
+  },
+  "incumbent": "v3",
+  "winner": "v1",
+  "winner_source": "challenger-b",
+  "winner_struct_ok": true,
+  "replace": true,
+  "notes": [
+   "v1's vertical trunk with a radiating starburst crown is the most recognizable palm silhouette; v3's diagonal broken-stick shape barely reads as a tree",
+   "straight vertical trunk with fronds radiating outward reads as the clearest palm silhouette",
+   "thin trunk topped by clearly radiating frond blades, the defining palm silhouette"
+  ]
+ },
+ "pants": {
+  "votes": {
+   "v2": 6,
+   "v3": 3,
+   "v1": 0
+  },
+  "incumbent": "v1",
+  "winner": "v2",
+  "winner_source": "challenger-a",
+  "winner_struct_ok": true,
+  "replace": true,
+  "notes": [
+   "v2 has a clean symmetric waistband with two even legs; v1's legs are uneven with a stray notch breaking the silhouette",
+   "clean waistband over two even legs with a crisp crotch cut; v1's mismatched offset legs read as disjointed",
+   "classic waistband splitting into two even legs, fully connected"
+  ]
+ },
+ "peanut": {
+  "votes": {
+   "v1": 6,
+   "v3": 3,
+   "v2": 0
+  },
+  "incumbent": "v2",
+  "winner": "v1",
+  "winner_source": "challenger-a",
+  "winner_struct_ok": false,
+  "replace": false,
+  "notes": [
+   "v1's smooth two-lobe waist reads as a classic peanut shell; v2 is just two disconnected rectangular slabs with no peanut shape",
+   "symmetric bowtie of two lobes joined by a narrow waist reads immediately as a peanut shell",
+   "symmetric pinched two-lobe shell reads cleanly as a peanut"
+  ]
+ },
+ "rainbow": {
+  "votes": {
+   "v3": 5,
+   "v1": 4,
+   "v2": 0
+  },
+  "incumbent": "v2",
+  "winner": "v3",
+  "winner_source": "challenger-a",
+  "winner_struct_ok": true,
+  "replace": true,
+  "notes": [
+   "symmetric two-legged arch with matching pillar widths",
+   "smooth symmetric arch reads instantly; v2 is a disconnected gray jumble, not an arch at all",
+   "symmetric even arch reads cleanest as a rainbow"
+  ]
+ },
+ "robot": {
+  "votes": {
+   "v3": 5,
+   "v2": 4,
+   "v1": 0
+  },
+  "incumbent": "v1",
+  "winner": "v3",
+  "winner_source": "challenger-b",
+  "winner_struct_ok": true,
+  "replace": true,
+  "notes": [
+   "clean head/torso/symmetric arms/legs silhouette",
+   "clear head/antenna, arms straight out, legs apart - classic robot pose",
+   "clear head+antenna, arm, legs in right proportion"
+  ]
+ },
+ "sailboat": {
+  "votes": {
+   "v3": 6,
+   "v1": 3,
+   "v2": 0
+  },
+  "incumbent": "v3",
+  "winner": "v3",
+  "winner_source": "incumbent",
+  "winner_struct_ok": false,
+  "replace": false,
+  "notes": [
+   "iconic twin-sail-plus-hull profile",
+   "two clean triangular sails over a hull, unmistakably a sailboat",
+   "twin sails with visible mast is the most classic sailboat silhouette"
+  ]
+ },
+ "snail": {
+  "votes": {
+   "v3": 6,
+   "v1": 2,
+   "v2": 1
+  },
+  "incumbent": "v1",
+  "winner": "v3",
+  "winner_source": "challenger-b",
+  "winner_struct_ok": true,
+  "replace": true,
+  "notes": [
+   "rounded coiled shell with clean elongated body",
+   "coiled shell, antennae, and tail all read clearly together",
+   "clear shell, eye stalks, and elongated body read immediately as a snail"
+  ]
+ },
+ "spider": {
+  "votes": {
+   "v3": 6,
+   "v1": 2,
+   "v2": 1
+  },
+  "incumbent": "v1",
+  "winner": "v3",
+  "winner_source": "challenger-b",
+  "winner_struct_ok": true,
+  "replace": true,
+  "notes": [
+   "body with legs radiating in multiple directions",
+   "multiple legs radiate from a central body at varied angles, unlike the others' blob/arch shapes",
+   "multiple articulated legs radiating from a central body read best as a spider"
+  ]
+ },
+ "squid": {
+  "votes": {
+   "v3": 5,
+   "v2": 4,
+   "v1": 0
+  },
+  "incumbent": "v1",
+  "winner": "v3",
+  "winner_source": "challenger-b",
+  "winner_struct_ok": true,
+  "replace": true,
+  "notes": [
+   "torpedo mantle with fins and dangling tentacles",
+   "bulbous mantle, fin flaps, and evenly spaced trailing tentacles read cleanly",
+   "mantle with trailing tentacle legs and fin bumps reads clearly as squid"
+  ]
+ },
+ "star": {
+  "votes": {
+   "v3": 5,
+   "v2": 4,
+   "v1": 0
+  },
+  "incumbent": "v3",
+  "winner": "v3",
+  "winner_source": "incumbent",
+  "winner_struct_ok": true,
+  "replace": false,
+  "notes": [
+   "chunky 3D extrusion with points radiating in multiple directions",
+   "top point sits clearly elevated and the two legs splay apart symmetrically, matching the classic 5-point silhouette",
+   "extruded top point and spreading arms/legs read best as a 3D star"
+  ]
+ },
+ "submarine": {
+  "votes": {
+   "v1": 6,
+   "v3": 3,
+   "v2": 0
+  },
+  "incumbent": "v2",
+  "winner": "v1",
+  "winner_source": "challenger-b",
+  "winner_struct_ok": true,
+  "replace": true,
+  "notes": [
+   "classic hull-plus-periscope-tower silhouette, fully connected",
+   "hull, conning tower, periscope, and side fins all present - v2 has a floating disconnected cube",
+   "hull with a clear conning tower/periscope is the most legible submarine"
+  ]
+ }
+}
