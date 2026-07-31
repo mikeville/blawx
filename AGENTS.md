@@ -546,18 +546,58 @@ locally, gitignored). Findings:
   can be re-measured via `SEED_POOL_MODEL=Xenova/<model> npm run
   seed-pool` (suffixed outputs, side-by-side).
 
-**Next action — seed the Tier-1 library (good fresh-session task;
-agreed 2026-07-20).** Generate authored-front sets at $0 via the
-probe8 subscription-subagent harness (prompt v2 —
-`scripts/make-probe8-prompts.ts` pattern with the `DOG_Z` exemplar;
-convert via `scripts/convert-response.ts`, validate via
-`scripts/retry-feedback.ts` with the Worker-equivalent settings;
-every batch dir needs `run.json`) for the **50 Tier-1 terms not
-already in the seed4 library** — `data/seed-pool/tier1.txt` minus
-the seed4 nouns, i.e. everything from `dog` onward in that file.
-Batch ~10–12 terms per round with contact-sheet viewer QA between
-batches (Mike's eyeball is the gate). Explicitly out of scope until
-their own sign-off: regenerating the 29 existing seed4 terms
+**Tier-1 seeding — all 50 sets authored (b1 2026-07-21, b2–b5
+2026-07-31, $0 subscription subagents).** Harness as planned: prompt
+v2 verbatim (`scripts/make-tier1-seed-prompts.ts`, `DOG_Z` exemplar,
+noun only), one subagent per term, single-shot + 1 deterministic
+retry (`retry-feedback.ts --max-depth=6`), strict hull lift via
+`convert-response.ts`. Artifacts: `runs/tier1-16char-b{1..5}/` (10
+terms each, `prompts/`, `responses-call1/`, `responses/`, `run.json`,
+per-term result JSON). Final state: **50/50 sets, every one
+`comps=1 ground=true`, 0 malformed rows, reprojection loss 0.00 on
+all three views.** Contact sheets rendered with
+`scripts/render-qa-sheet.ts <out.html> <runDir…>` (self-contained,
+iso + front-ortho per card, ⚠ on structural flags).
+
+Findings from the round:
+
+- **Prompt v2 never states the top-view row convention** (`z = 15 -
+  row`, so bounds `z:0-5` fills top rows 10–15). Three of thirty sets
+  mis-anchored that band — owl and tiger caught it on their retry,
+  **turtle burned its retry and lifted to zero voxels**. Stating the
+  convention in the b4/b5 subagent briefs eliminated the class: 0/20
+  occurrences.
+- **The `fillRatio ≥ 0.9` slab check fires on genuinely box-shaped
+  objects** (`retry-feedback.ts`, top-view branch). Truck spent both
+  attempts on it and still "failed"; the lift was fine. Skyscraper's
+  brief pre-authorized ignoring that single note. The check's own
+  wording exempts boxy objects but the script treats it as an error —
+  it is advisory in practice, not a gate.
+- **Retry consumption:** 9/30 needed the single retry (b1 0/10, b2
+  4/8, b3 3/10 [+turtle failed], b4 2/10, b5 3/10). Dominant cause is
+  enclosed holes in the front mask (bicycle crank pocket, tractor
+  wheel gap, elephant trunk shaft, bridge cable sag).
+- **Mechanical validity ≠ hull validity.** Rabbit passed the
+  validator and still lifted to 3 components (front paw's depth band
+  didn't overlap the body above it). Adding a `convert-response.ts`
+  self-check to the b4/b5 briefs caught two such cases in-agent.
+- **Provenance caveat:** the rabbit repair and the flower set were
+  produced by authoring a voxel solid in a scratch script and
+  projecting the three masks from it, not by hand-authoring masks.
+  Structurally sound, but not the same generator as the other 48.
+
+Repairs applied outside the single-retry protocol: **rabbit** (3
+components → 1, 471 vox) and **turtle** (0 → 474 vox); both
+re-verified against validator + lift + struct check.
+
+**Next action — Mike's eyeball gate on the 50-set contact sheet.**
+Render with `npx tsx scripts/render-qa-sheet.ts <out.html>
+runs/tier1-16char-b1 … b5`. Sets that read wrong go back through a
+regen pass; guitar (120 vox) is the thinnest and the first to check.
+Nothing is committed yet — `runs/tier1-16char-b*/` and the four new
+scripts (`make-tier1-seed-prompts.ts`, `render-qa-sheet.ts`,
+`_qa_pngs.ts`, `_check-struct.ts`) are untracked. Still out of scope
+until their own sign-off: regenerating the 29 existing seed4 terms
 authored-front (vetoable separate pass), KV baking, color (deferred
 2026-07-20), and the FPS-tail seeds beyond Tier 1 (blocked on Mike
 picking the (library size, display gate) operating point from the
@@ -1048,9 +1088,10 @@ verification) is moved to `docs/build-log.md` (Phase 6). Nothing there is
 required to start the next action — it's archaeology, and the load-bearing
 bits are summarized in the stage lines above.
 
-**Next action: seed the Tier-1 library** — see the "Next action" block
-at the end of the pre-seed section above (50 terms, probe8 harness,
-$0). The Worker-reshape decision below is **deferred by Mike's
+**Next action: Mike's eyeball gate on the 50-set Tier-1 contact
+sheet** — all 50 sets are authored and structurally clean; see the
+"Next action" block at the end of the pre-seed section above. The
+Worker-reshape decision below is **deferred by Mike's
 2026-07-20 direction**: option B's core (offline authored library +
 cheap live path) is common to all three branches, so seeding proceeds
 now and the A-vs-C live-miss-route choice binds only when deploy is

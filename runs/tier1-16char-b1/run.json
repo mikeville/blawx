@@ -1,0 +1,14 @@
+{
+  "id": "tier1-16char-b1",
+  "label": "tier1 seed B1 · authored-front, noun-only",
+  "date": "2026-07-21",
+  "pipeline": "Pre-seed Tier-1 library: probe8 full-authorship prompt v2 (DOG_Z exemplar, noun only, no source mask) for Tier-1 terms not in the seed4 library. Subscription subagents design all three views ($0 API, Sonnet-5 adaptive thinking); single-shot + 1 deterministic-feedback retry (retry-feedback.ts --max-depth=6); strict hull lift via convert-response.ts. Contact-sheet eyeball QA between batches.",
+  "conditions": {
+    "grid": "16",
+    "encoding": "char",
+    "model": "claude-sonnet-5",
+    "prompt": "full-authorship v2 (probe8 verbatim)",
+    "source": "none — noun only",
+    "method": "single-shot + 1 deterministic-feedback retry (retry-feedback.ts --max-depth=6); run via subscription subagents ($0, adaptive thinking)"
+  }
+}
