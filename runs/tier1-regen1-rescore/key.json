@@ -1,0 +1,67 @@
+{
+  "item01": {
+    "noun": "coffee-cup",
+    "src": "tier1-regen1-16char-a/coffee-cup",
+    "vox": 608
+  },
+  "item02": {
+    "noun": "bee",
+    "src": "tier1-regen1-16char-a/bee",
+    "vox": 558
+  },
+  "item03": {
+    "noun": "teddy-bear",
+    "src": "tier1-regen1-16char-a/teddy-bear",
+    "vox": 488
+  },
+  "item04": {
+    "noun": "pizza",
+    "src": "tier1-16char-b4/pizza",
+    "vox": 358
+  },
+  "item05": {
+    "noun": "monkey",
+    "src": "tier1-regen1-16char-b/monkey",
+    "vox": 469
+  },
+  "item06": {
+    "noun": "dog",
+    "src": "tier1-regen1-16char-a/dog",
+    "vox": 274
+  },
+  "item07": {
+    "noun": "hamburger",
+    "src": "tier1-regen1-16char-b/hamburger",
+    "vox": 480
+  },
+  "item08": {
+    "noun": "camera",
+    "src": "tier1-regen1-16char-b/camera",
+    "vox": 556
+  },
+  "item09": {
+    "noun": "shark",
+    "src": "tier1-regen1-16char-a/shark",
+    "vox": 436
+  },
+  "item10": {
+    "noun": "motorcycle",
+    "src": "tier1-regen1-16char-b/motorcycle",
+    "vox": 372
+  },
+  "item11": {
+    "noun": "banana",
+    "src": "tier1-regen1-16char-a/banana",
+    "vox": 380
+  },
+  "item12": {
+    "noun": "crown",
+    "src": "tier1-regen1-16char-b/crown",
+    "vox": 532
+  },
+  "item13": {
+    "noun": "dolphin",
+    "src": "tier1-regen1-16char-b/dolphin",
+    "vox": 388
+  }
+}

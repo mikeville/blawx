@@ -1,0 +1,14 @@
+{
+  "id": "tier1-regen1-16char-a",
+  "label": "tier1 regen1 challengers arm A · blindpanel-flagged terms",
+  "date": "2026-08-05",
+  "pipeline": "Approved Tier-1 regen round: prompt v2 amended with pre-authoring declarations (feature / pose / depth plan), a numeric top-view row convention, and a wheels-as-proud-masses vehicle clause, over the 13 sets flagged by the tier1-blindpanel hindsight pass. Two identical arms give each term two independent challengers; a blind 2-voter free-naming panel ranks challenger vs incumbent with a structure guard, ties keep incumbent. Subscription subagents, $0 API.",
+  "conditions": {
+    "grid": "16",
+    "encoding": "char",
+    "model": "claude-sonnet-5",
+    "prompt": "full-authorship v2 + regen1 amendments (H-DEPTH/H-CARICATURE/H-POSE/H-WHEELS)",
+    "source": "none — noun only",
+    "method": "single-shot + 1 deterministic-feedback retry (retry-feedback.ts --max-depth=6) with convert-response self-check incl. median-column-depth advisory; run via subscription subagents ($0, adaptive thinking)"
+  }
+}

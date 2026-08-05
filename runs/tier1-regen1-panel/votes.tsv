@@ -1,0 +1,40 @@
+item	noun	src	voter1	conf1	voter2	conf2
+item01	shark	tier1-regen1-16char-b/shark	robot	medium	robot	low
+item02	hamburger	tier1-16char-b4/hamburger	book	low	building	low
+item03	pizza	tier1-regen1-16char-a/pizza	staircase	high	cake	medium
+item04	hamburger	tier1-regen1-16char-b/hamburger	building	low	building	low
+item05	camera	tier1-regen1-16char-b/camera	train	low	suitcase	low
+item06	motorcycle	tier1-regen1-16char-a/motorcycle	gate	low	arch	low
+item07	monkey	tier1-16char-b3/monkey	unclear, castle	low	robot	low
+item08	banana	tier1-regen1-16char-a/banana	fish	medium	crystal	low
+item09	teddy-bear	tier1-regen1-16char-b/teddy-bear	unclear, building	low	building	low
+item10	dolphin	tier1-16char-b3/dolphin	staircase	medium	castle	low
+item11	dolphin	tier1-regen1-16char-b/dolphin	city skyline	medium	skyscraper	low
+item12	dog	tier1-regen1-16char-b/dog	deer	medium	deer	medium
+item13	banana	tier1-regen1-16char-b/banana	staircase	high	staircase	medium
+item14	teddy-bear	tier1-regen1-16char-a/teddy-bear	unclear, robot	low	robot	low
+item15	banana	tier1-16char-b4/banana	staircase	high	staircase	high
+item16	crown	tier1-regen1-16char-a/crown	city skyline	medium	skyline	low
+item17	motorcycle	tier1-regen1-16char-b/motorcycle	truck	low	car	low
+item18	coffee-cup	tier1-regen1-16char-a/coffee-cup	building	low	building	low
+item19	pizza	tier1-regen1-16char-b/pizza	mountain	medium	pyramid	low
+item20	monkey	tier1-regen1-16char-b/monkey	robot	medium	robot	low
+item21	dog	tier1-16char-b1/dog	staircase	medium	staircase	low
+item22	camera	tier1-regen1-16char-a/camera	suitcase	medium	suitcase	medium
+item23	motorcycle	tier1-16char-b2/motorcycle	unclear, castle	low	building	low
+item24	coffee-cup	tier1-16char-b1/coffee-cup	tower	medium	tower	medium
+item25	teddy-bear	tier1-16char-b5/teddy-bear	robot	low	robot	low
+item26	camera	tier1-16char-b5/camera	building	low	sofa	low
+item27	bee	tier1-16char-b3/bee	unclear, robot	low	animal	low
+item28	bee	tier1-regen1-16char-a/bee	dinosaur	medium	dog	low
+item29	hamburger	tier1-regen1-16char-a/hamburger	unclear, building	low	building	low
+item30	bee	tier1-regen1-16char-b/bee	dinosaur	low	dog	low
+item31	pizza	tier1-16char-b4/pizza	mountain	medium	pyramid	low
+item32	coffee-cup	tier1-regen1-16char-b/coffee-cup	building	low	boot	medium
+item33	shark	tier1-regen1-16char-a/shark	unclear, castle	low	castle	low
+item34	crown	tier1-16char-b5/crown	unclear, tower	low	tower	low
+item35	dolphin	tier1-regen1-16char-a/dolphin	mountain	low	rock formation	low
+item36	crown	tier1-regen1-16char-b/crown	city skyline	high	skyline	medium
+item37	monkey	tier1-regen1-16char-a/monkey	teapot	medium	pitcher	medium
+item38	shark	tier1-16char-b3/shark	unclear, castle	low	robot	low
+item39	dog	tier1-regen1-16char-a/dog	horse	medium	dog	medium

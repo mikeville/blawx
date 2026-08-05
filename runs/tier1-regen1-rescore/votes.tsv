@@ -1,0 +1,14 @@
+item	noun	src	voter1	conf1	voter2	conf2
+item01	coffee-cup	tier1-regen1-16char-a/coffee-cup	stepped pedestal	low	building	low
+item02	bee	tier1-regen1-16char-a/bee	crown	medium	animal	low
+item03	teddy-bear	tier1-regen1-16char-a/teddy-bear	robot	low	robot	low
+item04	pizza	tier1-16char-b4/pizza	fan	low	pyramid	low
+item05	monkey	tier1-regen1-16char-b/monkey	robot	low	robot	medium
+item06	dog	tier1-regen1-16char-a/dog	horse	low	horse	medium
+item07	hamburger	tier1-regen1-16char-b/hamburger	toaster	low	robot	low
+item08	camera	tier1-regen1-16char-b/camera	camera	medium	camera	medium
+item09	shark	tier1-regen1-16char-a/shark	castle	medium	castle	low
+item10	motorcycle	tier1-regen1-16char-b/motorcycle	bench	low	hammer	low
+item11	banana	tier1-regen1-16char-a/banana	paw	low	crown	low
+item12	crown	tier1-regen1-16char-b/crown	skyline	medium	skyline	medium
+item13	dolphin	tier1-regen1-16char-b/dolphin	staircase	medium	staircase	medium

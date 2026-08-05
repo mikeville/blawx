@@ -1,0 +1,197 @@
+{
+  "item01": {
+    "noun": "shark",
+    "src": "tier1-regen1-16char-b/shark",
+    "vox": 364
+  },
+  "item02": {
+    "noun": "hamburger",
+    "src": "tier1-16char-b4/hamburger",
+    "vox": 948
+  },
+  "item03": {
+    "noun": "pizza",
+    "src": "tier1-regen1-16char-a/pizza",
+    "vox": 294
+  },
+  "item04": {
+    "noun": "hamburger",
+    "src": "tier1-regen1-16char-b/hamburger",
+    "vox": 480
+  },
+  "item05": {
+    "noun": "camera",
+    "src": "tier1-regen1-16char-b/camera",
+    "vox": 556
+  },
+  "item06": {
+    "noun": "motorcycle",
+    "src": "tier1-regen1-16char-a/motorcycle",
+    "vox": 392
+  },
+  "item07": {
+    "noun": "monkey",
+    "src": "tier1-16char-b3/monkey",
+    "vox": 437
+  },
+  "item08": {
+    "noun": "banana",
+    "src": "tier1-regen1-16char-a/banana",
+    "vox": 380
+  },
+  "item09": {
+    "noun": "teddy-bear",
+    "src": "tier1-regen1-16char-b/teddy-bear",
+    "vox": 592
+  },
+  "item10": {
+    "noun": "dolphin",
+    "src": "tier1-16char-b3/dolphin",
+    "vox": 558
+  },
+  "item11": {
+    "noun": "dolphin",
+    "src": "tier1-regen1-16char-b/dolphin",
+    "vox": 388
+  },
+  "item12": {
+    "noun": "dog",
+    "src": "tier1-regen1-16char-b/dog",
+    "vox": 464
+  },
+  "item13": {
+    "noun": "banana",
+    "src": "tier1-regen1-16char-b/banana",
+    "vox": 331
+  },
+  "item14": {
+    "noun": "teddy-bear",
+    "src": "tier1-regen1-16char-a/teddy-bear",
+    "vox": 488
+  },
+  "item15": {
+    "noun": "banana",
+    "src": "tier1-16char-b4/banana",
+    "vox": 256
+  },
+  "item16": {
+    "noun": "crown",
+    "src": "tier1-regen1-16char-a/crown",
+    "vox": 680
+  },
+  "item17": {
+    "noun": "motorcycle",
+    "src": "tier1-regen1-16char-b/motorcycle",
+    "vox": 372
+  },
+  "item18": {
+    "noun": "coffee-cup",
+    "src": "tier1-regen1-16char-a/coffee-cup",
+    "vox": 608
+  },
+  "item19": {
+    "noun": "pizza",
+    "src": "tier1-regen1-16char-b/pizza",
+    "vox": 458
+  },
+  "item20": {
+    "noun": "monkey",
+    "src": "tier1-regen1-16char-b/monkey",
+    "vox": 469
+  },
+  "item21": {
+    "noun": "dog",
+    "src": "tier1-16char-b1/dog",
+    "vox": 288
+  },
+  "item22": {
+    "noun": "camera",
+    "src": "tier1-regen1-16char-a/camera",
+    "vox": 512
+  },
+  "item23": {
+    "noun": "motorcycle",
+    "src": "tier1-16char-b2/motorcycle",
+    "vox": 432
+  },
+  "item24": {
+    "noun": "coffee-cup",
+    "src": "tier1-16char-b1/coffee-cup",
+    "vox": 582
+  },
+  "item25": {
+    "noun": "teddy-bear",
+    "src": "tier1-16char-b5/teddy-bear",
+    "vox": 688
+  },
+  "item26": {
+    "noun": "camera",
+    "src": "tier1-16char-b5/camera",
+    "vox": 612
+  },
+  "item27": {
+    "noun": "bee",
+    "src": "tier1-16char-b3/bee",
+    "vox": 538
+  },
+  "item28": {
+    "noun": "bee",
+    "src": "tier1-regen1-16char-a/bee",
+    "vox": 558
+  },
+  "item29": {
+    "noun": "hamburger",
+    "src": "tier1-regen1-16char-a/hamburger",
+    "vox": 682
+  },
+  "item30": {
+    "noun": "bee",
+    "src": "tier1-regen1-16char-b/bee",
+    "vox": 392
+  },
+  "item31": {
+    "noun": "pizza",
+    "src": "tier1-16char-b4/pizza",
+    "vox": 358
+  },
+  "item32": {
+    "noun": "coffee-cup",
+    "src": "tier1-regen1-16char-b/coffee-cup",
+    "vox": 489
+  },
+  "item33": {
+    "noun": "shark",
+    "src": "tier1-regen1-16char-a/shark",
+    "vox": 436
+  },
+  "item34": {
+    "noun": "crown",
+    "src": "tier1-16char-b5/crown",
+    "vox": 294
+  },
+  "item35": {
+    "noun": "dolphin",
+    "src": "tier1-regen1-16char-a/dolphin",
+    "vox": 348
+  },
+  "item36": {
+    "noun": "crown",
+    "src": "tier1-regen1-16char-b/crown",
+    "vox": 532
+  },
+  "item37": {
+    "noun": "monkey",
+    "src": "tier1-regen1-16char-a/monkey",
+    "vox": 656
+  },
+  "item38": {
+    "noun": "shark",
+    "src": "tier1-16char-b3/shark",
+    "vox": 562
+  },
+  "item39": {
+    "noun": "dog",
+    "src": "tier1-regen1-16char-a/dog",
+    "vox": 274
+  }
+}

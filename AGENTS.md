@@ -20,11 +20,15 @@ untried.
 | **Seed library** | seed4 (29 terms) + **Tier-1: 50/50 authored, all structurally clean** as of 2026-07-31. |
 | **Blocked on** | Mike's eyeball gate on the Tier-1 contact sheet; four open calls listed below. |
 
-**Next action — run the approved Tier-1 regen round** (Mike, 2026-08-05;
-plan at the end of the pre-seed library thread below). Mike's eyeball
-gate on the 50-set contact sheet is still pending in parallel
-(`npm run dev`, contact-sheet viewer, **blind** toggle) and can add or
-remove flags from the regen list at any point.
+**Next action — Mike's eyeball on the regen1 winners.** The approved
+regen round ran 2026-08-05 (`runs/tier1-regen1-panel/RESULTS.md`): 26/26
+challengers structurally clean, 12 proposed replacements (camera and dog
+strong, motorcycle/crown good, 8 marginal-to-weak), pizza keeps its
+incumbent. **No swap performed** — view `runs/tier1-regen1-sheet.html`
+plus the trio renders (`runs/tier1-regen1-panel/renders/` with
+`key.json`) and rule per term. The original 50-set eyeball gate
+(`npm run dev`, contact-sheet viewer, **blind** toggle) remains pending
+in parallel and can re-flag any set.
 
 **Open calls — Mike's, no recommendation implied.** Each is stated in full
 further down.
@@ -257,26 +261,35 @@ pose rationale; wheels-as-proud-masses; keep the 2-voter panel as the
 per-batch regen ranker) are stated falsifiably in
 `runs/tier1-blindpanel/RESULTS.md`.
 
-**Approved regen round (Mike, 2026-08-05) — not yet run:**
+**Regen round (approved and RUN 2026-08-05,
+`runs/tier1-regen1-panel/RESULTS.md`).** All four approved steps
+executed: amended brief generator
+(`scripts/make-tier1-regen-prompts.ts` — declaration lines for
+feature/pose/depth-plan, numeric top-view convention, vehicle wheels
+clause), median-column-depth advisory added to `convert-response.ts`
+(warn ≥ 12, advisory only — it caught two slabs in-agent), 26
+challengers authored clean (tier1 protocol, 7/26 used the retry), blind
+2-voter panel over 39 trios plus a fresh 2-voter re-score of winners.
+Outcome: **12 proposed replacements, 1 keep (pizza), no swap performed —
+blocked on Mike's eyeball** (see Next action). Headlines: camera
+challenger free-names as "camera" by both fresh voters (strict
+wrong→right); dog gets a strict blind hit and quadruped consensus;
+coffee-cup medDepth 16→9 and hamburger 15→9 with slab-consensus broken.
+Hypothesis verdicts: **H-DEPTH supported; H-CARICATURE mixed** (a
+quadruped, not the right one — species still collapses in gray);
+**H-POSE falsified on pizza** (both challengers re-chose the upright
+slice despite the pose line; a term-specific pose directive is the next
+escalation) but banana improved; **H-WHEELS partially supported**
+(truck/car in panel, regressed in re-score); **H-PANEL kept** with the
+caveat that n=2 wrong-consensus is a flag, not a verdict. Also found: 3
+of 50 shipped b1 JSONs (airplane, coffee-cup, train) don't reproduce
+from their stored responses — shipped JSONs stay the incumbents of
+record.
 
-1. Amend the authoring brief template (prompt v2 + the b4/b5 additions;
-   generator: `scripts/make-improve1-prompts.ts` or a tier1 variant) to
-   require three pre-authoring declarations — exaggerated identity
-   feature, pose + 30°-iso rationale, per-region depth plan — plus the
-   wheels-as-proud-masses clause for vehicle terms.
-2. Add a median-column-depth advisory (warn ≥ 12 on non-boxy terms) to
-   the `convert-response.ts` self-check the briefs already use, so
-   authoring agents catch their own slabs in-agent.
-3. Regen the 13 flagged sets improve1-style: 2 challengers each ($0
-   subscription subagents), blind 2-voter free-name panel scoring
-   challenger vs incumbent, structure guard, ties keep incumbent. No
-   swap into the library without Mike's eyeball on winners.
-4. Re-score winners with the same panel; the wrong-consensus rate is
-   the falsifier for each hypothesis. Write up as a new run dir
-   (RESULTS.md) and update this thread.
-
-If the hypotheses hold, the amended brief becomes the default for
-FPS-tail batches once open call 2 picks an operating point.
+If Mike's eyeball confirms the winners, the amended brief becomes the
+default for FPS-tail batches once open call 2 picks an operating point;
+the swap itself (local KV + run-dir bookkeeping) is a mechanical
+follow-up.
 
 **Query form matters more than vocabulary** (20-persona elicitation,
 2026-07-20, synthetic, n=20 — directional only). Almost nobody types a

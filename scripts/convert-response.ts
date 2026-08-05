@@ -64,6 +64,33 @@ if (missing.length > 0) {
   if (voxels.length === 0) notes.push('hull collapsed to zero voxels');
 }
 
+// Median column depth (y-span per occupied (x,z) footprint column) — the
+// discriminating stat for the tier1-blindpanel slab class, which the top-view
+// fillRatio check misses. Advisory only: warn at ≥ 12 unless the object is
+// genuinely box-shaped (bus, castle, skyscraper legitimately sit that high).
+const MED_DEPTH_WARN = 12;
+let medianColumnDepth = 0;
+if (voxels.length > 0) {
+  const spans = new Map<string, { min: number; max: number }>();
+  for (const [x, y, z] of voxels) {
+    const k = `${x},${z}`;
+    const s = spans.get(k);
+    if (!s) spans.set(k, { min: y, max: y });
+    else {
+      if (y < s.min) s.min = y;
+      if (y > s.max) s.max = y;
+    }
+  }
+  const sorted = [...spans.values()].map((s) => s.max - s.min + 1).sort((a, b) => a - b);
+  medianColumnDepth = sorted[Math.floor(sorted.length / 2)];
+  if (medianColumnDepth >= MED_DEPTH_WARN) {
+    notes.push(
+      `advisory: median column depth ${medianColumnDepth} ≥ ${MED_DEPTH_WARN} — ` +
+        `reads as a monolithic slab in iso unless the object is genuinely box-shaped; vary per-part extents`,
+    );
+  }
+}
+
 const result: BenchResult = {
   noun,
   size,
@@ -83,6 +110,7 @@ writeFileSync(join(runDir, `${slug}.json`), JSON.stringify(result));
 const fmt = (n: number) => n.toFixed(2);
 console.log(
   `${manifest.id}/${noun}: ${voxels.length} voxels, ${malformedRows} malformed rows, ` +
-    `loss f=${fmt(reprojectionLoss.front)} s=${fmt(reprojectionLoss.side)} t=${fmt(reprojectionLoss.top)}` +
+    `loss f=${fmt(reprojectionLoss.front)} s=${fmt(reprojectionLoss.side)} t=${fmt(reprojectionLoss.top)} ` +
+    `medDepth=${medianColumnDepth}` +
     (notes.length > 0 ? ` — ${notes.join('; ')}` : ''),
 );
