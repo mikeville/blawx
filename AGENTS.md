@@ -20,11 +20,11 @@ untried.
 | **Seed library** | seed4 (29 terms) + **Tier-1: 50/50 authored, all structurally clean** as of 2026-07-31. |
 | **Blocked on** | Mike's eyeball gate on the Tier-1 contact sheet; four open calls listed below. |
 
-**Next action — Mike's eyeball gate on the 50-set Tier-1 contact sheet.**
-`npm run dev`, open the contact-sheet viewer, use the **blind** toggle.
-The five `tier1-16char-b*` runs load automatically. Sets that read wrong
-go back through a regen pass (the improve1 harness takes a flag list);
-`guitar` (120 vox) is the thinnest and the first to check.
+**Next action — run the approved Tier-1 regen round** (Mike, 2026-08-05;
+plan at the end of the pre-seed library thread below). Mike's eyeball
+gate on the 50-set contact sheet is still pending in parallel
+(`npm run dev`, contact-sheet viewer, **blind** toggle) and can add or
+remove flags from the regen list at any point.
 
 **Open calls — Mike's, no recommendation implied.** Each is stated in full
 further down.
@@ -232,6 +232,51 @@ Findings from the round:
 
 Repairs outside the single-retry protocol: **rabbit** (3 components → 1,
 471 vox) and **turtle** (0 → 474 vox).
+
+**Hindsight judgment pass (2026-08-05, `runs/tier1-blindpanel/`).** All
+50 sets rendered through the production iso renderer, judged by a
+2-voter blind free-naming panel ($0 Sonnet subagents) plus a
+target-aware Fable eyeball. Verdicts: **15 clean / 22 marginal / 13
+flagged** (flags: banana, bee, camera, coffee-cup, crown, dog, dolphin,
+hamburger, monkey, motorcycle, pizza, shark, teddy-bear). Blind
+free-naming is a stress ranker, not a bar — 6/100 strict hits, but the
+number is not comparable to judge1's 81% forced-choice. The strongest
+bad-signal found: **cross-voter wrong-consensus** (both voters converge
+on the same wrong object — rose→key, pumpkin→battery, truck→table),
+which structure checks can never catch. Failure classes, with members
+and evidence: (A) full-depth front-mask extrusions reading as slabs —
+median column depth is the discriminating stat, the fillRatio check
+misses all of them; (B) species collapse on gray quadrupeds — identity
+survives only via one exaggerated silhouette feature (rabbit's ears,
+dinosaur's neck); (C) flat/radial objects posed wrong for iso (pizza on
+its tip, sun lying flat); (D) vehicle wheels carved as notches reading
+as furniture legs; (E) wrong-gestalt mimicry on structurally clean
+sets. Five vetoable improvement hypotheses for the next batch (depth
+plan in brief + median-depth advisory; named-caricature rule; explicit
+pose rationale; wheels-as-proud-masses; keep the 2-voter panel as the
+per-batch regen ranker) are stated falsifiably in
+`runs/tier1-blindpanel/RESULTS.md`.
+
+**Approved regen round (Mike, 2026-08-05) — not yet run:**
+
+1. Amend the authoring brief template (prompt v2 + the b4/b5 additions;
+   generator: `scripts/make-improve1-prompts.ts` or a tier1 variant) to
+   require three pre-authoring declarations — exaggerated identity
+   feature, pose + 30°-iso rationale, per-region depth plan — plus the
+   wheels-as-proud-masses clause for vehicle terms.
+2. Add a median-column-depth advisory (warn ≥ 12 on non-boxy terms) to
+   the `convert-response.ts` self-check the briefs already use, so
+   authoring agents catch their own slabs in-agent.
+3. Regen the 13 flagged sets improve1-style: 2 challengers each ($0
+   subscription subagents), blind 2-voter free-name panel scoring
+   challenger vs incumbent, structure guard, ties keep incumbent. No
+   swap into the library without Mike's eyeball on winners.
+4. Re-score winners with the same panel; the wrong-consensus rate is
+   the falsifier for each hypothesis. Write up as a new run dir
+   (RESULTS.md) and update this thread.
+
+If the hypotheses hold, the amended brief becomes the default for
+FPS-tail batches once open call 2 picks an operating point.
 
 **Query form matters more than vocabulary** (20-persona elicitation,
 2026-07-20, synthetic, n=20 — directional only). Almost nobody types a

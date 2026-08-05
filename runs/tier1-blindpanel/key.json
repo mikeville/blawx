@@ -1,0 +1,252 @@
+{
+  "item01": {
+    "noun": "dolphin",
+    "run": "b3",
+    "vox": 558
+  },
+  "item02": {
+    "noun": "skyscraper",
+    "run": "b5",
+    "vox": 557
+  },
+  "item03": {
+    "noun": "teddy-bear",
+    "run": "b5",
+    "vox": 688
+  },
+  "item04": {
+    "noun": "turtle",
+    "run": "b3",
+    "vox": 474
+  },
+  "item05": {
+    "noun": "shark",
+    "run": "b3",
+    "vox": 562
+  },
+  "item06": {
+    "noun": "bridge",
+    "run": "b5",
+    "vox": 592
+  },
+  "item07": {
+    "noun": "coffee-cup",
+    "run": "b1",
+    "vox": 582
+  },
+  "item08": {
+    "noun": "apple",
+    "run": "b4",
+    "vox": 400
+  },
+  "item09": {
+    "noun": "banana",
+    "run": "b4",
+    "vox": 256
+  },
+  "item10": {
+    "noun": "bus",
+    "run": "b2",
+    "vox": 944
+  },
+  "item11": {
+    "noun": "bee",
+    "run": "b3",
+    "vox": 538
+  },
+  "item12": {
+    "noun": "camera",
+    "run": "b5",
+    "vox": 612
+  },
+  "item13": {
+    "noun": "star",
+    "run": "b4",
+    "vox": 368
+  },
+  "item14": {
+    "noun": "dog",
+    "run": "b1",
+    "vox": 288
+  },
+  "item15": {
+    "noun": "windmill",
+    "run": "b5",
+    "vox": 568
+  },
+  "item16": {
+    "noun": "snowman",
+    "run": "b4",
+    "vox": 624
+  },
+  "item17": {
+    "noun": "dinosaur",
+    "run": "b1",
+    "vox": 354
+  },
+  "item18": {
+    "noun": "eiffel-tower",
+    "run": "b5",
+    "vox": 317
+  },
+  "item19": {
+    "noun": "helicopter",
+    "run": "b2",
+    "vox": 506
+  },
+  "item20": {
+    "noun": "sun",
+    "run": "b4",
+    "vox": 444
+  },
+  "item21": {
+    "noun": "motorcycle",
+    "run": "b2",
+    "vox": 432
+  },
+  "item22": {
+    "noun": "whale",
+    "run": "b3",
+    "vox": 411
+  },
+  "item23": {
+    "noun": "key",
+    "run": "b5",
+    "vox": 184
+  },
+  "item24": {
+    "noun": "train",
+    "run": "b1",
+    "vox": 630
+  },
+  "item25": {
+    "noun": "hamburger",
+    "run": "b4",
+    "vox": 948
+  },
+  "item26": {
+    "noun": "bicycle",
+    "run": "b2",
+    "vox": 212
+  },
+  "item27": {
+    "noun": "fire-truck",
+    "run": "b1",
+    "vox": 630
+  },
+  "item28": {
+    "noun": "umbrella",
+    "run": "b5",
+    "vox": 292
+  },
+  "item29": {
+    "noun": "crown",
+    "run": "b5",
+    "vox": 294
+  },
+  "item30": {
+    "noun": "butterfly",
+    "run": "b3",
+    "vox": 276
+  },
+  "item31": {
+    "noun": "owl",
+    "run": "b3",
+    "vox": 466
+  },
+  "item32": {
+    "noun": "boat",
+    "run": "b1",
+    "vox": 448
+  },
+  "item33": {
+    "noun": "bear",
+    "run": "b2",
+    "vox": 684
+  },
+  "item34": {
+    "noun": "birthday-cake",
+    "run": "b1",
+    "vox": 744
+  },
+  "item35": {
+    "noun": "pumpkin",
+    "run": "b4",
+    "vox": 936
+  },
+  "item36": {
+    "noun": "rose",
+    "run": "b1",
+    "vox": 226
+  },
+  "item37": {
+    "noun": "castle",
+    "run": "b1",
+    "vox": 828
+  },
+  "item38": {
+    "noun": "lion",
+    "run": "b3",
+    "vox": 565
+  },
+  "item39": {
+    "noun": "airplane",
+    "run": "b1",
+    "vox": 296
+  },
+  "item40": {
+    "noun": "tractor",
+    "run": "b2",
+    "vox": 655
+  },
+  "item41": {
+    "noun": "tiger",
+    "run": "b3",
+    "vox": 556
+  },
+  "item42": {
+    "noun": "monkey",
+    "run": "b3",
+    "vox": 437
+  },
+  "item43": {
+    "noun": "submarine",
+    "run": "b2",
+    "vox": 289
+  },
+  "item44": {
+    "noun": "rabbit",
+    "run": "b2",
+    "vox": 471
+  },
+  "item45": {
+    "noun": "crab",
+    "run": "b4",
+    "vox": 378
+  },
+  "item46": {
+    "noun": "truck",
+    "run": "b2",
+    "vox": 636
+  },
+  "item47": {
+    "noun": "guitar",
+    "run": "b5",
+    "vox": 120
+  },
+  "item48": {
+    "noun": "flower",
+    "run": "b4",
+    "vox": 372
+  },
+  "item49": {
+    "noun": "pizza",
+    "run": "b4",
+    "vox": 358
+  },
+  "item50": {
+    "noun": "elephant",
+    "run": "b2",
+    "vox": 648
+  }
+}
