@@ -17,18 +17,17 @@ untried.
 | **Front-end** | Complete through Stage 5 (mobile-first LEGO-manual surface, persistent iso stage, streamed build log, stop-motion pass). |
 | **Geometry pipeline** | Settled. 16³ char encoding, deterministic validator + one feedback retry, strict hull lift. |
 | **Live generation** | ON locally (Worker at `../api`, bills the API key). Not deployed. |
-| **Seed library** | seed4 (29 terms) + **Tier-1: 50/50 authored, all structurally clean** as of 2026-07-31. |
+| **Seed library** | seed4 (29 terms) + **Tier-1: 50/50 authored** + **Tier-2 b1: 25/25 authored**, all structurally clean, as of 2026-08-05. |
 | **Blocked on** | Mike's eyeball gate on the Tier-1 contact sheet; four open calls listed below. |
 
-**Next action — Mike's eyeball on the regen1 winners.** The approved
-regen round ran 2026-08-05 (`runs/tier1-regen1-panel/RESULTS.md`): 26/26
-challengers structurally clean, 12 proposed replacements (camera and dog
-strong, motorcycle/crown good, 8 marginal-to-weak), pizza keeps its
-incumbent. **No swap performed** — view `runs/tier1-regen1-sheet.html`
-plus the trio renders (`runs/tier1-regen1-panel/renders/` with
-`key.json`) and rule per term. The original 50-set eyeball gate
-(`npm run dev`, contact-sheet viewer, **blind** toggle) remains pending
-in parallel and can re-flag any set.
+**Next action — Mike's eyeball, now on three sheets.** In priority order:
+(1) the regen1 winners (`runs/tier1-regen1-sheet.html` + the trio renders
+in `runs/tier1-regen1-panel/renders/` with `key.json`) — 12 proposed
+replacements await a per-term ruling, **no swap performed**; (2) the new
+Tier-2 b1 batch (`runs/tier2-b1-sheet.html`, 25 cards, never eyeballed,
+never panelled); (3) the original 50-set gate (`npm run dev`,
+contact-sheet viewer, **blind** toggle), still pending in parallel and
+able to re-flag any set.
 
 **Open calls — Mike's, no recommendation implied.** Each is stated in full
 further down.
@@ -291,6 +290,44 @@ default for FPS-tail batches once open call 2 picks an operating point;
 the swap itself (local KV + run-dir bookkeeping) is a mechanical
 follow-up.
 
+**Tier-2 b1 — the first FPS-tail batch (2026-08-05,
+`runs/tier2-16char-b1/RESULTS.md`).** 25 terms, seed-list entries 79–103
+(`plaster cast` … `cornucopia`, covering radius 0.489 → 0.544), authored
+by $0 subscription subagents under the tier1 protocol. **25/25
+structurally clean** (comps=1, ground=true, 0 malformed rows, loss 0.00
+on all three views) and all 25 reproduce byte-identical from their stored
+responses. Retry consumption 4/25. Open call 2 does **not** gate this:
+FPS is greedy, so the tail's prefix is the same wherever the library
+eventually stops — only the batch *count* depends on the operating point.
+The batch was authored with the regen1-amended brief on the standing
+assumption that the amendments survive Mike's eyeball on the regen1
+winners; the prompt now lives once in `scripts/lib/authoring-prompt.ts`
+(extraction verified byte-identical against the regen1 packets) and the
+batch slice is declared in `scripts/make-tier2-seed-prompts.ts`.
+
+Findings from the round:
+
+- **The top-view `fillRatio` slab check took 3 of the 4 retries.** None of
+  those three call-1 answers was broken. More evidence for the standing
+  "advisory in practice, error in script" note.
+- **The depth signals are gameable by z-staggering.** Phone booth,
+  tiramisu and nutcracker each cleared medDepth or the footprint check by
+  pushing successive parts into different depth lanes rather than giving
+  parts genuinely different extents — producing a shape that leans
+  backward as it rises, which two of the three then described as a
+  staircase or terrace. That is the wrong-gestalt read the blindpanel pass
+  flagged. **H-DEPTH's stat can be satisfied without the property it
+  proxies for.**
+- **Floats are unremarkable:** mean 32.2 here vs 47.5 across the 50 tier1
+  sets.
+- **`landmine` is a naval mine** — the authoring brief named the spiked
+  spherical cartoon mine, which is the wrong object. Structurally clean,
+  semantically wrong; a one-agent re-author fixes it.
+- **Tone is an open call, nothing dropped.** The FPS tail is where odd
+  terms live; this slice carries `landmine`, `bulletproof vest` and
+  `pillbox`. They pass buildability and cover real noun-space, but whether
+  a LEGO-manual toy should ship them is Mike's, not a structural question.
+
 **Query form matters more than vocabulary** (20-persona elicitation,
 2026-07-20, synthetic, n=20 — directional only). Almost nobody types a
 bare noun: of 60 first queries, 15 were personal/possessive ("my dog
@@ -305,7 +342,7 @@ demands ("with moving parts"), scale demands, profanity, injection strings.
 
 **Out of scope until their own sign-off:** regenerating the 29 seed4 terms
 authored-front (vetoable separate pass), KV baking, color, and FPS-tail
-seeds beyond Tier 1 (blocked on open call 2).
+batches beyond b1 (how many more is open call 2; the *ordering* is not).
 
 ---
 
@@ -431,6 +468,11 @@ reference for "this is what shippable looks like at 16³".
   records `meta.masks` so runs render mask thumbnails in the viewer.
 - `scripts/exemplars.ts`, `scripts/make-probe8-prompts.ts`,
   `scripts/make-tier1-seed-prompts.ts` — prompt v2 and batch generation.
+- `scripts/lib/authoring-prompt.ts` — the single copy of the amended
+  authored-front prompt (declarations + numeric top-view convention +
+  vehicle clause), shared by the tier1-regen and tier2 generators.
+- `scripts/make-tier2-seed-prompts.ts` — FPS-tail batches; each batch's
+  seed-list slice is declared in the script.
 - `scripts/render-qa-sheet.ts`, `scripts/_check-struct.ts`,
   `scripts/_qa_pngs.ts` — contact sheets and structural checks.
 - `scripts/lib/silhouette.ts` — front-mask acquisition + depth profiles.

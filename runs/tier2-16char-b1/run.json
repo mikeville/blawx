@@ -1,0 +1,14 @@
+{
+  "id": "tier2-16char-b1",
+  "label": "tier2 seed B1 · FPS tail 79–103",
+  "date": "2026-08-05",
+  "pipeline": "Pre-seed Tier-2 library: the first FPS-tail slice past Tier 1 (seed-list.json entries 79–103, \"plaster cast\" through \"cornucopia\", covering radius 0.489→0.544). Amended prompt v2 (pre-authoring feature/pose/depth-plan declarations, numeric top-view row convention, wheels-as-proud-masses clause) via scripts/lib/authoring-prompt.ts. One subscription subagent per term, single-shot + 1 deterministic-feedback retry (retry-feedback.ts --max-depth=6) with the convert-response self-check incl. median-column-depth advisory. $0 API.",
+  "conditions": {
+    "grid": "16",
+    "encoding": "char",
+    "model": "claude-sonnet-5",
+    "prompt": "full-authorship v2 + regen1 amendments (shared authoring-prompt.ts)",
+    "source": "none — noun only",
+    "method": "single-shot + 1 deterministic-feedback retry (retry-feedback.ts --max-depth=6) with convert-response self-check incl. median-column-depth advisory; run via subscription subagents ($0, adaptive thinking)"
+  }
+}
