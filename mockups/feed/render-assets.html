@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en"><meta charset="utf-8"><title>Saved set image preparation</title>
+<style>body{margin:0;background:#f4f4f4;font-family:Helvetica,Arial,sans-serif}#picture{width:900px;height:700px}canvas{width:100%;height:100%;display:block}nav{padding:16px;display:flex;gap:12px}button{padding:12px}output{padding:16px;display:block}</style>
+<div id="picture"><canvas aria-label="Saved brick model"></canvas></div><nav></nav><output>Choose a set</output><img id="capture" alt="Prepared asset" hidden>
+<script type="module">
+import {SETS} from './shared.js';
+import {ProductViewer} from '/src/product-viewer.js';
+import {convertToBricks} from '/src/construction.js';
+const viewer = new ProductViewer(document.querySelector('canvas'));
+const index = await fetch('/examples/index.json').then(r=>r.json());
+const output = document.querySelector('output');
+for (const set of SETS) {
+  const button=document.createElement('button'); button.textContent=set.id;
+  button.onclick=async()=>{
+    output.textContent='Preparing '+set.id;
+    const record=index.find(entry=>Number(entry.shape)===set.shape);
+    if (!record) throw new Error(`Shape ${set.shape} is unavailable.`);
+    const rawModel=await fetch(record.url).then(r=>r.json());
+    const {brickModel}=convertToBricks({rawModel,adjustments:false});
+    viewer.azimuth=Math.PI*0.75;
+    viewer.setModel(brickModel,{animate:false});
+    viewer.radius*=0.78; viewer.resize(); viewer.updateCamera();
+    viewer.renderer.render(viewer.scene,viewer.camera);
+    document.querySelector('#capture').src=viewer.canvas.toDataURL('image/png');
+    output.textContent='Ready: '+set.id;
+  };
+  document.querySelector('nav').append(button);
+}
+</script></html>

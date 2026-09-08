@@ -1,46 +1,53 @@
+node_modules/
+dist/
+app-runs/
+.blawx-private/
 .env
-.env.local
-
-# Logs
-logs
+.env.*
+!.env.example
 *.log
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-pnpm-debug.log*
-lerna-debug.log*
-
-# Downloaded 3D meshes (generate3d cache)
-out/
-
-# Build / deps
-node_modules
-dist
-dist-ssr
-*.tsbuildinfo
-*.local
-
-# Editor / OS
-.vscode/*
-!.vscode/extensions.json
-.idea
 .DS_Store
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-*.sw?
+.codex/
+.claude/
+.cursor/
+.agents/
+.npmrc
+.netrc
+.pypirc
+.aws/
+.ssh/
+*.pem
+*.key
+*.p12
+*.pfx
+*.crt
+credentials.json
+service-account*.json
 
-# Private notes, scratch, working docs — never committed
-# Anything matching these patterns stays out of the public repo by default.
-CLAUDE.local.md
-AGENTS.local.md
-NOTES.md
-PRIVATE.md
-SCRATCH.md
-TODO.local.md
-*.private.md
-*.private.txt
-.notes/
-.private/
-.scratch/
+# Private agent and project working material. These files belong outside any
+# eventual public repository; ignoring them is only a guard for new files.
+# .gitignore cannot protect a matching file that is already tracked.
+AGENTS.md
+AGENTS-HISTORY.md
+SESSION.md
+CLAUDE.md
+.cursorrules
+.impeccable.md
+PRIVATE-*.md
+*-PRIVATE.md
+RELEASE-PLAN.md
+PUBLISHING-DECISION.md
+REDACTION-REPORT.md
+*BILLING*.md
+*RESEARCH*.md
+*RECEIPT*.md
+*.record.json
+*.receipt.json
+raw-records/
+receipts/
+
+# Runtime receipts belong in the OS data directory configured by
+# BLAWX_PRIVATE_DATA_DIR, never in this repository. Ignore these legacy names
+# only as a last-resort defense; the runtime also rejects in-tree roots.
+artifacts/
+experiments/

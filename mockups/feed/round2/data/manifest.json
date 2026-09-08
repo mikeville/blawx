@@ -1,0 +1,74 @@
+[
+  {
+    "id": "cat",
+    "sourceShape": 43,
+    "source": "/examples/shape-43.json",
+    "prompt": "cat",
+    "sourceSha256": "e5357a81c5b2ae4543f86f520bc7892f342baae37ade5fe0ece45a713fed2276",
+    "preparation": "Local baseline ordinary-brick conversion and recorded assembly plan for layout exploration. No repairs, refinement or model calls.",
+    "physicalValidation": false,
+    "parts": 565,
+    "steps": 78,
+    "unresolvedSteps": 57
+  },
+  {
+    "id": "pickup",
+    "sourceShape": 44,
+    "source": "/examples/shape-44.json",
+    "prompt": "red pickup truck",
+    "sourceSha256": "3e00c8eba38fad6f2f4c89ab363a58ad3024c788fdd1e78f01ba9788e362ebb5",
+    "preparation": "Local baseline ordinary-brick conversion and recorded assembly plan for layout exploration. No repairs, refinement or model calls.",
+    "physicalValidation": false,
+    "parts": 256,
+    "steps": 59,
+    "unresolvedSteps": 10
+  },
+  {
+    "id": "dragon",
+    "sourceShape": 45,
+    "source": "/examples/shape-45.json",
+    "prompt": "dragon curled around a lighthouse",
+    "sourceSha256": "e5c27fcab65d5b145c04847b34b630908a503792e564e592e28b9b0edf84a011",
+    "preparation": "Local baseline ordinary-brick conversion and recorded assembly plan for layout exploration. No repairs, refinement or model calls.",
+    "physicalValidation": false,
+    "parts": 522,
+    "steps": 114,
+    "unresolvedSteps": 41
+  },
+  {
+    "id": "spaghetti",
+    "sourceShape": 46,
+    "source": "/examples/shape-46.json",
+    "prompt": "person eating spaghetti",
+    "sourceSha256": "849a0e506f9cfa2a4e1e5ae9c3764d530faab3aa0fdf37691010480f6fc93d70",
+    "preparation": "Local baseline ordinary-brick conversion and recorded assembly plan for layout exploration. No repairs, refinement or model calls.",
+    "physicalValidation": false,
+    "parts": 286,
+    "steps": 46,
+    "unresolvedSteps": 21
+  },
+  {
+    "id": "tv",
+    "sourceShape": 47,
+    "source": "/examples/shape-47.json",
+    "prompt": "nostalgia",
+    "sourceSha256": "2edb107dd92823a0cdcb35801f915bbb9ca8c6dcf5ecff87d8b2b9e904729cfb",
+    "preparation": "Local baseline ordinary-brick conversion and recorded assembly plan for layout exploration. No repairs, refinement or model calls.",
+    "physicalValidation": false,
+    "parts": 974,
+    "steps": 133,
+    "unresolvedSteps": 79
+  },
+  {
+    "id": "reef",
+    "sourceShape": 42,
+    "source": "/examples/shape-42.json",
+    "prompt": "an underwater research station built into a coral reef",
+    "sourceSha256": "0433931e522445f3bc9500919c271bc387dafb57db5b12ba4f80ecf452e9e5ad",
+    "preparation": "Local baseline ordinary-brick conversion and recorded assembly plan for layout exploration. No repairs, refinement or model calls.",
+    "physicalValidation": false,
+    "parts": 575,
+    "steps": 111,
+    "unresolvedSteps": 55
+  }
+]

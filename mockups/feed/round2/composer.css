@@ -1,0 +1,532 @@
+:root {
+  --composer-footprint: 80px;
+}
+
+body[data-composer="floating"] {
+  padding-bottom: var(--composer-footprint);
+}
+
+body[data-composer="floating"] .floating-composer {
+  --composer-enter: 400ms steps(4, end);
+  --composer-exit: 300ms steps(3, end);
+  position: fixed;
+  z-index: 120;
+  right: 0;
+  bottom: var(--keyboard-inset, 0px);
+  left: 0;
+  height: calc(64px + env(safe-area-inset-bottom, 0px));
+  padding: 8px max(var(--page-gutter), env(safe-area-inset-right, 0px)) calc(8px + env(safe-area-inset-bottom, 0px)) max(var(--page-gutter), env(safe-area-inset-left, 0px));
+  background: transparent;
+  pointer-events: none;
+  contain: layout;
+}
+
+body[data-composer="floating"] .floating-composer.is-expanded {
+  pointer-events: auto;
+}
+
+body[data-composer="floating"] .composer-surface {
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  border-top: 1px solid var(--ink);
+  background: var(--paper);
+  transform: scaleX(1);
+  transform-origin: right center;
+  transition: transform var(--composer-enter), opacity var(--composer-enter);
+}
+
+body[data-composer="floating"] .floating-composer.is-collapsed .composer-surface {
+  opacity: 0;
+  transform: scaleX(0);
+  transition-duration: 300ms;
+  transition-timing-function: steps(3, end);
+}
+
+body[data-composer="floating"] .floating-composer #prompt-form {
+  position: relative;
+  display: grid;
+  grid-template-columns: 44px minmax(0, 1fr) 88px;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  height: 48px;
+  margin: 0;
+  pointer-events: auto;
+}
+
+body[data-composer="floating"] .floating-composer .prompt-field {
+  min-width: 0;
+  height: 48px;
+  border-bottom: 1px solid var(--ink);
+  background: transparent;
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateX(0);
+  transition: transform var(--composer-enter), opacity var(--composer-enter);
+}
+
+body[data-composer="floating"] .floating-composer .prompt-field:hover,
+body[data-composer="floating"] .floating-composer .prompt-field:focus-within {
+  background: var(--yellow-wash);
+}
+
+body[data-composer="floating"] .floating-composer #prompt {
+  width: 100%;
+  height: 48px;
+  min-height: 48px;
+  padding: 0 8px;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  font-size: 16px;
+  line-height: 48px;
+  letter-spacing: -.015em;
+  outline: 0;
+}
+
+body[data-composer="floating"] .floating-composer .prompt-invitation {
+  inset: 0 8px;
+  overflow: hidden;
+  font-size: 16px;
+  line-height: 48px;
+  letter-spacing: -.015em;
+  white-space: nowrap;
+}
+
+body[data-composer="floating"] .floating-composer .composer-close {
+  position: relative;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  opacity: 1;
+  pointer-events: auto;
+  transition: opacity var(--composer-enter);
+}
+
+body[data-composer="floating"] .composer-close span::before,
+body[data-composer="floating"] .composer-close span::after {
+  content: "";
+  position: absolute;
+  top: 21px;
+  left: 13px;
+  width: 18px;
+  height: 1px;
+  background: currentColor;
+}
+body[data-composer="floating"] .composer-close span::before { transform: rotate(45deg); }
+body[data-composer="floating"] .composer-close span::after { transform: rotate(-45deg); }
+
+body[data-composer="floating"] .floating-composer .make-button {
+  position: relative;
+  width: 88px;
+  height: 48px;
+  min-height: 48px;
+  margin: 0;
+  padding: 0;
+  overflow: visible;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  pointer-events: auto;
+}
+
+body[data-composer="floating"] .floating-composer .make-button::before {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  border: 1px solid var(--ink);
+  background: var(--yellow);
+  transform: scaleX(1);
+  transform-origin: right center;
+  transition: transform var(--composer-enter), background-color 100ms steps(1, end);
+}
+
+body[data-composer="floating"] .floating-composer .make-button:hover,
+body[data-composer="floating"] .floating-composer .make-button:active {
+  background: transparent;
+  transform: none;
+}
+body[data-composer="floating"] .floating-composer .make-button:hover::before {
+  background: color-mix(in srgb, var(--yellow) 88%, var(--ink));
+}
+body[data-composer="floating"] .floating-composer .make-button:active::before {
+  background: var(--yellow-press);
+}
+body[data-composer="floating"] .floating-composer .make-button:focus-visible {
+  outline: none;
+}
+body[data-composer="floating"] .floating-composer .make-button:focus-visible::before {
+  outline: 3px solid var(--ink);
+  outline-offset: 4px;
+}
+
+body[data-composer="floating"] .composer-button-label,
+body[data-composer="floating"] .composer-plus {
+  position: absolute;
+  z-index: 1;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  white-space: nowrap;
+  transition: opacity var(--composer-enter);
+}
+
+body[data-composer="floating"] .composer-plus {
+  right: 0;
+  left: auto;
+  width: 48px;
+  opacity: 0;
+  font-size: 0;
+}
+body[data-composer="floating"] .composer-plus::before,
+body[data-composer="floating"] .composer-plus::after {
+  content: "";
+  position: absolute;
+  width: 16px;
+  height: 2px;
+  background: var(--ink);
+}
+body[data-composer="floating"] .composer-plus::after { transform: rotate(90deg); }
+
+body[data-composer="floating"] .composer-studs {
+  position: absolute;
+  z-index: 1;
+  top: -5px;
+  right: 0;
+  width: 48px;
+  display: flex;
+  justify-content: center;
+  gap: 9px;
+  opacity: 0;
+  transform: translateY(5px);
+  transition: transform var(--composer-exit), opacity var(--composer-exit);
+}
+body[data-composer="floating"] .composer-studs i {
+  width: 11px;
+  height: 5px;
+  border: 1px solid var(--ink);
+  border-bottom: 0;
+  background: var(--yellow);
+}
+
+body[data-composer="floating"] .floating-composer .form-message {
+  position: absolute;
+  right: 96px;
+  bottom: calc(100% + 8px);
+  max-width: min(36ch, calc(100vw - 32px));
+  min-height: 0;
+  margin: 0;
+  padding: 3px 6px;
+  background: var(--paper);
+  font-size: 11px;
+  pointer-events: none;
+}
+
+body[data-composer="floating"] .floating-composer.is-collapsed #prompt-form {
+  pointer-events: none;
+}
+body[data-composer="floating"] .floating-composer.is-collapsed .prompt-field {
+  opacity: 0;
+  pointer-events: none;
+  transform: translateX(12px);
+  transition-duration: 300ms;
+  transition-timing-function: steps(3, end);
+}
+body[data-composer="floating"] .floating-composer.is-collapsed .composer-close {
+  opacity: 0;
+  pointer-events: none;
+  transition-duration: 300ms;
+}
+body[data-composer="floating"] .floating-composer.is-collapsed .form-message { visibility: hidden; }
+body[data-composer="floating"] .floating-composer.is-collapsed .make-button::before {
+  transform: scaleX(.5454545);
+  transition-duration: 300ms;
+  transition-timing-function: steps(3, end);
+}
+body[data-composer="floating"] .floating-composer.is-collapsed .composer-button-label { opacity: 0; }
+body[data-composer="floating"] .floating-composer.is-collapsed .composer-plus { opacity: 1; }
+body[data-composer="floating"] .floating-composer.is-collapsed .composer-studs {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+@media (max-width: 430px) {
+  body[data-composer="floating"] .floating-composer {
+    padding-right: max(8px, env(safe-area-inset-right, 0px));
+    padding-left: max(8px, env(safe-area-inset-left, 0px));
+  }
+  body[data-composer="floating"] .floating-composer #prompt-form {
+    grid-template-columns: 44px minmax(0, 1fr) 84px;
+    gap: 6px;
+  }
+  body[data-composer="floating"] .floating-composer .make-button { width: 84px; }
+  body[data-composer="floating"] .floating-composer.is-collapsed .make-button::before { transform: scaleX(.5714286); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body[data-composer="floating"] .floating-composer *,
+  body[data-composer="floating"] .floating-composer *::before,
+  body[data-composer="floating"] .floating-composer *::after {
+    animation-duration: .01ms !important;
+    transition-duration: .01ms !important;
+  }
+}
+
+/* Circle study: an independent capsule and pill, with no full-width dock. */
+body[data-composer="circle"] {
+  padding-bottom: var(--composer-footprint);
+}
+
+body[data-composer="circle"] .floating-composer {
+  --composer-enter: 400ms steps(4, end);
+  --composer-exit: 300ms steps(3, end);
+  position: fixed;
+  z-index: 120;
+  right: 0;
+  bottom: var(--keyboard-inset, 0px);
+  left: 0;
+  height: calc(64px + env(safe-area-inset-bottom, 0px));
+  padding: 8px max(8px, env(safe-area-inset-right, 0px)) calc(8px + env(safe-area-inset-bottom, 0px)) max(8px, env(safe-area-inset-left, 0px));
+  pointer-events: none;
+}
+
+body[data-composer="circle"] .composer-surface,
+body[data-composer="circle"] .composer-studs {
+  display: none;
+}
+
+body[data-composer="circle"] .floating-composer #prompt-form {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 84px;
+  align-items: center;
+  gap: 8px;
+  width: min(100%, 620px);
+  height: 48px;
+  margin-left: auto;
+  pointer-events: auto;
+}
+
+body[data-composer="circle"] .floating-composer .prompt-field {
+  grid-column: 1;
+  grid-row: 1;
+  min-width: 0;
+  height: 48px;
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--ink) 34%, transparent);
+  border-radius: 24px;
+  background: var(--paper);
+  opacity: 1;
+  clip-path: inset(0 0 0 0 round 24px);
+  pointer-events: auto;
+  transform-origin: right center;
+  transition: clip-path var(--composer-enter), opacity var(--composer-enter), border-color 100ms steps(1, end), box-shadow 100ms steps(1, end);
+}
+
+body[data-composer="circle"] .floating-composer .prompt-field:hover {
+  border-color: color-mix(in srgb, var(--ink) 54%, transparent);
+  background: var(--paper);
+}
+body[data-composer="circle"] .floating-composer .prompt-field:focus-within {
+  border-color: var(--ink);
+  background: var(--paper);
+  box-shadow: 0 0 0 2px var(--yellow);
+}
+body[data-composer="circle"] .floating-composer .prompt-field.is-invited {
+  border-color: var(--ink);
+  outline: 0;
+  box-shadow: 0 0 0 2px var(--yellow);
+}
+
+body[data-composer="circle"] .floating-composer #prompt {
+  width: 100%;
+  height: 46px;
+  min-height: 46px;
+  padding: 0 48px 0 16px;
+  border: 0;
+  border-radius: 23px;
+  background: transparent;
+  font-size: 16px;
+  line-height: 46px;
+  letter-spacing: -.015em;
+  outline: 0;
+}
+
+body[data-composer="circle"] .floating-composer .prompt-invitation {
+  inset: 0 48px 0 16px;
+  overflow: hidden;
+  color: #777773;
+  font-size: 16px;
+  line-height: 46px;
+  letter-spacing: -.015em;
+  white-space: nowrap;
+}
+
+body[data-composer="circle"] .floating-composer .composer-close {
+  position: relative;
+  z-index: 2;
+  grid-column: 1;
+  grid-row: 1;
+  justify-self: end;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  opacity: 1;
+  pointer-events: auto;
+  transition: opacity var(--composer-enter);
+}
+body[data-composer="circle"] .floating-composer .composer-close:hover,
+body[data-composer="circle"] .floating-composer .composer-close:active {
+  background: transparent;
+}
+body[data-composer="circle"] .composer-close span::before,
+body[data-composer="circle"] .composer-close span::after {
+  content: "";
+  position: absolute;
+  top: 21px;
+  left: 16px;
+  width: 12px;
+  height: 1px;
+  background: currentColor;
+}
+body[data-composer="circle"] .composer-close span::before { transform: rotate(45deg); }
+body[data-composer="circle"] .composer-close span::after { transform: rotate(-45deg); }
+
+body[data-composer="circle"] .floating-composer .make-button {
+  position: relative;
+  grid-column: 2;
+  grid-row: 1;
+  width: 84px;
+  height: 48px;
+  min-height: 48px;
+  margin: 0;
+  padding: 0;
+  overflow: visible;
+  border: 0;
+  border-radius: 24px;
+  background: transparent;
+  pointer-events: auto;
+}
+
+body[data-composer="circle"] .floating-composer .make-button::before {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  border: 1px solid color-mix(in srgb, var(--ink) 68%, transparent);
+  border-radius: 24px;
+  background: var(--yellow);
+  clip-path: inset(0 0 0 0 round 24px);
+  transform-origin: right center;
+  transition: clip-path var(--composer-enter), background-color 100ms steps(1, end);
+}
+body[data-composer="circle"] .floating-composer .make-button:hover,
+body[data-composer="circle"] .floating-composer .make-button:active {
+  background: transparent;
+  transform: none;
+}
+body[data-composer="circle"] .floating-composer .make-button:hover::before {
+  background: color-mix(in srgb, var(--yellow) 92%, var(--ink));
+}
+body[data-composer="circle"] .floating-composer .make-button:active::before {
+  background: color-mix(in srgb, var(--yellow) 84%, var(--ink));
+}
+body[data-composer="circle"] .floating-composer .make-button:focus-visible {
+  outline: none;
+}
+body[data-composer="circle"] .floating-composer .make-button:focus-visible::before {
+  outline: 2px solid var(--yellow);
+  outline-offset: 3px;
+  box-shadow: 0 0 0 1px var(--ink);
+}
+
+body[data-composer="circle"] .composer-button-label,
+body[data-composer="circle"] .composer-plus {
+  position: absolute;
+  z-index: 1;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  white-space: nowrap;
+  transition: opacity var(--composer-enter);
+}
+body[data-composer="circle"] .composer-plus {
+  right: 0;
+  left: auto;
+  width: 48px;
+  opacity: 0;
+  font-size: 0;
+}
+body[data-composer="circle"] .composer-plus::before,
+body[data-composer="circle"] .composer-plus::after {
+  content: "";
+  position: absolute;
+  width: 14px;
+  height: 2px;
+  background: var(--ink);
+}
+body[data-composer="circle"] .composer-plus::after { transform: rotate(90deg); }
+
+body[data-composer="circle"] .floating-composer .form-message {
+  position: absolute;
+  right: 92px;
+  bottom: calc(100% + 8px);
+  max-width: min(36ch, calc(100vw - 24px));
+  min-height: 0;
+  margin: 0;
+  padding: 3px 8px;
+  border-radius: 10px;
+  background: var(--paper);
+  font-size: 11px;
+  pointer-events: none;
+}
+
+body[data-composer="circle"] .floating-composer.is-collapsed #prompt-form {
+  pointer-events: none;
+}
+body[data-composer="circle"] .floating-composer.is-collapsed .prompt-field {
+  opacity: 0;
+  clip-path: inset(0 0 0 100% round 24px);
+  pointer-events: none;
+  transition-duration: 300ms;
+  transition-timing-function: steps(3, end);
+}
+body[data-composer="circle"] .floating-composer.is-collapsed .composer-close {
+  opacity: 0;
+  pointer-events: none;
+  transition-duration: 300ms;
+}
+body[data-composer="circle"] .floating-composer.is-collapsed .form-message { visibility: hidden; }
+body[data-composer="circle"] .floating-composer.is-collapsed .make-button::before {
+  clip-path: inset(0 0 0 36px round 24px);
+  transition-duration: 300ms;
+  transition-timing-function: steps(3, end);
+}
+body[data-composer="circle"] .floating-composer.is-collapsed .composer-button-label { opacity: 0; }
+body[data-composer="circle"] .floating-composer.is-collapsed .composer-plus { opacity: 1; }
+
+@media (min-width: 431px) {
+  body[data-composer="circle"] .floating-composer #prompt-form {
+    grid-template-columns: minmax(0, 1fr) 88px;
+  }
+  body[data-composer="circle"] .floating-composer .make-button { width: 88px; }
+  body[data-composer="circle"] .floating-composer.is-collapsed .make-button::before {
+    clip-path: inset(0 0 0 40px round 24px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body[data-composer="circle"] .floating-composer *,
+  body[data-composer="circle"] .floating-composer *::before,
+  body[data-composer="circle"] .floating-composer *::after {
+    animation-duration: .01ms !important;
+    transition-duration: .01ms !important;
+  }
+}

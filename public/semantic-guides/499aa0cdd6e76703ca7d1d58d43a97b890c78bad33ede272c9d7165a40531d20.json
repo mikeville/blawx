@@ -1,0 +1,74 @@
+{
+  "annotation": {
+    "version": 1,
+    "fingerprint": "499aa0cdd6e76703ca7d1d58d43a97b890c78bad33ede272c9d7165a40531d20",
+    "sections": [
+      {
+        "startStepId": "step-1",
+        "endStepId": "step-6",
+        "label": "Wheel and hub",
+        "confidence": "high",
+        "evidence": "Black bricks form a wheel at x=0–2, z=3–9 across y=0–4, with light gray hub #26 on its outer face."
+      },
+      {
+        "startStepId": "step-7",
+        "endStepId": "step-12",
+        "label": "Wheel and hub",
+        "confidence": "high",
+        "evidence": "Black bricks form a wheel at x=12–14, z=3–9 across y=0–4, with light gray hub #27 on its outer face."
+      },
+      {
+        "startStepId": "step-13",
+        "endStepId": "step-18",
+        "label": "Wheel and hub",
+        "confidence": "high",
+        "evidence": "Black bricks form a wheel at x=0–2, z=17–23 across y=0–4, with light gray hub #38 on its outer face."
+      },
+      {
+        "startStepId": "step-19",
+        "endStepId": "step-24",
+        "label": "Wheel and hub",
+        "confidence": "high",
+        "evidence": "Black bricks form a wheel at x=12–14, z=17–23 across y=0–4, with light gray hub #39 on its outer face."
+      },
+      {
+        "startStepId": "step-25",
+        "endStepId": "step-33",
+        "label": "Chassis and body floor",
+        "confidence": "high",
+        "evidence": "Broad black courses span between the wheels at y=3. Red bricks build the central body above them, while dark gray bricks establish the rear cargo floor at z=15–23."
+      },
+      {
+        "startStepId": "step-34",
+        "endStepId": "step-37",
+        "label": "Cargo bed",
+        "confidence": "high",
+        "evidence": "Dark gray floor additions and narrow red walls at x=2 and x=11 surround z=15–23. Red crosspieces at z=22 form the tailgate."
+      },
+      {
+        "startStepId": "step-38",
+        "endStepId": "step-44",
+        "label": "Hood and lower cab",
+        "confidence": "high",
+        "evidence": "Black front underbody additions carry broad red courses across z=1–15. The raised red region at z=4–8 leads into the lower cab at z=8–15."
+      },
+      {
+        "startStepId": "step-45",
+        "endStepId": "step-55",
+        "label": "Cab windows and roof",
+        "confidence": "high",
+        "evidence": "Blue bricks occupy z=8–14 at y=8–9, framed by red corners and the rear cab wall. Red bricks at y=10 cap the cab, alongside remaining hood and body additions."
+      },
+      {
+        "startStepId": "step-56",
+        "endStepId": "step-59",
+        "label": "Bumpers and headlights",
+        "confidence": "high",
+        "evidence": "Light gray strips span x=2–12 at z=0 and z=23 on y=3–4. White bricks #128–129 sit above the front strip at its two ends."
+      }
+    ]
+  },
+  "metadata": {
+    "provenance": "saved-annotation"
+  }
+}

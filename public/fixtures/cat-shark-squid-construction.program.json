@@ -1,0 +1,435 @@
+{
+  "meta": {
+    "provenance": "prepared",
+    "subject": "cat riding a shark jumping over a giant squid",
+    "method": "construction"
+  },
+  "operations": [
+    {
+      "type": "box",
+      "x": 0,
+      "y": 0,
+      "z": 0,
+      "w": 34,
+      "h": 1,
+      "d": 22,
+      "color": "blue"
+    },
+    {
+      "type": "box",
+      "x": 2,
+      "y": 1,
+      "z": 2,
+      "w": 8,
+      "h": 1,
+      "d": 3,
+      "color": "white"
+    },
+    {
+      "type": "box",
+      "x": 20,
+      "y": 1,
+      "z": 16,
+      "w": 11,
+      "h": 1,
+      "d": 3,
+      "color": "white"
+    },
+    {
+      "type": "box",
+      "x": 10,
+      "y": 1,
+      "z": 9,
+      "w": 5,
+      "h": 2,
+      "d": 4,
+      "color": "blue"
+    },
+    {
+      "type": "box",
+      "x": 14,
+      "y": 1,
+      "z": 10,
+      "w": 4,
+      "h": 4,
+      "d": 3,
+      "color": "blue"
+    },
+    {
+      "type": "box",
+      "x": 17,
+      "y": 1,
+      "z": 11,
+      "w": 4,
+      "h": 7,
+      "d": 3,
+      "color": "blue"
+    },
+    {
+      "type": "box",
+      "x": 20,
+      "y": 1,
+      "z": 12,
+      "w": 4,
+      "h": 10,
+      "d": 3,
+      "color": "blue"
+    },
+    {
+      "type": "ellipsoid",
+      "x": 2,
+      "y": 2,
+      "z": 6,
+      "w": 10,
+      "h": 7,
+      "d": 9,
+      "color": "red"
+    },
+    {
+      "type": "ellipsoid",
+      "x": 4,
+      "y": 6,
+      "z": 8,
+      "w": 6,
+      "h": 5,
+      "d": 6,
+      "color": "orange"
+    },
+    {
+      "type": "box",
+      "x": 3,
+      "y": 7,
+      "z": 6,
+      "w": 2,
+      "h": 2,
+      "d": 2,
+      "color": "white"
+    },
+    {
+      "type": "box",
+      "x": 9,
+      "y": 7,
+      "z": 6,
+      "w": 2,
+      "h": 2,
+      "d": 2,
+      "color": "white"
+    },
+    {
+      "type": "box",
+      "x": 3,
+      "y": 7,
+      "z": 5,
+      "w": 1,
+      "h": 1,
+      "d": 1,
+      "color": "black"
+    },
+    {
+      "type": "box",
+      "x": 10,
+      "y": 7,
+      "z": 5,
+      "w": 1,
+      "h": 1,
+      "d": 1,
+      "color": "black"
+    },
+    {
+      "type": "box",
+      "x": 2,
+      "y": 2,
+      "z": 13,
+      "w": 2,
+      "h": 2,
+      "d": 7,
+      "color": "red"
+    },
+    {
+      "type": "box",
+      "x": 5,
+      "y": 2,
+      "z": 14,
+      "w": 2,
+      "h": 2,
+      "d": 7,
+      "color": "red"
+    },
+    {
+      "type": "box",
+      "x": 8,
+      "y": 2,
+      "z": 14,
+      "w": 2,
+      "h": 2,
+      "d": 7,
+      "color": "red"
+    },
+    {
+      "type": "box",
+      "x": 11,
+      "y": 2,
+      "z": 12,
+      "w": 2,
+      "h": 2,
+      "d": 8,
+      "color": "red"
+    },
+    {
+      "type": "box",
+      "x": 0,
+      "y": 1,
+      "z": 18,
+      "w": 4,
+      "h": 2,
+      "d": 2,
+      "color": "red"
+    },
+    {
+      "type": "box",
+      "x": 12,
+      "y": 1,
+      "z": 18,
+      "w": 4,
+      "h": 2,
+      "d": 2,
+      "color": "red"
+    },
+    {
+      "type": "taper",
+      "x": 18,
+      "y": 10,
+      "z": 7,
+      "w": 14,
+      "h": 6,
+      "d": 7,
+      "topW": 9,
+      "topD": 5,
+      "color": "darkGray"
+    },
+    {
+      "type": "taper",
+      "x": 29,
+      "y": 12,
+      "z": 8,
+      "w": 6,
+      "h": 4,
+      "d": 5,
+      "topW": 2,
+      "topD": 3,
+      "color": "darkGray"
+    },
+    {
+      "type": "taper",
+      "x": 14,
+      "y": 11,
+      "z": 8,
+      "w": 6,
+      "h": 4,
+      "d": 5,
+      "topW": 2,
+      "topD": 3,
+      "color": "darkGray"
+    },
+    {
+      "type": "taper",
+      "x": 13,
+      "y": 14,
+      "z": 6,
+      "w": 5,
+      "h": 7,
+      "d": 3,
+      "topW": 1,
+      "topD": 1,
+      "color": "darkGray"
+    },
+    {
+      "type": "taper",
+      "x": 13,
+      "y": 14,
+      "z": 11,
+      "w": 5,
+      "h": 7,
+      "d": 3,
+      "topW": 1,
+      "topD": 1,
+      "color": "darkGray"
+    },
+    {
+      "type": "box",
+      "x": 20,
+      "y": 10,
+      "z": 7,
+      "w": 10,
+      "h": 2,
+      "d": 7,
+      "color": "white"
+    },
+    {
+      "type": "taper",
+      "x": 23,
+      "y": 15,
+      "z": 9,
+      "w": 5,
+      "h": 5,
+      "d": 3,
+      "topW": 1,
+      "topD": 1,
+      "color": "darkGray"
+    },
+    {
+      "type": "box",
+      "x": 29,
+      "y": 14,
+      "z": 7,
+      "w": 1,
+      "h": 1,
+      "d": 1,
+      "color": "black"
+    },
+    {
+      "type": "box",
+      "x": 29,
+      "y": 14,
+      "z": 14,
+      "w": 1,
+      "h": 1,
+      "d": 1,
+      "color": "black"
+    },
+    {
+      "type": "box",
+      "x": 32,
+      "y": 12,
+      "z": 9,
+      "w": 2,
+      "h": 1,
+      "d": 3,
+      "color": "white"
+    },
+    {
+      "type": "box",
+      "x": 21,
+      "y": 16,
+      "z": 8,
+      "w": 2,
+      "h": 2,
+      "d": 2,
+      "color": "orange"
+    },
+    {
+      "type": "box",
+      "x": 27,
+      "y": 16,
+      "z": 8,
+      "w": 2,
+      "h": 2,
+      "d": 2,
+      "color": "orange"
+    },
+    {
+      "type": "ellipsoid",
+      "x": 21,
+      "y": 18,
+      "z": 8,
+      "w": 8,
+      "h": 6,
+      "d": 5,
+      "color": "orange"
+    },
+    {
+      "type": "ellipsoid",
+      "x": 22,
+      "y": 23,
+      "z": 8,
+      "w": 7,
+      "h": 5,
+      "d": 5,
+      "color": "orange"
+    },
+    {
+      "type": "taper",
+      "x": 22,
+      "y": 27,
+      "z": 8,
+      "w": 3,
+      "h": 3,
+      "d": 2,
+      "topW": 1,
+      "topD": 1,
+      "color": "orange"
+    },
+    {
+      "type": "taper",
+      "x": 26,
+      "y": 27,
+      "z": 8,
+      "w": 3,
+      "h": 3,
+      "d": 2,
+      "topW": 1,
+      "topD": 1,
+      "color": "orange"
+    },
+    {
+      "type": "box",
+      "x": 23,
+      "y": 25,
+      "z": 7,
+      "w": 1,
+      "h": 1,
+      "d": 1,
+      "color": "green"
+    },
+    {
+      "type": "box",
+      "x": 27,
+      "y": 25,
+      "z": 7,
+      "w": 1,
+      "h": 1,
+      "d": 1,
+      "color": "green"
+    },
+    {
+      "type": "box",
+      "x": 24,
+      "y": 23,
+      "z": 7,
+      "w": 3,
+      "h": 2,
+      "d": 1,
+      "color": "white"
+    },
+    {
+      "type": "box",
+      "x": 25,
+      "y": 24,
+      "z": 6,
+      "w": 1,
+      "h": 1,
+      "d": 1,
+      "color": "brown"
+    },
+    {
+      "type": "box",
+      "x": 21,
+      "y": 20,
+      "z": 12,
+      "w": 7,
+      "h": 2,
+      "d": 2,
+      "color": "orange"
+    },
+    {
+      "type": "box",
+      "x": 20,
+      "y": 21,
+      "z": 12,
+      "w": 2,
+      "h": 4,
+      "d": 2,
+      "color": "orange"
+    }
+  ]
+}

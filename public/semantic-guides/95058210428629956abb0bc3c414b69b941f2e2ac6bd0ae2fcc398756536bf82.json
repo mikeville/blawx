@@ -1,0 +1,88 @@
+{
+  "annotation": {
+    "version": 1,
+    "fingerprint": "95058210428629956abb0bc3c414b69b941f2e2ac6bd0ae2fcc398756536bf82",
+    "sections": [
+      {
+        "startStepId": "step-1",
+        "endStepId": "step-16",
+        "label": "Rocky footing and dragon coil",
+        "confidence": "high",
+        "evidence": "Dark-gray bricks spread across y=0–2 beneath the central white footprint. Green bricks at y=2–4 curve around that footprint, with brown bricks marking the tower entrance."
+      },
+      {
+        "startStepId": "step-17",
+        "endStepId": "step-24",
+        "label": "Lighthouse entrance and shaft",
+        "confidence": "high",
+        "evidence": "Brown #172–173, #177 and #221 occupy the front entrance. White bricks rise through y=3–7 around x=9–16 and z=9–16, alongside small green coil additions."
+      },
+      {
+        "startStepId": "step-25",
+        "endStepId": "step-35",
+        "label": "Tower stripe and lantern",
+        "confidence": "high",
+        "evidence": "Red bricks form the y=8 tower band; white walls and blue #357, #378 and #382 rise above it. Dark-gray y=13 bricks widen beneath the yellow lantern at y=14–16."
+      },
+      {
+        "startStepId": "step-36",
+        "endStepId": "step-46",
+        "label": "Dragon coil and rising neck",
+        "confidence": "high",
+        "evidence": "Green additions fill the low curve around the tower and rise at x=2–10 through y=6–12. Tan #283 borders this rising mass; higher green pieces extend toward the head."
+      },
+      {
+        "startStepId": "step-47",
+        "endStepId": "step-65",
+        "label": "Dragon head and wings",
+        "confidence": "high",
+        "evidence": "Green bricks form a projecting head at x=4–12, z=3–13, y=13–16. Orange bricks spread behind the neck through z=12–23 and y=8–14, forming broad wing surfaces."
+      },
+      {
+        "startStepId": "step-66",
+        "endStepId": "step-70",
+        "label": "Lantern wall and roof edge",
+        "confidence": "high",
+        "evidence": "Yellow and dark-gray bricks form the lantern side at x=14, y=14–16. Red #508 and #515 extend above it at y=17."
+      },
+      {
+        "startStepId": "step-71",
+        "endStepId": "step-79",
+        "label": "Dragon tail and horns",
+        "confidence": "high",
+        "evidence": "Green #149, #206 and #208 taper along z=18–20 at y=2–3. Paired tan stacks #496/#510 and #497/#511 rise beside the head at y=16–17."
+      },
+      {
+        "startStepId": "step-80",
+        "endStepId": "step-92",
+        "label": "Lighthouse trim and dragon tail",
+        "confidence": "high",
+        "evidence": "Red #512 and #521 form the roof center and tip; #336 completes a tower-band edge. Green #150 and #152 extend the low tail, while #428 fills the gray lantern platform."
+      },
+      {
+        "startStepId": "step-93",
+        "endStepId": "step-96",
+        "label": "Dragon eyes",
+        "confidence": "high",
+        "evidence": "Black #471 and #474 sit at matching y=15 and z=7 positions on opposite sides of the green head, at x=5 and x=10."
+      },
+      {
+        "startStepId": "step-97",
+        "endStepId": "step-109",
+        "label": "Lighthouse crown and rocky rim",
+        "confidence": "high",
+        "evidence": "Red y=17 bricks complete broad roof areas above the dark-gray y=13 platform. Other additions extend the dark-gray y=1 ground perimeter and neighboring green coil."
+      },
+      {
+        "startStepId": "step-110",
+        "endStepId": "step-114",
+        "label": "Outer dragon coil",
+        "confidence": "high",
+        "evidence": "Green additions at x=20–21, z=8–16 and y=2–5 fill the outside of the curve beside the tower, above dark-gray #57."
+      }
+    ]
+  },
+  "metadata": {
+    "provenance": "saved-annotation"
+  }
+}

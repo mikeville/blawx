@@ -1,0 +1,391 @@
+{
+  "meta": {
+    "provenance": "prepared",
+    "subject": "a massive detailed futuristic cityscape",
+    "method": "construction"
+  },
+  "operations": [
+    {
+      "type": "box",
+      "x": 0,
+      "y": 0,
+      "z": 0,
+      "w": 46,
+      "h": 1,
+      "d": 38,
+      "color": "darkGray"
+    },
+    {
+      "type": "box",
+      "x": 0,
+      "y": 1,
+      "z": 17,
+      "w": 46,
+      "h": 1,
+      "d": 4,
+      "color": "lightGray"
+    },
+    {
+      "type": "box",
+      "x": 21,
+      "y": 1,
+      "z": 0,
+      "w": 4,
+      "h": 1,
+      "d": 38,
+      "color": "lightGray"
+    },
+    {
+      "type": "box",
+      "x": 0,
+      "y": 2,
+      "z": 18,
+      "w": 46,
+      "h": 1,
+      "d": 2,
+      "color": "blue"
+    },
+    {
+      "type": "box",
+      "x": 22,
+      "y": 2,
+      "z": 0,
+      "w": 2,
+      "h": 1,
+      "d": 38,
+      "color": "blue"
+    },
+    {
+      "type": "taper",
+      "x": 17,
+      "y": 1,
+      "z": 13,
+      "w": 12,
+      "h": 22,
+      "d": 12,
+      "topW": 7,
+      "topD": 7,
+      "color": "white"
+    },
+    {
+      "type": "taper",
+      "x": 19,
+      "y": 23,
+      "z": 15,
+      "w": 8,
+      "h": 12,
+      "d": 8,
+      "topW": 3,
+      "topD": 3,
+      "color": "lightGray"
+    },
+    {
+      "type": "box",
+      "x": 22,
+      "y": 35,
+      "z": 18,
+      "w": 2,
+      "h": 7,
+      "d": 2,
+      "color": "blue"
+    },
+    {
+      "type": "box",
+      "x": 18,
+      "y": 9,
+      "z": 12,
+      "w": 10,
+      "h": 1,
+      "d": 1,
+      "color": "blue"
+    },
+    {
+      "type": "box",
+      "x": 18,
+      "y": 16,
+      "z": 12,
+      "w": 10,
+      "h": 1,
+      "d": 1,
+      "color": "blue"
+    },
+    {
+      "type": "taper",
+      "x": 3,
+      "y": 1,
+      "z": 3,
+      "w": 8,
+      "h": 18,
+      "d": 8,
+      "topW": 5,
+      "topD": 5,
+      "color": "darkGray"
+    },
+    {
+      "type": "taper",
+      "x": 12,
+      "y": 1,
+      "z": 4,
+      "w": 7,
+      "h": 14,
+      "d": 7,
+      "topW": 4,
+      "topD": 4,
+      "color": "lightGray"
+    },
+    {
+      "type": "box",
+      "x": 7,
+      "y": 13,
+      "z": 6,
+      "w": 8,
+      "h": 2,
+      "d": 3,
+      "color": "white"
+    },
+    {
+      "type": "box",
+      "x": 5,
+      "y": 8,
+      "z": 2,
+      "w": 4,
+      "h": 1,
+      "d": 1,
+      "color": "blue"
+    },
+    {
+      "type": "taper",
+      "x": 30,
+      "y": 1,
+      "z": 3,
+      "w": 8,
+      "h": 25,
+      "d": 8,
+      "topW": 3,
+      "topD": 3,
+      "color": "white"
+    },
+    {
+      "type": "box",
+      "x": 33,
+      "y": 26,
+      "z": 6,
+      "w": 2,
+      "h": 8,
+      "d": 2,
+      "color": "blue"
+    },
+    {
+      "type": "taper",
+      "x": 39,
+      "y": 1,
+      "z": 5,
+      "w": 5,
+      "h": 15,
+      "d": 6,
+      "topW": 2,
+      "topD": 3,
+      "color": "lightGray"
+    },
+    {
+      "type": "box",
+      "x": 28,
+      "y": 1,
+      "z": 12,
+      "w": 7,
+      "h": 8,
+      "d": 4,
+      "color": "darkGray"
+    },
+    {
+      "type": "box",
+      "x": 31,
+      "y": 11,
+      "z": 5,
+      "w": 6,
+      "h": 1,
+      "d": 1,
+      "color": "blue"
+    },
+    {
+      "type": "box",
+      "x": 40,
+      "y": 8,
+      "z": 4,
+      "w": 3,
+      "h": 1,
+      "d": 1,
+      "color": "blue"
+    },
+    {
+      "type": "taper",
+      "x": 3,
+      "y": 1,
+      "z": 24,
+      "w": 15,
+      "h": 9,
+      "d": 10,
+      "topW": 9,
+      "topD": 6,
+      "color": "tan"
+    },
+    {
+      "type": "box",
+      "x": 5,
+      "y": 10,
+      "z": 26,
+      "w": 11,
+      "h": 2,
+      "d": 6,
+      "color": "white"
+    },
+    {
+      "type": "box",
+      "x": 8,
+      "y": 12,
+      "z": 27,
+      "w": 5,
+      "h": 3,
+      "d": 4,
+      "color": "green"
+    },
+    {
+      "type": "box",
+      "x": 1,
+      "y": 2,
+      "z": 34,
+      "w": 18,
+      "h": 2,
+      "d": 3,
+      "color": "blue"
+    },
+    {
+      "type": "taper",
+      "x": 29,
+      "y": 1,
+      "z": 24,
+      "w": 7,
+      "h": 17,
+      "d": 7,
+      "topW": 4,
+      "topD": 4,
+      "color": "darkGray"
+    },
+    {
+      "type": "taper",
+      "x": 37,
+      "y": 1,
+      "z": 23,
+      "w": 7,
+      "h": 21,
+      "d": 8,
+      "topW": 3,
+      "topD": 4,
+      "color": "lightGray"
+    },
+    {
+      "type": "taper",
+      "x": 27,
+      "y": 1,
+      "z": 32,
+      "w": 6,
+      "h": 11,
+      "d": 5,
+      "topW": 3,
+      "topD": 2,
+      "color": "white"
+    },
+    {
+      "type": "taper",
+      "x": 35,
+      "y": 1,
+      "z": 33,
+      "w": 10,
+      "h": 8,
+      "d": 4,
+      "topW": 6,
+      "topD": 2,
+      "color": "tan"
+    },
+    {
+      "type": "box",
+      "x": 32,
+      "y": 12,
+      "z": 26,
+      "w": 8,
+      "h": 2,
+      "d": 3,
+      "color": "white"
+    },
+    {
+      "type": "box",
+      "x": 39,
+      "y": 15,
+      "z": 25,
+      "w": 4,
+      "h": 1,
+      "d": 1,
+      "color": "blue"
+    },
+    {
+      "type": "box",
+      "x": 7,
+      "y": 6,
+      "z": 16,
+      "w": 12,
+      "h": 2,
+      "d": 2,
+      "color": "white"
+    },
+    {
+      "type": "box",
+      "x": 25,
+      "y": 6,
+      "z": 16,
+      "w": 14,
+      "h": 2,
+      "d": 2,
+      "color": "white"
+    },
+    {
+      "type": "box",
+      "x": 20,
+      "y": 6,
+      "z": 5,
+      "w": 2,
+      "h": 2,
+      "d": 9,
+      "color": "white"
+    },
+    {
+      "type": "box",
+      "x": 24,
+      "y": 6,
+      "z": 24,
+      "w": 2,
+      "h": 2,
+      "d": 9,
+      "color": "white"
+    },
+    {
+      "type": "box",
+      "x": 1,
+      "y": 1,
+      "z": 15,
+      "w": 3,
+      "h": 7,
+      "d": 8,
+      "color": "white"
+    },
+    {
+      "type": "box",
+      "x": 42,
+      "y": 1,
+      "z": 15,
+      "w": 3,
+      "h": 7,
+      "d": 8,
+      "color": "white"
+    }
+  ]
+}

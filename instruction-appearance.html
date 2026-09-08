@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#f4f4f4" />
+    <title>Blawx — accepted instruction appearance</title>
+    <style>
+      :root {
+        color: #171612;
+        background: #f4f4f4;
+        font-family: Helvetica, Arial, sans-serif;
+        font-synthesis: none;
+        --paper: #f4f4f4;
+        --ink: #171612;
+        --quiet: #68665f;
+        --yellow: #f2c500;
+        --space-xs: 4px;
+        --space-sm: 8px;
+        --space-md: 12px;
+        --space-lg: 16px;
+        --space-xl: 24px;
+        --space-2xl: 32px;
+        --space-3xl: 48px;
+      }
+
+      * { box-sizing: border-box; }
+      body { margin: 0; min-width: 320px; }
+      a { color: inherit; text-underline-offset: 3px; }
+      a:focus-visible, canvas:focus-visible { outline: 3px solid #0c6ac8; outline-offset: 3px; }
+
+      main {
+        width: min(1040px, calc(100% - 32px));
+        margin: 0 auto;
+        padding: clamp(32px, 6vw, 80px) 0 64px;
+      }
+
+      header {
+        display: grid;
+        grid-template-columns: minmax(0, 1.35fr) minmax(260px, .65fr);
+        gap: var(--space-3xl);
+        align-items: end;
+        padding-bottom: var(--space-xl);
+        border-bottom: 2px solid var(--ink);
+      }
+
+      .kicker, .case-label {
+        margin: 0;
+        font-size: .72rem;
+        font-weight: 700;
+        letter-spacing: .12em;
+        text-transform: uppercase;
+      }
+
+      h1 {
+        max-width: 12ch;
+        margin: var(--space-sm) 0 0;
+        font-size: clamp(2.5rem, 6vw, 5.8rem);
+        font-weight: 700;
+        line-height: .9;
+        letter-spacing: -.055em;
+      }
+
+      .intro {
+        display: grid;
+        gap: var(--space-md);
+        max-width: 54ch;
+        color: var(--quiet);
+        font-size: .95rem;
+        line-height: 1.45;
+      }
+
+      .intro p { margin: 0; }
+
+      .proof {
+        margin-top: var(--space-2xl);
+        padding: var(--space-xl) 0 var(--space-2xl);
+        border-bottom: 1px solid var(--ink);
+      }
+
+      .proof-head {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: var(--space-xl);
+        align-items: start;
+        margin-bottom: var(--space-2xl);
+      }
+
+      h2 {
+        margin: var(--space-xs) 0 var(--space-sm);
+        font-size: 2rem;
+        line-height: 1;
+        letter-spacing: -.04em;
+      }
+
+      .proof-description {
+        max-width: 54ch;
+        margin: 0;
+        color: var(--quiet);
+        font-size: .86rem;
+        line-height: 1.45;
+      }
+
+      .accepted {
+        display: inline-block;
+        border: 1px solid var(--ink);
+        border-radius: 999px;
+        padding: 9px 13px;
+        background: var(--yellow);
+        font-size: .75rem;
+        font-weight: 700;
+      }
+
+      .examples {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: var(--space-xl);
+      }
+
+      figure { margin: 0; }
+      .stage {
+        position: relative;
+        aspect-ratio: 1 / .82;
+        overflow: hidden;
+        border: 1px solid #aaa8a0;
+      }
+
+      canvas { display: block; width: 100%; height: 100%; touch-action: none; cursor: grab; }
+      canvas:active { cursor: grabbing; }
+      figcaption {
+        display: grid;
+        grid-template-columns: auto 1fr;
+        gap: var(--space-sm);
+        align-items: baseline;
+        padding-top: var(--space-sm);
+        font-size: .76rem;
+        line-height: 1.35;
+      }
+
+      .case-detail { color: var(--quiet); text-align: right; }
+      .status { min-height: 1.4em; margin: var(--space-xl) 0 0; font-size: .8rem; font-weight: 700; }
+      .back { display: inline-block; margin-top: var(--space-sm); font-size: .84rem; font-weight: 700; }
+
+      @media (max-width: 720px) {
+        header { grid-template-columns: 1fr; gap: var(--space-xl); }
+        .proof-head { grid-template-columns: 1fr; }
+        .accepted { justify-self: start; }
+        .examples { grid-template-columns: 1fr; }
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <header>
+        <div>
+          <p class="kicker">Building guide · accepted appearance</p>
+          <h1>Pastel context, full-color additions.</h1>
+        </div>
+        <div class="intro">
+          <p>Earlier pieces stay opaque and retain softened source hues as landmarks. New pieces keep their actual colors and dark edges.</p>
+          <p>This Blawx treatment was evaluated against the same saved build moments. Reference manuals: <a href="https://www.lego.com/cdn/product-assets/product.bi.additional.main.pdf/75441_ZHSI_BI_Build_Translate.pdf">75441</a> and <a href="https://www.lego.com/cdn/product-assets/product.bi.core.pdf/6555771.pdf">6555771</a>.</p>
+        </div>
+      </header>
+
+      <section class="proof" aria-labelledby="proof-title">
+        <div class="proof-head">
+          <div>
+            <p class="kicker">Final treatment</p>
+            <h2 id="proof-title">Pastel color</h2>
+            <p class="proof-description">85% source saturation before a 62% blend toward neutral paper. Context remains solid, depth-correct, and softly shaded.</p>
+          </div>
+          <span class="accepted">Accepted</span>
+        </div>
+
+        <div class="examples">
+          <figure>
+            <div class="stage"><canvas data-case="43" tabindex="0" aria-label="Accepted pastel context on Shape 43"></canvas></div>
+            <figcaption><span class="case-label">Shape 43 · cat</span><span class="case-detail" data-caption="43">Loading plan…</span></figcaption>
+          </figure>
+          <figure>
+            <div class="stage"><canvas data-case="44" tabindex="0" aria-label="Accepted pastel context on Shape 44"></canvas></div>
+            <figcaption><span class="case-label">Shape 44 · pickup</span><span class="case-detail" data-caption="44">Loading plan…</span></figcaption>
+          </figure>
+        </div>
+      </section>
+
+      <p class="status" role="status"></p>
+      <a class="back" href="/">Back to Blawx →</a>
+    </main>
+    <script type="module" src="/src/instruction-appearance.js"></script>
+  </body>
+</html>

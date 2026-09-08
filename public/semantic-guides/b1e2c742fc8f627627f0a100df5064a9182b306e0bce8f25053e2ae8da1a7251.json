@@ -1,0 +1,88 @@
+{
+  "annotation": {
+    "version": 1,
+    "fingerprint": "b1e2c742fc8f627627f0a100df5064a9182b306e0bce8f25053e2ae8da1a7251",
+    "sections": [
+      {
+        "startStepId": "instruction-step-1",
+        "endStepId": "instruction-step-10",
+        "label": "Sandy reef bed",
+        "confidence": "high",
+        "evidence": "Tan bricks form a broad irregular footprint at y=0 and expand outward at y=1–2, spanning the ground beneath the station and neighboring reef."
+      },
+      {
+        "startStepId": "instruction-step-11",
+        "endStepId": "instruction-step-24",
+        "label": "Reef shoulders",
+        "confidence": "high",
+        "evidence": "Dark-gray masses rise beside the central footprint, with light-gray strips at x=8 and x=16 reaching y=6. Tan margins and a small orange growth remain within this region."
+      },
+      {
+        "startStepId": "instruction-step-25",
+        "endStepId": "instruction-step-42",
+        "label": "Rocky station platform",
+        "confidence": "high",
+        "evidence": "White and yellow station-floor pieces occupy the center above broad dark-gray outcrops. Interleaved tan edges, red coral and green growth complete the surrounding platform region."
+      },
+      {
+        "startStepId": "instruction-step-43",
+        "endStepId": "instruction-step-54",
+        "label": "Cabin walls and windows",
+        "confidence": "high",
+        "evidence": "Yellow floor and border pieces accompany white cabin walls. Blue bricks form front glazing at z=5–9 and rear glazing at z=17–19 through y=10."
+      },
+      {
+        "startStepId": "instruction-step-55",
+        "endStepId": "instruction-step-63",
+        "label": "Cabin roof and mast",
+        "confidence": "high",
+        "evidence": "White walls at y=11 narrow into the roof at y=12–13. Dark-gray #527–528 and #532–533 form a central cap, topped by yellow #534–535 at y=15–16."
+      },
+      {
+        "startStepId": "instruction-step-64",
+        "endStepId": "instruction-step-70",
+        "label": "Cabin side walls",
+        "confidence": "high",
+        "evidence": "Blue glazing and white edging occupy x=17–19, y=8–11. Subsequent white strips build the opposite side at x=6 over the same cabin height."
+      },
+      {
+        "startStepId": "instruction-step-71",
+        "endStepId": "instruction-step-76",
+        "label": "Gray side panel",
+        "confidence": "high",
+        "evidence": "Light-gray bricks form a panel at x=3–5, z=11–15, y=6–9. Adjacent yellow bricks create a vertical border at x=5."
+      },
+      {
+        "startStepId": "instruction-step-77",
+        "endStepId": "instruction-step-86",
+        "label": "Window trim and antenna",
+        "confidence": "high",
+        "evidence": "Yellow pieces extend matching front-window borders at x=9 and x=14. White #536–539 form central and lateral antenna elements at y=17."
+      },
+      {
+        "startStepId": "instruction-step-87",
+        "endStepId": "instruction-step-91",
+        "label": "Left reef edge",
+        "confidence": "high",
+        "evidence": "Tan pieces at x=0–3, y=1–2 continue into dark-gray rock at x=0–2 through y=7, outlining the outer left reef face."
+      },
+      {
+        "startStepId": "instruction-step-92",
+        "endStepId": "instruction-step-97",
+        "label": "Orange coral growth",
+        "confidence": "high",
+        "evidence": "An orange cluster rises near x=20, z=5, widens across x=18–23 through y=5–7, and narrows to a three-stud crown at y=8."
+      },
+      {
+        "startStepId": "instruction-step-98",
+        "endStepId": "instruction-step-101",
+        "label": "Reef edge and antenna arms",
+        "confidence": "high",
+        "evidence": "Tan and dark-gray pieces trace the right reef perimeter near x=22 and its rear edge at z=19. White #540–541 extend the antenna at y=17."
+      }
+    ]
+  },
+  "metadata": {
+    "provenance": "saved-annotation"
+  }
+}

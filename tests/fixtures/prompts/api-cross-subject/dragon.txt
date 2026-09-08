@@ -1,0 +1,31 @@
+You are designing the raw colored 3D shape of a delightful brick-built display model from a user's text prompt. Your task is geometric design, not software implementation. Produce one finished response without tools, file access, browsing, other agents, or clarification. Do not read project instructions, existing models, or examples. Do not make changes to any files yourself. No explanations, markdown fences, captions, labels, or commentary in your response: output exactly the JSON requested below.
+
+USER PROMPT: dragon curled around a lighthouse
+
+Design goal: an immediately recognizable, appealing full three-dimensional interpretation of the user prompt that could become a well-designed real brick-built display set. Use intentional proportions, a strong silhouette, coherent color placement, and a few distinctive details. It must read from front, side, and rear, not just one camera angle. Simplify deliberately. Choose your own design; do not copy a particular existing LEGO set. Do not turn this into a flat image or mosaic. Avoid noise, unrelated scenery, oversized display bases, and disconnected decorative pixels. Prioritize a good shape over ornamental detail. Preserve the subject’s distinctive proportions and the spatial relationships between its main parts. Use enough geometry to convey the form; color may efficiently suggest secondary details. Existing LEGO sets are the quality bar, not maximum detail density.
+
+Important separation: describe only occupied CUBIC voxels and their colors through a compact program of solid primitives. Occupied cells are pieces of desired colored material, NOT individual physical LEGO bricks. Do not assign brick types, optimize part count, or worry about whether sideways-adjacent cells have studs. Exact LEGO parts and structural packing are a later process. Keep the visible volume geometrically coherent and avoid accidentally floating details. Cells connect geometrically across any shared face, including sideways. Ground is y=0.
+
+Output shape:
+{"ops":[["b",0,0,0,2,2,2,"O"]]}
+
+The tiny box only illustrates notation; it is not a suggested design. Operations are evaluated in array order. Occupied cells from later operations overwrite earlier colors at the same coordinates. This is an additive union; empty space outside an operation does not carve previous material. There is no subtraction operation.
+
+Coordinates and available primitives:
+- Every x,y,z,w,h,d value is an integer. x/y/z are MINIMUM corners of bounds. w/h/d are positive widths along x/y/z. All cell spacings are equal; y is vertical, z increases front-to-back, x increases left-to-right. Origins must be nonnegative.
+- box fills all w*h*d cells within its bounds.
+- ellipsoid fills cells whose centers are inside an ellipsoid inscribed in those bounds. The center is (x+w/2,y+h/2,z+d/2); radii are (w/2,h/2,d/2). Tiny or sharply curved extremities may leave empty lower layers; account for this in placement.
+- taper fills a centered rectangular cross-section on each y layer, linearly shrinking from w*d on its bottom layer to topW*topD on its top layer. It requires positive integer topW and topD no greater than w and d. It is vertical, not rotatable. For h=1 it uses the top cross-section. Membership includes cells whose centers are inside each section.
+- Encode each operation as a tuple [type,x,y,z,w,h,d,color]. Type is "b" for box, "e" for ellipsoid, "t" for taper. Only taper appends topW,topD, making ["t",x,y,z,w,h,d,color,topW,topD]. Exact tuple lengths: 8 for box/ellipsoid, 10 for taper. The section-loft operation described below is also available; no other fields or operation types.
+- Color is one character: K=black, W=white, L=lightGray, D=darkGray, R=red, Y=yellow, B=blue, G=green, T=tan, N=brown, O=orange. No empty-cell color.
+- Design a small complete set: all occupied geometry must fit inside coordinates 0..24 on every axis. Aim for 20–24 cells on the longest axis. Use deliberate small-set proportions, not a scaled-down large design. Hard maximum is 64 on each axis and 50,000 occupied cells total. Sum of operation bounding-box volumes must not exceed 262,144. You do not need to use all available colors or space.
+
+Section loft, a way to describe a whole changing body rather than many separate blocks:
+- Tuple ["l",axis,profile,color,sections], exactly five entries. axis is "x", "y", or "z"; profile is "box" or "ellipse". Color uses the same symbols as above.
+- Each section is [a,u,v,wu,wv]: coordinate a along the chosen axis, center u/v of the cross-section, and its full widths wu/wv. For axis x, u=y and v=z; for axis y, u=x and v=z; for axis z, u=x and v=y.
+- Supply 2 to 16 sections ordered by strictly increasing a. All numbers must be finite multiples of 0.5; widths strictly positive. Every section and its full extents must fit within 0..64. For example each u-wu/2 must be >=0 and u+wu/2 <=64.
+- The compiler linearly interpolates centers and widths between sections, then fills cell centers inside the box or ellipse cross-section. It occupies axial cell centers from the first section inclusive to the last section exclusive. It does not add material beyond those endpoints or remove any previous material.
+- Use this for a coherent changing silhouette when it is helpful. A body can widen then narrow, shift its center, or transition proportions using a few sections. A single loft cannot double back along its chosen axis; use separate forms for that. Small box/ellipsoid/taper primitives remain available for details. Do not force every part into a loft.
+- Keep the design economical: prefer a few meaningful forms to many overlapping fragments. For this small-set experiment, use at most 24 operations overall and at most 4 sections per loft. Preserve the subject's identity and appeal with fewer meaningful forms. Omit nonessential ornament, but keep defining features and coherent front/side/rear views. Color may efficiently communicate secondary details. This is a finished small set, not a rough draft. Candidate rasterization work across lofts and primitives must stay within 262,144 cells, including candidate empty space.
+
+Before emitting final JSON, reason about the full three-dimensional design and spatial relationships between its parts. Return the single best design you can produce in one response. Do not run tools or an iterative repair process.

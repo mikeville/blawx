@@ -1,0 +1,60 @@
+{
+  "annotation": {
+    "version": 1,
+    "fingerprint": "11773b21777328ced3c183ac19e28d0b1ae29fa8eb162eefd59f089fa7eae7c6",
+    "sections": [
+      {
+        "startStepId": "instruction-step-1",
+        "endStepId": "instruction-step-11",
+        "label": "Cabinet feet and sides",
+        "confidence": "high",
+        "evidence": "Black bricks #0–15 form two feet beneath brown lower cabinet regions. Narrow brown strips at x=22 extend the right side upward through y=13."
+      },
+      {
+        "startStepId": "instruction-step-12",
+        "endStepId": "instruction-step-83",
+        "label": "Cabinet and screen surround",
+        "confidence": "high",
+        "evidence": "Brown additions fill the housing across x=1–23 and z=3–16, capped at y=14. Tan and black front strips surround the screen area; #914–916 form a top mount."
+      },
+      {
+        "startStepId": "instruction-step-84",
+        "endStepId": "instruction-step-92",
+        "label": "Screen panel",
+        "confidence": "high",
+        "evidence": "Light-gray bricks span x=4–17 at z=0–2 through y=5–12. White and red strips form the outer vertical bands of the front panel."
+      },
+      {
+        "startStepId": "instruction-step-93",
+        "endStepId": "instruction-step-94",
+        "label": "Antenna stems",
+        "confidence": "high",
+        "evidence": "Light-gray bricks #917–918 sit above the black top mount at y=16, z=9–11, forming paired stems at x=9 and x=14."
+      },
+      {
+        "startStepId": "instruction-step-95",
+        "endStepId": "instruction-step-113",
+        "label": "Rear casing",
+        "confidence": "high",
+        "evidence": "Dark-gray additions occupy z=16–20 and y=3–13, forming a broad rear housing with stepped side edges and a narrow top rim."
+      },
+      {
+        "startStepId": "instruction-step-114",
+        "endStepId": "instruction-step-118",
+        "label": "Screen color bars",
+        "confidence": "high",
+        "evidence": "Yellow, green and blue bricks create adjacent vertical bands across x=7–14, y=7–12 at z=0, with black strips beneath them."
+      },
+      {
+        "startStepId": "instruction-step-119",
+        "endStepId": "instruction-step-123",
+        "label": "Antenna and exterior fittings",
+        "confidence": "high",
+        "evidence": "Bricks #919–924 form outward-spreading light-gray antenna arms above the cabinet. Black and gray additions also occupy the front controls and rear tab at z=20."
+      }
+    ]
+  },
+  "metadata": {
+    "provenance": "saved-annotation"
+  }
+}

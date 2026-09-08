@@ -1,0 +1,101 @@
+[
+  {
+    "id": "cat-construction",
+    "prepared": 1,
+    "label": "cat · authored construction",
+    "url": "/fixtures/cat-construction.json",
+    "provenance": "prepared",
+    "subject": "cat",
+    "method": "construction"
+  },
+  {
+    "id": "cat-shark-squid-construction",
+    "prepared": 2,
+    "label": "cat riding a shark jumping over a giant squid · authored construction",
+    "url": "/fixtures/cat-shark-squid-construction.json",
+    "provenance": "prepared",
+    "subject": "cat riding a shark jumping over a giant squid",
+    "method": "construction"
+  },
+  {
+    "id": "futuristic-city-construction",
+    "prepared": 3,
+    "label": "a massive detailed futuristic cityscape · authored construction",
+    "url": "/fixtures/futuristic-city-construction.json",
+    "provenance": "prepared",
+    "subject": "a massive detailed futuristic cityscape",
+    "method": "construction"
+  },
+  {
+    "id": "detail-tower-simple",
+    "prepared": 4,
+    "label": "tower · solid/simple detail study",
+    "url": "/fixtures/detail-tower-simple.json",
+    "provenance": "prepared",
+    "subject": "authored paired study: a compact civic tower with solid simple massing",
+    "method": "authored-detail-study"
+  },
+  {
+    "id": "detail-tower-stepped-open",
+    "prepared": 5,
+    "label": "tower · stepped/open detail study",
+    "url": "/fixtures/detail-tower-stepped-open.json",
+    "provenance": "prepared",
+    "subject": "authored paired study: a compact civic tower with stepped crown and framed openings",
+    "method": "authored-detail-study"
+  },
+  {
+    "id": "detail-probe-simple",
+    "prepared": 6,
+    "label": "space probe · solid/simple detail study",
+    "url": "/fixtures/detail-probe-simple.json",
+    "provenance": "prepared",
+    "subject": "authored paired study: a deep-space probe with a block body, panels, engine, and antenna",
+    "method": "authored-detail-study"
+  },
+  {
+    "id": "detail-probe-stepped-open",
+    "prepared": 7,
+    "label": "space probe · stepped/open detail study",
+    "url": "/fixtures/detail-probe-stepped-open.json",
+    "provenance": "prepared",
+    "subject": "authored paired study: a deep-space probe with stepped engine collars and a hollow antenna rim",
+    "method": "authored-detail-study"
+  },
+  {
+    "id": "bay-panel-solid",
+    "prepared": 8,
+    "label": "architectural panel · solid bays control",
+    "url": "/fixtures/bay-panel-solid.json",
+    "provenance": "prepared",
+    "subject": "authored paired study: a heavy architectural wall with a solid inset panel",
+    "method": "authored-bays-study"
+  },
+  {
+    "id": "bay-panel-open",
+    "prepared": 9,
+    "label": "architectural panel · open repeated bays",
+    "url": "/fixtures/bay-panel-open.json",
+    "provenance": "prepared",
+    "subject": "authored paired study: a structural architectural wall with repeated open bays",
+    "method": "authored-bays-study"
+  },
+  {
+    "id": "bay-mechanical-grille",
+    "prepared": 10,
+    "label": "mechanical grille · horizontal repeated bays",
+    "url": "/fixtures/bay-mechanical-grille.json",
+    "provenance": "prepared",
+    "subject": "authored reuse study: an open horizontal mechanical grille made from repeated bays",
+    "method": "authored-bays-study"
+  },
+  {
+    "id": "shape30-annulus-authored-variation",
+    "prepared": 11,
+    "label": "Shape30 annulus tires · authored variation",
+    "url": "/fixtures/shape30-annulus-authored-variation.json",
+    "provenance": "prepared",
+    "subject": "person riding a bicycle",
+    "method": "authored-annulus-variation"
+  }
+]

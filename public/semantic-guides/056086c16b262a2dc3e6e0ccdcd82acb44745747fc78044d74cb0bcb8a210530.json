@@ -1,0 +1,60 @@
+{
+  "annotation": {
+    "version": 1,
+    "fingerprint": "056086c16b262a2dc3e6e0ccdcd82acb44745747fc78044d74cb0bcb8a210530",
+    "sections": [
+      {
+        "startStepId": "step-1",
+        "endStepId": "step-3",
+        "label": "Shoes and ankles",
+        "confidence": "high",
+        "evidence": "Two separate black footprints span x=6–11 and x=12–17 at y=0–1. Gray bricks #31 and #33 begin an ankle above one footprint."
+      },
+      {
+        "startStepId": "step-4",
+        "endStepId": "step-8",
+        "label": "Trouser legs",
+        "confidence": "high",
+        "evidence": "Dark gray bricks form two parallel upright masses at x=7–11 and x=12–16, z=10–15, through y=2–6."
+      },
+      {
+        "startStepId": "step-9",
+        "endStepId": "step-18",
+        "label": "Shirt and left sleeve",
+        "confidence": "high",
+        "evidence": "Blue bricks bridge the legs and fill the torso at y=7–12, z=10–16. The sleeve projects toward x=5–7; brown #206 and #209 begin the neck above it."
+      },
+      {
+        "startStepId": "step-19",
+        "endStepId": "step-23",
+        "label": "Right sleeve and hand",
+        "confidence": "high",
+        "evidence": "Blue bricks extend along x=15–18 beside the torso. Brown pieces at x=15–17, z=6–9 form the forward hand, with light gray #189 above it."
+      },
+      {
+        "startStepId": "step-24",
+        "endStepId": "step-35",
+        "label": "Head and hair",
+        "confidence": "high",
+        "evidence": "Brown bricks form the neck and head at y=13–17, with dark facial marks toward z=7–8. Black bricks cap the head at y=18–19; nearby yellow and gray pieces accompany the face."
+      },
+      {
+        "startStepId": "step-36",
+        "endStepId": "step-41",
+        "label": "Plate of spaghetti",
+        "confidence": "high",
+        "evidence": "White bricks form a broad dish at z=2–10, y=8–10. Yellow bricks fill its center, with red #159, #161 and #162 forming a topping at y=11."
+      },
+      {
+        "startStepId": "step-42",
+        "endStepId": "step-46",
+        "label": "Face and hand details",
+        "confidence": "high",
+        "evidence": "Brown and blue pieces complete the hand and sleeve near x=4–7. Brown #247 and #263 extend the head side; black #255 and #257 mark the eyes, with yellow pieces near the mouth."
+      }
+    ]
+  },
+  "metadata": {
+    "provenance": "saved-annotation"
+  }
+}

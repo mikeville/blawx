@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Blawx — round two</title>
+<style>
+:root { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; color: #20201e; background: #e7e7e4; }
+* { box-sizing: border-box; }
+body { margin: 0; }
+button, a { font: inherit; color: inherit; }
+header { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px 16px; padding: 10px 24px; background: #f4f4f4; border-bottom: 1px solid #ccc; }
+h1 { font-size: 13px; margin: 0; }
+.tools, .sizes, .placements { display: flex; align-items: center; gap: 4px; }
+.tools { flex-wrap: wrap; gap: 4px 16px; }
+button { min-height: 44px; padding: 8px 14px; border: 0; background: transparent; font-size: 13px; cursor: pointer; }
+button[aria-pressed=true] { background: #20201e; color: #f4f4f4; border-radius: 3px; }
+a { font-size: 12px; text-underline-offset: 4px; padding: 12px; }
+button:focus-visible, a:focus-visible { outline: 2px solid #986e00; outline-offset: 3px; }
+.viewport { max-width: 1440px; margin: 0 auto 24px; background: #f4f4f4; box-shadow: 0 0 0 1px #d0d0cb; }
+.viewport[data-size=phone] { max-width: 390px; }
+iframe { display: block; width: 100%; height: calc(100dvh - 65px); min-height: 520px; border: 0; }
+.viewport[data-size=phone] iframe { height: 844px; }
+@media (max-width: 760px) {
+  header { padding: 6px 12px; gap: 4px; }
+  h1 { width: 100%; font-size: 11px; margin: 4px; }
+  .sizes { display: none; }
+  .tools { gap: 4px; }
+  button { padding: 8px 10px; font-size: 12px; }
+  a { padding: 8px; font-size: 11px; }
+  .viewport { margin-bottom: 0; }
+  .viewport[data-size=phone] iframe, iframe { height: calc(100dvh - 100px); min-height: 420px; }
+}
+</style></head><body>
+<header><h1>Blawx / floating prompt review</h1><div class="tools"><div class="placements" role="group" aria-label="Prompt placement"><button data-composer="inline" aria-pressed="false">In flow</button><button data-composer="fixed" aria-pressed="false">Fixed bottom</button><button data-composer="floating" aria-pressed="true">Floating brick</button></div><div class="sizes" role="group" aria-label="Preview size"><button data-size="desktop" aria-pressed="false">Desktop</button><button data-size="phone" aria-pressed="true">Phone</button></div><a href="../index.html" target="_blank" rel="noopener">Round one</a><a id="open" href="./app.html?composer=floating" target="_blank" rel="noopener">Open ↗</a></div></header>
+<main class="viewport" data-size="phone"><iframe title="Blawx mobile layout preview"></iframe></main>
+<script>
+const params = new URLSearchParams(location.search);
+let composer = ['inline', 'fixed', 'floating'].includes(params.get('composer')) ? params.get('composer') : 'floating';
+let size = params.get('size') === 'desktop' ? 'desktop' : 'phone';
+const frame = document.querySelector('iframe');
+function update() {
+  const source = `./app.html?composer=${composer}`;
+  if (frame.getAttribute('src') !== source) frame.src = source;
+  document.querySelector('#open').href = source;
+  document.querySelector('.viewport').dataset.size = size;
+  document.querySelectorAll('button[data-composer]').forEach(button => button.setAttribute('aria-pressed', String(button.dataset.composer === composer)));
+  document.querySelectorAll('button[data-size]').forEach(button => button.setAttribute('aria-pressed', String(button.dataset.size === size)));
+  history.replaceState(null, '', `${location.pathname}?composer=${composer}&size=${size}`);
+}
+document.querySelectorAll('button[data-composer]').forEach(button => button.onclick = () => { composer = button.dataset.composer; update(); });
+document.querySelectorAll('button[data-size]').forEach(button => button.onclick = () => { size = button.dataset.size; update(); });
+update();
+</script></body></html>

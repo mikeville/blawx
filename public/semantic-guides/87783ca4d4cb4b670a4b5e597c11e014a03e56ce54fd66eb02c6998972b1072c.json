@@ -1,0 +1,74 @@
+{
+  "annotation": {
+    "version": 1,
+    "fingerprint": "87783ca4d4cb4b670a4b5e597c11e014a03e56ce54fd66eb02c6998972b1072c",
+    "sections": [
+      {
+        "startStepId": "instruction-step-1",
+        "endStepId": "instruction-step-2",
+        "label": "Shoe soles",
+        "confidence": "high",
+        "evidence": "Black bricks make two separate low footprints at x=6–11 and x=12–17, both extending from z=7 to z=15 at y=0."
+      },
+      {
+        "startStepId": "instruction-step-3",
+        "endStepId": "instruction-step-6",
+        "label": "Right leg and shirt side",
+        "confidence": "high",
+        "evidence": "Black bricks complete the right shoe, gray bricks rise through y=2–6, and blue bricks continue above them into the shirt and outward sleeve at x=14–18."
+      },
+      {
+        "startStepId": "instruction-step-7",
+        "endStepId": "instruction-step-9",
+        "label": "Left leg and waist",
+        "confidence": "high",
+        "evidence": "Black bricks complete the shoe at x=6–11. Gray courses rise at x=7–11 through y=6, followed by blue waist bricks at y=7."
+      },
+      {
+        "startStepId": "instruction-step-10",
+        "endStepId": "instruction-step-16",
+        "label": "Shirt and sleeves",
+        "confidence": "high",
+        "evidence": "Blue bricks fill the torso across x=6–15, z=10–16, y=8–12, with sleeve extensions on both sides. Brown #190 begins the neck above the shirt."
+      },
+      {
+        "startStepId": "instruction-step-17",
+        "endStepId": "instruction-step-22",
+        "label": "Neck and face",
+        "confidence": "high",
+        "evidence": "Brown bricks build the neck at y=13 and broaden into the head through y=17. Black #199 and #211 lie along the lower front face; brown projections extend to either side."
+      },
+      {
+        "startStepId": "instruction-step-23",
+        "endStepId": "instruction-step-25",
+        "label": "Hair cap",
+        "confidence": "high",
+        "evidence": "Black bricks cover the head at y=18–19 over x=7–15, z=8–16. These steps also add brown #240 beneath the cap and several blue shirt pieces."
+      },
+      {
+        "startStepId": "instruction-step-26",
+        "endStepId": "instruction-step-31",
+        "label": "Raised hand and fork",
+        "confidence": "high",
+        "evidence": "Blue sleeve bricks surround x=15–18; brown bricks form the hand at z=6–9. Gray #173 and #210 extend upward beside yellow #188. Black #235 adds an eye detail."
+      },
+      {
+        "startStepId": "instruction-step-32",
+        "endStepId": "instruction-step-37",
+        "label": "Plate of spaghetti",
+        "confidence": "high",
+        "evidence": "White bricks form a dish at y=8–10, z=2–10. Yellow pieces occupy its center, while red #147, #150 and #151 form a topping at y=11."
+      },
+      {
+        "startStepId": "instruction-step-38",
+        "endStepId": "instruction-step-40",
+        "label": "Left hand and face details",
+        "confidence": "high",
+        "evidence": "Brown #86, #92, #118 and #122 form the hand beside blue sleeve pieces at x=4–5. Brown #227 and #241 extend the head side, and black #233 marks an eye."
+      }
+    ]
+  },
+  "metadata": {
+    "provenance": "saved-annotation"
+  }
+}

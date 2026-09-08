@@ -1,0 +1,407 @@
+[
+  {
+    "id": "shape-01",
+    "shape": 1,
+    "label": "Shape 01 · cat",
+    "url": "/examples/shape-01.json",
+    "provenance": "generated",
+    "subject": "cat",
+    "method": "voxel-layers"
+  },
+  {
+    "id": "shape-02",
+    "shape": 2,
+    "label": "Shape 02 · cat",
+    "url": "/examples/shape-02.json",
+    "provenance": "generated",
+    "subject": "cat",
+    "method": "voxel-program"
+  },
+  {
+    "id": "shape-03",
+    "shape": 3,
+    "label": "Shape 03 · cat",
+    "url": "/examples/shape-03.json",
+    "provenance": "generated",
+    "subject": "cat",
+    "method": "voxel-tuples"
+  },
+  {
+    "id": "shape-04",
+    "shape": 4,
+    "label": "Shape 04 · a massive detailed futuristic cityscape",
+    "url": "/examples/shape-04.json",
+    "provenance": "generated",
+    "subject": "a massive detailed futuristic cityscape",
+    "method": "voxel-tuples"
+  },
+  {
+    "id": "shape-05",
+    "shape": 5,
+    "label": "Shape 05 · cat riding a shark jumping over a giant squid",
+    "url": "/examples/shape-05.json",
+    "provenance": "generated",
+    "subject": "cat riding a shark jumping over a giant squid",
+    "method": "voxel-tuples"
+  },
+  {
+    "id": "shape-06",
+    "shape": 6,
+    "label": "Shape 06 · a massive detailed futuristic cityscape",
+    "url": "/examples/shape-06.json",
+    "provenance": "generated",
+    "subject": "a massive detailed futuristic cityscape",
+    "method": "voxel-program"
+  },
+  {
+    "id": "shape-07",
+    "shape": 7,
+    "label": "Shape 07 · cat riding a shark jumping over a giant squid",
+    "url": "/examples/shape-07.json",
+    "provenance": "generated",
+    "subject": "cat riding a shark jumping over a giant squid",
+    "method": "voxel-program"
+  },
+  {
+    "id": "shape-08",
+    "shape": 8,
+    "label": "Shape 08 · a massive detailed futuristic cityscape",
+    "url": "/examples/shape-08.json",
+    "provenance": "generated",
+    "subject": "a massive detailed futuristic cityscape",
+    "method": "voxel-tuples"
+  },
+  {
+    "id": "shape-09",
+    "shape": 9,
+    "label": "Shape 09 · a massive detailed futuristic cityscape",
+    "url": "/examples/shape-09.json",
+    "provenance": "generated",
+    "subject": "a massive detailed futuristic cityscape",
+    "method": "voxel-program"
+  },
+  {
+    "id": "shape-10",
+    "shape": 10,
+    "label": "Shape 10 · a massive detailed futuristic cityscape",
+    "url": "/examples/shape-10.json",
+    "provenance": "generated",
+    "subject": "a massive detailed futuristic cityscape",
+    "method": "voxel-tuples"
+  },
+  {
+    "id": "shape-11",
+    "shape": 11,
+    "label": "Shape 11 · a massive detailed futuristic cityscape",
+    "url": "/examples/shape-11.json",
+    "provenance": "generated",
+    "subject": "a massive detailed futuristic cityscape",
+    "method": "voxel-tuples"
+  },
+  {
+    "id": "shape-12",
+    "shape": 12,
+    "label": "Shape 12 · a massive detailed futuristic cityscape",
+    "url": "/examples/shape-12.json",
+    "provenance": "generated",
+    "subject": "a massive detailed futuristic cityscape",
+    "method": "voxel-tuples"
+  },
+  {
+    "id": "shape-13",
+    "shape": 13,
+    "label": "Shape 13 · self actualization",
+    "url": "/examples/shape-13.json",
+    "provenance": "generated",
+    "subject": "self actualization",
+    "method": "voxel-tuples"
+  },
+  {
+    "id": "shape-14",
+    "shape": 14,
+    "label": "Shape 14 · a massive detailed futuristic cityscape",
+    "url": "/examples/shape-14.json",
+    "provenance": "generated",
+    "subject": "a massive detailed futuristic cityscape",
+    "method": "voxel-detail"
+  },
+  {
+    "id": "shape-15",
+    "shape": 15,
+    "label": "Shape 15 · a massive detailed futuristic cityscape",
+    "url": "/examples/shape-15.json",
+    "provenance": "generated",
+    "subject": "a massive detailed futuristic cityscape",
+    "method": "voxel-detail"
+  },
+  {
+    "id": "shape-16",
+    "shape": 16,
+    "label": "Shape 16 · red pickup truck",
+    "url": "/examples/shape-16.json",
+    "provenance": "generated",
+    "subject": "red pickup truck",
+    "method": "voxel-tuples"
+  },
+  {
+    "id": "shape-17",
+    "shape": 17,
+    "label": "Shape 17 · red pickup truck",
+    "url": "/examples/shape-17.json",
+    "provenance": "generated",
+    "subject": "red pickup truck",
+    "method": "voxel-loft"
+  },
+  {
+    "id": "shape-18",
+    "shape": 18,
+    "label": "Shape 18 · cat",
+    "url": "/examples/shape-18.json",
+    "provenance": "generated",
+    "subject": "cat",
+    "method": "voxel-loft"
+  },
+  {
+    "id": "shape-19",
+    "shape": 19,
+    "label": "Shape 19 · red pickup truck",
+    "url": "/examples/shape-19.json",
+    "provenance": "generated",
+    "subject": "red pickup truck",
+    "method": "voxel-loft"
+  },
+  {
+    "id": "shape-20",
+    "shape": 20,
+    "label": "Shape 20 · red pickup truck",
+    "url": "/examples/shape-20.json",
+    "provenance": "generated",
+    "subject": "red pickup truck",
+    "method": "voxel-loft"
+  },
+  {
+    "id": "shape-21",
+    "shape": 21,
+    "label": "Shape 21 · cat",
+    "url": "/examples/shape-21.json",
+    "provenance": "generated",
+    "subject": "cat",
+    "method": "voxel-loft"
+  },
+  {
+    "id": "shape-22",
+    "shape": 22,
+    "label": "Shape 22 · cat riding a shark jumping over a giant squid",
+    "url": "/examples/shape-22.json",
+    "provenance": "generated",
+    "subject": "cat riding a shark jumping over a giant squid",
+    "method": "voxel-loft"
+  },
+  {
+    "id": "shape-23",
+    "shape": 23,
+    "label": "Shape 23 · cat",
+    "url": "/examples/shape-23.json",
+    "provenance": "generated",
+    "subject": "cat",
+    "method": "voxel-loft"
+  },
+  {
+    "id": "shape-24",
+    "shape": 24,
+    "label": "Shape 24 · cat",
+    "url": "/examples/shape-24.json",
+    "provenance": "generated",
+    "subject": "cat",
+    "method": "voxel-loft"
+  },
+  {
+    "id": "shape-25",
+    "shape": 25,
+    "label": "Shape 25 · cat",
+    "url": "/examples/shape-25.json",
+    "provenance": "generated",
+    "subject": "cat",
+    "method": "voxel-loft"
+  },
+  {
+    "id": "shape-26",
+    "shape": 26,
+    "label": "Shape 26 · cat",
+    "url": "/examples/shape-26.json",
+    "provenance": "generated",
+    "subject": "cat",
+    "method": "voxel-loft"
+  },
+  {
+    "id": "shape-27",
+    "shape": 27,
+    "label": "Shape 27 · dragon curled around a lighthouse",
+    "url": "/examples/shape-27.json",
+    "provenance": "generated",
+    "subject": "dragon curled around a lighthouse",
+    "method": "voxel-loft"
+  },
+  {
+    "id": "shape-28",
+    "shape": 28,
+    "label": "Shape 28 · person eating spaghetti",
+    "url": "/examples/shape-28.json",
+    "provenance": "generated",
+    "subject": "person eating spaghetti",
+    "method": "voxel-loft"
+  },
+  {
+    "id": "shape-29",
+    "shape": 29,
+    "label": "Shape 29 · nostalgia",
+    "url": "/examples/shape-29.json",
+    "provenance": "generated",
+    "subject": "nostalgia",
+    "method": "voxel-loft"
+  },
+  {
+    "id": "shape-30",
+    "shape": 30,
+    "label": "Shape 30 · person riding a bicycle",
+    "url": "/examples/shape-30.json",
+    "provenance": "generated",
+    "subject": "person riding a bicycle",
+    "method": "voxel-loft"
+  },
+  {
+    "id": "shape-31",
+    "shape": 31,
+    "label": "Shape 31 · an underwater research station built into a coral reef",
+    "url": "/examples/shape-31.json",
+    "provenance": "generated",
+    "subject": "an underwater research station built into a coral reef",
+    "method": "voxel-loft"
+  },
+  {
+    "id": "shape-32",
+    "shape": 32,
+    "label": "Shape 32 · cat",
+    "url": "/examples/shape-32.json",
+    "provenance": "generated",
+    "subject": "cat",
+    "method": "voxel-loft"
+  },
+  {
+    "id": "shape-33",
+    "shape": 33,
+    "label": "Shape 33 · cat",
+    "url": "/examples/shape-33.json",
+    "provenance": "generated",
+    "subject": "cat",
+    "method": "voxel-loft"
+  },
+  {
+    "id": "shape-34",
+    "shape": 34,
+    "label": "Shape 34 · cat",
+    "url": "/examples/shape-34.json",
+    "provenance": "generated",
+    "subject": "cat",
+    "method": "voxel-construction"
+  },
+  {
+    "id": "shape-35",
+    "shape": 35,
+    "label": "Shape 35 · dragon curled around a lighthouse",
+    "url": "/examples/shape-35.json",
+    "provenance": "generated",
+    "subject": "dragon curled around a lighthouse",
+    "method": "voxel-loft-bidirectional"
+  },
+  {
+    "id": "shape-38",
+    "shape": 38,
+    "label": "Shape 38 · cat",
+    "url": "/examples/shape-38.json",
+    "provenance": "generated",
+    "subject": "cat",
+    "method": "voxel-loft"
+  },
+  {
+    "id": "shape-39",
+    "shape": 39,
+    "label": "Shape 39 · dragon curled around a lighthouse",
+    "url": "/examples/shape-39.json",
+    "provenance": "generated",
+    "subject": "dragon curled around a lighthouse",
+    "method": "voxel-loft"
+  },
+  {
+    "id": "shape-40",
+    "shape": 40,
+    "label": "Shape 40 · an underwater research station built into a coral reef",
+    "url": "/examples/shape-40.json",
+    "provenance": "generated",
+    "subject": "an underwater research station built into a coral reef",
+    "method": "voxel-loft"
+  },
+  {
+    "id": "shape-41",
+    "shape": 41,
+    "label": "Shape 41 · an underwater research station built into a coral reef",
+    "url": "/examples/shape-41.json",
+    "provenance": "generated",
+    "subject": "an underwater research station built into a coral reef",
+    "method": "voxel-loft"
+  },
+  {
+    "id": "shape-42",
+    "shape": 42,
+    "label": "Shape 42 · an underwater research station built into a coral reef",
+    "url": "/examples/shape-42.json",
+    "provenance": "generated",
+    "subject": "an underwater research station built into a coral reef",
+    "method": "voxel-loft"
+  },
+  {
+    "id": "shape-43",
+    "shape": 43,
+    "label": "Shape 43 · cat",
+    "url": "/examples/shape-43.json",
+    "provenance": "generated",
+    "subject": "cat",
+    "method": "voxel-loft"
+  },
+  {
+    "id": "shape-44",
+    "shape": 44,
+    "label": "Shape 44 · red pickup truck",
+    "url": "/examples/shape-44.json",
+    "provenance": "generated",
+    "subject": "red pickup truck",
+    "method": "voxel-loft"
+  },
+  {
+    "id": "shape-45",
+    "shape": 45,
+    "label": "Shape 45 · dragon curled around a lighthouse",
+    "url": "/examples/shape-45.json",
+    "provenance": "generated",
+    "subject": "dragon curled around a lighthouse",
+    "method": "voxel-loft"
+  },
+  {
+    "id": "shape-46",
+    "shape": 46,
+    "label": "Shape 46 · person eating spaghetti",
+    "url": "/examples/shape-46.json",
+    "provenance": "generated",
+    "subject": "person eating spaghetti",
+    "method": "voxel-loft"
+  },
+  {
+    "id": "shape-47",
+    "shape": 47,
+    "label": "Shape 47 · nostalgia",
+    "url": "/examples/shape-47.json",
+    "provenance": "generated",
+    "subject": "nostalgia",
+    "method": "voxel-loft"
+  }
+]

@@ -1,0 +1,67 @@
+{
+  "annotation": {
+    "version": 1,
+    "fingerprint": "7c1d002e6eee91af362d1b05eaef1a48269d35e7beb6dd87bfb3dd4aaad08860",
+    "sections": [
+      {
+        "startStepId": "instruction-step-1",
+        "endStepId": "instruction-step-5",
+        "label": "Wheel and hub",
+        "confidence": "high",
+        "evidence": "Black bricks form a wheel at x=0–2, z=3–9 across y=0–4. Light gray #26 occupies the outer face at y=2."
+      },
+      {
+        "startStepId": "instruction-step-6",
+        "endStepId": "instruction-step-10",
+        "label": "Wheel and hub",
+        "confidence": "high",
+        "evidence": "Black bricks form a wheel at x=12–14, z=3–9 across y=0–4. Light gray #27 occupies the outer face at y=2."
+      },
+      {
+        "startStepId": "instruction-step-11",
+        "endStepId": "instruction-step-12",
+        "label": "Wheel and hub",
+        "confidence": "high",
+        "evidence": "Black bricks rise from #2 at x=0–2, z=18–22 to form a rear wheel spanning z=17–23. Light gray #38 provides its outer hub."
+      },
+      {
+        "startStepId": "instruction-step-13",
+        "endStepId": "instruction-step-17",
+        "label": "Wheel and hub",
+        "confidence": "high",
+        "evidence": "Black bricks form a wheel at x=12–14, z=17–23 across y=0–4. Light gray #39 occupies the outer face at y=2."
+      },
+      {
+        "startStepId": "instruction-step-18",
+        "endStepId": "instruction-step-22",
+        "label": "Chassis and bumpers",
+        "confidence": "high",
+        "evidence": "Black bricks spread across x=2–12 at y=3 between the wheel positions. Light gray strips occupy the front and rear ends at z=0 and z=23."
+      },
+      {
+        "startStepId": "instruction-step-23",
+        "endStepId": "instruction-step-39",
+        "label": "Truck body and cargo bed",
+        "confidence": "high",
+        "evidence": "Broad red courses form the hood and lower cab at z=1–15. Dark gray flooring and narrow red sidewalls define the cargo bed at z=15–23; initial blue cab pieces appear above."
+      },
+      {
+        "startStepId": "instruction-step-40",
+        "endStepId": "instruction-step-45",
+        "label": "Cab windows and roof",
+        "confidence": "high",
+        "evidence": "Blue bricks fill the cab window region at z=8–14, y=8–9. Red framing borders the windows, and red bricks at y=10 form the roof across x=2–12."
+      },
+      {
+        "startStepId": "instruction-step-46",
+        "endStepId": "instruction-step-48",
+        "label": "Front bumper and headlight",
+        "confidence": "high",
+        "evidence": "Light gray #46 and #92 occupy x=10–12 at z=0 on y=3–4. White #131 sits directly above them at y=5, forming a front corner headlight."
+      }
+    ]
+  },
+  "metadata": {
+    "provenance": "saved-annotation"
+  }
+}

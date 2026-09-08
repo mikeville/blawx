@@ -1,0 +1,88 @@
+{
+  "annotation": {
+    "version": 1,
+    "fingerprint": "fd7b5e28b471c7ad8247f0e41ec6fb7d5b90c6b1312a5ddce6ffb7b95ef76d48",
+    "sections": [
+      {
+        "startStepId": "instruction-step-1",
+        "endStepId": "instruction-step-6",
+        "label": "Left paws and haunch",
+        "confidence": "high",
+        "evidence": "White bricks at x=6–11, z=4–9 form a front paw; orange clusters behind it at z=10–19 build the haunch, with an orange leg rising to y=5."
+      },
+      {
+        "startStepId": "instruction-step-7",
+        "endStepId": "instruction-step-19",
+        "label": "Right paws and haunch",
+        "confidence": "high",
+        "evidence": "White bricks at x=13–18 form the other front paw. Rear orange clusters build its haunch and the tail curve, while central orange spans connect the lower torso."
+      },
+      {
+        "startStepId": "instruction-step-20",
+        "endStepId": "instruction-step-34",
+        "label": "Torso and haunches",
+        "confidence": "high",
+        "evidence": "Orange courses fill the broad rear body at z=10–19 and rise along both flanks, connecting the haunches through the central torso."
+      },
+      {
+        "startStepId": "instruction-step-35",
+        "endStepId": "instruction-step-45",
+        "label": "Chest and shoulders",
+        "confidence": "high",
+        "evidence": "White #176, #207, #237, #240 and #270–273 form the front chest patch. Orange courses surround it and narrow upward toward the shoulders at y=10–12."
+      },
+      {
+        "startStepId": "instruction-step-46",
+        "endStepId": "instruction-step-53",
+        "label": "Muzzle and cheeks",
+        "confidence": "high",
+        "evidence": "White bricks project forward at z=1–5, y=11–13, while orange courses widen around them into cheeks spanning approximately x=5–19."
+      },
+      {
+        "startStepId": "instruction-step-54",
+        "endStepId": "instruction-step-58",
+        "label": "Eyes and face",
+        "confidence": "high",
+        "evidence": "Black pairs #425–426 and #448, #450 form eyes at x=8–10 and x=14–16, y=14–15. Orange face courses surround the eyes and centered white muzzle."
+      },
+      {
+        "startStepId": "instruction-step-59",
+        "endStepId": "instruction-step-64",
+        "label": "Forehead and ears",
+        "confidence": "high",
+        "evidence": "Orange courses at y=16–17 shape the forehead and paired ears. Tan interiors #493–494, #499 and #502 lead to narrow orange tips #519–520 at y=19."
+      },
+      {
+        "startStepId": "instruction-step-65",
+        "endStepId": "instruction-step-69",
+        "label": "Raised tail",
+        "confidence": "high",
+        "evidence": "Orange bricks form a narrow upright at x=20–23, z=6–11, y=2–7. Tan #244, #275–277, #281 and #304 form its contrasting tip."
+      },
+      {
+        "startStepId": "instruction-step-70",
+        "endStepId": "instruction-step-74",
+        "label": "Forehead stripe and ear edges",
+        "confidence": "high",
+        "evidence": "Brown #474 and #491 form a centered forehead stripe at y=16–17. Orange #513 and #516 add matching edges to the two ears at y=18."
+      },
+      {
+        "startStepId": "instruction-step-75",
+        "endStepId": "instruction-step-80",
+        "label": "White paw contours",
+        "confidence": "high",
+        "evidence": "Six small white assemblies extend the front, outer and rear edges of the paired paw footprints at y=0–1, spanning z=3–10."
+      },
+      {
+        "startStepId": "instruction-step-81",
+        "endStepId": "instruction-step-83",
+        "label": "Muzzle tip",
+        "confidence": "high",
+        "evidence": "White #366 and #393 stack at x=10–14, z=1–2, y=12–13, forming the foremost edge of the centered muzzle."
+      }
+    ]
+  },
+  "metadata": {
+    "provenance": "saved-annotation"
+  }
+}
