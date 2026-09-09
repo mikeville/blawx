@@ -2,6 +2,13 @@ import * as THREE from 'three';
 import { PALETTE } from './geometry.js';
 import { brickPreviewData } from './brick-preview.js';
 import { createAssemblyJoinPreview } from './assembly-join-preview.js';
+import { BRICK_OUTLINE_WIDTH, BrickOutlineBatch } from './brick-outlines.js';
+import {
+  DEFAULT_BLACK_PIECE_OUTLINE,
+  SOURCE_NEAR_BLACK_LUMINANCE_THRESHOLD,
+  groupBrickOutlinesBySourceColor,
+} from './black-piece-ink.js';
+import { createStudRenderSettings } from './stud-appearance.js';
 
 const ISO_ORIGIN = Math.PI / 4;
 const QUARTER_TURN = Math.PI / 2;
@@ -17,6 +24,7 @@ const MAX_VISIBILITY_RAY_TESTS = 250_000;
 const MAX_VISIBILITY_BODIES = Math.floor(MAX_VISIBILITY_RAY_TESTS / (UPWARD_AZIMUTHS.length * 9));
 const EDGE_SEGMENTS = [[0, 1], [1, 3], [3, 2], [2, 0], [4, 5], [5, 7], [7, 6], [6, 4], [0, 4], [1, 5], [2, 6], [3, 7]];
 const EDGE_POINTS = [[-1,-1,-1],[1,-1,-1],[-1,1,-1],[1,1,-1],[-1,-1,1],[1,-1,1],[-1,1,1],[1,1,1]];
+const DARK_FACE_LUMINANCE_FLOOR = 0.03;
 
 const ACCEPTED_INSTRUCTION_HIGHLIGHT_STYLE = 'pastel-color';
 const ACCEPTED_INSTRUCTION_APPEARANCE = Object.freeze({
@@ -47,8 +55,18 @@ export function getInstructionContextColor(source) {
   return tone;
 }
 
-export function getInstructionActiveMaterialAppearance(source) {
+export function getBrickFaceColor(source) {
   const tone = source instanceof THREE.Color ? source.clone() : new THREE.Color(source);
+  const luminance = tone.r * 0.2126 + tone.g * 0.7152 + tone.b * 0.0722;
+  if (luminance >= SOURCE_NEAR_BLACK_LUMINANCE_THRESHOLD) return tone;
+  if (luminance > 0) return tone.multiplyScalar(DARK_FACE_LUMINANCE_FLOOR / luminance);
+  return tone.setRGB(DARK_FACE_LUMINANCE_FLOOR, DARK_FACE_LUMINANCE_FLOOR, DARK_FACE_LUMINANCE_FLOOR);
+}
+
+export function getInstructionActiveMaterialAppearance(source, liftDarkFaces = true) {
+  const tone = liftDarkFaces
+    ? getBrickFaceColor(source)
+    : (source instanceof THREE.Color ? source.clone() : new THREE.Color(source));
   return {
     color: tone.clone().multiplyScalar(0.15),
     emissive: tone,
@@ -294,6 +312,8 @@ export class ProductViewer {
     highlightIds = null,
     insertionDirection = null,
     joinContext = null,
+    studAppearance = null,
+    blackPieceOutline = DEFAULT_BLACK_PIECE_OUTLINE,
     animate = true,
   } = {}) {
     if (this.disposed) return;
@@ -303,7 +323,7 @@ export class ProductViewer {
       ? createAssemblyJoinPreview({ model, highlightIds, joinContext })
       : { active: false, model, arrows: [] };
     const renderModel = joinPreview.active ? joinPreview.model : model;
-    const data = isBricks ? brickPreviewData(renderModel) : {
+    let data = isBricks ? brickPreviewData(renderModel) : {
       bodies: model.cells.map(c => ({ ...c, x: c.x + .5, y: c.y + .5, z: c.z + .5, w: .96, h: .96, d: .96 })),
       studs: [],
     };
@@ -315,7 +335,11 @@ export class ProductViewer {
     if (fromBelow) this.azimuth = chooseUpwardInsertionAzimuth(data.bodies, highlightIds);
     const geometry = new THREE.BoxGeometry(1, 1, 1);
     const voxelMm = renderModel.meta?.scale?.voxelMm ?? 8;
-    const studGeometry = new THREE.CylinderGeometry(2.45 / voxelMm, 2.45 / voxelMm, 1.8 / voxelMm, 8);
+    const studSettings = createStudRenderSettings(data.studs, voxelMm, studAppearance);
+    const studRadius = studSettings.radius;
+    const studHeight = studSettings.height;
+    data = { ...data, studs: studSettings.studs };
+    const studGeometry = new THREE.CylinderGeometry(studRadius, studRadius, studHeight, 32);
     this.resources.push(geometry, studGeometry);
     const matrix = new THREE.Matrix4();
     const materials = new Map();
@@ -347,14 +371,16 @@ export class ProductViewer {
             });
           } else {
             const sourceTone = PALETTE[color] ?? 0xff3b80;
-            const instructionTone = instructionDiagram ? getInstructionActiveMaterialAppearance(sourceTone) : null;
+            const instructionTone = instructionDiagram
+              ? getInstructionActiveMaterialAppearance(sourceTone, isBricks)
+              : null;
             material = new THREE.MeshLambertMaterial(instructionTone ? {
               ...instructionTone,
               polygonOffset: true,
               polygonOffsetFactor: 1,
               polygonOffsetUnits: 1,
             } : {
-              color: new THREE.Color(sourceTone),
+              color: isBricks ? getBrickFaceColor(sourceTone) : new THREE.Color(sourceTone),
               polygonOffset: true,
               polygonOffsetFactor: 1,
               polygonOffsetUnits: 1,
@@ -392,13 +418,24 @@ export class ProductViewer {
       this.renderObjects.push(contextLines);
       this.resources.push(contextGeometry, contextMaterial);
 
-      const activeGeometry = makeEdgeGeometry(activeBodies);
-      const activeMaterial = new THREE.LineBasicMaterial({ color: appearance.activeEdge, toneMapped: false });
-      const activeLines = new THREE.LineSegments(activeGeometry, activeMaterial);
-      activeLines.renderOrder = 3;
-      this.group.add(activeLines);
-      this.renderObjects.push(activeLines);
-      this.resources.push(activeGeometry, activeMaterial);
+      const activeStuds = data.studs.filter(stud => highlightIds.has(stud.id));
+      for (const outlineGroup of groupBrickOutlinesBySourceColor(
+        { bodies: activeBodies, studs: activeStuds },
+        blackPieceOutline,
+      )) {
+        const activeOutlines = new BrickOutlineBatch({
+          bodies: outlineGroup.bodies,
+          studs: outlineGroup.studs,
+          studRadius,
+          studHeight,
+          color: outlineGroup.color,
+          sidewallColor: outlineGroup.sidewallColor,
+          linewidth: BRICK_OUTLINE_WIDTH * 8 / voxelMm,
+          renderOrder: 3,
+        });
+        this.group.add(activeOutlines);
+        this.renderObjects.push(activeOutlines);
+      }
 
       if (fromBelow) {
         insertionArrow = makeUpwardInsertionArrow(activeBodies);
@@ -420,12 +457,29 @@ export class ProductViewer {
         }
       }
     } else {
-      const lineGeometry = makeEdgeGeometry(data.bodies);
-      const lineMaterial = new THREE.LineBasicMaterial({ color: 0x000000, transparent: true, opacity: isBricks ? .25 : .68 });
-      const lines = new THREE.LineSegments(lineGeometry, lineMaterial);
-      this.renderObjects.push(lines);
-      this.group.add(lines);
-      this.resources.push(lineGeometry, lineMaterial);
+      if (isBricks) {
+        for (const outlineGroup of groupBrickOutlinesBySourceColor(data, blackPieceOutline)) {
+          const outlines = new BrickOutlineBatch({
+            bodies: outlineGroup.bodies,
+            studs: outlineGroup.studs,
+            studRadius,
+            studHeight,
+            color: outlineGroup.color,
+            sidewallColor: outlineGroup.sidewallColor,
+            linewidth: BRICK_OUTLINE_WIDTH * 8 / voxelMm,
+            renderOrder: 3,
+          });
+          this.renderObjects.push(outlines);
+          this.group.add(outlines);
+        }
+      } else {
+        const lineGeometry = makeEdgeGeometry(data.bodies);
+        const lineMaterial = new THREE.LineBasicMaterial({ color: 0x000000, transparent: true, opacity: .68 });
+        const lines = new THREE.LineSegments(lineGeometry, lineMaterial);
+        this.renderObjects.push(lines);
+        this.group.add(lines);
+        this.resources.push(lineGeometry, lineMaterial);
+      }
     }
 
     // Use the same raw bounding volume for every comparison, even after repairs.
@@ -485,6 +539,7 @@ export class ProductViewer {
     );
     this.camera.lookAt(this.center);
     this.camera.updateProjectionMatrix();
+    this.renderObjects.forEach(object => object.updateCamera?.(this.camera, this.renderer));
     this.scheduleRender();
   }
 
@@ -500,6 +555,7 @@ export class ProductViewer {
     this.camera.top = verticalRadius;
     this.camera.bottom = -verticalRadius;
     this.camera.updateProjectionMatrix();
+    this.renderObjects.forEach(object => object.updateCamera?.(this.camera, this.renderer));
     this.scheduleRender();
   }
 

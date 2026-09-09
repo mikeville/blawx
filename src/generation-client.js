@@ -58,7 +58,10 @@ export function createGenerationClient(fetchImpl = fetch, endpoint = '/api/gener
       }
 
       if (!isRecord(payload) || typeof payload.requestId !== 'string' || typeof payload.prompt !== 'string' || !isRecord(payload.model)
-        || !isRecord(payload.sourceProgram) || !isRecord(payload.diagnostics) || !isRecord(payload.metadata)) {
+        || (payload.sourceProgram != null && !isRecord(payload.sourceProgram)) || !isRecord(payload.diagnostics) || !isRecord(payload.metadata)
+        || (payload.resultId != null && typeof payload.resultId !== 'string')
+        || (payload.cacheHit != null && typeof payload.cacheHit !== 'boolean')
+        || (payload.saveStatus != null && !['saved', 'failed'].includes(payload.saveStatus))) {
         throw new GenerationClientError('The generator returned an incomplete result.', { code: 'malformed-response', status: response.status });
       }
       const validation = validateVoxels(payload.model);

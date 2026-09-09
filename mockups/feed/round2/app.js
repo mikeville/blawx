@@ -5,6 +5,9 @@ import { mountViewportLayout } from './viewport.js';
 import { mountComposer } from './composer.js';
 import { mountGuideNavigation } from './guide-navigation.js';
 import { createEntranceGate } from './hero-motion.js';
+import { PREVIEW_CREATED_AT, PREVIEW_NOW, formatCreationAge } from './activity.js';
+import { mountAppRoutes, normalizeSetHash } from './routes.js';
+import { loadViewState, saveViewState } from './view-state.js';
 
 const setById = new Map(SETS.map(set => [set.id, set]));
 const featured = FEATURED_IDS.map(id => setById.get(id)).filter(Boolean);
@@ -26,10 +29,16 @@ const brandHome = document.querySelector('#brand-home');
 const composer = document.querySelector('.composer');
 
 const requestedComposer = new URLSearchParams(window.location.search).get('composer');
-const composerMode = ['inline', 'fixed', 'floating'].includes(requestedComposer) ? requestedComposer : 'fixed';
+const composerMode = ['inline', 'fixed', 'floating', 'circle'].includes(requestedComposer) ? requestedComposer : 'circle';
+const restoredView = loadViewState({ mode: composerMode, recentCount: recent.length });
+promptInput.value = restoredView.prompt;
+form.classList.toggle('has-prompt', Boolean(promptInput.value.trim()));
 document.body.dataset.composer = composerMode;
 if (composerMode === 'floating') document.body.append(composer);
-const composerController = mountComposer({ composer, promptInput, form, mode: composerMode });
+const composerController = mountComposer({
+  composer, promptInput, form, mode: composerMode,
+  homeHost: document.querySelector('.home-lead'),
+});
 const viewportLayout = mountViewportLayout({ composer, promptInput });
 const guideNavigation = mountGuideNavigation({ host: guideHost, detailView });
 
@@ -38,8 +47,9 @@ document.body.classList.add('input-type');
 brandHome.href = `${window.location.pathname}${window.location.search}`;
 
 const entrance = createEntranceGate();
-let galleryCount = Math.min(3, recent.length);
-let homeScrollY = 0;
+let galleryCount = restoredView.galleryCount;
+let homeScrollY = restoredView.homeScrollY;
+let restoreHomeOnMount = true;
 let homeHero;
 let detailHero;
 let guide;
@@ -87,6 +97,14 @@ function takeEntrance() {
   return entrance(reducedMotion.matches);
 }
 
+function persistViewState() {
+  saveViewState({
+    mode: composerMode,
+    recentCount: recent.length,
+    state: { prompt: promptInput.value, galleryCount, homeScrollY },
+  });
+}
+
 function renderGallery() {
   gallery.append(...recent.slice(gallery.children.length, galleryCount).map(set => {
     const card = document.createElement('article');
@@ -104,6 +122,19 @@ function renderGallery() {
     const prompt = document.createElement('span');
     prompt.className = 'card-prompt';
     prompt.textContent = set.prompt;
+    // Production uses the result's original createdAt and the current clock.
+    // These fixed sample dates illustrate that contract, not real visitor activity.
+    const createdAt = PREVIEW_CREATED_AT[set.id];
+    const age = formatCreationAge(createdAt, PREVIEW_NOW);
+    if (age) {
+      const time = document.createElement('time');
+      time.className = 'card-time';
+      time.dateTime = createdAt;
+      time.textContent = age;
+      time.title = `Example creation time: ${new Date(createdAt).toLocaleString()}`;
+      prompt.append(' ', time);
+      caption.setAttribute('aria-label', `Open set: ${set.prompt}, made ${age}`);
+    }
     caption.append(prompt);
     card.append(stage, caption);
     card.addEventListener('click', event => {
@@ -124,6 +155,7 @@ function openSet(set) {
   if (!detailSelected) {
     homeScrollY = window.scrollY;
     homeReturnFocus = document.activeElement;
+    persistViewState();
   }
   if (window.location.hash === `#set/${encodeURIComponent(set.id)}`) {
     composerController.setRoute(true);
@@ -131,7 +163,7 @@ function openSet(set) {
     detailTitle.focus({ preventScroll: true });
     return;
   }
-  window.location.hash = `set/${encodeURIComponent(set.id)}`;
+  routes.navigate(`#set/${set.id}`);
 }
 
 function mountHomeHero() {
@@ -162,12 +194,14 @@ function showHome() {
   document.title = 'Blawx';
   renderGallery();
   guideNavigation.update();
-  if (returningHome) {
+  if (returningHome || restoreHomeOnMount) {
+    const shouldRestoreFocus = returningHome;
     requestAnimationFrame(() => {
       window.scrollTo(0, homeScrollY);
-      if (homeReturnFocus?.isConnected) homeReturnFocus.focus({ preventScroll: true });
+      if (shouldRestoreFocus && homeReturnFocus?.isConnected) homeReturnFocus.focus({ preventScroll: true });
     });
     returningHome = false;
+    restoreHomeOnMount = false;
   }
 }
 
@@ -192,18 +226,16 @@ function showDetail(set) {
   guideNavigation.update();
 }
 
-function route() {
-  const match = window.location.hash.match(/^#set\/([^/]+)$/);
-  if (!match) {
+function route(hash = normalizeSetHash(window.location.hash)) {
+  const id = hash.slice('#set/'.length);
+  if (!hash) {
+    returningHome = detailSelected;
     showHome();
     return;
   }
-  let id;
-  try { id = decodeURIComponent(match[1]); } catch { id = ''; }
   const set = setById.get(id);
   if (!set) {
-    history.replaceState(null, '', `${window.location.pathname}${window.location.search}`);
-    showHome();
+    routes.navigate('', { replace: true });
     return;
   }
   showDetail(set);
@@ -230,6 +262,7 @@ form.addEventListener('submit', event => {
 promptInput.addEventListener('input', () => {
   formMessage.textContent = '';
   form.classList.toggle('has-prompt', Boolean(promptInput.value.trim()));
+  persistViewState();
 });
 
 homeHeroHost.closest('.home-hero')?.addEventListener('click', event => {
@@ -240,6 +273,7 @@ homeHeroHost.closest('.home-hero')?.addEventListener('click', event => {
 showMore.addEventListener('click', () => {
   const previousCount = galleryCount;
   galleryCount = Math.min(galleryCount + 3, recent.length);
+  persistViewState();
   renderGallery();
   gallery.children[previousCount]?.querySelector('button')?.focus({ preventScroll: true });
 });
@@ -249,20 +283,18 @@ brandHome.addEventListener('click', event => {
     window.scrollTo(0, 0);
     return;
   }
-  returningHome = true;
-  history.pushState(null, '', `${window.location.pathname}${window.location.search}`);
-  route();
+  routes.navigate('');
 });
 
-window.addEventListener('hashchange', () => {
-  returningHome = !window.location.hash;
-  route();
-});
+const routes = mountAppRoutes({ onChange: route });
 window.addEventListener('pagehide', event => {
+  if (!detailSelected) homeScrollY = window.scrollY;
+  persistViewState();
   if (!event.persisted) {
     viewportLayout.dispose();
     composerController.dispose();
     guideNavigation.dispose();
+    routes.dispose();
   }
 });
 

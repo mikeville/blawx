@@ -28,7 +28,8 @@ export function createSavedDemoClient(fetchImpl = fetch) {
       const indexResponse = await fetchImpl('/examples/index.json');
       if (!indexResponse.ok) throw new Error('The saved example index could not be loaded.');
       const index = await indexResponse.json();
-      const record = index.find((entry) => Number(entry?.shape) === example.shape);
+      const record = index.find((entry) => entry?.shape === example.shape
+        || entry?.id === `shape-${String(example.shape).padStart(2, '0')}`);
       if (!record?.url) throw new Error(`Saved Shape ${example.shape} is unavailable.`);
       const modelResponse = await fetchImpl(record.url);
       if (!modelResponse.ok) throw new Error(`Saved Shape ${example.shape} could not be loaded.`);

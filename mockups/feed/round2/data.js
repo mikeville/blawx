@@ -1,7 +1,7 @@
 import { SETS } from '../shared.js';
 export { SETS };
 
-// Editorial choices are independent from creation order.
+// Editorial choices are independent from creation order and can be replaced.
 export const FEATURED_IDS = ['dragon', 'cat', 'tv'];
 export const RECENT_IDS = ['tv', 'spaghetti', 'dragon', 'pickup', 'cat', 'reef'];
 const results = new Map();

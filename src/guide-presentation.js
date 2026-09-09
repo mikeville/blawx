@@ -1,3 +1,5 @@
+import { varyGuideSectionLabels } from './guide-label-variation.js';
+
 const QUARTER_TURNS = 4;
 const MAX_PART_STEPS = 12;
 
@@ -92,10 +94,11 @@ function issueSignature(step, rotationQuarterTurns, origin, context) {
 function semanticSignature(section) {
   if (!Object.hasOwn(section, 'semanticConfidence') && !Object.hasOwn(section, 'semanticLabel')) return '';
   const confidence = section.semanticConfidence ?? 'uncertain';
-  const label = confidence === 'high' && typeof section.semanticLabel === 'string'
+  const hasUsableLabel = confidence === 'high' || confidence === 'inferred';
+  const label = hasUsableLabel && typeof section.semanticLabel === 'string'
     ? section.semanticLabel.trim().toLowerCase().replace(/\s+/g, ' ')
     : '';
-  return `${confidence}:${label}`;
+  return `${hasUsableLabel ? 'named' : confidence}:${label}`;
 }
 
 function sectionSignature(section, rotationQuarterTurns, context) {
@@ -176,7 +179,8 @@ function genericLabel(section, index, context) {
 function assignLabels(entries, context) {
   return entries.map((entry, index) => ({
     ...entry,
-    label: entry.semanticConfidence === 'high' && typeof entry.semanticLabel === 'string' && entry.semanticLabel.trim()
+    label: (entry.semanticConfidence === 'high' || entry.semanticConfidence === 'inferred')
+      && typeof entry.semanticLabel === 'string' && entry.semanticLabel.trim()
       ? entry.semanticLabel.trim()
       : genericLabel(entry, index, context),
   }));
@@ -283,6 +287,7 @@ export function deriveGuidePresentation({ plan, guide, subject = null } = {}) {
 
   let sections = groups.map(({ representative, instances }, index) => presentationEntry(representative, instances, index, context));
   sections = assignLabels(sections, context);
+  sections = varyGuideSectionLabels(sections);
   const presentationByGroup = new Map(groups.map((group, index) => [group, sections[index]]));
   const instanceIndexes = new Map(groups.map((group) => [group, 0]));
   const sequence = guide.sections.map((section) => {

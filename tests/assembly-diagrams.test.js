@@ -3,7 +3,16 @@ import assert from 'node:assert/strict';
 
 import { compactAssemblyPlan } from '../src/assembly-diagrams.js';
 
-function makePlan({ bricks, stepBrickIds, stepKinds = [], stepIssues = [], stepHighlightIds = [], directions = [] }) {
+function makePlan({
+  bricks,
+  stepBrickIds,
+  stepKinds = [],
+  stepIssues = [],
+  stepHighlightIds = [],
+  directions = [],
+  moduleBuildContext,
+  graphEdges = [],
+}) {
   const byId = new Map(bricks.map((brick) => [brick.id, brick]));
   const visible = [];
   const steps = stepBrickIds.map((newBrickIds, index) => {
@@ -27,10 +36,13 @@ function makePlan({ bricks, stepBrickIds, stepKinds = [], stepIssues = [], stepH
   return {
     version: 1,
     bricks,
-    modules: [{ id: 'module-1', label: 'Build area 1', brickIds: bricks.map(({ id }) => id), status: 'ready', kind: 'grounded', componentIds: ['component-1'] }],
+    modules: [{
+      id: 'module-1', label: 'Build area 1', brickIds: bricks.map(({ id }) => id), status: 'ready', kind: 'grounded',
+      componentIds: ['component-1'], ...(moduleBuildContext ? { buildContext: moduleBuildContext } : {}),
+    }],
     steps,
     inventory: [],
-    graph: { edges: [], components: [] },
+    graph: { edges: graphEdges, components: [] },
     stats: {
       brickCount: bricks.length,
       stepCount: steps.length,
@@ -47,6 +59,57 @@ function makePlan({ bricks, stepBrickIds, stepKinds = [], stepIssues = [], stepH
 }
 
 const brick = (id, x, y, z, w, d, color = 'orange') => ({ id, x, y, z, w, d, color });
+
+function connectedPatchPlan({ orderPolicy = 'connected-patches' } = {}) {
+  const floor = Array.from({ length: 7 }, (_, index) => brick(`floor-${index}`, index, 2, 0, 1, 1));
+  const bonds = Array.from({ length: 6 }, (_, index) => brick(`bond-${index}`, index, 3, 0, 2, 1));
+  const stepBrickIds = [['floor-0', 'floor-1'], ['bond-0']];
+  for (let index = 2; index < floor.length; index += 1) {
+    stepBrickIds.push([`floor-${index}`], [`bond-${index - 1}`]);
+  }
+  const graphEdges = [];
+  for (let index = 0; index < bonds.length; index += 1) {
+    graphEdges.push(
+      { a: `floor-${index}`, b: `bond-${index}`, studs: 1 },
+      { a: `floor-${index + 1}`, b: `bond-${index}`, studs: 1 },
+    );
+  }
+  return makePlan({
+    bricks: [...floor, ...bonds],
+    stepBrickIds,
+    graphEdges,
+    moduleBuildContext: { kind: 'work-surface', floorY: 2, orderPolicy },
+  });
+}
+
+function cumulativeComponentsAtDiagramEnds(plan) {
+  const adjacency = new Map(plan.bricks.map(({ id }) => [id, new Set()]));
+  for (const { a, b } of plan.graph.edges) {
+    adjacency.get(a).add(b);
+    adjacency.get(b).add(a);
+  }
+  const placed = new Set();
+  return plan.steps.map((step) => {
+    for (const brickId of step.newBrickIds) placed.add(brickId);
+    if (!placed.size) return 0;
+    let components = 0;
+    const reached = new Set();
+    for (const start of placed) {
+      if (reached.has(start)) continue;
+      components += 1;
+      reached.add(start);
+      const pending = [start];
+      while (pending.length) {
+        const current = pending.pop();
+        for (const next of adjacency.get(current)) if (placed.has(next) && !reached.has(next)) {
+          reached.add(next);
+          pending.push(next);
+        }
+      }
+    }
+    return components;
+  });
+}
 
 test('compacts nearby clean steps despite varied rectangular footprints and preserves their internal order', () => {
   const plan = makePlan({
@@ -91,6 +154,32 @@ test('simple dependent courses can share a display diagram while retaining valid
   assert.deepEqual(compacted.steps[0].visibleBrickIds, ['base', 'cap', 'top']);
   assert.deepEqual(compacted.steps[0].highlightBrickIds, ['base', 'cap', 'top']);
   assert.equal(report.collapsedStepCount, 2);
+});
+
+test('rectangular layer policy preserves course boundaries while ordinary compaction stays flexible', () => {
+  const input = {
+    bricks: [brick('lower',0,2,0,2,2),brick('upper',0,3,0,2,2)],
+    stepBrickIds: [['lower'],['upper']],
+  };
+  assert.equal(compactAssemblyPlan(makePlan(input)).plan.steps.length,1);
+  const {plan,report}=compactAssemblyPlan(makePlan({...input,
+    moduleBuildContext:{kind:'work-surface',floorY:2,orderPolicy:'rectangular-layers'}}));
+  assert.equal(plan.steps.length,2);
+  assert.equal(report.rejectedMergeCounts['rectangular-layer-boundary'],1);
+  assert.deepEqual(plan.steps.flatMap(step=>step.sourceStepIds),['step-1','step-2']);
+  assert.equal(report.brickCoverageComplete,true);
+});
+
+test('rectangular layer policy merges complete regions but keeps ragged unions separate', () => {
+  const context={kind:'work-surface',floorY:2,orderPolicy:'rectangular-layers'};
+  const base={bricks:[brick('a',0,2,0,4,2),brick('b',0,2,2,2,2)],
+    stepBrickIds:[['a'],['b']],moduleBuildContext:context};
+  const ragged=compactAssemblyPlan(makePlan(base));
+  assert.equal(ragged.plan.steps.length,2);
+  assert.equal(ragged.report.rejectedMergeCounts['rectangular-group-boundary'],1);
+  const rectangle=compactAssemblyPlan(makePlan({...base,bricks:[base.bricks[0],{...base.bricks[1],w:4}]}));
+  assert.equal(rectangle.plan.steps.length,1);
+  assert.equal(rectangle.report.sourceStepCoverageComplete,true);
 });
 
 test('keeps a disconnected foundation separate while combining work attached to its new seed', () => {
@@ -159,6 +248,62 @@ test('looks past temporary foundation gaps and stops at the latest connected vis
   ]);
   assert.ok(report.rejectedMergeCounts['not-face-connected'] >= 2);
   assert.ok(report.rejectedMergeCounts['brick-limit'] >= 1);
+});
+
+test('connected-patch diagrams rewind before a trailing loose prerequisite and end stud-connected', () => {
+  const source = connectedPatchPlan();
+  const before = structuredClone(source);
+  const first = compactAssemblyPlan(source);
+  const second = compactAssemblyPlan(structuredClone(source));
+
+  assert.deepEqual(source, before);
+  assert.deepEqual(first, second);
+  assert.deepEqual(first.plan.steps.map(({ sourceStepIds }) => sourceStepIds), [
+    Array.from({ length: 10 }, (_, index) => `step-${index + 1}`),
+    ['step-11', 'step-12'],
+  ]);
+  assert.deepEqual(cumulativeComponentsAtDiagramEnds(first.plan), [1, 1]);
+  assert.ok(first.plan.steps.every(({ newBrickIds }) => newBrickIds.length <= 12));
+  assert.deepEqual(first.plan.steps.flatMap(({ sourceStepIds }) => sourceStepIds), source.steps.map(({ id }) => id));
+  assert.equal(first.report.sourceStepCoverageComplete, true);
+  assert.equal(first.report.brickCoverageComplete, true);
+  assert.deepEqual(first.report.connectedPatchCompaction, {
+    selected: 'connected-endpoints',
+    basicInstructionDiagramCount: 2,
+    connectedInstructionDiagramCount: 2,
+    maxAdditionalDiagramCount: 1,
+    basicBoundaryStats: { buildDiagramCount: 2, detachedBrickExposure: 1, peakDetachedBrickCount: 1 },
+    connectedBoundaryStats: { buildDiagramCount: 2, detachedBrickExposure: 0, peakDetachedBrickCount: 0 },
+  });
+});
+
+test('does not spend the connected-patch diagram allowance without a boundary improvement', () => {
+  const source = makePlan({
+    bricks: [brick('floor-a', 0, 2, 0, 1, 1), brick('floor-b', 1, 2, 0, 1, 1), brick('bond', 0, 3, 0, 2, 1)],
+    stepBrickIds: [['floor-a', 'floor-b'], ['bond']],
+    graphEdges: [
+      { a: 'floor-a', b: 'bond', studs: 1 },
+      { a: 'floor-b', b: 'bond', studs: 1 },
+    ],
+    moduleBuildContext: { kind: 'work-surface', floorY: 2, orderPolicy: 'connected-patches' },
+  });
+  const { plan: compacted, report } = compactAssemblyPlan(source);
+
+  assert.deepEqual(compacted.steps.map(({ sourceStepIds }) => sourceStepIds), [['step-1', 'step-2']]);
+  assert.equal(report.connectedPatchCompaction.selected, 'basic-bounded');
+  assert.deepEqual(report.connectedPatchCompaction.basicBoundaryStats,
+    report.connectedPatchCompaction.connectedBoundaryStats);
+});
+
+test('course-first work-surface diagrams retain the ordinary compaction endpoint', () => {
+  const source = connectedPatchPlan({ orderPolicy: 'course-first' });
+  const { plan: compacted } = compactAssemblyPlan(source);
+
+  assert.deepEqual(compacted.steps.map(({ sourceStepIds }) => sourceStepIds), [
+    Array.from({ length: 11 }, (_, index) => `step-${index + 1}`),
+    ['step-12'],
+  ]);
+  assert.deepEqual(cumulativeComponentsAtDiagramEnds(compacted), [2, 1]);
 });
 
 test('does not accept a final bridge while an earlier highlighted seed remains disconnected', () => {

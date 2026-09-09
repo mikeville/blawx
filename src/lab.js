@@ -53,7 +53,7 @@ document.querySelector('#app').innerHTML = `
       <div><div class="eyebrow">Saved shapes</div><h2 id="comparison-title">Results comparison</h2></div>
       <div class="comparison-controls"><label>Find a subject<input id="comparison-search" type="search" placeholder="Try reef or cat"></label><label>Cost basis<select id="comparison-cost-basis"><option value="observed">Observed run</option><option value="cold">Same input · uncached</option><option value="warm">Same input · mostly cached</option></select></label><label>Sort<select id="comparison-sort"><option value="shape-desc">Newest shape</option><option value="time-asc">Time · fastest</option><option value="time-desc">Time · slowest</option><option value="dollars-asc">Estimate · lowest</option><option value="dollars-desc">Estimate · highest</option></select></label></div>
     </div>
-    <p class="comparison-note">This table identifies the public saved shapes. Private attempt, timing, model, usage, feedback, and billing records are not included; unavailable values remain blank.</p>
+    <p class="comparison-note">This table compares saved shapes only. Private generation-attempt records are not included in this public dataset. Times exclude browser rendering; staged runs show sums of measured stages. Subscription access and API-equivalent estimates are separate. No separate API charge does not mean free public generation. Hypothetical estimates use saved September 2026 research rates; the actual product tier is unreported.</p>
     <p id="comparison-assumption" class="comparison-assumption" hidden><strong>Illustrative normalized scenario:</strong> 1,500 input tokens; uncached assumes all uncached, mostly cached assumes 1,400 cached + 100 uncached; observed output is held fixed; no cache-write charges are assumed. Uses historical rates and is not a deployment forecast.</p>
     <div id="comparison-table" class="comparison-table"><small>Loading saved-shape comparison…</small></div>
   </section>`;
@@ -141,7 +141,7 @@ function loadModel(model, label = 'Imported model', identity = label) {
   el['count-label'].textContent = isVoxel ? 'Voxels' : 'Pieces';
   el.pieces.textContent = (isVoxel ? model.cells : model.bricks).length.toLocaleString();
   el.stage.textContent = isVoxel ? 'Raw shape · parts not assigned' : 'Brick geometry · buildability unknown';
-  el.prompt.textContent = meta.subject ?? meta.prompt ?? 'No prompt published.';
+  el.prompt.textContent = meta.prompt ?? 'No prompt recorded.';
   el.prompt.hidden = true;
   el['prompt-toggle'].textContent = 'Reveal prompt';
   el['prompt-toggle'].disabled = false;
@@ -182,12 +182,17 @@ async function initializeFixtures() {
       return entries;
     };
     const [experiments, fixtures] = await Promise.all([readIndex('/examples/index.json', true), readIndex('/fixtures/index.json')]);
-    const numberedExperiments = experiments.map((entry) => ({
+    const numberedExperiments = experiments.map((entry, index) => {
+      const shapeNumber = Number.isSafeInteger(entry.shape) && entry.shape > 0
+        ? entry.shape
+        : index + 1;
+      return {
       ...entry,
-      displayLabel: `Shape ${String(entry.shape).padStart(2, '0')}`,
-      shapeNumber: Number(entry.shape),
+      displayLabel: `Shape ${String(shapeNumber).padStart(2, '0')}`,
+      shapeNumber,
       sourceKind: 'experiment',
-    }));
+      };
+    });
     const experimentEntries = [...numberedExperiments].sort((a, b) => {
       const aTime = Date.parse(a.createdAt ?? a.generatedAt ?? '') || 0;
       const bTime = Date.parse(b.createdAt ?? b.generatedAt ?? '') || 0;
@@ -196,7 +201,7 @@ async function initializeFixtures() {
     if (experimentEntries.length > 1 && experimentEntries.every((entry) => !(Date.parse(entry.createdAt ?? entry.generatedAt ?? '') > 0))) experimentEntries.reverse();
     const preparedEntries = fixtures.map((entry, index) => ({
       ...entry,
-      displayLabel: `Prepared ${String.fromCharCode(64 + Number(entry.prepared ?? index + 1))}`,
+      displayLabel: `Prepared ${String.fromCharCode(65 + index)}`,
       sourceKind: 'prepared',
     }));
     const entries = [...experimentEntries, ...preparedEntries];
@@ -278,11 +283,11 @@ async function initializeAttempts() {
     }
     const attempts = await response.json();
     if (attempts?.status === 'private-records-not-included') {
-      el['attempt-count'].textContent = 'private';
-      el.attempts.innerHTML = `<small>${escapeHtml(attempts.message ?? 'Private attempt records are not included.')}</small>`;
+      el['attempt-count'].textContent = '0';
+      el.attempts.innerHTML = `<small>${escapeHtml(attempts.message ?? 'Private generation-attempt records are not included in this public dataset.')}</small>`;
       return;
     }
-    if (!Array.isArray(attempts)) throw new Error('Attempt index must be an array or an unavailable-state object.');
+    if (!Array.isArray(attempts)) throw new Error('Attempt index must be an array.');
     const chronological = [...attempts].sort((a, b) => String(a.createdAt ?? a.id).localeCompare(String(b.createdAt ?? b.id)));
     el['attempt-count'].textContent = chronological.length;
     el.attempts.innerHTML = chronological.length ? chronological.map((attempt, index) => {

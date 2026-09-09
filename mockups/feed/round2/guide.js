@@ -1,94 +1,30 @@
-import { ProductViewer } from '../../../src/product-viewer.js';
 import { createGuideSections } from '../../../src/guide-sections.js';
 import { deriveGuidePresentation } from '../../../src/guide-presentation.js';
-import { createGuideNumbering, formatGuideStepRange } from '../../../src/guide-numbering.js';
+import { createGuideNumbering } from '../../../src/guide-numbering.js';
 import { escapeMarkup as escape, inventoryMarkup, tallyParts } from '../../../src/part-illustration.js';
-import { createSemanticGuideClient, nameConstructionGuide } from '../../../src/semantic-guide-client.js';
+import { nameConstructionGuide } from '../../../src/semantic-guide-client.js';
 import { getSavedResult } from './data.js';
+import { createSharedGuideRenderer } from './guide-renderer.js';
+import { guideRangeMarkup } from './guide-range.js';
+import { createSemanticReviewClient } from './semantic-review-client.js';
 
-const semanticClient = createSemanticGuideClient();
+const semanticClient = createSemanticReviewClient({ search: globalThis.location?.search ?? '' });
 const sortedInventory = items => [...items].sort((a, b) =>
   a.color.localeCompare(b.color) || (b.w * b.d) - (a.w * a.d));
-
-function resultModel(result, byId, ids) {
-  return {
-    ...result.brickModel,
-    kind: 'bricks',
-    bricks: ids.map(id => byId.get(id)).filter(Boolean),
-  };
-}
 
 export function mountGuide(host, { set }) {
   const controller = new AbortController();
   let disposed = false;
   let request = 0;
-  let observer = null;
+  let diagramRenderer = null;
   let activeChapter = null;
-  const mounted = new Map();
-  const visible = new Set();
 
   host.classList.add('r2-guide');
   host.innerHTML = '<p class="r2-guide__loading" role="status">Preparing instructions…</p>';
 
-  function release(canvas) {
-    const record = mounted.get(canvas);
-    if (!record) return;
-    canvas.dataset.azimuth = String(record.viewer.azimuth);
-    record.viewer.dispose();
-    mounted.delete(canvas);
-    const replacement = canvas.cloneNode(false);
-    observer?.unobserve(canvas);
-    visible.delete(canvas);
-    canvas.replaceWith(replacement);
-    observer?.observe(replacement);
-  }
-
   function releaseAll() {
-    observer?.disconnect();
-    observer = null;
-    visible.clear();
-    for (const canvas of [...mounted.keys()]) {
-      mounted.get(canvas)?.viewer.dispose();
-      mounted.delete(canvas);
-    }
-  }
-
-  function mountCanvas(canvas, specs, result, byId) {
-    if (disposed || mounted.has(canvas) || mounted.size >= 3) return;
-    const spec = specs[Number(canvas.dataset.diagram)];
-    if (!spec) return;
-    const viewer = new ProductViewer(canvas);
-    canvas.removeEventListener('pointermove', viewer.onMove);
-    viewer.onMove = (event) => {
-      if (!viewer.dragStart) return;
-      viewer.azimuth = viewer.dragStart.azimuth - (event.clientX - viewer.dragStart.x) * 0.012;
-      viewer.updateCamera();
-    };
-    canvas.addEventListener('pointermove', viewer.onMove);
-    const visibleModel = resultModel(result, byId, spec.visible);
-    viewer.setModel(visibleModel, {
-      frameModel: visibleModel,
-      highlightIds: new Set(spec.highlight),
-      insertionDirection: spec.insertionDirection,
-      animate: false,
-    });
-    if (canvas.dataset.azimuth) {
-      viewer.azimuth = Number(canvas.dataset.azimuth);
-      viewer.updateCamera();
-    }
-    mounted.set(canvas, { viewer });
-    canvas.addEventListener('keydown', event => {
-      if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') return;
-      event.preventDefault();
-      viewer.turn(event.key === 'ArrowLeft' ? -1 : 1);
-    });
-  }
-
-  function fillAvailable(specs, result, byId) {
-    for (const canvas of visible) {
-      if (mounted.size >= 3) break;
-      if (canvas.isConnected) mountCanvas(canvas, specs, result, byId);
-    }
+    diagramRenderer?.dispose();
+    diagramRenderer = null;
   }
 
   function renderChapter(details, section, context) {
@@ -117,20 +53,6 @@ export function mountGuide(host, { set }) {
       </figure>`;
     });
 
-    const readingParts = section.parts ?? [];
-    let diagramCursor = 0;
-    const diagramMarkup = readingParts.length > 1
-      ? readingParts.map((part, index) => {
-          const count = part.stepIds.length;
-          const contents = diagrams.slice(diagramCursor, diagramCursor + count).join('');
-          diagramCursor += count;
-          const range = numbering.partRanges.get(part.id);
-          return `<details class="r2-guide__range" ${index === 0 ? 'open' : ''}>
-            <summary aria-label="Steps ${range.start} through ${range.end}">${formatGuideStepRange(range)}</summary>${contents}
-          </details>`;
-        }).join('')
-      : diagrams.join('');
-
     let placement = '';
     if (section.repeatCount > 1) {
       const highlight = section.instances.flatMap(instance => instance.brickIds);
@@ -141,27 +63,35 @@ export function mountGuide(host, { set }) {
       </figure>`;
     }
 
+    const readingParts = section.parts ?? [];
+    let diagramCursor = 0;
+    const diagramMarkup = readingParts.length > 1
+      ? readingParts.map((part, index) => {
+          const count = part.stepIds.length;
+          const contents = diagrams.slice(diagramCursor, diagramCursor + count).join('');
+          diagramCursor += count;
+          const range = numbering.partRanges.get(part.id);
+          const finalPlacement = index === readingParts.length - 1 ? placement : '';
+          return `<details class="r2-guide__range" ${index === 0 ? 'open' : ''}>
+            <summary aria-label="Steps ${range.start} through ${range.end}"><span class="r2-guide__range-label">${guideRangeMarkup(range)}</span></summary>
+            <div class="r2-guide__diagram-grid">${contents}${finalPlacement}</div>
+          </details>`;
+        }).join('')
+      : `<div class="r2-guide__diagram-grid">${diagrams.join('')}${placement}</div>`;
+
     details.querySelector('.r2-guide__chapter-body').innerHTML = `
       <details class="r2-guide__section-parts"><summary>Parts</summary>
         <ul class="r2-guide__parts">${inventoryMarkup(sortedInventory(section.totalInventory ?? section.inventory))}</ul>
-      </details>${diagramMarkup}${placement}`;
+      </details>${diagramMarkup}`;
 
     details.querySelectorAll('.r2-guide__range').forEach(range => range.addEventListener('toggle', () => {
-      if (!range.open) range.querySelectorAll('canvas').forEach(release);
+      diagramRenderer?.refreshWithin(range);
     }));
-
-    observer = new IntersectionObserver(entries => {
-      for (const entry of entries) {
-        const range = entry.target.closest('.r2-guide__range');
-        if (entry.isIntersecting && (!range || range.open)) visible.add(entry.target);
-        else {
-          visible.delete(entry.target);
-          release(entry.target);
-        }
-      }
-      fillAvailable(specs, result, byId);
-    }, { rootMargin: '100px 0px' });
-    details.querySelectorAll('canvas').forEach(canvas => observer.observe(canvas));
+    diagramRenderer = createSharedGuideRenderer({ result, byId });
+    details.querySelectorAll('canvas').forEach(canvas => {
+      const spec = specs[Number(canvas.dataset.diagram)];
+      if (spec) diagramRenderer.observe(canvas, spec);
+    });
   }
 
   async function load() {
@@ -195,13 +125,14 @@ export function mountGuide(host, { set }) {
         <div class="r2-guide__chapters">${presentation.sections.map((section, index) => {
           const range = numbering.sectionRanges.get(section.id);
           return `<details class="r2-guide__chapter" data-index="${index}">
-            <summary><strong>${formatGuideStepRange(range)}</strong><span>${escape(section.label)}</span>${section.repeatCount > 1 ? `<b>${section.repeatCount}×</b>` : ''}</summary>
+            <summary><strong class="r2-guide__range-label">${guideRangeMarkup(range)}</strong><span>${escape(section.label)}</span>${section.repeatCount > 1 ? `<b>${section.repeatCount}×</b>` : ''}</summary>
             <div class="r2-guide__chapter-body"></div>
           </details>`;
         }).join('')}</div>
         <details class="r2-guide__developer"><summary>Developer</summary>
           <p>Draft · Saved ${escape(set.id)} · ${plan.bricks.length} bricks · ${numbering.diagramCount} diagrams · ${unresolved} connection-review diagrams.</p>
           <p>Frozen baseline snapshot; adjustment and refinement are not applied in this layout study.</p>
+          ${semanticClient.reviewId ? `<p>Naming review ${escape(semanticClient.reviewId)} · saved exact-fingerprint candidate.</p>` : ''}
           ${result.semanticAnnotation ? '<p>Section names are inferred from the saved guide and its geometry. Structural coverage is validated; semantic accuracy is unverified.</p>' : ''}
           ${result.semanticMetadata?.correction?.provenance ? `<p>${escape(result.semanticMetadata.correction.provenance)}</p>` : ''}
           ${plan.limitations?.length ? `<p>${escape(plan.limitations.join(' '))}</p>` : ''}

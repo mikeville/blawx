@@ -1,12 +1,13 @@
 import { defineConfig } from 'vite';
-import { createGenerationService, GenerationError } from './server/generation-service.js';
 import { createGenerationMiddleware } from './server/middleware.js';
-import { createSemanticGuideService } from './server/semantic-guide-service.js';
 import { createSemanticGuideMiddleware } from './server/semantic-guide-middleware.js';
+import { createFeedMiddleware } from './server/feed-middleware.js';
+import { createLocalAppServices } from './server/local-app-services.js';
 
 const PRIVATE_SEGMENTS = new Set([
   '.git', '.codex', '.claude', '.cursor', '.agents', '.aws', '.ssh',
-  'app-runs', 'artifacts', 'experiments', 'raw-records', 'receipts', 'server', 'scripts', 'tests',
+  '.blawx-private', 'app-data', 'app-runs', 'artifacts', 'experiments',
+  'raw-records', 'receipts', 'server', 'scripts', 'tests',
 ]);
 const PRIVATE_BASENAMES = new Set([
   '.env', '.cursorrules', '.impeccable.md', 'agents.md', 'agents-history.md', 'session.md', 'claude.md',
@@ -23,6 +24,7 @@ export function isPrivateRequestPath(rawUrl) {
   const basename = parts.at(-1) ?? '';
   return PRIVATE_BASENAMES.has(basename)
     || basename.startsWith('.env.')
+    || basename.endsWith('.log')
     || /\.(?:pem|key|p12|pfx|crt)$/i.test(basename)
     || /(?:^private-|\b(?:billing|research|receipt|raw-record)\b).*\.(?:md|json|jsonl|txt|log)$/i.test(basename)
     || /\.(?:record|receipt)\.json$/i.test(basename)
@@ -37,22 +39,15 @@ function privateRequestGuard(request, response, next) {
 }
 
 function localGenerationPlugin() {
-  let service;
-  let semanticService;
   return {
     name: 'blawx-local-generation',
-    configureServer(server) {
+    async configureServer(server) {
       server.middlewares.use(privateRequestGuard);
-      service = createGenerationService();
-      semanticService = createSemanticGuideService({ isGenerationBusy: service.isBusy });
-      server.middlewares.use(createSemanticGuideMiddleware(semanticService));
-      server.middlewares.use(createGenerationMiddleware({
-        generate(input, options) {
-          if (semanticService.isBusy()) throw new GenerationError('busy', 'Another local model request is already running.', null);
-          return service.generate(input, options);
-        },
-      }));
-      server.httpServer?.once('close', () => { service.cancel(); semanticService.cancel(); });
+      const services = await createLocalAppServices();
+      server.middlewares.use(createFeedMiddleware(services.store));
+      server.middlewares.use(createSemanticGuideMiddleware(services.semantic));
+      server.middlewares.use(createGenerationMiddleware(services.generation));
+      server.httpServer?.once('close', () => { void services.close().catch(() => {}); });
     },
   };
 }
@@ -68,8 +63,9 @@ export default defineConfig({
         '.env', '.env.*', '*.{crt,pem,key,p12,pfx}', '**/.git/**',
         '.npmrc', '.netrc', '.pypirc', 'credentials.json', 'service-account*.json',
         '**/.codex/**', '**/.claude/**', '**/.cursor/**', '**/.agents/**', '**/.aws/**', '**/.ssh/**',
-        '**/app-runs/**', '**/artifacts/**', '**/experiments/**', '**/server/**',
+        '**/.blawx-private/**', '**/app-data/**', '**/app-runs/**', '**/artifacts/**', '**/experiments/**', '**/server/**',
         '**/raw-records/**', '**/receipts/**',
+        '**/*.log',
         '**/AGENTS.md', '**/AGENTS-HISTORY.md', '**/SESSION.md', '**/CLAUDE.md', '**/.cursorrules', '**/.impeccable.md',
       ],
     },

@@ -3,6 +3,7 @@ import test from 'node:test';
 import * as THREE from 'three';
 import {
   chooseUpwardInsertionAzimuth,
+  getBrickFaceColor,
   getInstructionActiveMaterialAppearance,
   getInstructionContextColor,
   getInstructionHighlightAppearance,
@@ -10,6 +11,21 @@ import {
 } from '../src/product-viewer.js';
 
 const chroma = color => Math.max(color.r, color.g, color.b) - Math.min(color.r, color.g, color.b);
+const luminance = color => color.r * 0.2126 + color.g * 0.7152 + color.b * 0.0722;
+
+test('near-black LEGO faces lift to charcoal without mutating source or shifting ordinary colors', () => {
+  const sourceBlack = new THREE.Color(0x111111);
+  const sourceRed = new THREE.Color(0xc91a09);
+  const sourceBlue = new THREE.Color(0x0055bf);
+  const blackBefore = sourceBlack.clone();
+  const faceBlack = getBrickFaceColor(sourceBlack);
+
+  assert.ok(Math.abs(luminance(faceBlack) - 0.03) < 1e-12);
+  assert.ok(luminance(faceBlack) > luminance(new THREE.Color(0x171612)), 'charcoal face remains distinct from ink');
+  assert.deepEqual(sourceBlack.toArray(), blackBefore.toArray(), 'source black remains immutable');
+  assert.deepEqual(getBrickFaceColor(sourceRed).toArray(), sourceRed.toArray(), 'red is unaffected');
+  assert.deepEqual(getBrickFaceColor(sourceBlue).toArray(), sourceBlue.toArray(), 'blue is unaffected');
+});
 
 test('instruction active material keeps source hue dominant from either viewing direction', () => {
   const sourceOrange = new THREE.Color(0xf58220);

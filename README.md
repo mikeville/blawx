@@ -16,12 +16,14 @@ LEGO Group. LEGO is a trademark of the LEGO Group.
 
 ## What is included
 
-- The product view at `/`, with six saved examples and an optional local prompt
-  workflow.
+- The product view at `/`, with a featured set, six saved examples, a persistent
+  local recent-results feed, and an optional local prompt workflow.
 - Rotatable raw voxel, brick, and adjusted construction views.
 - A deterministic local conversion and bounded assembly-planning pipeline.
 - A scrolling draft guide with section previews, numbered diagrams, join views,
   inventories, and unresolved-operation diagnostics.
+- A shared rotatable model stage and generation progress carousel across the
+  home and detail views.
 - A geometry lab at `/?lab` for the retained generated examples and prepared
   studies.
 - An instruction-appearance fixture at `/instruction-appearance.html`.
@@ -95,12 +97,17 @@ account. ChatGPT plan usage limits apply. The intended subscription route does
 not require `OPENAI_API_KEY`, and there is no automatic paid API fallback.
 
 Start `npm run dev`, open the loopback URL, and submit a typed prompt. The UI
-action is the explicit opt-in to one bounded generation request. A fresh result
-may also request one bounded semantic-section naming pass for its exact guide.
-Saved-example buttons never opt in to new semantic inference. The implementation
-uses a 90-second provider timeout and performs no application-level retry.
-The Codex CLI transport may perform its own retries; this wrapper does not
-configure or count them.
+action is the explicit opt-in to one bounded generation request. Successful
+results and their prompts are saved in the local `Recently made` feed and are
+visible to anyone who can use that running local app. Do not submit secrets,
+personal information, or text you do not want stored. Exact normalized prompt
+matches reuse the saved result without a new provider request.
+
+Uncached semantic-section naming is paused by default. Exact saved annotations
+may still be used when their fingerprints validate; otherwise the guide keeps
+its structural fallback names. The implementation uses a 90-second provider
+timeout and performs no application-level retry. The Codex CLI transport may
+perform its own retries; this wrapper does not configure or count them.
 
 Generation is deliberately local-only. The development server binds to
 `127.0.0.1`; its host/origin checks are not authentication for a deployed
@@ -126,8 +133,11 @@ Set `BLAWX_PRIVATE_DATA_DIR` to choose another absolute or relative location,
 but it must resolve outside the application tree and every Git worktree,
 including paths reached through symlinks. Generation receipts are stored
 under `generation/<request-id>/`; semantic receipts and cache data are stored
-under `semantic-guides/`. These records are private working data, not public
-fixtures, and are not served by Vite.
+under `semantic-guides/`; the local feed database is stored under
+`feed/results.sqlite`. These records are private working data, not public
+fixtures, and are not served by Vite. Hidden feed rows remain in that private
+database; this prototype does not provide multi-user accounts, secure deletion,
+or a hosted privacy boundary.
 
 Some research command-line utilities remain for reproducibility work. Their
 live modes require an explicit live flag and a positive request/session bound;

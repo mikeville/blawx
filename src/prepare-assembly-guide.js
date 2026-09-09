@@ -6,16 +6,17 @@ import { assessAssemblyQuality, orderQualityImproved, orderQualityRejections } f
 
 // A bounded local evaluate/choose pass. It preserves construction evidence and
 // the explicit placement sequence separately from the diagrams a builder reads.
-export function prepareAssemblyGuide(result) {
+export function prepareAssemblyGuide(result, {moduleReplay = null} = {}) {
   const started = performance.now();
   const original = result.assemblyPlan ?? createAssemblyPlan({brickModel: result.brickModel});
   const before = assessAssemblyQuality(original);
   let plan = original;
   const attempts = [];
-  const workSurfaceBrickIds = original.modules.find(module => module.buildContext?.kind === 'work-surface')?.brickIds;
+  const workSurface = original.modules.find(module => module.buildContext?.kind === 'work-surface');
   const candidate = createAssemblyPlan({
     brickModel: result.brickModel, preferLocalProgress: true, preferLocalFoundations: true,
-    ...(workSurfaceBrickIds ? {workSurfaceBrickIds} : {}),
+    ...(moduleReplay ? {moduleReplay} : workSurface ? {workSurfaceBrickIds:workSurface.brickIds,
+      workSurfaceOrder:workSurface.buildContext.orderPolicy ?? 'course-first'} : {}),
   });
   const quality = assessAssemblyQuality(candidate);
   const rejectionReasons = [...assemblyRejectionReasons(original, candidate), ...orderQualityRejections(before, quality)];

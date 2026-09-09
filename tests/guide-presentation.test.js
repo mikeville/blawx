@@ -295,6 +295,38 @@ test('semantic labels control chapter meaning while arbitrary prompt wording has
   assert.equal(repeatedPresentation.sections[0].label, 'Front supports');
 });
 
+test('inferred labels remain usable through presentation and repeated-section matching', () => {
+  const repeated = [red(0, 0), red(1, 0)];
+  const { plan, guide } = fixture([repeated, translated(repeated, 0, 5)]);
+  for (const section of guide.sections) {
+    section.semanticLabel = 'Side supports';
+    section.semanticConfidence = 'inferred';
+  }
+
+  const presentation = deriveGuidePresentation({ plan, guide });
+  assert.equal(presentation.sections.length, 1);
+  assert.equal(presentation.sections[0].label, 'Side supports');
+  assert.equal(presentation.sections[0].repeatCount, 2);
+  assert.equal(presentation.stats.coverageComplete, true);
+});
+
+test('legacy high and inferred copies with the same name share one repeated instruction', () => {
+  const repeated = [red(0, 0), red(1, 0)];
+  const { plan, guide } = fixture([repeated, translated(repeated, 0, 5)]);
+  guide.sections[0].semanticLabel = 'Side supports';
+  guide.sections[0].semanticConfidence = 'high';
+  guide.sections[1].semanticLabel = ' side   SUPPORTS ';
+  guide.sections[1].semanticConfidence = 'inferred';
+
+  const presentation = deriveGuidePresentation({ plan, guide });
+  assert.equal(presentation.sections.length, 1);
+  assert.equal(presentation.sections[0].label, 'Side supports');
+  assert.equal(presentation.sections[0].repeatCount, 2);
+  assert.equal(presentation.sections[0].totalInventory.reduce((sum, entry) => sum + entry.count, 0), plan.bricks.length);
+  assert.equal(presentation.stats.brickCount, plan.bricks.length);
+  assert.equal(presentation.stats.coverageComplete, true);
+});
+
 test('uncertain proposed labels use deterministic generic presentation copy', () => {
   const { plan, guide } = fixture([[red(0, 0)]]);
   guide.sections[0].semanticLabel = 'Speculative antenna';

@@ -22,6 +22,16 @@ function introducedOnce(plan) {
   return introduced.length === plan.bricks.length && new Set(introduced).size === plan.bricks.length;
 }
 
+function rotateTranslateRecolor(source, quarterTurns) {
+  return model(source.bricks.map((item) => {
+    let { x, z, w, d } = item;
+    for (let turn = 0; turn < quarterTurns; turn += 1) {
+      [x, z, w, d] = [-z - d, x, d, w];
+    }
+    return { ...item, x: x + 20 + quarterTurns * 7, z: z - 10 + quarterTurns * 3, w, d, color: 'blue' };
+  }));
+}
+
 test('a connected work-surface bridge joins separate grounded feet and continues in place', () => {
   const source = model([
     brick(0, 0, 0), brick(2, 0, 0),
@@ -119,12 +129,20 @@ test('table support applies only at the selected floor and leaves an elevated in
   const baseline = createAssemblyPlan({ brickModel: source });
   const bandIds = idsMatching(baseline, ({ x, y }) => (x === 0 && y >= 1 && y <= 3) || x === 2 && y === 2);
   const elevatedRootId = idsMatching(baseline, ({ x, y }) => x === 2 && y === 2)[0];
-  const plan = createAssemblyPlan({ brickModel: source, workSurfaceBrickIds: bandIds });
+  const plan = createAssemblyPlan({
+    brickModel: source,
+    workSurfaceBrickIds: bandIds,
+    workSurfaceOrder: 'rectangular-layers',
+  });
   const workSurface = plan.modules.find(({ groupType }) => groupType === 'work-surface');
   const bandSteps = plan.steps.filter(({ moduleId }) => moduleId === workSurface.id);
   const elevatedStep = bandSteps.find(({ newBrickIds }) => newBrickIds.includes(elevatedRootId));
 
-  assert.equal(workSurface.buildContext.floorY, 1);
+  assert.deepEqual(workSurface.buildContext, {
+    kind: 'work-surface',
+    floorY: 1,
+    orderPolicy: 'rectangular-layers',
+  });
   assert.equal(elevatedStep.kind, 'unresolved');
   assert.equal(elevatedStep.issues.some(({ code, brickIds }) =>
     code === 'unsupported-addition' && brickIds.includes(elevatedRootId)), true);
@@ -148,7 +166,11 @@ test('a prior overhead component blocks the full downward work-surface join swee
   ]);
   const baseline = createAssemblyPlan({ brickModel: source });
   const bandIds = idsMatching(baseline, ({ x, y, color }) => x === 0 && color === 'red' && (y === 1 || y === 2));
-  const plan = createAssemblyPlan({ brickModel: source, workSurfaceBrickIds: bandIds });
+  const plan = createAssemblyPlan({
+    brickModel: source,
+    workSurfaceBrickIds: bandIds,
+    workSurfaceOrder: 'rectangular-layers',
+  });
   const workSurface = plan.modules.find(({ groupType }) => groupType === 'work-surface');
   const join = plan.steps.filter(({ moduleId }) => moduleId === workSurface.id).at(-1);
 
@@ -173,20 +195,217 @@ test('continuation finishes the lowest feasible branch course before climbing ne
   const plan = createAssemblyPlan({
     brickModel: source,
     workSurfaceBrickIds: bandIds,
+    workSurfaceOrder: 'connected-patches',
     preferLocalProgress: true,
     preferLocalFoundations: true,
   });
+  const workSurface = plan.modules.find(({ groupType }) => groupType === 'work-surface');
   const continuation = plan.modules.find(({ groupType }) => groupType === 'continuation');
   const byId = new Map(plan.bricks.map((item) => [item.id, item]));
   const continuationCourses = plan.steps
     .filter(({ moduleId, newBrickIds }) => moduleId === continuation.id && newBrickIds.length)
     .map(({ newBrickIds }) => Math.min(...newBrickIds.map((id) => byId.get(id).y)));
 
+  assert.equal(workSurface.buildContext.orderPolicy, 'connected-patches');
   assert.deepEqual(continuationCourses, [3, 3, 4]);
   assert.equal(plan.steps.filter(({ moduleId }) => moduleId === continuation.id).every(({ kind }) => kind === 'build'), true);
   assert.equal(plan.stats.rootFailureCount, 0);
   assert.equal(plan.stats.unresolvedBrickCount, 0);
   assert.equal(plan.stats.coverageComplete, true);
+});
+
+test('connected-patches bonds each small work-surface frontier before opening the next one', () => {
+  const source = model([
+    brick(0, 0, 0, 2, 1), brick(2, 0, 0, 4, 1), brick(6, 0, 0, 2, 1),
+    brick(0, 1, 0, 2, 1), brick(2, 1, 0, 4, 1), brick(6, 1, 0, 2, 1),
+    brick(0, 2, 0, 4, 1), brick(4, 2, 0, 4, 1),
+  ]);
+  const baseline = createAssemblyPlan({ brickModel: source });
+  const bandIds = idsMatching(baseline, ({ y }) => y === 1 || y === 2);
+  const courseFirst = createAssemblyPlan({ brickModel: source, workSurfaceBrickIds: bandIds });
+  const explicitCourseFirst = createAssemblyPlan({
+    brickModel: source,
+    workSurfaceBrickIds: bandIds,
+    workSurfaceOrder: 'course-first',
+  });
+  const connected = createAssemblyPlan({
+    brickModel: source,
+    workSurfaceBrickIds: bandIds,
+    workSurfaceOrder: 'connected-patches',
+  });
+  const workSurface = connected.modules.find(({ groupType }) => groupType === 'work-surface');
+  const byId = new Map(connected.bricks.map((item) => [item.id, item]));
+  const buildSteps = connected.steps.filter(({ moduleId, newBrickIds }) =>
+    moduleId === workSurface.id && newBrickIds.length);
+
+  assert.deepEqual(withoutTiming(explicitCourseFirst), withoutTiming(courseFirst));
+  assert.deepEqual(workSurface.buildContext, {
+    kind: 'work-surface',
+    floorY: 1,
+    orderPolicy: 'connected-patches',
+  });
+  assert.deepEqual(
+    buildSteps.map(({ newBrickIds }) => newBrickIds.map((id) => {
+      const { x, y, w } = byId.get(id);
+      return { x, y, w };
+    })),
+    [
+      [{ x: 0, y: 1, w: 2 }, { x: 2, y: 1, w: 4 }],
+      [{ x: 0, y: 2, w: 4 }],
+      [{ x: 6, y: 1, w: 2 }],
+      [{ x: 4, y: 2, w: 4 }],
+    ],
+  );
+  assert.deepEqual(
+    courseFirst.steps.filter(({ moduleId, newBrickIds }) =>
+      moduleId === courseFirst.modules.find(({ groupType }) => groupType === 'work-surface').id && newBrickIds.length)
+      .map(({ newBrickIds }) => newBrickIds.map((id) => byId.get(id).y)),
+    [[1, 1, 1], [2, 2]],
+  );
+
+  const sourcePosition = new Map(buildSteps.flatMap((step, stepIndex) =>
+    step.newBrickIds.map((id) => [id, stepIndex])));
+  for (const { a, b } of connected.graph.edges) {
+    if (!sourcePosition.has(a) || !sourcePosition.has(b)) continue;
+    const lower = byId.get(a).y < byId.get(b).y ? a : b;
+    const upper = lower === a ? b : a;
+    assert.ok(sourcePosition.get(lower) < sourcePosition.get(upper));
+  }
+  assert.equal(buildSteps.every(({ kind, insertionDirection, issues }) =>
+    kind === 'build' && insertionDirection === undefined && issues.length === 0), true);
+  assert.equal(connected.steps.filter(({ moduleId }) => moduleId === workSurface.id).at(-1).kind, 'join');
+  assert.equal(connected.stats.rootFailureCount, 0);
+  assert.equal(connected.stats.unresolvedBrickCount, 0);
+  assert.equal(connected.stats.validJoinCount, 1);
+  assert.equal(connected.stats.coverageComplete, true);
+  assert.equal(introducedOnce(connected), true);
+  assert.deepEqual(connected.bricks, courseFirst.bricks);
+  assert.deepEqual(connected.inventory, courseFirst.inventory);
+});
+
+test('connected-patches preserves its geometric and dependency guarantees through four rotations', () => {
+  const fixture = model([
+    brick(0, 0, 0, 2, 1), brick(2, 0, 0, 4, 1), brick(6, 0, 0, 2, 1),
+    brick(0, 1, 0, 2, 1), brick(2, 1, 0, 4, 1), brick(6, 1, 0, 2, 1),
+    brick(0, 2, 0, 4, 1), brick(4, 2, 0, 4, 1),
+  ]);
+
+  for (let rotation = 0; rotation < 4; rotation += 1) {
+    const source = rotateTranslateRecolor(fixture, rotation);
+    const baseline = createAssemblyPlan({ brickModel: source });
+    const bandIds = idsMatching(baseline, ({ y }) => y === 1 || y === 2);
+    const courseFirst = createAssemblyPlan({ brickModel: source, workSurfaceBrickIds: bandIds });
+    const connected = createAssemblyPlan({
+      brickModel: source,
+      workSurfaceBrickIds: bandIds,
+      workSurfaceOrder: 'connected-patches',
+    });
+    const workSurface = connected.modules.find(({ groupType }) => groupType === 'work-surface');
+    const buildSteps = connected.steps.filter(({ moduleId, newBrickIds }) =>
+      moduleId === workSurface.id && newBrickIds.length);
+    const byId = new Map(connected.bricks.map((item) => [item.id, item]));
+    const sourcePosition = new Map(buildSteps.flatMap((step, stepIndex) =>
+      step.newBrickIds.map((id) => [id, stepIndex])));
+
+    assert.deepEqual(connected.bricks, courseFirst.bricks, `rotation ${rotation}: geometry`);
+    assert.deepEqual(connected.inventory, courseFirst.inventory, `rotation ${rotation}: inventory`);
+    for (const metric of [
+      'rootFailureCount',
+      'unresolvedBrickCount',
+      'dependentUnresolvedCount',
+      'blockedJoinCount',
+      'validJoinCount',
+    ]) {
+      assert.equal(connected.stats[metric], courseFirst.stats[metric], `rotation ${rotation}: ${metric}`);
+    }
+    assert.equal(connected.stats.coverageComplete, true, `rotation ${rotation}: coverage`);
+    assert.equal(introducedOnce(connected), true, `rotation ${rotation}: unique introduction`);
+
+    for (const { a, b } of connected.graph.edges) {
+      if (!sourcePosition.has(a) || !sourcePosition.has(b)) continue;
+      const lower = byId.get(a).y < byId.get(b).y ? a : b;
+      const upper = lower === a ? b : a;
+      assert.ok(sourcePosition.get(lower) < sourcePosition.get(upper), `rotation ${rotation}: lower before upper`);
+    }
+
+    const floorY = workSurface.buildContext.floorY;
+    const floorIds = new Set(workSurface.brickIds.filter((id) => byId.get(id).y === floorY));
+    const firstBondStep = buildSteps.findIndex(({ newBrickIds }) =>
+      newBrickIds.some((id) => byId.get(id).y > floorY));
+    const floorBeforeBond = new Set(buildSteps.slice(0, firstBondStep)
+      .flatMap(({ newBrickIds }) => newBrickIds.filter((id) => floorIds.has(id))));
+    assert.ok(firstBondStep >= 0, `rotation ${rotation}: has a bond`);
+    assert.ok(floorBeforeBond.size < floorIds.size, `rotation ${rotation}: bonds before completing the floor`);
+  }
+});
+
+test('rectangular-layers emits regular strips as exact dependency-safe source operations', () => {
+  const source = model([
+    brick(0, 0, 0, 2, 1), brick(2, 0, 0, 2, 1),
+    brick(0, 0, 1, 2, 1), brick(2, 0, 1, 2, 1),
+    brick(0, 1, 0, 2, 1), brick(2, 1, 0, 2, 1),
+    brick(0, 1, 1, 2, 1), brick(2, 1, 1, 2, 1),
+    brick(0, 2, 0, 1, 2), brick(1, 2, 0, 2, 2), brick(3, 2, 0, 1, 2),
+  ]);
+  const baseline = createAssemblyPlan({ brickModel: source });
+  const bandIds = idsMatching(baseline, ({ y }) => y === 1 || y === 2);
+  const courseFirst = createAssemblyPlan({ brickModel: source, workSurfaceBrickIds: bandIds });
+  const layered = createAssemblyPlan({
+    brickModel: source,
+    workSurfaceBrickIds: bandIds,
+    workSurfaceOrder: 'rectangular-layers',
+  });
+  const workSurface = layered.modules.find(({ groupType }) => groupType === 'work-surface');
+  const byId = new Map(layered.bricks.map((item) => [item.id, item]));
+  const buildSteps = layered.steps.filter(({ moduleId, newBrickIds }) =>
+    moduleId === workSurface.id && newBrickIds.length);
+
+  assert.deepEqual(workSurface.buildContext, {
+    kind: 'work-surface',
+    floorY: 1,
+    orderPolicy: 'rectangular-layers',
+  });
+  assert.deepEqual(buildSteps.map(({ newBrickIds }) => newBrickIds.map((id) => {
+    const { x, y, z, w, d } = byId.get(id);
+    return { x, y, z, w, d };
+  })), [
+    [
+      { x: 0, y: 1, z: 0, w: 2, d: 1 },
+      { x: 2, y: 1, z: 0, w: 2, d: 1 },
+      { x: 0, y: 1, z: 1, w: 2, d: 1 },
+      { x: 2, y: 1, z: 1, w: 2, d: 1 },
+    ],
+    [
+      { x: 0, y: 2, z: 0, w: 1, d: 2 },
+      { x: 1, y: 2, z: 0, w: 2, d: 2 },
+      { x: 3, y: 2, z: 0, w: 1, d: 2 },
+    ],
+  ]);
+  const sourcePosition = new Map(buildSteps.flatMap((step, stepIndex) =>
+    step.newBrickIds.map((id) => [id, stepIndex])));
+  for (const { a, b } of layered.graph.edges) {
+    if (!sourcePosition.has(a) || !sourcePosition.has(b)) continue;
+    const lower = byId.get(a).y < byId.get(b).y ? a : b;
+    const upper = lower === a ? b : a;
+    assert.ok(sourcePosition.get(lower) < sourcePosition.get(upper));
+  }
+  for (const metric of ['rootFailureCount', 'unresolvedBrickCount', 'dependentUnresolvedCount', 'blockedJoinCount', 'validJoinCount']) {
+    assert.equal(layered.stats[metric], courseFirst.stats[metric], metric);
+  }
+  assert.equal(buildSteps.every(({ kind, issues }) => kind === 'build' && issues.length === 0), true);
+  assert.equal(layered.steps.filter(({ moduleId }) => moduleId === workSurface.id).at(-1).kind, 'join');
+  assert.equal(layered.stats.coverageComplete, true);
+  assert.equal(introducedOnce(layered), true);
+  assert.deepEqual(layered.bricks, courseFirst.bricks);
+  assert.deepEqual(layered.inventory, courseFirst.inventory);
+});
+
+test('rejects unknown work-surface ordering policies', () => {
+  const source = model([brick(0, 0, 0), brick(0, 1, 0)]);
+  assert.throws(
+    () => createAssemblyPlan({ brickModel: source, workSurfaceOrder: 'flat-sweep' }),
+    /workSurfaceOrder/,
+  );
 });
 
 test('guide preparation preserves the work-surface module and its distinct alignment join diagram', () => {

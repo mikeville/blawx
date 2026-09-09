@@ -1,6 +1,8 @@
 const MIN_SUPPORT_GROUPS = 1;
 const MAX_SUPPORT_GROUPS = 4;
-const LIFT_COURSES = 3;
+const MIN_LIFT_COURSES = 3;
+const STANDARD_ISOMETRIC_ELEVATION = Math.atan(1 / Math.sqrt(2));
+const STANDARD_ISOMETRIC_AXIS = 1 / Math.sqrt(2);
 
 function overlapStuds(lower, upper) {
   const minX = Math.max(lower.x, upper.x);
@@ -37,6 +39,17 @@ function internallyConnected(ids, bricksById) {
 
 function inactive(model) {
   return { active: false, model, liftCourses: 0, arrows: [], targetStuds: [] };
+}
+
+function liftCoursesFor(bricks, { studsPerVoxel, coursesPerVoxel }) {
+  const xSpan = Math.max(...bricks.map(({ x, w }) => x + w)) - Math.min(...bricks.map(({ x }) => x));
+  const zSpan = Math.max(...bricks.map(({ z, d }) => z + d)) - Math.min(...bricks.map(({ z }) => z));
+  // At a standard four-corner isometric view, both horizontal axes contribute
+  // equally to the slab's vertical screen projection. Lift far enough to clear
+  // that silhouette, then leave one integral course of printed white space.
+  const projectedDepth = (xSpan + zSpan) * STANDARD_ISOMETRIC_AXIS / studsPerVoxel;
+  const occlusionCourses = projectedDepth * Math.tan(STANDARD_ISOMETRIC_ELEVATION) * coursesPerVoxel;
+  return Math.max(MIN_LIFT_COURSES, Math.ceil(occlusionCourses + 1));
 }
 
 // Build a static exploded projection in the same display units as brickPreviewData.
@@ -110,10 +123,12 @@ export function createAssemblyJoinPreview({ model, highlightIds, joinContext } =
 
   const { studsPerVoxel = 1, coursesPerVoxel = 5 / 6, voxelMm = 8 } = model.meta?.scale ?? {};
   if (![studsPerVoxel, coursesPerVoxel, voxelMm].every((value) => Number.isFinite(value) && value > 0)) return inactive(model);
+  const highlightedBricks = [...highlightIds].map((id) => bricksById.get(id));
+  const liftCourses = liftCoursesFor(highlightedBricks, { studsPerVoxel, coursesPerVoxel });
   const studTopOffset = 0.9 / voxelMm;
   const lowerGap = 0.22;
   const upperGap = 0.28;
-  const liftHeight = LIFT_COURSES / coursesPerVoxel;
+  const liftHeight = liftCourses / coursesPerVoxel;
   const arrows = sourceArrows.map(({ x, z, targetCourse, ...fields }) => {
     const targetY = targetCourse / coursesPerVoxel + studTopOffset + lowerGap;
     return {
@@ -125,8 +140,8 @@ export function createAssemblyJoinPreview({ model, highlightIds, joinContext } =
   const previewModel = {
     ...model,
     bricks: model.bricks.map((brick) => highlightIds.has(brick.id)
-      ? { ...brick, y: brick.y + LIFT_COURSES }
+      ? { ...brick, y: brick.y + liftCourses }
       : { ...brick }),
   };
-  return { active: true, model: previewModel, liftCourses: LIFT_COURSES, arrows, targetStuds };
+  return { active: true, model: previewModel, liftCourses, arrows, targetStuds };
 }

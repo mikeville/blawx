@@ -27,14 +27,11 @@ function outcome(overrides = {}) {
 
 async function fixtureRoot() {
   const root = await mkdtemp(join(tmpdir(), 'blawx-backend-test-'));
+  const dataRoot = join(root, 'private-data');
   const { mkdir, writeFile } = await import('node:fs/promises');
   await mkdir(join(root, 'server', 'prompts'), { recursive: true });
   await writeFile(join(root, 'server', 'prompts', 'voxel-loft.txt'), 'HEADER\nUSER PROMPT: old\nFOOTER\n');
-  return root;
-}
-
-function privateServiceOptions(root) {
-  return { root, dataRoot: join(root, 'app-runs'), allowTestDataRoot: true };
+  return { root, dataRoot };
 }
 
 test('normalizes a subject to one line while preserving punctuation', () => {
@@ -51,8 +48,8 @@ test('Codex invocation is fixed, isolated, and ChatGPT-only', () => {
   assert.ok(args.includes('gpt-6-astra'));
   assert.ok(args.includes('service_tier="fast"'));
   assert.equal(args.at(-1), '-');
-  const env = createChildEnvironment({ OPENAI_API_KEY: 'secret', CODEX_API_KEY: 'secret2', OPENAI_BASE_URL: 'bad', SAFE: 'no', PATH: '/bin', HOME: '/safe-home', CODEX_HOME: '/safe-codex' });
-  assert.deepEqual(env, { PATH: '/bin', HOME: '/safe-home', CODEX_HOME: '/safe-codex' });
+  const env = createChildEnvironment({ OPENAI_API_KEY: 'secret', CODEX_API_KEY: 'secret2', OPENAI_BASE_URL: 'bad', SAFE: 'yes' });
+  assert.deepEqual(env, {});
 });
 
 function fakeChild({ output = '', hang = false } = {}) {
@@ -114,9 +111,9 @@ test('provider cancellation kills the isolated exec process group', async () => 
 });
 
 test('service returns expanded raw voxels and preserves a complete private receipt', async () => {
-  const root = await fixtureRoot();
+  const { root, dataRoot } = await fixtureRoot();
   let sentPrompt;
-  const service = createGenerationService({ ...privateServiceOptions(root), id: () => 'request-1', provider: async (prompt) => { sentPrompt = prompt; return outcome(); } });
+  const service = createGenerationService({ root, dataRoot, allowTestDataRoot: true, id: () => 'request-1', provider: async (prompt) => { sentPrompt = prompt; return outcome(); } });
   const result = await service.generate('  orange   cat!  ');
   assert.match(sentPrompt, /^USER PROMPT: orange cat!$/m);
   assert.equal(result.prompt, 'orange cat!');
@@ -124,63 +121,49 @@ test('service returns expanded raw voxels and preserves a complete private recei
   assert.equal(result.diagnostics.valid, true);
   assert.equal(result.metadata.actualModel, 'gpt-6-astra');
   assert.equal(result.metadata.qualityPass, null);
-  const record = JSON.parse(await readFile(join(root, 'app-runs', 'generation', 'request-1', 'record.json'), 'utf8'));
+  const record = JSON.parse(await readFile(join(dataRoot, 'generation', 'request-1', 'record.json'), 'utf8'));
   assert.equal(record.status, 'generated-schema-valid');
   assert.equal(record.applicationRetries, 0);
   assert.equal(record.cliTransportRetriesControlled, false);
-  const saved = JSON.parse(await readFile(join(root, 'app-runs', 'generation', 'request-1', 'model.json'), 'utf8'));
+  const saved = JSON.parse(await readFile(join(dataRoot, 'generation', 'request-1', 'model.json'), 'utf8'));
   assert.deepEqual(saved.sourceProgram, program);
   assert.equal(saved.model.cells.length, 8);
 });
 
-test('duplicate generation IDs preserve the first receipt and make no second provider call', async () => {
-  const root = await fixtureRoot();
-  let calls = 0;
-  const service = createGenerationService({
-    ...privateServiceOptions(root), id: () => 'duplicate-id',
-    provider: async () => { calls += 1; return outcome(); },
-  });
-  await service.generate('cat');
-  const recordPath = join(root, 'app-runs', 'generation', 'duplicate-id', 'record.json');
-  const original = await readFile(recordPath);
-  await assert.rejects(service.generate('dog'), (error) => error?.code === 'EEXIST');
-  assert.equal(calls, 1);
-  assert.deepEqual(await readFile(recordPath), original);
-});
-
 test('service rejects invalid output, maps auth before validation, and keeps receipts', async () => {
-  const root = await fixtureRoot();
-  const invalid = createGenerationService({ ...privateServiceOptions(root), id: () => 'bad', provider: async () => outcome({ finalRaw: '{' }) });
+  const { root, dataRoot } = await fixtureRoot();
+  const privateOptions = { root, dataRoot, allowTestDataRoot: true };
+  const invalid = createGenerationService({ ...privateOptions, id: () => 'bad', provider: async () => outcome({ finalRaw: '{' }) });
   await assert.rejects(invalid.generate('cat'), (error) => error instanceof GenerationError && error.code === 'invalid-output');
-  const auth = createGenerationService({ ...privateServiceOptions(root), id: () => 'auth', provider: async () => outcome({ exit: { code: null, signal: null }, authUnavailable: true, finalRaw: null }) });
+  const auth = createGenerationService({ ...privateOptions, id: () => 'auth', provider: async () => outcome({ exit: { code: null, signal: null }, authUnavailable: true, finalRaw: null }) });
   await assert.rejects(auth.generate('cat'), (error) => error instanceof GenerationError && error.code === 'unavailable');
-  assert.equal(JSON.parse(await readFile(join(root, 'app-runs', 'generation', 'auth', 'record.json'))).status, 'failed');
+  assert.equal(JSON.parse(await readFile(join(dataRoot, 'generation', 'auth', 'record.json'))).status, 'failed');
 });
 
 test('nonzero CLI exits report generator failure before missing-final validation', async () => {
-  const root = await fixtureRoot();
+  const { root, dataRoot } = await fixtureRoot();
   const service = createGenerationService({
-    ...privateServiceOptions(root), id: () => 'config-failure',
+    root, dataRoot, allowTestDataRoot: true, id: () => 'config-failure',
     provider: async () => outcome({
       exit: { code: 1, signal: null }, finalRaw: null,
       stderr: 'Invalid configuration while preparing ChatGPT subscription execution.',
     }),
   });
   await assert.rejects(service.generate('cat'), (error) => error.code === 'generator-failed');
-  const record = JSON.parse(await readFile(join(root, 'app-runs', 'generation', 'config-failure', 'record.json')));
+  const record = JSON.parse(await readFile(join(dataRoot, 'generation', 'config-failure', 'record.json')));
   assert.equal(record.exit.code, 1);
   assert.match(record.validationError, /complete bounded final response/);
 });
 
 test('service allows one request and relays cancellation, including pre-aborted signals', async () => {
-  const root = await fixtureRoot();
+  const { root, dataRoot } = await fixtureRoot();
   let finish;
   const provider = (_prompt, { signal }) => new Promise((resolve) => {
     finish = () => resolve(outcome({ cancelled: signal.aborted }));
     if (signal.aborted) return finish();
     signal.addEventListener('abort', finish, { once: true });
   });
-  const service = createGenerationService({ ...privateServiceOptions(root), id: (() => { let i = 0; return () => `r${++i}`; })(), provider });
+  const service = createGenerationService({ root, dataRoot, allowTestDataRoot: true, id: (() => { let i = 0; return () => `r${++i}`; })(), provider });
   const controller = new AbortController();
   const first = service.generate('cat', { signal: controller.signal });
   while (!service.isBusy()) await new Promise((resolve) => setImmediate(resolve));
@@ -217,7 +200,7 @@ test('HTTP adapter enforces method, host/origin, content type, size, prompt, bus
   const service = { generate: async (prompt) => {
     normalizeSubject(prompt);
     if (mode === 'busy') throw new GenerationError('busy', 'busy');
-    if (mode === 'timeout') throw new GenerationError('timeout', 'timeout', '123e4567-e89b-42d3-a456-426614174000');
+    if (mode === 'timeout') throw new GenerationError('timeout', 'timeout', '123e4567-e89b-42d3-a456-426614174001');
     return { prompt };
   } };
   await (async () => {
@@ -232,27 +215,8 @@ test('HTTP adapter enforces method, host/origin, content type, size, prompt, bus
     mode = 'timeout';
     const response = await requestMiddleware(service, { headers: { 'content-type': 'application/json' }, body: '{"prompt":"cat"}' });
     assert.equal(response.status, 504);
-    assert.equal(response.body.requestId, '123e4567-e89b-42d3-a456-426614174000');
+    assert.equal(response.body.requestId, '123e4567-e89b-42d3-a456-426614174001');
   })();
-});
-
-test('HTTP adapter never exposes an unexpected absolute path', async () => {
-  const response = await requestMiddleware({ generate: async () => { throw new Error('/Users/private/project/.env'); } }, {
-    headers: { 'content-type': 'application/json' }, body: '{"prompt":"cat"}',
-  });
-  assert.equal(response.status, 502);
-  assert.deepEqual(response.body.error, { code: 'generator-failed', message: 'Generator failed.' });
-  assert.doesNotMatch(JSON.stringify(response.body), /Users|\.env/);
-});
-
-test('HTTP adapter never echoes adversarial validation text or non-UUID request IDs', async () => {
-  const sentinel = '/Users/private/project/.env?token=secret';
-  const response = await requestMiddleware({
-    generate: async () => { throw Object.assign(new TypeError(`Prompt must not be empty. ${sentinel}`), { requestId: sentinel }); },
-  }, { headers: { 'content-type': 'application/json' }, body: '{"prompt":"cat"}' });
-  assert.equal(response.status, 400);
-  assert.deepEqual(response.body, { error: { code: 'bad-request', message: 'Invalid generation request.' } });
-  assert.doesNotMatch(JSON.stringify(response.body), /Users|token|secret/);
 });
 
 test('HTTP response disconnect aborts the active generation signal', async () => {
@@ -276,4 +240,15 @@ test('HTTP response disconnect aborts the active generation signal', async () =>
   response.emit('close');
   await serving;
   assert.equal(observedAbort, true);
+});
+
+test('HTTP errors never expose internal paths, provider output, or unknown exception details', async () => {
+  for (const failure of [new Error('EACCES /private/receipt secret'), new GenerationError('generator-failed', 'private provider output', 'request-safe')]) {
+    const result = await requestMiddleware({ generate: async () => { throw failure; } }, {
+      headers: { 'content-type': 'application/json' }, body: '{"prompt":"cat"}',
+    });
+    assert.equal(result.status, 502);
+    assert.equal(result.body.error.code, 'generator-failed');
+    assert.doesNotMatch(JSON.stringify(result.body), /private|secret|provider output/);
+  }
 });

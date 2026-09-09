@@ -261,7 +261,7 @@ export function createGuideSectionsFromRanges(plan, ranges) {
     }
     expectedStart = end + 1;
     const confidence = range.confidence ?? 'uncertain';
-    const semanticLabel = confidence === 'high' ? range.label ?? null : null;
+    const semanticLabel = confidence === 'high' || confidence === 'inferred' ? range.label ?? null : null;
     const section = sectionData({
       id: `section-${index + 1}`,
       label: semanticLabel ?? `Build section ${index + 1}`,

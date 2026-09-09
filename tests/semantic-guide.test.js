@@ -227,7 +227,7 @@ test('semantic input rejects repeat protection that requires more than sixty-fou
   );
 });
 
-test('annotation rejects omissions, duplicates, stale fingerprints, unknown fields, and high-confidence null labels', () => {
+test('annotation accepts legacy high and inferred labels while rejecting invalid status and required-label omissions', () => {
   const input = createSemanticGuideInput({ plan: planFixture(), subject: 'Object' });
   const ranges = [
     semanticSection('s1', 's2', 'Foundation'),
@@ -244,6 +244,12 @@ test('annotation rejects omissions, duplicates, stale fingerprints, unknown fiel
   assert.throws(() => validateSemanticGuideAnnotation(input, annotation(input, [
     semanticSection('s1', 's2', null, 'high'), ranges[1],
   ])), /require a label/);
+  assert.throws(() => validateSemanticGuideAnnotation(input, annotation(input, [
+    semanticSection('s1', 's2', null, 'inferred'), ranges[1],
+  ])), /require a label/);
+  assert.throws(() => validateSemanticGuideAnnotation(input, annotation(input, [
+    semanticSection('s1', 's2', 'Foundation', 'guessed'), ranges[1],
+  ])), /invalid confidence/);
 });
 
 test('semantic application rebuilds mixed ranges without mutating or losing steps, issues, inventory, or source operations', () => {
@@ -262,7 +268,7 @@ test('semantic application rebuilds mixed ranges without mutating or losing step
   const sourceGuide = structuredClone(guide);
   const input = createSemanticGuideInput({ plan, guide, subject: 'A neutral construction' });
   const semantic = annotation(input, [
-    semanticSection('s1', 's2', 'Lower structure'),
+    semanticSection('s1', 's2', 'Lower structure', 'inferred'),
     semanticSection('s3', 's4', 'Accent pieces', 'uncertain'),
   ]);
   const result = applySemanticGuide({ plan, guide, subject: input.subject, annotation: semantic });
@@ -271,6 +277,7 @@ test('semantic application rebuilds mixed ranges without mutating or losing step
   assert.deepEqual(result.sections.flatMap(({ brickIds }) => brickIds), ['b1', 'b2', 'b3', 'b4']);
   assert.equal(result.sections[0].status, 'unresolved');
   assert.equal(result.sections[0].semanticLabel, 'Lower structure');
+  assert.equal(result.sections[0].semanticConfidence, 'inferred');
   assert.equal(result.sections[1].semanticLabel, null);
   assert.equal(result.semantics.sections[1].label, 'Accent pieces');
   assert.equal(result.stats.coverageComplete, true);

@@ -4,6 +4,7 @@ import { createGuideNumbering } from './guide-numbering.js';
 import { deriveGuidePresentation } from './guide-presentation.js';
 import { prepareAssemblyGuide } from './prepare-assembly-guide.js';
 import { assemblyRejectionReasons, unresolvedCells } from './refine-construction.js';
+import { refineWorkSurfaceOrder } from './refine-work-surface-order.js';
 
 const BAND_COURSES = [2, 3, 4];
 const MIN_BAND_BRICKS = 2;
@@ -374,7 +375,7 @@ export function planSubassemblies(result) {
   if (JSON.stringify(result.brickModel) !== geometrySnapshot) {
     throw new Error('Subassembly planning mutated the input brick geometry.');
   }
-  const completeResult = selected?.result ?? result;
+  const completeResult = selected ? refineWorkSurfaceOrder(selected.result) : result;
   const after = planMetrics(completeResult);
   const stageMs = now() - started;
   const report = {
@@ -412,6 +413,7 @@ export function planSubassemblies(result) {
       conversionMs: result.metrics.conversionMs + stageMs,
       stageTiming: {
         ...(result.metrics.stageTiming ?? {}),
+        ...(completeResult.workSurfaceOrdering ? {workSurfaceOrderingMs:completeResult.workSurfaceOrdering.orderingMs} : {}),
         subassemblyMs: (result.metrics.stageTiming?.subassemblyMs ?? 0) + stageMs,
       },
     },

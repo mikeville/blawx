@@ -1,110 +1,424 @@
+import './composer.css';
 import './product.css';
-import { createSavedDemoClient, DEMO_EXAMPLES } from './demo-client.js';
+import './generation-progress.css';
 import { createGenerationClient } from './generation-client.js';
-import { ProductViewer } from './product-viewer.js';
+import { createFeedClient } from './feed-client.js';
+import { createExampleClient } from './example-client.js';
+import { createPreviewClient } from './preview-client.js';
+import { mountModelStage } from './model-stage.js';
+import { mountRecentFeed } from './recent-feed.js';
 import { mountConstructionComparison } from './construction-comparison.js';
+import { mountComposer } from './composer.js';
+import { mountViewportLayout } from './viewport-layout.js';
+import { loadViewState, saveViewState } from './feed-view-state.js';
+import { FEATURED_SET_IDS } from './featured-sets.js';
+import { generationDiagnosticRows } from './generation-diagnostics.js';
+import { HERO_ROTATION_DEFAULTS } from './hero-rotation.js';
+import { mountPromptField } from './prompt-field.js';
+import { mountGenerationProgress } from './generation-progress.js';
 
-const picks = DEMO_EXAMPLES.map(({ name }) => `<button type="button" data-prompt="${name}">${name}</button>`).join('');
-document.querySelector('#app').innerHTML = `
-  <main class="shell"><div class="sheet">
-    <header class="masthead"><button class="wordmark" type="button">Blawx</button><span id="tagline">LEGO generator</span></header>
-    <section class="stage" aria-label="Model preview"><canvas id="model-canvas" tabindex="0"></canvas></section>
-    <section class="content" aria-live="polite"><form id="prompt-form"><h1>Name your set</h1><label class="sr-only" for="prompt">Set description</label><input id="prompt" maxlength="500" autocomplete="off" placeholder="Type anything"><div class="example-group"><div class="picks">${picks}</div></div><button class="submit" disabled>Generate set</button></form><div id="status" hidden></div></section>
-    <footer><details class="developer-tools"><summary>Developer</summary><div class="developer-body"><p class="developer-record"></p><div class="developer-generation"></div><div class="developer-construction"></div><nav><a href="?lab">Geometry lab</a></nav><p>Local generation · brick comparison</p></div></details></footer>
-  </div></main>`;
+export function mountProductApp(host, {
+  generationClient = createGenerationClient(),
+  feedClient = createFeedClient(),
+  exampleClient = createExampleClient(),
+  previewClient = createPreviewClient(),
+  allowSemanticInference = true,
+  constructionClient,
+  stageFactory = mountModelStage,
+  comparisonFactory = mountConstructionComparison,
+  progressFactory = mountGenerationProgress,
+  generationEstimateRange = null,
+} = {}) {
+  host.innerHTML = `<header class="brand-strip"><a class="brand" href="#" aria-label="Blawx home">Blawx</a></header>
+    <main><div id="home-view"><section class="home-lead" aria-label="Featured set and prompt"><div class="home-hero"><div class="hero-mount"></div></div>
+      <div class="composer"><form id="prompt-form" novalidate><label class="sr-only" for="prompt">What would you like to build?</label><div class="prompt-field"><div class="prompt-invitation" aria-hidden="true"><span>What would you</span> <span>like to build?<span class="invitation-caret"></span></span></div><textarea id="prompt" rows="1" maxlength="500" autocomplete="off" spellcheck="true" placeholder=" " enterkeyhint="go"></textarea></div><button class="make-button" type="submit">Make it</button><p id="public-use" class="public-use" hidden>Prompts &amp; sets are public.</p></form><p id="form-message" class="form-message" role="status"></p></div></section><section class="recent-host"></section></div>
+      <div id="detail-view" hidden><article class="set-detail"><div class="detail-hero hero-mount"></div><header class="detail-copy"><h1 id="detail-title" tabindex="-1"></h1><div class="generation-progress-host"></div><p class="detail-prompt"></p><span class="result-note" role="status"></span></header></article><section class="instructions"><div class="guide-host"></div></section></div></main>
+    <footer class="developer-footer"><details class="developer-tools"><summary>Developer</summary><div class="developer-body"><p class="developer-record"></p><div class="developer-generation"></div><div class="developer-construction"></div><nav><a href="?lab">Geometry lab</a><a href="/mockups/feed/round2/index.html">Layout archive</a></nav></div></details></footer>`;
 
-const form = document.querySelector('#prompt-form');
-const input = document.querySelector('#prompt');
-const status = document.querySelector('#status');
-const tagline = document.querySelector('#tagline');
-const canvas = document.querySelector('#model-canvas');
-const developer = document.querySelector('.developer-construction');
-const developerRecord = document.querySelector('.developer-record');
-const developerGeneration = document.querySelector('.developer-generation');
-const viewer = new ProductViewer(canvas);
-const savedClient = createSavedDemoClient();
-const generationClient = createGenerationClient();
-let requestId = 0;
-let activeController = null;
-let elapsedTimer = null;
-let disposeComparison = null;
+  const home = host.querySelector('#home-view');
+  const detail = host.querySelector('#detail-view');
+  const composer = host.querySelector('.composer');
+  const form = host.querySelector('#prompt-form');
+  const input = host.querySelector('#prompt');
+  const message = host.querySelector('.form-message');
+  const recentHost = host.querySelector('.recent-host');
+  const homeHeroHost = host.querySelector('.home-hero .hero-mount');
+  const detailHeroHost = host.querySelector('.detail-hero');
+  const detailTitle = host.querySelector('.detail-copy h1');
+  const detailPrompt = host.querySelector('.detail-copy p');
+  const progressHost = host.querySelector('.generation-progress-host');
+  const resultNote = host.querySelector('.result-note');
+  const instructions = host.querySelector('.instructions');
+  const guideHost = host.querySelector('.guide-host');
+  const devRecord = host.querySelector('.developer-record');
+  const devGeneration = host.querySelector('.developer-generation');
+  const devConstruction = host.querySelector('.developer-construction');
+  const brand = host.querySelector('.brand');
+  const makeButton = form.querySelector('.make-button');
+  const storageMode = `product:${location.pathname}`;
+  const restored = loadViewState({ mode: storageMode, recentCount: 9999 });
+  input.value = restored.prompt;
+  form.classList.toggle('has-prompt', Boolean(input.value.trim()));
+  document.body.dataset.composer = 'circle';
+  const composerController = mountComposer({ composer, promptInput: input, form, mode: 'circle', homeHost: host.querySelector('.home-lead') });
+  const viewport = mountViewportLayout({ composer, promptInput: input });
+  const promptField = mountPromptField({ input, form, publicNote: composer.querySelector('#public-use') });
+  const generated = new Map();
+  let activeFeedClient = feedClient;
+  let feed;
+  let homeStage;
+  let detailStage;
+  let comparisonDispose;
+  let progressController;
+  let activeRequest;
+  let lastPrompt = '';
+  let homeScrollY = restored.homeScrollY;
+  let disposed = false;
+  let entranceAvailable = true;
+  let routeVersion = 0;
+  let featuredResult;
+  let detailRequest;
+  let galleryCount = Math.max(9, restored.galleryCount);
+  let sourceFocusId = null;
+  let handledLocation = '';
 
-function escape(value) { const node = document.createElement('div'); node.textContent = value; return node.innerHTML; }
-function stopActiveRequest() {
-  disposeComparison?.();
-  disposeComparison = null;
-  developer.replaceChildren();
-  developerRecord.textContent = "";
-  developerGeneration.replaceChildren();
-  activeController?.abort();
-  activeController = null;
-  clearInterval(elapsedTimer);
-  elapsedTimer = null;
-}
-function showForm() {
-  requestId += 1; stopActiveRequest(); form.hidden = false; status.hidden = true; tagline.textContent = 'LEGO generator';
-  form.querySelector('.submit').disabled = !input.value.trim(); input.focus({ preventScroll: true });
-  window.scrollTo(0, 0);
-}
-function formatSeconds(milliseconds) {
-  return Number.isFinite(milliseconds) ? `${(milliseconds / 1000).toFixed(1)} seconds` : 'Not reported';
-}
-async function generate(value) {
-  const currentRequest = ++requestId;
-  stopActiveRequest();
-  const controller = new AbortController();
-  activeController = controller;
-  window.scrollTo(0, 0);
-  input.value = value; form.hidden = true; status.hidden = false; status.className = 'loading';
-  status.innerHTML = `<p class="kicker">Generating your set</p><h1>${escape(value)}</h1><div class="build-line"><i></i><span>Generating your set… <b id="elapsed" aria-hidden="true" aria-live="off">0.0 s</b></span></div><button class="cancel" type="button">Cancel</button>`;
-  status.querySelector('.cancel').onclick = showForm;
-  const startedAt = performance.now();
-  const elapsed = status.querySelector('#elapsed');
-  elapsedTimer = setInterval(() => { elapsed.textContent = `${((performance.now() - startedAt) / 1000).toFixed(1)} s`; }, 100);
-  try {
-    const result = await generationClient.generate(value, { signal: controller.signal }); if (currentRequest !== requestId) return;
-    const browserMs = performance.now() - startedAt;
-    stopActiveRequest();
-    viewer.setModel(result.model); tagline.textContent = 'LEGO generator'; status.className = 'result';
-    const metadata = result.metadata;
-    developerRecord.textContent = `Generated result · ${result.requestId}`;
-    developerGeneration.innerHTML = `<dl><div><dt>Generation</dt><dd>${formatSeconds(metadata.generationMs)}</dd></div><div><dt>Browser wait</dt><dd>${formatSeconds(browserMs)}</dd></div><div><dt>Model</dt><dd>${escape(metadata.actualModel || metadata.requestedModel || 'Not reported')}</dd></div><div><dt>Timing scope</dt><dd>${escape(metadata.timingScope || 'Generation only')}</dd></div></dl>`;
-    status.innerHTML = `<h1>${escape(result.prompt)}</h1><div class="construction-comparison"></div><button class="again" type="button">Build another set</button>`;
-    disposeComparison = mountConstructionComparison(status.querySelector('.construction-comparison'), { rawModel: result.model, sourceProgram: result.sourceProgram ?? null, viewer, devHost: developer, subject: result.model.meta?.prompt ?? result.prompt, allowSemanticInference: true });
-  } catch (error) {
-    if (currentRequest !== requestId) return;
-    stopActiveRequest();
-    if (error?.name === 'AbortError') return;
-    status.className = 'error';
-    status.innerHTML = `<p class="kicker">Generation stopped</p><h1>Couldn’t generate that set</h1><p>${escape(error.message || 'The local generator did not return a usable set.')}</p><button class="again" type="button">Try again</button>`;
+  const locationKey = () => `${location.pathname}${location.search}${location.hash}`;
+
+  function persist() {
+    saveViewState({ mode: storageMode, recentCount: 9999, state: { prompt: input.value.slice(0, 500), galleryCount, homeScrollY: home.hidden ? homeScrollY : window.scrollY } });
   }
-  status.querySelector('.again').onclick = showForm;
-}
-
-async function showSavedExample(value) {
-  const currentRequest = ++requestId;
-  stopActiveRequest();
-  window.scrollTo(0, 0);
-  form.hidden = true; status.hidden = false; status.className = 'loading';
-  status.innerHTML = `<h1>${escape(value)}</h1><div class="build-line"><i></i><span>Loading…</span></div>`;
-  try {
-    const result = await savedClient.generate(value); if (currentRequest !== requestId) return;
-    viewer.setModel(result.model); tagline.textContent = 'LEGO generator';
-    developerRecord.textContent = `Saved example · Shape ${result.example.shape}. Accepted raw geometry from the demo shelf.`; status.className = 'result';
-    status.innerHTML = `<h1>${escape(result.example.name)}</h1><div class="construction-comparison"></div><button class="again" type="button">Build another set</button>`;
-    disposeComparison = mountConstructionComparison(status.querySelector('.construction-comparison'), { rawModel: result.model, sourceProgram: result.sourceProgram ?? null, viewer, devHost: developer, subject: result.model.meta?.prompt ?? value });
-  } catch (error) {
-    if (currentRequest !== requestId) return;
-    status.className = 'error';
-    status.innerHTML = `<h1>Couldn’t load that example</h1><p>${escape(error.message)}</p><button class="again" type="button">Choose another</button>`;
+  function showMessage(text, actionLabel, action) {
+    message.replaceChildren(document.createTextNode(text));
+    if (!actionLabel) return;
+    const button = document.createElement('button');
+    button.type = 'button'; button.textContent = actionLabel; button.onclick = action;
+    message.append(' ', button);
   }
-  status.querySelector('.again').onclick = showForm;
+  async function refreshLibrary() {
+    if (activeFeedClient !== exampleClient) { void feed?.refresh(); return; }
+    const page = await feedClient.list().catch(() => null);
+    if (disposed || !page?.items.length) return;
+    feed?.dispose();
+    activeFeedClient = feedClient;
+    feed = mountRecentFeed(recentHost, {
+      client: feedClient, previewClient, onOpenSet: openId, initialPage: page,
+      onChange: ({ count }) => { galleryCount = count; persist(); },
+    });
+    if (home.hidden) feed.suspend();
+  }
+  function resultClientFor(id) { return id.startsWith('example-') ? exampleClient : feedClient; }
+  async function getResult(id, options) { return generated.get(id) ?? resultClientFor(id).getResult(id, options); }
+  function clearDetail() {
+    detailRequest?.abort(); detailRequest = null;
+    detailStage?.dispose(); detailStage = null;
+    comparisonDispose?.(); comparisonDispose = null;
+    progressController?.dispose(); progressController = null;
+    detailHeroHost.replaceChildren(); guideHost.replaceChildren(); devConstruction.replaceChildren();
+    devRecord.textContent = ''; devGeneration.replaceChildren();
+    detail.classList.remove('is-generated-result');
+    instructions.hidden = false;
+  }
+
+  function setSubmissionPending(pending) {
+    if (pending) form.setAttribute('aria-busy', 'true');
+    else form.removeAttribute('aria-busy');
+    input.readOnly = pending;
+    makeButton.disabled = pending;
+    promptField.sync();
+  }
+
+  function finishActiveRequest(job) {
+    if (activeRequest !== job) return false;
+    activeRequest = null;
+    progressController?.complete(); progressController = null;
+    setSubmissionPending(false);
+    return true;
+  }
+
+  function cancelActiveRequest({ returnHome = false } = {}) {
+    const job = activeRequest;
+    if (!job) return false;
+    activeRequest = null;
+    job.controller.abort();
+    comparisonDispose?.(); comparisonDispose = null;
+    progressController?.dispose(); progressController = null;
+    setSubmissionPending(false);
+    if (returnHome) {
+      history.replaceState(null, '', location.pathname + location.search);
+      handledLocation = locationKey();
+      message.textContent = '';
+      void mountHome();
+    }
+    return true;
+  }
+  function renderGenerationDiagnostics(result) {
+    const rows = generationDiagnosticRows(result, result.browserWaitMs);
+    if (!rows.length) { devGeneration.replaceChildren(); return; }
+    const list = document.createElement('dl');
+    for (const row of rows) {
+      const item = document.createElement('div');
+      const term = document.createElement('dt'); term.textContent = row.label;
+      const value = document.createElement('dd'); value.textContent = row.value;
+      item.append(term, value); list.append(item);
+    }
+    if (result.saveStatus === 'failed' && !result.cacheHit) {
+      const note = document.createElement('p'); note.textContent = 'Result-store save failed';
+      devGeneration.replaceChildren(list, note);
+    } else devGeneration.replaceChildren(list);
+  }
+  async function mountFeatured() {
+    try {
+      if (!featuredResult) {
+        for (const id of FEATURED_SET_IDS) {
+          try { featuredResult = await getResult(id); break; } catch {}
+        }
+      }
+      if (!featuredResult) throw new Error('Featured set unavailable.');
+      const model = await previewClient.prepare(featuredResult.model);
+      if (disposed || home.hidden || homeStage) return;
+      homeStage = stageFactory(homeHeroHost, { model, label: `${featuredResult.prompt}, featured interactive 3D LEGO-style set`, onOpen: () => openId(featuredResult.id), animate: entranceAvailable, heroRotation: HERO_ROTATION_DEFAULTS });
+      entranceAvailable = false;
+    } catch {
+      if (!disposed && !home.hidden) homeHeroHost.innerHTML = '<span class="stage-unavailable">Featured set unavailable</span>';
+    }
+  }
+  function openId(id) {
+    if (!detail.hidden) return;
+    homeScrollY = window.scrollY; persist();
+    sourceFocusId = id;
+    navigateId(id);
+  }
+  function navigateId(id) {
+    const next = `#set/${encodeURIComponent(id)}`;
+    if (location.hash === next) route(true);
+    else location.hash = next;
+  }
+
+  async function chooseLibrary() {
+    try {
+      const page = await feedClient.list();
+      if (page.items.length) return { client: feedClient, page };
+    } catch { return { client: feedClient, page: null }; }
+    return { client: exampleClient, page: await exampleClient.list() };
+  }
+
+  async function mountHome() {
+    const currentRoute = ++routeVersion;
+    clearDetail(); detail.hidden = true; home.hidden = false; composerController.setRoute(false);
+    setSubmissionPending(false);
+    promptField.sync();
+    document.title = 'Blawx';
+    mountFeatured();
+    if (!feed) {
+      const library = await chooseLibrary();
+      if (disposed || currentRoute !== routeVersion) return;
+      activeFeedClient = library.client;
+      feed = mountRecentFeed(recentHost, {
+        client: activeFeedClient, previewClient, examples: activeFeedClient === exampleClient, onOpenSet: openId,
+        initialPage: library.page, restoreCount: galleryCount,
+        onChange: ({ count }) => { galleryCount = count; persist(); },
+      });
+    }
+    feed?.resume();
+    await feed?.ready;
+    if (disposed || currentRoute !== routeVersion) return;
+    requestAnimationFrame(() => {
+      if (currentRoute !== routeVersion) return;
+      window.scrollTo(0, homeScrollY);
+      if (sourceFocusId) host.querySelector(`[data-result-id="${CSS.escape(sourceFocusId)}"]`)?.parentElement?.querySelector('button')?.focus({ preventScroll: true });
+    });
+  }
+
+  function beginGeneratedDetail(job) {
+    job.routeVersion = ++routeVersion;
+    if (!home.hidden) { homeScrollY = window.scrollY; persist(); }
+    home.hidden = true;
+    detail.hidden = false;
+    composerController.setRoute(true);
+    feed?.suspend();
+    homeStage?.dispose(); homeStage = null;
+    clearDetail();
+    detail.classList.add('is-generated-result');
+    instructions.hidden = true;
+    input.blur();
+    setSubmissionPending(true);
+    window.scrollTo(0, 0);
+    detailTitle.textContent = job.prompt;
+    detailPrompt.textContent = '';
+    resultNote.textContent = '';
+    document.title = `${job.prompt} — Blawx`;
+    detailStage = stageFactory(detailHeroHost, {
+      loading: true,
+      label: `Building ${job.prompt}, interactive 3D LEGO-style set`,
+      animate: false,
+      heroRotation: HERO_ROTATION_DEFAULTS,
+    });
+    progressController = progressFactory(progressHost, {
+      estimateRange: generationEstimateRange,
+      onCancel: () => cancelActiveRequest({ returnHome: true }),
+    });
+  }
+
+  function rememberGeneratedResult(result, prompt, browserWaitMs) {
+    const id = result.resultId || `unsaved-${result.requestId}`;
+    const publicResult = {
+      ...result,
+      id,
+      createdAt: result.createdAt ?? new Date().toISOString(),
+      browserWaitMs: result.cacheHit ? undefined : browserWaitMs,
+    };
+    if (result.saveStatus === 'failed') {
+      generated.set(id, publicResult);
+      if (generated.size > 8) generated.delete(generated.keys().next().value);
+    } else feedClient.remember?.(publicResult);
+    input.value = result.submittedPrompt ?? prompt;
+    promptField.sync();
+    persist();
+    return publicResult;
+  }
+
+  async function continueGeneratedDetail(job, result) {
+    const id = result.id;
+    const next = `#set/${encodeURIComponent(id)}`;
+    history.pushState(null, '', next);
+    handledLocation = locationKey();
+    job.resultId = id;
+    sourceFocusId = null;
+    detailTitle.textContent = result.submittedPrompt ?? job.prompt;
+    detailPrompt.textContent = '';
+    resultNote.textContent = result.cacheHit ? 'Loaded an existing set' : result.saveStatus === 'failed' ? 'This set wasn’t added to Recently made.' : '';
+    document.title = `${detailTitle.textContent} — Blawx`;
+    devRecord.textContent = typeof result.provenance === 'string' ? result.provenance : result.saveStatus === 'failed' ? 'Unsaved local result' : `Public result · ${result.id}`;
+    renderGenerationDiagnostics(result);
+
+    job.phase = 'bricks';
+    progressController?.setPhase('bricks');
+    const preview = await previewClient.prepare(result.model, { signal: job.controller.signal });
+    if (disposed || activeRequest !== job || job.routeVersion !== routeVersion) return;
+    detailStage?.setModel(result.model.kind === 'bricks' ? result.model : preview, {
+      animate: true,
+      frameModel: result.model,
+      label: `${result.prompt}, interactive 3D LEGO-style set`,
+    });
+    detailStage?.setLoading?.(false);
+    entranceAvailable = false;
+
+    job.phase = 'guide';
+    progressController?.setPhase('guide');
+    const finishGuide = () => {
+      if (disposed || activeRequest !== job || job.routeVersion !== routeVersion) return;
+      instructions.hidden = false;
+      finishActiveRequest(job);
+    };
+    try {
+      comparisonDispose = comparisonFactory(guideHost, {
+        rawModel: result.model,
+        sourceProgram: result.sourceProgram ?? null,
+        viewer: detailStage,
+        devHost: devConstruction,
+        subject: result.prompt,
+        allowSemanticInference: !result.example && !result.cacheHit && Boolean(result.metadata) && allowSemanticInference,
+        constructionClient,
+        hideLoadingMessage: true,
+        onReady: finishGuide,
+        onError: finishGuide,
+      });
+    } catch (error) {
+      if (disposed || activeRequest !== job || job.routeVersion !== routeVersion) return;
+      guideHost.innerHTML = '<p class="guide-loading" role="status">Instructions unavailable</p>';
+      instructions.hidden = false;
+      finishActiveRequest(job);
+    }
+    if (result.saveStatus !== 'failed' && !result.cacheHit) void refreshLibrary();
+  }
+
+  async function mountDetail(id) {
+    const currentRoute = ++routeVersion;
+    if (!home.hidden) { homeScrollY = window.scrollY; persist(); }
+    home.hidden = true; detail.hidden = false; composerController.setRoute(true);
+    feed?.suspend();
+    homeStage?.dispose(); homeStage = null; clearDetail();
+    detailRequest = new AbortController();
+    const signal = detailRequest.signal;
+    window.scrollTo(0, 0);
+    detailTitle.textContent = 'Loading set'; detailPrompt.textContent = ''; resultNote.textContent = '';
+    try {
+      const result = await getResult(id, { signal });
+      if (disposed || currentRoute !== routeVersion) return;
+      detailTitle.textContent = result.title || result.prompt;
+      detailPrompt.textContent = result.title && result.title.toLowerCase() !== result.prompt.toLowerCase() ? result.prompt : '';
+      resultNote.textContent = result.cacheHit ? 'Loaded an existing set' : result.saveStatus === 'failed' ? 'This set wasn’t added to Recently made.' : '';
+      document.title = `${detailTitle.textContent} — Blawx`;
+      const preview = await previewClient.prepare(result.model, { signal });
+      if (disposed || currentRoute !== routeVersion) return;
+      detailStage = stageFactory(detailHeroHost, { model: preview, label: `${result.prompt}, interactive 3D LEGO-style set`, animate: entranceAvailable, heroRotation: HERO_ROTATION_DEFAULTS });
+      entranceAvailable = false;
+      devRecord.textContent = typeof result.provenance === 'string' ? result.provenance : result.example ? 'Saved example' : result.saveStatus === 'failed' ? 'Unsaved local result' : `Public result · ${result.id}`;
+      renderGenerationDiagnostics(result);
+      comparisonDispose = comparisonFactory(guideHost, { rawModel: result.model, sourceProgram: result.sourceProgram ?? null, viewer: detailStage, devHost: devConstruction, subject: result.prompt, allowSemanticInference: !result.example && !result.cacheHit && Boolean(result.metadata) && allowSemanticInference, constructionClient });
+      detailTitle.focus({ preventScroll: true });
+    } catch (error) {
+      if (disposed || currentRoute !== routeVersion || error.name === 'AbortError') return;
+      detailTitle.textContent = 'Set unavailable'; detailPrompt.textContent = error.message;
+    }
+  }
+
+  function route(force = false) {
+    const nextLocation = locationKey();
+    if (force !== true && nextLocation === handledLocation && !activeRequest) return;
+    handledLocation = nextLocation;
+    cancelActiveRequest();
+    setSubmissionPending(false);
+    message.textContent = '';
+    const match = location.hash.match(/^#set\/([A-Za-z0-9_-]+)$/);
+    if (!match) { mountHome(); return; }
+    let id = ''; try { id = decodeURIComponent(match[1]); } catch {}
+    if (!id) { history.replaceState(null, '', location.pathname + location.search); mountHome(); return; }
+    mountDetail(id);
+  }
+
+  async function generate(prompt) {
+    if (activeRequest) return;
+    const job = { controller: new AbortController(), prompt, phase: 'designing', routeVersion: 0 };
+    activeRequest = job;
+    lastPrompt = prompt;
+    message.textContent = '';
+    beginGeneratedDetail(job);
+    try {
+      const startedAt = performance.now();
+      const result = await generationClient.generate(prompt, { signal: job.controller.signal });
+      const browserWaitMs = performance.now() - startedAt;
+      if (activeRequest !== job || job.controller.signal.aborted || disposed || job.routeVersion !== routeVersion) return;
+      await continueGeneratedDetail(job, rememberGeneratedResult(result, prompt, browserWaitMs));
+    } catch (error) {
+      if (activeRequest !== job || error.name === 'AbortError') return;
+      activeRequest = null;
+      progressController?.dispose(); progressController = null;
+      setSubmissionPending(false);
+      history.replaceState(null, '', location.pathname + location.search);
+      handledLocation = locationKey();
+      await mountHome();
+      if (!disposed && !home.hidden) showMessage(error.message || 'Couldn’t make that set.', 'Try again', () => generate(lastPrompt));
+    }
+  }
+
+  form.addEventListener('submit', event => { if (event.defaultPrevented) return; event.preventDefault(); const value = input.value.trim(); if (!value) { input.closest('.prompt-field').classList.add('is-invited'); input.focus({ preventScroll: true }); return; } generate(value); });
+  input.addEventListener('input', () => { if (!activeRequest) message.textContent = ''; input.closest('.prompt-field').classList.remove('is-invited'); form.classList.toggle('has-prompt', Boolean(input.value.trim())); persist(); });
+  brand.addEventListener('click', event => {
+    event.preventDefault();
+    if (activeRequest) { cancelActiveRequest({ returnHome: true }); return; }
+    if (location.hash) location.hash = '';
+    else if (home.hidden) void mountHome();
+    else window.scrollTo(0, 0);
+  });
+  const onPageHide = () => { persist(); cancelActiveRequest(); };
+  window.addEventListener('hashchange', route);
+  window.addEventListener('popstate', route);
+  window.addEventListener('pagehide', onPageHide);
+  route();
+
+  return { dispose() { disposed = true; cancelActiveRequest(); feed?.dispose(); homeStage?.dispose(); clearDetail(); previewClient.dispose?.(); promptField.dispose(); composerController.dispose(); viewport.dispose(); window.removeEventListener('hashchange', route); window.removeEventListener('popstate', route); window.removeEventListener('pagehide', onPageHide); host.replaceChildren(); } };
 }
 
-input.addEventListener('input', () => { form.querySelector('.submit').disabled = !input.value.trim(); });
-form.addEventListener('submit', (event) => { event.preventDefault(); if (input.value.trim()) generate(input.value.trim()); });
-document.querySelectorAll('[data-prompt]').forEach((button) => { button.onclick = () => showSavedExample(button.dataset.prompt); });
-document.querySelector('.wordmark').onclick = showForm;
-canvas.addEventListener('keydown', (event) => { if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') { event.preventDefault(); viewer.turn(event.key === 'ArrowLeft' ? -1 : 1); } });
-const heroRequest = requestId;
-savedClient.generate('cat').then(({ model }) => { if (heroRequest === requestId) viewer.setModel(model); }).catch(() => {});
+const defaultHost = document.querySelector('#app');
+if (defaultHost && !defaultHost.children.length) mountProductApp(defaultHost);

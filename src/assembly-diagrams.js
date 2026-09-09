@@ -170,6 +170,95 @@ function visibilityResult(steps, bricksById) {
   });
 }
 
+function rectangularLayerMergeRejections(steps, bricksById) {
+  const groups = steps.map(step => step.newBrickIds.map(id => bricksById.get(id)));
+  const bricks = groups.flat();
+  if (new Set(bricks.map(brick => brick.y)).size > 1) return ['rectangular-layer-boundary'];
+  const fillRatio = items => {
+    const width = Math.max(...items.map(b => b.x + b.w)) - Math.min(...items.map(b => b.x));
+    const depth = Math.max(...items.map(b => b.z + b.d)) - Math.min(...items.map(b => b.z));
+    return items.reduce((area,b) => area + b.w*b.d,0) / (width*depth);
+  };
+  return fillRatio(bricks) + 1e-9 < Math.min(...groups.map(fillRatio)) ? ['rectangular-group-boundary'] : [];
+}
+
+function isConnectedPatchModule(module) {
+  return module?.buildContext?.kind === 'work-surface'
+    && module.buildContext.orderPolicy === 'connected-patches';
+}
+
+function studAdjacencyForModule(plan, module) {
+  const moduleIds = new Set(module.brickIds);
+  const adjacency = new Map(module.brickIds.map((brickId) => [brickId, new Set()]));
+  for (const edge of plan.graph?.edges ?? []) {
+    if (!moduleIds.has(edge.a) || !moduleIds.has(edge.b)) continue;
+    adjacency.get(edge.a).add(edge.b);
+    adjacency.get(edge.b).add(edge.a);
+  }
+  return adjacency;
+}
+
+function projectedModuleIsStudConnected(steps, previouslyPlaced, adjacency) {
+  const placed = new Set(previouslyPlaced);
+  for (const step of steps) for (const brickId of step.newBrickIds) {
+    if (adjacency.has(brickId)) placed.add(brickId);
+  }
+  if (!placed.size) return false;
+  const first = placed.values().next().value;
+  const reached = new Set([first]);
+  const pending = [first];
+  while (pending.length) {
+    const brickId = pending.pop();
+    for (const neighborId of adjacency.get(brickId) ?? []) {
+      if (!placed.has(neighborId) || reached.has(neighborId)) continue;
+      reached.add(neighborId);
+      pending.push(neighborId);
+    }
+  }
+  return reached.size === placed.size;
+}
+
+function connectedPatchBoundaryStats(plan) {
+  const modules = new Map(plan.modules
+    .filter((module) => isConnectedPatchModule(module))
+    .map((module) => [module.id, {
+      brickIds: new Set(module.brickIds),
+      adjacency: studAdjacencyForModule(plan, module),
+      placed: new Set(),
+    }]));
+  let detachedBrickExposure = 0;
+  let peakDetachedBrickCount = 0;
+  let buildDiagramCount = 0;
+  for (const step of plan.steps) {
+    const state = modules.get(step.moduleId);
+    if (!state || step.kind !== 'build') continue;
+    buildDiagramCount += 1;
+    for (const brickId of step.newBrickIds) if (state.brickIds.has(brickId)) state.placed.add(brickId);
+    let largestComponentSize = 0;
+    const reached = new Set();
+    for (const start of state.placed) {
+      if (reached.has(start)) continue;
+      let componentSize = 0;
+      reached.add(start);
+      const pending = [start];
+      while (pending.length) {
+        const brickId = pending.pop();
+        componentSize += 1;
+        for (const neighborId of state.adjacency.get(brickId) ?? []) {
+          if (!state.placed.has(neighborId) || reached.has(neighborId)) continue;
+          reached.add(neighborId);
+          pending.push(neighborId);
+        }
+      }
+      largestComponentSize = Math.max(largestComponentSize, componentSize);
+    }
+    const detachedBrickCount = state.placed.size - largestComponentSize;
+    detachedBrickExposure += detachedBrickCount;
+    peakDetachedBrickCount = Math.max(peakDetachedBrickCount, detachedBrickCount);
+  }
+  return { buildDiagramCount, detachedBrickExposure, peakDetachedBrickCount };
+}
+
 function compactedStep(steps, diagramNumber, { singleBrickPlacement = false } = {}) {
   const first = steps[0];
   const final = steps.at(-1);
@@ -198,8 +287,15 @@ function countReferences(steps) {
     + step.newBrickIds.length + step.visibleBrickIds.length + step.highlightBrickIds.length, 0);
 }
 
-export function compactAssemblyPlan(plan) {
+function compactAssemblyPlanPass(plan, { connectedPatchEndpoints = false } = {}) {
   const { bricksById, modulesById } = validatePlan(plan);
+  const connectedPatchAdjacency = connectedPatchEndpoints
+    ? new Map([...modulesById]
+      .filter(([, module]) => isConnectedPatchModule(module))
+      .map(([moduleId, module]) => [moduleId, studAdjacencyForModule(plan, module)]))
+    : new Map();
+  const placedConnectedPatchBricks = new Map([...connectedPatchAdjacency.keys()]
+    .map((moduleId) => [moduleId, new Set()]));
   const instructionSteps = [];
   const rejectedMerges = [];
   const rejectedMergeCounts = {};
@@ -223,17 +319,28 @@ export function compactAssemblyPlan(plan) {
         instructionSteps.length + 1,
         { singleBrickPlacement: true },
       ));
+      const placed = placedConnectedPatchBricks.get(plan.steps[cursor].moduleId);
+      if (placed) for (const brickId of plan.steps[cursor].newBrickIds) placed.add(brickId);
       cursor += 2;
       continue;
     }
     const start = cursor;
     const candidate = [plan.steps[start]];
+    const moduleId = plan.steps[start].moduleId;
+    const connectedAdjacency = connectedPatchAdjacency.get(moduleId);
+    const previouslyPlaced = placedConnectedPatchBricks.get(moduleId);
     let latestValidEnd = start + 1;
+    let latestConnectedEnd = connectedAdjacency
+      && projectedModuleIsStudConnected(candidate, previouslyPlaced, connectedAdjacency)
+      ? start + 1 : null;
     let probe = start + 1;
     while (probe < plan.steps.length) {
       const next = plan.steps[probe];
       const extended = [...candidate, next];
       const reasons = staticRejectionReasons(extended, bricksById);
+      if (!reasons.length && modulesById.get(moduleId)?.buildContext?.orderPolicy === 'rectangular-layers') {
+        reasons.push(...rectangularLayerMergeRejections(extended, bricksById));
+      }
       const temporarilyDisconnected = reasons.length === 1 && reasons[0] === 'not-face-connected';
       if (temporarilyDisconnected) {
         reject(candidate, next, reasons);
@@ -256,9 +363,22 @@ export function compactAssemblyPlan(plan) {
       candidate.push(next);
       probe += 1;
       latestValidEnd = probe;
+      if (connectedAdjacency
+        && projectedModuleIsStudConnected(candidate, previouslyPlaced, connectedAdjacency)) {
+        latestConnectedEnd = probe;
+      }
     }
-    const compacted = plan.steps.slice(start, latestValidEnd);
-    cursor = latestValidEnd;
+    // Connected-patch source operations deliberately allow a short, detached
+    // prerequisite prefix. A display diagram may merge that prefix only when its
+    // endpoint shows the whole work-surface band connected by studs. If the next
+    // bonding operation would exceed another diagram bound, rewind before the
+    // trailing prerequisite so it can be shown with its bond in the next diagram.
+    const compactedEnd = connectedAdjacency ? (latestConnectedEnd ?? start + 1) : latestValidEnd;
+    const compacted = plan.steps.slice(start, compactedEnd);
+    cursor = compactedEnd;
+    if (previouslyPlaced) for (const step of compacted) {
+      for (const brickId of step.newBrickIds) if (connectedAdjacency.has(brickId)) previouslyPlaced.add(brickId);
+    }
     instructionSteps.push(compactedStep(compacted, instructionSteps.length + 1));
   }
 
@@ -305,6 +425,37 @@ export function compactAssemblyPlan(plan) {
         maxHorizontalSpan: MAX_HORIZONTAL_SPAN,
         maxFootprintGap: MAX_FOOTPRINT_GAP,
         requiresFaceConnectedAppend: true,
+      },
+    },
+  };
+}
+
+export function compactAssemblyPlan(plan) {
+  const hasConnectedPatchModule = Array.isArray(plan?.modules)
+    && plan.modules.some((module) => isConnectedPatchModule(module));
+  if (!hasConnectedPatchModule) return compactAssemblyPlanPass(plan);
+
+  const basic = compactAssemblyPlanPass(plan);
+  const connected = compactAssemblyPlanPass(plan, { connectedPatchEndpoints: true });
+  const basicBoundaryStats = connectedPatchBoundaryStats(basic.plan);
+  const connectedBoundaryStats = connectedPatchBoundaryStats(connected.plan);
+  const connectedWithinDiagramBound = connected.plan.steps.length <= basic.plan.steps.length + 1;
+  const boundaryHandlingImproves = connectedBoundaryStats.detachedBrickExposure
+      < basicBoundaryStats.detachedBrickExposure
+    && connectedBoundaryStats.peakDetachedBrickCount <= basicBoundaryStats.peakDetachedBrickCount;
+  const useConnected = connectedWithinDiagramBound && boundaryHandlingImproves;
+  const selected = useConnected ? connected : basic;
+  return {
+    ...selected,
+    report: {
+      ...selected.report,
+      connectedPatchCompaction: {
+        selected: useConnected ? 'connected-endpoints' : 'basic-bounded',
+        basicInstructionDiagramCount: basic.plan.steps.length,
+        connectedInstructionDiagramCount: connected.plan.steps.length,
+        maxAdditionalDiagramCount: 1,
+        basicBoundaryStats,
+        connectedBoundaryStats,
       },
     },
   };

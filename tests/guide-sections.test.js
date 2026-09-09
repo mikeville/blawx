@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 
 import { createAssemblyPlan } from '../src/assembly.js';
-import { createGuideSections } from '../src/guide-sections.js';
+import { createGuideSections, createGuideSectionsFromRanges } from '../src/guide-sections.js';
 
 const brick = (x, y, z, w = 1, d = 1, color = 'red') => ({ x, y, z, w, d, color });
 const model = (bricks) => ({ version: 1, kind: 'bricks', bricks });
@@ -13,6 +13,19 @@ test('an underside viewpoint starts a separate group while preserving assembly o
   const guide = createGuideSections(plan);
   assert.deepEqual(guide.sections.flatMap(section=>section.groups.map(group=>group.stepIds)),[['step-1'],['step-2'],['step-3']]);
   assert.equal(guide.stats.coverageComplete,true);
+});
+
+test('range sections retain usable inferred labels and discard uncertain proposals', () => {
+  const plan = syntheticPlan({ moduleSizes: [2], steps: [{ count: 1 }, { count: 1 }] });
+  const guide = createGuideSectionsFromRanges(plan, [
+    { startStepId: 'step-1', endStepId: 'step-1', label: 'Lower frame', confidence: 'inferred' },
+    { startStepId: 'step-2', endStepId: 'step-2', label: 'Possible antenna', confidence: 'uncertain' },
+  ]);
+
+  assert.deepEqual(guide.sections.map(({ label }) => label), ['Lower frame', 'Build section 2']);
+  assert.deepEqual(guide.sections.map(({ semanticLabel }) => semanticLabel), ['Lower frame', null]);
+  assert.deepEqual(guide.sections.map(({ semanticConfidence }) => semanticConfidence), ['inferred', 'uncertain']);
+  assert.equal(guide.stats.coverageComplete, true);
 });
 
 function syntheticPlan({ moduleSizes, steps }) {

@@ -1,7 +1,8 @@
 import { spawn as nodeSpawn } from 'node:child_process';
-import { mkdtemp, open, rm } from 'node:fs/promises';
+import { mkdtemp, open, rm, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
+import { validateNamingImages } from './naming-budget.js';
 
 export const PROVIDER_SETTINGS = Object.freeze({
   requestedModel: 'gpt-6-astra',
@@ -37,17 +38,50 @@ export function createChildEnvironment(environment = process.env) {
   return childEnv;
 }
 
-export function buildCodexArgs(finalPath) {
+function resolveInvocationSettings(settings) {
+  if (settings === undefined) return PROVIDER_SETTINGS;
+  if (!settings || typeof settings !== 'object' || Array.isArray(settings)) {
+    throw new TypeError('Codex settings must be an object.');
+  }
+  const resolved = {
+    requestedModel: settings.requestedModel ?? settings.model,
+    reasoningEffort: settings.reasoningEffort,
+    requestedServiceTier: settings.requestedServiceTier ?? settings.serviceTier,
+  };
+  const rawGeneration = resolved.requestedModel === PROVIDER_SETTINGS.requestedModel
+    && resolved.reasoningEffort === PROVIDER_SETTINGS.reasoningEffort
+    && resolved.requestedServiceTier === PROVIDER_SETTINGS.requestedServiceTier;
+  const boundedNaming = ((['gpt-5.4-mini', 'gpt-5.6-luna'].includes(resolved.requestedModel)
+      && resolved.reasoningEffort === 'low')
+    || (['gpt-5.4-mini', 'gpt-5.6-terra'].includes(resolved.requestedModel)
+      && resolved.reasoningEffort === 'none'))
+    && resolved.requestedServiceTier === 'default';
+  if (!rawGeneration && !boundedNaming) {
+    throw new RangeError('Unsupported Codex model, reasoning, or service-tier settings.');
+  }
+  return resolved;
+}
+
+export function buildCodexArgs(finalPath, settings, imagePaths = []) {
+  const invocation = resolveInvocationSettings(settings);
+  if (!Array.isArray(imagePaths) || imagePaths.some((path) => typeof path !== 'string' || path.length === 0)) {
+    throw new TypeError('Codex image paths must be non-empty strings.');
+  }
+  const serviceArgs = invocation.requestedServiceTier === 'fast'
+    ? ['--enable', 'fast_mode', '-c', 'service_tier="fast"']
+    : ['--disable', 'fast_mode'];
   return [
     'exec', '--ignore-user-config', '--ephemeral', '--skip-git-repo-check',
     '--sandbox', 'read-only', '--json', '--color', 'never',
     '-c', 'forced_login_method="chatgpt"',
     '-c', 'web_search="disabled"', '--enable', 'skip_host_skill_discovery',
     ...DISABLED_FEATURES.flatMap((feature) => ['--disable', feature]),
-    '--model', PROVIDER_SETTINGS.requestedModel,
-    '-c', `model_reasoning_effort="${PROVIDER_SETTINGS.reasoningEffort}"`,
-    '--enable', 'fast_mode', '-c', 'service_tier="fast"',
-    '-C', join(finalPath, '..'), '-o', finalPath, '-',
+    '--model', invocation.requestedModel,
+    '-c', `model_reasoning_effort="${invocation.reasoningEffort}"`,
+    ...serviceArgs,
+    '-C', join(finalPath, '..'), '-o', finalPath,
+    ...imagePaths.flatMap((path) => ['-i', path]),
+    '-',
   ];
 }
 
@@ -97,9 +131,19 @@ async function checkChatGptLogin({ spawn, signal, timeoutMs }) {
   return {};
 }
 
-export async function runCodex(prompt, { signal, spawn = nodeSpawn, timeoutMs = PROVIDER_SETTINGS.timeoutMs } = {}) {
+export async function runCodex(prompt, {
+  signal,
+  spawn = nodeSpawn,
+  timeoutMs = PROVIDER_SETTINGS.timeoutMs,
+  settings,
+  images = [],
+  phase: _phase = 'proposal',
+} = {}) {
+  void _phase;
+  const preparedImages = validateNamingImages(images);
   const tempCwd = await mkdtemp(join(tmpdir(), 'blawx-app-generation-'));
   const finalPath = join(tempCwd, 'final.json');
+  const imagePaths = preparedImages.map((_, index) => join(tempCwd, `naming-view-${index + 1}.png`));
   const stdout = { chunks: [], storedBytes: 0, totalBytes: 0, truncated: false };
   const stderr = { chunks: [], storedBytes: 0, totalBytes: 0, truncated: false };
   let child = null;
@@ -111,6 +155,7 @@ export async function runCodex(prompt, { signal, spawn = nodeSpawn, timeoutMs = 
   const startedNs = process.hrtime.bigint();
 
   try {
+    await Promise.all(preparedImages.map((image, index) => writeFile(imagePaths[index], image.png, { flag: 'wx' })));
     const preflightStartNs = process.hrtime.bigint();
     const preflight = await checkChatGptLogin({ spawn, signal, timeoutMs: Math.min(timeoutMs, 5_000) });
     const preflightMs = Number(process.hrtime.bigint() - preflightStartNs) / 1e6;
@@ -138,7 +183,7 @@ export async function runCodex(prompt, { signal, spawn = nodeSpawn, timeoutMs = 
     }
     if (!cancelled && !launchError) {
       try {
-        child = spawn('codex', buildCodexArgs(finalPath), {
+        child = spawn('codex', buildCodexArgs(finalPath, settings, imagePaths), {
           cwd: tempCwd,
           detached: true,
           stdio: ['pipe', 'pipe', 'pipe'],

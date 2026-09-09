@@ -8,6 +8,7 @@ const number = value => Number(value ?? 0).toLocaleString();
 
 export function mountConstructionComparison(host, {
   rawModel, sourceProgram = null, viewer, devHost, subject = null, allowSemanticInference = false,
+  constructionClient = client, onReady, onError, hideLoadingMessage = false,
 }) {
   const controller = new AbortController();
   let operationId = 0;
@@ -20,8 +21,10 @@ export function mountConstructionComparison(host, {
   let bookletResult = null;
   let deferredSemanticResult = null;
   let semanticRequested = false;
+  let initialGuideReady = false;
   host.innerHTML = `<p class="guide-loading" role="status">Preparing instructions…</p><div class="assembly-booklet"></div>`;
   const loading = host.querySelector(".guide-loading");
+  loading.hidden = hideLoadingMessage;
   devHost.innerHTML = `<div class="comparison-choices" role="group" aria-label="Preview stage">
     <button type="button" data-stage="raw" aria-pressed="true">Raw shape</button>
     <button type="button" data-stage="bricks" aria-pressed="false">Bricks</button>
@@ -152,17 +155,27 @@ export function mountConstructionComparison(host, {
     buttons.filter(b => b.dataset.stage !== 'raw').forEach(b => { b.disabled = true; });
     note.textContent = stage === 'adjusted' ? 'Checking bounded local adjustments…' : 'Converting locally… Raw geometry is preserved.';
     try {
-      const result = await client.convert({ rawModel, sourceProgram, adjustments: stage === 'adjusted' }, { signal: controller.signal });
+      const result = await constructionClient.convert({ rawModel, sourceProgram, adjustments: stage === 'adjusted' }, { signal: controller.signal });
       if (disposed || currentOperation !== operationId) return;
       results.set(stage, result);
       loading.hidden = true;
       if (selectWhenReady && requestedStage === stage) show(stage);
       else { describe(results.get('bricks') ?? result); note.textContent = 'Original preserved. Bricks are ready to compare.'; }
+      if (!initialGuideReady) {
+        initialGuideReady = true;
+        if (result.instructionPlan ?? result.assemblyPlan) onReady?.(result);
+        else onError?.(new Error(result.assemblyError || 'No assembly plan returned.'));
+      }
       if (stage === 'adjusted') nameAdjustedGuide(result).catch(error => {
         if (!disposed && error.name !== 'AbortError') note.textContent = `Section naming stopped: ${error.message}`;
       });
     } catch (error) {
-      if (!disposed && currentOperation === operationId && error.name !== 'AbortError') {note.textContent = `Conversion stopped: ${error.message}`; loading.textContent = 'Instructions unavailable';}
+      if (!disposed && currentOperation === operationId && error.name !== 'AbortError') {
+        note.textContent = `Conversion stopped: ${error.message}`;
+        loading.textContent = 'Instructions unavailable';
+        loading.hidden = false;
+        if (!initialGuideReady) onError?.(error);
+      }
     } finally {
       if (!disposed && currentOperation === operationId) {
         pending = null;

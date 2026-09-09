@@ -534,12 +534,14 @@ export function validateSemanticGuideAnnotation(input, annotation) {
       throw new RangeError('Annotation sections must cover every step exactly once in order.');
     }
     const confidence = section.confidence;
-    if (confidence !== 'high' && confidence !== 'uncertain') {
+    if (confidence !== 'high' && confidence !== 'inferred' && confidence !== 'uncertain') {
       throw new RangeError(`Annotation section ${index + 1} has invalid confidence.`);
     }
     let label = null;
     if (section.label !== null) label = boundedString(section.label, `Annotation section ${index + 1}.label`, MAX_LABEL_LENGTH);
-    if (confidence === 'high' && label === null) throw new RangeError('High-confidence annotation sections require a label.');
+    if ((confidence === 'high' || confidence === 'inferred') && label === null) {
+      throw new RangeError(`${confidence === 'high' ? 'High-confidence' : 'Inferred'} annotation sections require a label.`);
+    }
     const evidence = boundedString(section.evidence, `Annotation section ${index + 1}.evidence`, MAX_EVIDENCE_LENGTH);
     const hasBrick = canonicalInput.steps.slice(start, end + 1).some((step) => step.newBrickIds.length > 0);
     if (!hasBrick) throw new RangeError(`Annotation section ${index + 1} must introduce at least one brick.`);

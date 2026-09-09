@@ -28,6 +28,25 @@ test('passes AbortSignal to fetch and preserves abort errors for cancellation', 
   await assert.rejects(pending, { name: 'AbortError' });
 });
 
+test('accepts public cached results without exposing a private source program', async () => {
+  const { sourceProgram: _privateProgram, ...publicResult } = success;
+  const cached = { ...publicResult, resultId: 'set-1', cacheHit: true, submittedPrompt: 'CAT', saveStatus: 'saved', metadata: { cacheHit: true } };
+  const client = createGenerationClient(async () => response(cached));
+  const result = await client.generate('CAT');
+  assert.equal(result.resultId, 'set-1');
+  assert.equal(result.cacheHit, true);
+  assert.equal(result.sourceProgram, undefined);
+  assert.equal(result.metadata.generationMs, undefined);
+});
+
+test('accepts a usable result when persistence failed, but rejects malformed cache fields', async () => {
+  const unsaved = { ...success, sourceProgram: null, resultId: null, cacheHit: false, saveStatus: 'failed' };
+  assert.equal(await createGenerationClient(async () => response(unsaved)).generate('cat'), unsaved);
+  for (const patch of [{ cacheHit: 'yes' }, { resultId: 123 }, { saveStatus: 'maybe' }, { sourceProgram: [] }]) {
+    await assert.rejects(createGenerationClient(async () => response({ ...success, ...patch })).generate('cat'), { code: 'malformed-response' });
+  }
+});
+
 test('surfaces structured HTTP errors with status and request id', async () => {
   const client = createGenerationClient(async () => response({ requestId: 'request-2', error: { code: 'busy', message: 'Another set is being generated.' } }, { ok: false, status: 409 }));
   await assert.rejects(client.generate('cat'), (error) => {

@@ -1,4 +1,5 @@
 import { FOOTPRINTS, PALETTE } from './geometry.js';
+import { createRectangularLayerGroups } from './rectangular-layer-groups.js';
 
 const MAX_BRICKS = 5_000;
 const MAX_FOOTPRINT_CELLS = 1_500_000;
@@ -320,7 +321,7 @@ function studAdjacency(brickCount, graph) {
   return adjacency;
 }
 
-function splitWorkSurfaceGroup(groups, brickIds, bricks, graph) {
+function splitWorkSurfaceGroup(groups, brickIds, bricks, graph, orderPolicy) {
   if (!Array.isArray(brickIds)) throw new TypeError('workSurfaceBrickIds must be an array when provided.');
   if (brickIds.length < 2) throw new RangeError('workSurfaceBrickIds must contain at least two brick IDs.');
   if (brickIds.some((id) => typeof id !== 'string') || new Set(brickIds).size !== brickIds.length) {
@@ -355,7 +356,11 @@ function splitWorkSurfaceGroup(groups, brickIds, bricks, graph) {
       indexes: indexes.slice().sort((a, b) => compareBricks(bricks[a], bricks[b])),
       kind: 'detail',
       groupType: 'work-surface',
-      buildContext: { kind: 'work-surface', floorY },
+      buildContext: {
+        kind: 'work-surface',
+        floorY,
+        ...(orderPolicy !== 'course-first' ? { orderPolicy } : {}),
+      },
     },
   ];
   if (continuationIndexes.length) replacement.push({
@@ -365,6 +370,118 @@ function splitWorkSurfaceGroup(groups, brickIds, bricks, graph) {
     groupType: 'continuation',
   });
   return [...groups.slice(0, ownerIndex), ...replacement, ...groups.slice(ownerIndex + 1)];
+}
+
+function replayModuleGroups(moduleReplay, bricks, graph) {
+  if (!Array.isArray(moduleReplay)) throw new TypeError('moduleReplay must be an array when provided.');
+  if (!moduleReplay.length) throw new RangeError('moduleReplay must contain at least one module.');
+  const indexById = new Map(bricks.map(({ id }, index) => [id, index]));
+  const componentByBrickIndex = new Map();
+  graph.components.forEach((indexes, componentIndex) => {
+    for (const index of indexes) componentByBrickIndex.set(index, componentIndex);
+  });
+  const adjacency = studAdjacency(bricks.length, graph);
+  const moduleIds = new Set();
+  const ownedIndexes = new Set();
+  let priorWasWorkSurface = false;
+  const groups = moduleReplay.map((descriptor, descriptorIndex) => {
+    if (!descriptor || typeof descriptor !== 'object' || Array.isArray(descriptor)) {
+      throw new TypeError(`moduleReplay entry ${descriptorIndex + 1} must be an object.`);
+    }
+    if (typeof descriptor.id !== 'string' || !descriptor.id || moduleIds.has(descriptor.id)) {
+      throw new RangeError('moduleReplay module IDs must be unique nonempty strings.');
+    }
+    moduleIds.add(descriptor.id);
+    if (typeof descriptor.label !== 'string' || !descriptor.label) {
+      throw new TypeError(`moduleReplay module ${descriptor.id} must have a nonempty label.`);
+    }
+    if (!['grounded', 'detail', 'floating'].includes(descriptor.kind)) {
+      throw new RangeError(`moduleReplay module ${descriptor.id} has invalid kind ${String(descriptor.kind)}.`);
+    }
+    if (!Array.isArray(descriptor.brickIds) || !descriptor.brickIds.length
+      || new Set(descriptor.brickIds).size !== descriptor.brickIds.length
+      || descriptor.brickIds.some((id) => typeof id !== 'string')) {
+      throw new RangeError(`moduleReplay module ${descriptor.id} must contain unique brick ID strings.`);
+    }
+    const indexes = descriptor.brickIds.map((id) => {
+      const index = indexById.get(id);
+      if (index === undefined) throw new RangeError(`moduleReplay module ${descriptor.id} references unknown brick ${id}.`);
+      if (ownedIndexes.has(index)) throw new RangeError(`moduleReplay brick ${id} belongs to multiple modules.`);
+      ownedIndexes.add(index);
+      return index;
+    });
+    if (!Array.isArray(descriptor.brickOrder) || descriptor.brickOrder.length !== descriptor.brickIds.length
+      || new Set(descriptor.brickOrder).size !== descriptor.brickOrder.length
+      || descriptor.brickOrder.some((id) => !descriptor.brickIds.includes(id))) {
+      throw new RangeError(`moduleReplay module ${descriptor.id} brickOrder must exactly match its brickIds.`);
+    }
+    const replayRank = new Map(descriptor.brickOrder.map((id, rank) => [indexById.get(id), rank]));
+    const allowedGroupTypes = new Set(['branch', 'color', 'detached-parts', 'work-surface', 'continuation']);
+    if (descriptor.groupType !== undefined && !allowedGroupTypes.has(descriptor.groupType)) {
+      throw new RangeError(`moduleReplay module ${descriptor.id} has invalid groupType ${String(descriptor.groupType)}.`);
+    }
+    const internallyConnected = connectedWithin(new Set(indexes), adjacency);
+    const componentIndexes = [...new Set(indexes.map((index) => componentByBrickIndex.get(index)))].sort((a, b) => a - b);
+    const containsGround = indexes.some((index) => bricks[index].y === 0);
+    const globallyGrounded = componentIndexes.length === 1 && graph.componentObjects[componentIndexes[0]].grounded;
+    let kind = descriptor.kind;
+    let label = descriptor.label;
+    if (kind === 'floating' && internallyConnected && globallyGrounded && !containsGround) {
+      kind = 'detail';
+      if (/^Unresolved (?:cluster\b|detached parts$)/.test(label)) label = `Assembly ${descriptorIndex + 1}`;
+    }
+    if (kind === 'grounded' && descriptor.groupType !== 'continuation' && !containsGround) {
+      throw new RangeError(`moduleReplay grounded module ${descriptor.id} must contain a ground-course brick.`);
+    }
+    if (kind === 'grounded'
+      && componentIndexes.some((componentIndex) => !graph.componentObjects[componentIndex].grounded)) {
+      throw new RangeError(`moduleReplay grounded module ${descriptor.id} cannot include a groundless stud component.`);
+    }
+    if (kind !== 'grounded' && !internallyConnected
+      && !(kind === 'floating' && descriptor.groupType === 'detached-parts')) {
+      throw new RangeError(`moduleReplay handled module ${descriptor.id} must be internally stud-connected.`);
+    }
+    if (descriptor.groupType === 'detached-parts' && !internallyConnected && kind !== 'floating') {
+      throw new RangeError(`moduleReplay detached review module ${descriptor.id} must remain floating.`);
+    }
+    if (descriptor.groupType === 'continuation') {
+      if (kind !== 'grounded' || !priorWasWorkSurface) {
+        throw new RangeError(`moduleReplay continuation ${descriptor.id} must immediately follow a work-surface module.`);
+      }
+    }
+    const isWorkSurface = descriptor.groupType === 'work-surface';
+    if (isWorkSurface) {
+      const context = descriptor.buildContext;
+      const orderPolicy = context?.orderPolicy ?? 'course-first';
+      if (kind !== 'detail' || context?.kind !== 'work-surface'
+        || !Number.isSafeInteger(context.floorY) || context.floorY <= 0
+        || context.floorY !== Math.min(...indexes.map((index) => bricks[index].y))
+        || !['course-first', 'connected-patches', 'rectangular-layers'].includes(orderPolicy)) {
+        throw new RangeError(`moduleReplay work-surface module ${descriptor.id} has invalid build context.`);
+      }
+      const contextKeys = Object.keys(context);
+      if (contextKeys.some((key) => !['kind', 'floorY', 'orderPolicy'].includes(key))) {
+        throw new RangeError(`moduleReplay work-surface module ${descriptor.id} has unsupported build context fields.`);
+      }
+    } else if (descriptor.buildContext !== undefined) {
+      throw new RangeError(`moduleReplay module ${descriptor.id} has buildContext outside a work-surface module.`);
+    }
+    priorWasWorkSurface = isWorkSurface;
+    return {
+      id: descriptor.id,
+      label,
+      indexes,
+      kind,
+      groupType: descriptor.groupType,
+      ...(descriptor.buildContext ? { buildContext: structuredClone(descriptor.buildContext) } : {}),
+      componentIndex: componentIndexes[0],
+      componentIndexes,
+      internallyConnected,
+      replayRank,
+    };
+  });
+  if (ownedIndexes.size !== bricks.length) throw new RangeError('Every brick must belong to exactly one moduleReplay module.');
+  return groups;
 }
 
 function inventoryFor(bricks) {
@@ -410,6 +527,26 @@ function orderedCandidates(candidates, bricks, anchor) {
 
 function lowestCourseFirst(candidates, bricks) {
   return [...candidates].sort((a, b) => bricks[a].y - bricks[b].y);
+}
+
+function selectWorkSurfacePatchTarget({ remaining, validPlaced, moduleSet, floorY, bricks, graph }) {
+  const hasBondedCourse = [...validPlaced].some((index) => bricks[index].y > floorY);
+  const targets = [...remaining].flatMap((index) => {
+    if (bricks[index].y !== floorY + 1) return [];
+    const directLower = [...graph.below[index].keys()].filter((lower) => moduleSet.has(lower));
+    if (!directLower.length) return [];
+    const missingBlockers = [...graph.blocksLower[index]].filter((lower) => remaining.has(lower));
+    if (missingBlockers.some((lower) => !moduleSet.has(lower) || bricks[lower].y !== floorY)) return [];
+    const attachedContacts = directLower.filter((lower) => validPlaced.has(lower)).length;
+    if (hasBondedCourse && attachedContacts === 0) return [];
+    if ([...graph.above[index]].some((upper) => validPlaced.has(upper))) return [];
+    return [{ index, missingBlockers, attachedContacts, directContactCount: directLower.length }];
+  });
+  targets.sort((a, b) => a.missingBlockers.length - b.missingBlockers.length
+    || b.attachedContacts - a.attachedContacts
+    || b.directContactCount - a.directContactCount
+    || compareBricks(bricks[a.index], bricks[b.index]));
+  return targets[0]?.index ?? null;
 }
 
 function insertionBlockers(index, solidIndexes, graph) {
@@ -520,15 +657,36 @@ function planModuleBuild({
   const steps = [];
   const offline = module.kind !== 'grounded';
   const workSurfaceFloor = module.buildContext?.kind === 'work-surface' ? module.buildContext.floorY : null;
+  const connectedPatchOrder = module.buildContext?.orderPolicy === 'connected-patches';
+  const rectangularLayerOrder = module.buildContext?.orderPolicy === 'rectangular-layers';
   const buildsOnPriorScene = module.groupType === 'continuation';
-  const completesFoundationByCourse = workSurfaceFloor !== null || buildsOnPriorScene;
+  const completesFoundationByCourse = (workSurfaceFloor !== null && !connectedPatchOrder) || buildsOnPriorScene;
   const useLocalProgress = preferLocalProgress && !offline;
   const localFloor = Math.min(...module.indexes.map((index) => bricks[index].y));
   let anchor = null;
   let unresolved = false;
+  let activeWorkSurfaceBond = null;
+  const indexByBrickId = new Map(bricks.map(({ id }, index) => [id, index]));
+  const rectangularGroups = rectangularLayerOrder
+    ? createRectangularLayerGroups(module.indexes.map((index) => bricks[index]), {
+      maxBricks: MAX_COHERENT_STEP_BRICKS,
+      maxSpan: MAX_STEP_LOCAL_SPAN,
+      maxPartTypes: MAX_STEP_PART_TYPES,
+    }).map(({ brickIds }) => brickIds.map((id) => indexByBrickId.get(id)))
+    : [];
+  let rectangularGroupCursor = 0;
   const pendingUnderAttachments = new Map();
 
   while (remaining.size) {
+    while (rectangularGroupCursor < rectangularGroups.length
+      && rectangularGroups[rectangularGroupCursor].every((index) => !remaining.has(index))) {
+      rectangularGroupCursor += 1;
+    }
+    const rectangularGroup = rectangularLayerOrder
+      ? rectangularGroups[rectangularGroupCursor].filter((index) => remaining.has(index))
+      : [];
+    const rectangularGroupSet = new Set(rectangularGroup);
+    const rectangularRank = new Map(rectangularGroup.map((index, rank) => [index, rank]));
     const batch = [];
     const batchIssues = [];
     let batchKind = null;
@@ -566,25 +724,74 @@ function planModuleBuild({
       if (supported.length && !pathPreserving.length && !recoverableBridges.size) for (const index of supported) {
         for (const lower of graph.blocksLower[index]) if (remaining.has(lower)) lowerObstacles.add(lower);
       }
-      const forced = supported.length === 0 || lowerObstacles.size > 0;
-      const closesFuturePath = !forced && pathPreserving.length === 0 && recoverableBridges.size === 0;
+      let forced = supported.length === 0 || lowerObstacles.size > 0;
+      let closesFuturePath = !forced && pathPreserving.length === 0 && recoverableBridges.size === 0;
       const candidates = pathPreserving.length ? pathPreserving : recoverableBridges.size ? recoverableBridges.keys()
         : lowerObstacles.size ? lowerObstacles : forced ? remaining : supported;
+      let patchCandidates = [...candidates];
+      if (connectedPatchOrder) {
+        if (activeWorkSurfaceBond !== null && !remaining.has(activeWorkSurfaceBond)) activeWorkSurfaceBond = null;
+        if (activeWorkSurfaceBond === null) {
+          activeWorkSurfaceBond = selectWorkSurfacePatchTarget({
+            remaining,
+            validPlaced,
+            moduleSet,
+            floorY: workSurfaceFloor,
+            bricks,
+            graph,
+          });
+        }
+        if (activeWorkSurfaceBond !== null) {
+          const missingFloor = [...graph.blocksLower[activeWorkSurfaceBond]]
+            .filter((lower) => remaining.has(lower) && bricks[lower].y === workSurfaceFloor);
+          if (missingFloor.length) {
+            const prerequisiteSet = new Set(missingFloor);
+            patchCandidates = patchCandidates.filter((candidate) => prerequisiteSet.has(candidate));
+          } else {
+            patchCandidates = patchCandidates.filter((candidate) => candidate === activeWorkSurfaceBond);
+          }
+          if (!patchCandidates.length) {
+            if (batch.length) break;
+            activeWorkSurfaceBond = null;
+            patchCandidates = [...candidates];
+          }
+        }
+      }
+      if (rectangularLayerOrder) {
+        const scheduled = patchCandidates.filter((candidate) => rectangularGroupSet.has(candidate));
+        if (scheduled.length) {
+          patchCandidates = scheduled;
+        } else {
+          if (batch.length) break;
+          patchCandidates = rectangularGroup;
+          forced = true;
+          closesFuturePath = false;
+        }
+      }
       const insertionDirectionFor = (candidate) => upwardSupported.includes(candidate) ? 'up' : 'down';
-      const directionCandidates = batchDirection === null ? [...candidates]
-        : [...candidates].filter((candidate) => insertionDirectionFor(candidate) === batchDirection);
+      const directionCandidates = batchDirection === null ? patchCandidates
+        : patchCandidates.filter((candidate) => insertionDirectionFor(candidate) === batchDirection);
       const assembled = offline ? stepStartValid : new Set([...priorScene, ...stepStartValid]);
       const useLocalBatch = useLocalProgress && batchKind !== 'unresolved';
-      const locallyOrdered = useLocalBatch
+      const heuristicOrder = rectangularLayerOrder
+        ? [...directionCandidates].sort((a, b) => rectangularRank.get(a) - rectangularRank.get(b))
+        : useLocalBatch
         ? orderedLocalCandidates(directionCandidates, bricks, anchor, assembled, graph, insertionDirectionFor, preferLocalFoundations)
         : orderedCandidates(directionCandidates, bricks, anchor);
+      const heuristicRank = new Map(heuristicOrder.map((index, rank) => [index, rank]));
+      const locallyOrdered = module.replayRank
+        ? [...directionCandidates].sort((a, b) => module.replayRank.get(a) - module.replayRank.get(b)
+          || heuristicRank.get(a) - heuristicRank.get(b))
+        : heuristicOrder;
       const sameDirection = completesFoundationByCourse ? lowestCourseFirst(locallyOrdered, bricks) : locallyOrdered;
       if (batch.length && sameDirection.length === 0) break;
       const coherent = batch.length ? sameDirection.filter((candidate) => (useLocalBatch
         ? fitsLocalProgressBatch(batch, candidate, bricks) : fitsStepBatch(batch, candidate, bricks))) : sameDirection;
       if (batch.length && useLocalBatch && coherent.length === 0) break;
+      if (batch.length && connectedPatchOrder && coherent.length === 0) break;
       if (!useLocalBatch && batch.length >= MAX_STEP_BRICKS && coherent.length === 0) break;
       const index = (coherent.length ? coherent : sameDirection)[0];
+      const completesWorkSurfaceBond = connectedPatchOrder && index === activeWorkSurfaceBond;
       const brick = bricks[index];
       const insertionDirection = insertionDirectionFor(index);
       const blockers = insertionDirection === 'up' ? [...graph.blocksLower[index]]
@@ -637,6 +844,11 @@ function planModuleBuild({
       if (insertionDirection === 'up') pendingUnderAttachments.delete(index);
       anchor = index;
       if (additionKind === 'unresolved') unresolved = true;
+      if (completesWorkSurfaceBond) {
+        activeWorkSurfaceBond = null;
+        break;
+      }
+      if (rectangularLayerOrder && rectangularGroup.every((candidate) => !remaining.has(candidate))) break;
     }
 
     const newBrickIds = batch.map((index) => bricks[index].id);
@@ -757,7 +969,7 @@ function addJoinStep({ module, bricks, graph, priorScene, visibleScene, buildRes
   const visibleBrickIds = [...visibleScene].map((index) => bricks[index].id).concat(moduleIds);
   const issues = [];
   let kind = 'join';
-  if (module.componentIndexes.length > 1) {
+  if (module.componentIndexes.length > 1 || module.internallyConnected === false) {
     kind = 'unresolved';
     issues.push(issue('disconnected-clusters', 'This review group contains multiple detached stud components; it is not a proposed handled subassembly.', moduleIds, 'error'));
   }
@@ -805,6 +1017,8 @@ export function createAssemblyPlan({
   preferLocalProgress = false,
   preferLocalFoundations = false,
   workSurfaceBrickIds = null,
+  workSurfaceOrder = 'course-first',
+  moduleReplay = null,
 } = {}) {
   const started = now();
   void rawModel;
@@ -815,36 +1029,47 @@ export function createAssemblyPlan({
   if (workSurfaceBrickIds !== null && !Array.isArray(workSurfaceBrickIds)) {
     throw new TypeError('workSurfaceBrickIds must be an array when provided.');
   }
+  if (moduleReplay !== null && workSurfaceBrickIds !== null) {
+    throw new RangeError('moduleReplay cannot be combined with workSurfaceBrickIds.');
+  }
+  if (!['course-first', 'connected-patches', 'rectangular-layers'].includes(workSurfaceOrder)) {
+    throw new RangeError("workSurfaceOrder must be 'course-first', 'connected-patches', or 'rectangular-layers'.");
+  }
   const bricks = validateAndIdentify(brickModel);
   const graphData = buildContactGraph(bricks);
-  const derivedGroups = deriveModuleGroups(bricks, graphData);
-  const smallFloating = derivedGroups.filter((group) => group.kind === 'floating' && group.indexes.length <= 8);
-  let groups = derivedGroups.filter((group) => !smallFloating.includes(group));
-  if (smallFloating.length) groups.push({
-    indexes: smallFloating.flatMap(({ indexes }) => indexes).sort((a, b) => compareBricks(bricks[a], bricks[b])),
-    kind: 'floating',
-    groupType: 'detached-parts',
-    componentIndex: Math.min(...smallFloating.map(({ componentIndex }) => componentIndex)),
-    componentIndexes: smallFloating.map(({ componentIndex }) => componentIndex),
-  });
-  groups.sort((a, b) => {
-    const groundedA = graphData.componentObjects[a.componentIndex].grounded;
-    const groundedB = graphData.componentObjects[b.componentIndex].grounded;
-    if (groundedA !== groundedB) return groundedA ? -1 : 1;
-    if (!groundedA && !groundedB) return b.indexes.length - a.indexes.length
-      || compareBricks(bricks[a.indexes[0]], bricks[b.indexes[0]]);
-    const familySizeA = graphData.components[a.componentIndex].length;
-    const familySizeB = graphData.components[b.componentIndex].length;
-    if (familySizeA !== familySizeB) return familySizeB - familySizeA;
-    if (a.componentIndex !== b.componentIndex) return a.componentIndex - b.componentIndex;
-    const coreA = a.kind === 'grounded';
-    const coreB = b.kind === 'grounded';
-    if (coreA !== coreB) return coreA ? -1 : 1;
-    if (a.groupType !== b.groupType) return a.groupType === 'branch' ? -1 : 1;
-    return b.indexes.length - a.indexes.length || compareBricks(bricks[a.indexes[0]], bricks[b.indexes[0]]);
-  });
-  if (workSurfaceBrickIds !== null) {
-    groups = splitWorkSurfaceGroup(groups, workSurfaceBrickIds, bricks, graphData);
+  let groups;
+  if (moduleReplay !== null) {
+    groups = replayModuleGroups(moduleReplay, bricks, graphData);
+  } else {
+    const derivedGroups = deriveModuleGroups(bricks, graphData);
+    const smallFloating = derivedGroups.filter((group) => group.kind === 'floating' && group.indexes.length <= 8);
+    groups = derivedGroups.filter((group) => !smallFloating.includes(group));
+    if (smallFloating.length) groups.push({
+      indexes: smallFloating.flatMap(({ indexes }) => indexes).sort((a, b) => compareBricks(bricks[a], bricks[b])),
+      kind: 'floating',
+      groupType: 'detached-parts',
+      componentIndex: Math.min(...smallFloating.map(({ componentIndex }) => componentIndex)),
+      componentIndexes: smallFloating.map(({ componentIndex }) => componentIndex),
+    });
+    groups.sort((a, b) => {
+      const groundedA = graphData.componentObjects[a.componentIndex].grounded;
+      const groundedB = graphData.componentObjects[b.componentIndex].grounded;
+      if (groundedA !== groundedB) return groundedA ? -1 : 1;
+      if (!groundedA && !groundedB) return b.indexes.length - a.indexes.length
+        || compareBricks(bricks[a.indexes[0]], bricks[b.indexes[0]]);
+      const familySizeA = graphData.components[a.componentIndex].length;
+      const familySizeB = graphData.components[b.componentIndex].length;
+      if (familySizeA !== familySizeB) return familySizeB - familySizeA;
+      if (a.componentIndex !== b.componentIndex) return a.componentIndex - b.componentIndex;
+      const coreA = a.kind === 'grounded';
+      const coreB = b.kind === 'grounded';
+      if (coreA !== coreB) return coreA ? -1 : 1;
+      if (a.groupType !== b.groupType) return a.groupType === 'branch' ? -1 : 1;
+      return b.indexes.length - a.indexes.length || compareBricks(bricks[a.indexes[0]], bricks[b.indexes[0]]);
+    });
+    if (workSurfaceBrickIds !== null) {
+      groups = splitWorkSurfaceGroup(groups, workSurfaceBrickIds, bricks, graphData, workSurfaceOrder);
+    }
   }
   let moduleNumber = 0;
   let buildAreaNumber = 0;
@@ -859,15 +1084,15 @@ export function createAssemblyPlan({
     if (group.groupType === 'color') detailNumber += 1;
     if (group.kind === 'floating') floatingNumber += 1;
     if (group.groupType === 'work-surface') workSurfaceNumber += 1;
-    const label = group.groupType === 'branch' ? `Upper section ${branchNumber}`
+    const label = group.label ?? (group.groupType === 'branch' ? `Upper section ${branchNumber}`
       : group.groupType === 'color' ? `Color detail ${detailNumber}`
       : group.groupType === 'detached-parts' ? 'Unresolved detached parts'
       : group.groupType === 'work-surface' ? `Work-surface section ${workSurfaceNumber}`
       : group.groupType === 'continuation' ? `Continue build area ${buildAreaNumber}`
       : group.kind === 'floating' ? `Unresolved cluster ${floatingNumber}`
-        : `Build area ${buildAreaNumber}`;
+        : `Build area ${buildAreaNumber}`);
     return {
-      id: `module-${moduleNumber}`,
+      id: group.id ?? `module-${moduleNumber}`,
       label,
       brickIds: group.indexes.map((index) => bricks[index].id),
       status: group.kind === 'floating' ? 'unresolved' : 'ready',
@@ -875,6 +1100,8 @@ export function createAssemblyPlan({
       indexes: group.indexes,
       componentIndex: group.componentIndex,
       componentIndexes: group.componentIndexes ?? [group.componentIndex],
+      internallyConnected: group.internallyConnected,
+      replayRank: group.replayRank,
       groupType: group.groupType,
       ...(group.buildContext ? { buildContext: { ...group.buildContext } } : {}),
       componentIds: (group.componentIndexes ?? [group.componentIndex]).map((index) => graphData.componentObjects[index].id),
@@ -946,11 +1173,13 @@ export function createAssemblyPlan({
     indexes: _indexes,
     componentIndex: _componentIndex,
     componentIndexes: _componentIndexes,
+    internallyConnected: _internallyConnected,
+    replayRank: _replayRank,
     groupType,
     ...module
   }) => ({
     ...module,
-    ...(workSurfaceBrickIds !== null && groupType ? { groupType } : {}),
+    ...((workSurfaceBrickIds !== null || moduleReplay !== null) && groupType ? { groupType } : {}),
   }));
   return {
     version: 1,
@@ -991,7 +1220,7 @@ export function createAssemblyPlan({
       'Small detached stud components may be collected into one unresolved review group; that grouping is not a freestanding-module claim.',
       'Only upright bricks and bounded vertical insertion are planned; other motions remain unresolved.',
       ...(allowUnderAttachments ? ['Upward under-attachments require a clear floor-to-target sweep and an independently supported upper brick; hand clearance and clutch strength remain unverified.'] : []),
-      ...(workSurfaceBrickIds !== null ? [
+      ...((workSurfaceBrickIds !== null || modules.some(({ buildContext }) => buildContext?.kind === 'work-surface')) ? [
         'A selected work-surface band may begin only at its lowest course on a flat table; its validated downward join still does not establish hand clearance, clutch strength, or physical stability.',
         'The lower work-surface remainder may contain independently positioned grounded supports; it is not represented as one rigid subassembly.',
       ] : []),

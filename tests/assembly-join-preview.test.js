@@ -124,6 +124,54 @@ test('anchors an asymmetric support-group arrow to a real contacted stud instead
   assert.notEqual(preview.arrows[0].end.x, 1.5, 'the geometric centroid is an unsupported hole');
 });
 
+test('a wide TV-like band clears its isometric footprint while every brick keeps one common translation', () => {
+  // A sparse alternating-course truss reaches the same 22x14 footprint as the
+  // accepted TV band while using only ordinary supported footprints.
+  const highlighted = [
+    brick('span-a', 0, 2, 0, 8, 1, 'brown'),
+    brick('span-b', 6, 3, 0, 8, 1, 'tan'),
+    brick('span-c', 12, 2, 0, 8, 1, 'brown'),
+    brick('corner', 18, 3, 0, 4, 1, 'tan'),
+    brick('depth-a', 20, 2, 0, 2, 8, 'brown'),
+    brick('depth-b', 20, 3, 6, 2, 8, 'tan'),
+  ];
+  const highlightIds = new Set(highlighted.map(({ id }) => id));
+  const bricks = [
+    brick('ground', 0, 0, 0, 2, 1, 'darkGray'),
+    brick('support', 0, 1, 0, 2, 1, 'darkGray'),
+    ...highlighted,
+  ];
+  const supportGroups = [{
+    brickIds: ['ground', 'support'],
+    contacts: [{ supportBrickId: 'support', bandBrickId: 'span-a', studs: 2 }],
+  }];
+  const model = {
+    version: 1,
+    kind: 'bricks',
+    meta: { scale: { studsPerVoxel: 1, coursesPerVoxel: 5 / 6, voxelMm: 8 } },
+    bricks,
+  };
+  const preview = createAssemblyJoinPreview({
+    model,
+    highlightIds,
+    joinContext: { direction: 'down', requiresAlignment: false, supportGroups },
+  });
+
+  assert.equal(preview.active, true);
+  assert.equal(preview.liftCourses, 16);
+  assert.equal(preview.arrows.length, 1);
+  const originalById = new Map(model.bricks.map((item) => [item.id, item]));
+  assert.equal(preview.model.bricks.filter(({ id }) => highlightIds.has(id))
+    .every((item) => item.y - originalById.get(item.id).y === preview.liftCourses), true);
+
+  const elevation = Math.atan(1 / Math.sqrt(2));
+  const projectedDepth = (22 + 14) / Math.sqrt(2);
+  const projectedLift = preview.liftCourses / (5 / 6) * Math.cos(elevation);
+  const projectedOcclusion = projectedDepth * Math.sin(elevation);
+  const oneCourseClearance = 1 / (5 / 6) * Math.cos(elevation);
+  assert.ok(projectedLift - projectedOcclusion >= oneCourseClearance - 1e-12);
+});
+
 test('falls back unchanged for absent, inconsistent, or disconnected join metadata', () => {
   const input = fixture();
   const cases = [

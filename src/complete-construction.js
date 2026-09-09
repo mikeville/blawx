@@ -6,6 +6,7 @@ import { prepareAssemblyGuide } from './prepare-assembly-guide.js';
 import { createGuideSections } from './guide-sections.js';
 import { assessAssemblyQuality, orderQualityRejections } from './assembly-quality.js';
 import { planSubassemblies } from './plan-subassemblies.js';
+import { repairAttachmentInterfaces } from './attachment-repair.js';
 
 function partHistogram(bricks) {
   const counts = {};
@@ -81,7 +82,10 @@ export function completeConstruction(options) {
     result = repairPreparedConstruction(result, {
       rawModel: options.rawModel, allowExtensions: options.adjustments === true,
     });
-    return planSubassemblies(result);
+    result = planSubassemblies(result);
+    return repairAttachmentInterfaces(result, {
+      rawModel: options.rawModel, allowExtensions: options.adjustments === true,
+    });
   } catch (error) {
     result.assemblyError = error.message || 'Assembly planning failed.';
     if (result.assemblyPlan && !result.guide) result.guide = createGuideSections(result.assemblyPlan);

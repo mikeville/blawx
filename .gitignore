@@ -1,6 +1,7 @@
 node_modules/
 dist/
 app-runs/
+app-data/
 .blawx-private/
 .env
 .env.*
