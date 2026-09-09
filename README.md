@@ -1,5 +1,7 @@
 # Blawx
 
+## A `text-to-lego` tool
+
 Blawx turns a short prompt into a rotatable, brick-built model, then works
 backward into ordinary bricks and a draft construction guide.
 
