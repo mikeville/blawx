@@ -54,7 +54,7 @@ function localGenerationPlugin() {
 
 export default defineConfig({
   plugins: [localGenerationPlugin()],
-  build: { rollupOptions: { input: { app: 'index.html', instructionAppearance: 'instruction-appearance.html' } } },
+  build: { rollupOptions: { input: { app: 'index.html' } } },
   server: {
     host: '127.0.0.1',
     fs: {

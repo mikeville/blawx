@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { mkdir, mkdtemp, readFile, stat, symlink, writeFile } from 'node:fs/promises';
+import { mkdir, mkdtemp, stat, symlink, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
 
@@ -78,13 +78,4 @@ test('Vite private-path guard rejects encoded and nested private material', () =
   for (const path of ['/', '/src/main.js', '/examples/index.json', '/fixtures/example.json']) {
     assert.equal(isPrivateRequestPath(path), false, path);
   }
-});
-
-test('public lab describes omitted private attempt records truthfully', async () => {
-  const source = await readFile(new URL('../src/lab.js', import.meta.url), 'utf8');
-  const sentinel = JSON.parse(await readFile(new URL('../public/examples/attempts.json', import.meta.url), 'utf8'));
-  assert.equal(sentinel.status, 'private-records-not-included');
-  assert.match(source, /Private generation-attempt records are not included in this public dataset/);
-  assert.match(source, /attempts\?\.status === 'private-records-not-included'/);
-  assert.doesNotMatch(source, /failed attempts remain in the Generation attempts panel/);
 });

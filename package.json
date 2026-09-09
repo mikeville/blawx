@@ -1,5 +1,5 @@
 {
-  "name": "blawx-geometry-lab",
+  "name": "blawx",
   "private": true,
   "version": "0.1.0",
   "description": "A local-first 3D brick and voxel generation demo.",
