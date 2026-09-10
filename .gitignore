@@ -1,6 +1,7 @@
 node_modules/
 dist/
 .netlify/
+supabase/.temp/
 app-runs/
 app-data/
 .blawx-private/
