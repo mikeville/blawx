@@ -34,6 +34,7 @@ export function mountRecentFeed(host, {
   initialPage = null,
   restoreCount = 9,
   onChange = null,
+  stageFactory = mountModelStage,
 }) {
   const records = new Map();
   let items = [];
@@ -67,8 +68,25 @@ export function mountRecentFeed(host, {
   function announceChange() {
     onChange?.({ count: items.length, ids: items.map(item => item.id) });
   }
+  function mountStage(record) {
+    if (!record.preparedModel || disposed || suspended || record.stage
+      || record.visible === false || !record.host.isConnected) return;
+    record.stage = stageFactory(record.host, {
+      model: record.preparedModel,
+      label: `${record.item.prompt}, interactive 3D LEGO-style set`,
+      onOpen: event => {
+        if (!hasModifiedLinkIntent(event)) onOpenSet(record.item.id);
+      },
+      animate: false,
+      linked: true,
+    });
+  }
   function loadStage(record) {
     if (disposed || suspended || record.stage || record.controller) return;
+    if (record.preparedModel) {
+      mountStage(record);
+      return;
+    }
     const controller = new AbortController();
     const currentGeneration = generation;
     record.controller = controller;
@@ -78,15 +96,8 @@ export function mountRecentFeed(host, {
       .then(model => {
         if (disposed || suspended || controller.signal.aborted || currentGeneration !== generation
           || record.visible === false || !record.host.isConnected) return;
-        record.stage = mountModelStage(record.host, {
-          model,
-          label: `${record.item.prompt}, interactive 3D LEGO-style set`,
-          onOpen: event => {
-            if (!hasModifiedLinkIntent(event)) onOpenSet(record.item.id);
-          },
-          animate: false,
-          linked: true,
-        });
+        record.preparedModel = model;
+        mountStage(record);
       })
       .catch(cause => {
         if (cause?.name !== 'AbortError' && !disposed && currentGeneration === generation) {
@@ -129,7 +140,14 @@ export function mountRecentFeed(host, {
       onOpenSet(item.id);
     });
     grid.append(card);
-    const record = { item, host: stageHost, stage: null, controller: null, visible: !observer };
+    const record = {
+      item,
+      host: stageHost,
+      stage: null,
+      controller: null,
+      preparedModel: null,
+      visible: !observer,
+    };
     records.set(item.id, record);
     if (observer) observer.observe(stageHost); else loadStage(record);
   }
