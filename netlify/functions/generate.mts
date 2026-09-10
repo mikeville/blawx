@@ -53,7 +53,11 @@ async function configuredRuntime() {
   }
 }
 
-export default async (request: Request, context: { ip?: string; requestId?: string }) => {
+export default async (request: Request, context: {
+  ip?: string;
+  requestId?: string;
+  waitUntil?: (promise: Promise<unknown>) => void;
+}) => {
   const secret = env('BLAWX_IP_HMAC_SECRET');
   const runtime = await configuredRuntime();
   const handler = createLaunchHandler({
@@ -68,6 +72,9 @@ export default async (request: Request, context: { ip?: string; requestId?: stri
       ? async ({ ip, now }) => bytesToPostgresBytea(await hashConnection({ ip, secret, now }))
       : null,
     logEvent: (event) => console.info(JSON.stringify({ scope: 'blawx-generation', ...event })),
+    defer: typeof context.waitUntil === 'function'
+      ? (promise) => context.waitUntil?.(promise)
+      : null,
   });
   return handler(request, context);
 };

@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import { bytesToPostgresBytea, hashConnection } from '../netlify/functions/_shared/connection-hash.js';
 import { deliverSpendAlerts, formatSpendAlert } from '../netlify/functions/_shared/alert-delivery.js';
+import { createGenerationStatusHandler } from '../netlify/functions/_shared/generation-status-handler.js';
 import {
   createPublicGenerationCacheKey,
   createPublicGenerationVersion,
@@ -157,6 +158,125 @@ test('successful provider result is reserved, marked, and finalized once', async
   ]);
 });
 
+test('deferred generation returns a job receipt before provider completion and saves atomically', async () => {
+  const calls = [];
+  let deferred;
+  let releaseProvider;
+  const providerGate = new Promise((resolve) => { releaseProvider = resolve; });
+  const generationVersion = 'raw-' + 'd'.repeat(64);
+  const store = {
+    findCachedResult: async () => null,
+    reserve: async () => ({ accepted: true, decision: 'reserved' }),
+    markProviderStarted: async ({ signal }) => { calls.push(['mark', signal]); return true; },
+    completeGeneration: async (input) => {
+      calls.push(['complete', input.requestId, input.actualMicros]);
+      return {
+        result_id: input.requestId,
+        prompt: input.prompt,
+        created_at: FIXED_TIME.toISOString(),
+        raw_model: input.rawModel,
+        source_program: input.sourceProgram,
+        diagnostics: input.diagnostics,
+        metadata: input.metadata,
+      };
+    },
+    finalize: async () => { throw new Error('atomic completion should be used'); },
+  };
+  const provider = async (_prepared, { requestId, signal }) => {
+    calls.push(['provider', signal]);
+    await providerGate;
+    return {
+      actualMicros: 42000,
+      resultId: 'resp-deferred-1',
+      payload: {
+        requestId,
+        prompt: 'a tiny lighthouse',
+        model: { version: 1, kind: 'voxels', cells: [{ x: 0, y: 0, z: 0, color: 'red' }], meta: {} },
+        sourceProgram: PROGRAM,
+        diagnostics: { valid: true },
+        metadata: { runtime: 'mock' },
+      },
+    };
+  };
+  provider.prepare = async (userPrompt) => ({ input: userPrompt, userPrompt });
+  const response = await createLaunchHandler(baseOptions({
+    store,
+    provider,
+    generationVersion,
+    defer: (promise) => { deferred = promise; },
+  }))(request(), context());
+
+  assert.equal(response.status, 202);
+  assert.deepEqual(await response.json(), { requestId: REQUEST_ID, status: 'pending' });
+  assert.ok(deferred instanceof Promise);
+  assert.equal(calls.some(([stage]) => stage === 'complete'), false);
+  releaseProvider();
+  await deferred;
+  assert.deepEqual(calls, [
+    ['mark', undefined],
+    ['provider', undefined],
+    ['complete', REQUEST_ID, 42000],
+  ]);
+});
+
+test('generation status stays pending, is connection-bound, and returns a saved result', async () => {
+  const pendingStore = {
+    pollGeneration: async ({ connectionHash }) => connectionHash === 'same-connection'
+      ? { request_state: 'reserved', failure_code: null }
+      : null,
+  };
+  const statusRequest = new Request(`${ORIGIN}/api/generations/${REQUEST_ID}`);
+  const statusContext = { ip: '203.0.113.9', params: { id: REQUEST_ID } };
+  const pendingHandler = createGenerationStatusHandler({
+    store: pendingStore,
+    connectionHasher: async () => 'same-connection',
+    now: () => FIXED_TIME,
+  });
+  const pending = await pendingHandler(statusRequest, statusContext);
+  assert.equal(pending.status, 202);
+  assert.deepEqual(await pending.json(), { requestId: REQUEST_ID, status: 'pending' });
+
+  const hidden = await createGenerationStatusHandler({
+    store: pendingStore,
+    connectionHasher: async () => 'another-connection',
+  })(statusRequest, statusContext);
+  assert.equal(hidden.status, 404);
+
+  const completed = await createGenerationStatusHandler({
+    store: {
+      pollGeneration: async () => ({
+        request_state: 'succeeded',
+        failure_code: null,
+        result_id: REQUEST_ID,
+        prompt: 'wacky pipe organ',
+        created_at: FIXED_TIME.toISOString(),
+        raw_model: { version: 1, kind: 'voxels', cells: [{ x: 0, y: 0, z: 0, color: 'red' }], meta: {} },
+        diagnostics: { valid: true },
+        metadata: { runtime: 'mock' },
+      }),
+    },
+    connectionHasher: async () => 'same-connection',
+  })(statusRequest, statusContext);
+  assert.equal(completed.status, 200);
+  const payload = await completed.json();
+  assert.equal(payload.resultId, REQUEST_ID);
+  assert.equal(payload.prompt, 'wacky pipe organ');
+  assert.equal(payload.sourceProgram, undefined);
+});
+
+test('generation status reports durable provider failure states with specific copy', async () => {
+  const requestForStatus = new Request(`${ORIGIN}/api/generations/${REQUEST_ID}`);
+  const handler = createGenerationStatusHandler({
+    store: { pollGeneration: async () => ({ request_state: 'failed', failure_code: 'provider_invalid' }) },
+    connectionHasher: async () => 'same-connection',
+  });
+  const response = await handler(requestForStatus, { ip: '203.0.113.9', params: { id: REQUEST_ID } });
+  const payload = await response.json();
+  assert.equal(response.status, 502);
+  assert.equal(payload.error.code, 'generation-invalid');
+  assert.match(payload.error.message, /brick plan.*attempt counted/i);
+});
+
 test('unknown provider usage is finalized fail-closed at the database reservation', async () => {
   const calls = [];
   const store = {
@@ -202,6 +322,56 @@ test('Supabase adapter uses the secret only as an API header and calls the exact
   assert.equal(seen[0].init.headers.apikey, 'server-secret');
   assert.equal(seen[0].init.headers.authorization, undefined);
   assert.doesNotMatch(seen[0].init.body, /server-secret/);
+});
+
+test('Supabase adapter completes and polls deferred generations through bounded RPCs', async () => {
+  const seen = [];
+  const store = createSupabaseLaunchStore({
+    projectUrl: 'https://project-ref.supabase.co',
+    secretKey: 'server-secret',
+    fetchImpl: async (url, init) => {
+      const body = JSON.parse(init.body);
+      seen.push({ url, body });
+      if (url.endsWith('/blawx_complete_generation')) {
+        return new Response(JSON.stringify([{
+          result_id: REQUEST_ID,
+          prompt: 'pipe organ',
+          created_at: FIXED_TIME.toISOString(),
+          raw_model: { version: 1 },
+          source_program: PROGRAM,
+          diagnostics: {},
+          metadata: {},
+        }]), { status: 200 });
+      }
+      return new Response(JSON.stringify([{ request_state: 'reserved', failure_code: null }]), { status: 200 });
+    },
+  });
+
+  const saved = await store.completeGeneration({
+    requestId: REQUEST_ID,
+    actualMicros: 1234,
+    cacheKey: 'a'.repeat(64),
+    generationVersion: 'raw-v1',
+    normalizedPrompt: 'pipe organ',
+    prompt: 'pipe organ',
+    rawModel: { version: 1 },
+    sourceProgram: PROGRAM,
+    diagnostics: {},
+    metadata: {},
+    providerResultId: 'resp-1',
+    now: FIXED_TIME,
+  });
+  assert.equal(saved.result_id, REQUEST_ID);
+  assert.equal(seen[0].body.p_actual_micros, 1234);
+  assert.equal(seen[0].body.p_now, FIXED_TIME.toISOString());
+
+  const polled = await store.pollGeneration({ requestId: REQUEST_ID, connectionHash: '\\x' + '11'.repeat(32) });
+  assert.equal(polled.request_state, 'reserved');
+  assert.equal(seen[1].url, 'https://project-ref.supabase.co/rest/v1/rpc/blawx_poll_generation');
+  assert.deepEqual(seen[1].body, {
+    p_request_id: REQUEST_ID,
+    p_connection_hash: '\\x' + '11'.repeat(32),
+  });
 });
 
 test('OpenAI launch request is fixed, tool-free, and cannot exceed the database reservation', () => {

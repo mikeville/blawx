@@ -17,6 +17,57 @@ test('posts a trimmed prompt and preserves the complete generation result', asyn
   assert.equal(result, success);
 });
 
+test('accepts a job receipt and polls with short requests until the saved set is ready', async () => {
+  const calls = [];
+  const responses = [
+    response({ requestId: 'request-1', status: 'pending' }, { status: 202 }),
+    response({ requestId: 'request-1', status: 'pending' }, { status: 202 }),
+    response({ ...success, resultId: 'request-1', cacheHit: false, saveStatus: 'saved' }),
+  ];
+  const client = createGenerationClient(async (url, options) => {
+    calls.push({ url, method: options.method });
+    return responses.shift();
+  }, '/api/generate', {
+    pollIntervalMs: 0,
+    statusEndpoint: (requestId) => `/api/generations/${requestId}`,
+  });
+
+  const result = await client.generate('cat');
+  assert.equal(result.resultId, 'request-1');
+  assert.deepEqual(calls, [
+    { url: '/api/generate', method: 'POST' },
+    { url: '/api/generations/request-1', method: 'GET' },
+    { url: '/api/generations/request-1', method: 'GET' },
+  ]);
+});
+
+test('retries a transient unreadable status response without starting another build', async () => {
+  let calls = 0;
+  const client = createGenerationClient(async () => {
+    calls += 1;
+    if (calls === 1) return response({ requestId: 'request-1', status: 'pending' }, { status: 202 });
+    if (calls === 2) return { ok: false, status: 502, text: async () => '<html>proxy reset</html>' };
+    if (calls === 3) return response({ requestId: 'request-1', error: { code: 'status-unavailable', message: 'Temporary.' } }, { ok: false, status: 503 });
+    return response(success);
+  }, '/api/generate', { pollIntervalMs: 0, statusEndpoint: () => '/api/generations/request-1' });
+
+  assert.equal(await client.generate('cat'), success);
+  assert.equal(calls, 4);
+});
+
+test('cancelling while polling stops browser checks without changing the accepted job', async () => {
+  const controller = new AbortController();
+  const client = createGenerationClient(
+    async () => response({ requestId: 'request-1', status: 'pending' }, { status: 202 }),
+    '/api/generate',
+    { pollIntervalMs: 1000, statusEndpoint: () => '/api/generations/request-1' },
+  );
+  const pending = client.generate('cat', { signal: controller.signal });
+  await Promise.resolve();
+  controller.abort();
+  await assert.rejects(pending, { name: 'AbortError' });
+});
+
 test('passes AbortSignal to fetch and preserves abort errors for cancellation', async () => {
   const controller = new AbortController();
   const client = createGenerationClient(async (_url, { signal }) => new Promise((_resolve, reject) => {

@@ -8,6 +8,8 @@ const RPC_NAMES = Object.freeze({
   finishAlert: 'blawx_finish_spend_alert',
   findCachedResult: 'blawx_find_cached_result',
   saveGenerationResult: 'blawx_save_generation_result',
+  completeGeneration: 'blawx_complete_generation',
+  pollGeneration: 'blawx_poll_generation',
   listVisibleResults: 'blawx_list_visible_results',
   getVisibleResult: 'blawx_get_visible_result',
 });
@@ -134,6 +136,46 @@ export function createSupabaseLaunchStore({ projectUrl, secretKey, fetchImpl = f
       }, { signal });
       if (!Array.isArray(rows) || rows.length !== 1) throw new Error('supabase_invalid_cache_save');
       return rows[0];
+    },
+    async completeGeneration({
+      requestId,
+      actualMicros,
+      cacheKey,
+      generationVersion,
+      normalizedPrompt,
+      prompt,
+      rawModel,
+      sourceProgram,
+      diagnostics,
+      metadata,
+      providerResultId,
+      now = new Date(),
+      signal,
+    } = {}) {
+      const rows = await rpc(RPC_NAMES.completeGeneration, {
+        p_request_id: requestId,
+        p_actual_micros: actualMicros,
+        p_cache_key: cacheKey,
+        p_generation_version: generationVersion,
+        p_normalized_prompt: normalizedPrompt,
+        p_prompt: prompt,
+        p_raw_model: rawModel,
+        p_source_program: sourceProgram,
+        p_diagnostics: diagnostics,
+        p_metadata: metadata,
+        p_provider_result_id: providerResultId,
+        p_now: now.toISOString(),
+      }, { signal });
+      if (!Array.isArray(rows) || rows.length !== 1) throw new Error('supabase_invalid_generation_completion');
+      return rows[0];
+    },
+    async pollGeneration({ requestId, connectionHash, signal } = {}) {
+      const rows = await rpc(RPC_NAMES.pollGeneration, {
+        p_request_id: requestId,
+        p_connection_hash: connectionHash,
+      }, { signal });
+      if (!Array.isArray(rows) || rows.length > 1) throw new Error('supabase_invalid_generation_poll');
+      return rows[0] ?? null;
     },
     async listVisibleResults({ cursorCreatedAt = null, cursorId = null, limit = 10, signal } = {}) {
       const rows = await rpc(RPC_NAMES.listVisibleResults, {

@@ -1,4 +1,6 @@
 import { MAX_PROMPT_CHARACTERS, PROMPT_TOO_LONG_MESSAGE } from '../../../src/prompt-policy.js';
+import { createPublicGenerationCacheKey, normalizeGenerationPrompt } from './generation-cache.js';
+import { validateVoxels } from '../../../src/voxels.js';
 
 const MAX_BODY_BYTES = 4096;
 const FRIENDLY_QUOTA_MESSAGE = 'Blawx is getting a lot of building requests today. This connection has used its three fresh builds for now—try again after midnight UTC. You can still explore saved sets, or clone the repo and connect your own API key to build without this demo’s shared limit.';
@@ -147,6 +149,160 @@ function providerFailureResponse(error, requestId) {
   );
 }
 
+function storedFailureCode(error) {
+  const code = typeof error?.code === 'string' ? error.code : '';
+  if (code === 'openai_timeout') return 'provider_timeout';
+  if (/refusal|program_invalid|output_(?:invalid|missing|unexpected|incomplete)|response_(?:failed|cancelled|incomplete)/.test(code)) {
+    return 'provider_invalid';
+  }
+  if (/network|http_failure|request_aborted|response_invalid_json/.test(code)) {
+    return 'provider_interrupted';
+  }
+  return Number.isInteger(error?.actualMicros) && error.actualMicros >= 0
+    ? 'provider_failure'
+    : 'provider_usage_unknown';
+}
+
+async function runReservedGeneration({
+  requestId,
+  submittedPrompt,
+  providerInput,
+  provider,
+  store,
+  cacheKey,
+  generationVersion,
+  now,
+  signal,
+  log,
+}) {
+  let providerStarted = false;
+  try {
+    providerStarted = await store.markProviderStarted({ requestId, now: now(), signal });
+    if (!providerStarted) throw new Error('provider_start_rejected');
+    log({ requestId, stage: 'provider-started' });
+
+    const generated = await provider(providerInput, { requestId, signal });
+    if (!generated || typeof generated !== 'object' || !Number.isInteger(generated.actualMicros)
+        || generated.actualMicros < 0 || typeof generated.resultId !== 'string'
+        || !generated.payload || typeof generated.payload !== 'object') {
+      throw new Error('provider_result_invalid');
+    }
+    log({ requestId, stage: 'provider-completed' });
+
+    if (cacheKey && typeof store.completeGeneration === 'function') {
+      const saved = await store.completeGeneration({
+        requestId,
+        actualMicros: generated.actualMicros,
+        cacheKey,
+        generationVersion,
+        normalizedPrompt: normalizeGenerationPrompt(submittedPrompt),
+        prompt: generated.payload.prompt,
+        rawModel: generated.payload.model,
+        sourceProgram: generated.payload.sourceProgram,
+        diagnostics: generated.payload.diagnostics,
+        metadata: generated.payload.metadata,
+        providerResultId: generated.resultId,
+        now: now(),
+        signal,
+      });
+      if (!saved || typeof saved.result_id !== 'string') {
+        const error = new Error('generation_persistence_invalid');
+        error.actualMicros = generated.actualMicros;
+        throw error;
+      }
+      log({ requestId, stage: 'finalized' });
+      return jsonResponse(200, {
+        requestId,
+        resultId: saved.result_id,
+        cacheHit: saved.result_id !== requestId,
+        submittedPrompt,
+        saveStatus: 'saved',
+        prompt: saved.prompt,
+        createdAt: saved.created_at,
+        model: saved.raw_model,
+        diagnostics: saved.diagnostics,
+        metadata: saved.metadata,
+      });
+    }
+
+    const finalization = await store.finalize({
+      requestId,
+      outcome: 'succeeded',
+      actualMicros: generated.actualMicros,
+      resultId: requestId,
+      failureCode: null,
+      now: now(),
+      signal,
+    });
+    if (!finalization?.finalized || finalization.decision !== 'finalized') {
+      return errorResponse(503, 'generation-paused', FRIENDLY_PAUSED_MESSAGE, requestId);
+    }
+    log({ requestId, stage: 'finalized' });
+    if (cacheKey && typeof store.saveGenerationResult === 'function') {
+      try {
+        const saved = await store.saveGenerationResult({
+          resultId: requestId,
+          cacheKey,
+          generationVersion,
+          normalizedPrompt: normalizeGenerationPrompt(submittedPrompt),
+          prompt: generated.payload.prompt,
+          rawModel: generated.payload.model,
+          sourceProgram: generated.payload.sourceProgram,
+          diagnostics: generated.payload.diagnostics,
+          metadata: generated.payload.metadata,
+          providerResultId: generated.resultId,
+          now: now(),
+          signal,
+        });
+        return jsonResponse(200, {
+          ...publicGeneratedPayload(generated.payload),
+          resultId: saved.result_id,
+          cacheHit: false,
+          submittedPrompt,
+          saveStatus: 'saved',
+          createdAt: saved.created_at,
+        });
+      } catch {
+        return jsonResponse(200, {
+          ...publicGeneratedPayload(generated.payload),
+          resultId: null,
+          cacheHit: false,
+          submittedPrompt,
+          saveStatus: 'failed',
+        });
+      }
+    }
+    return jsonResponse(200, publicGeneratedPayload(generated.payload));
+  } catch (error) {
+    const failureCode = storedFailureCode(error);
+    log({ requestId, stage: 'failed', failureCode });
+    try {
+      if (!providerStarted) {
+        await store.cancelBeforeProvider({
+          requestId,
+          failureCode: 'pre_provider_failure',
+          now: now(),
+        });
+      } else {
+        const knownActual = Number.isInteger(error?.actualMicros) && error.actualMicros >= 0
+          ? error.actualMicros
+          : null;
+        await store.finalize({
+          requestId,
+          outcome: knownActual === null ? 'unknown' : 'failed',
+          actualMicros: knownActual,
+          resultId: null,
+          failureCode,
+          now: now(),
+        });
+      }
+    } catch {
+      // The database reservation remains fail-closed if cleanup cannot complete.
+    }
+    return providerFailureResponse(error, requestId);
+  }
+}
+
 export function createLaunchHandler({
   generationEnabled,
   allowedOrigins,
@@ -156,6 +312,7 @@ export function createLaunchHandler({
   generationVersion = null,
   now = () => new Date(),
   logEvent = () => {},
+  defer = null,
 }) {
   const origins = new Set(allowedOrigins ?? []);
   const log = (event) => {
@@ -229,97 +386,26 @@ export function createLaunchHandler({
     if (!reservation?.accepted) return reservationRejection(reservation, requestId);
     log({ requestId, stage: 'reserved' });
 
-    let providerStarted = false;
-    try {
-      providerStarted = await store.markProviderStarted({ requestId, now: now(), signal: request.signal });
-      if (!providerStarted) throw new Error('provider_start_rejected');
-      log({ requestId, stage: 'provider-started' });
+    const run = () => runReservedGeneration({
+      requestId,
+      submittedPrompt: parsed.prompt,
+      providerInput,
+      provider,
+      store,
+      cacheKey,
+      generationVersion,
+      now,
+      signal: typeof defer === 'function' ? undefined : request.signal,
+      log,
+    });
 
-      const generated = await provider(providerInput, { requestId, signal: request.signal });
-      if (!generated || typeof generated !== 'object' || !Number.isInteger(generated.actualMicros)
-          || generated.actualMicros < 0 || typeof generated.resultId !== 'string'
-          || !generated.payload || typeof generated.payload !== 'object') {
-        throw new Error('provider_result_invalid');
-      }
-      log({ requestId, stage: 'provider-completed' });
-
-      const finalization = await store.finalize({
-        requestId,
-        outcome: 'succeeded',
-        actualMicros: generated.actualMicros,
-        resultId: requestId,
-        failureCode: null,
-        now: now(),
-      });
-      if (!finalization?.finalized || finalization.decision !== 'finalized') {
-        return errorResponse(503, 'generation-paused', FRIENDLY_PAUSED_MESSAGE, requestId);
-      }
-      log({ requestId, stage: 'finalized' });
-      if (cacheKey && typeof store.saveGenerationResult === 'function') {
-        try {
-          const saved = await store.saveGenerationResult({
-            resultId: requestId,
-            cacheKey,
-            generationVersion,
-            normalizedPrompt: normalizeGenerationPrompt(parsed.prompt),
-            prompt: generated.payload.prompt,
-            rawModel: generated.payload.model,
-            sourceProgram: generated.payload.sourceProgram,
-            diagnostics: generated.payload.diagnostics,
-            metadata: generated.payload.metadata,
-            providerResultId: generated.resultId,
-            now: now(),
-          });
-          return jsonResponse(200, {
-            ...publicGeneratedPayload(generated.payload),
-            resultId: saved.result_id,
-            cacheHit: false,
-            submittedPrompt: parsed.prompt,
-            saveStatus: 'saved',
-            createdAt: saved.created_at,
-          });
-        } catch {
-          return jsonResponse(200, {
-            ...publicGeneratedPayload(generated.payload),
-            resultId: null,
-            cacheHit: false,
-            submittedPrompt: parsed.prompt,
-            saveStatus: 'failed',
-          });
-        }
-      }
-      return jsonResponse(200, publicGeneratedPayload(generated.payload));
-    } catch (error) {
-      log({
-        requestId,
-        stage: 'failed',
-        failureCode: typeof error?.code === 'string' ? error.code : 'generation_internal_failure',
-      });
-      try {
-        if (!providerStarted) {
-          await store.cancelBeforeProvider({
-            requestId,
-            failureCode: 'pre_provider_failure',
-            now: now(),
-          });
-        } else {
-          const knownActual = Number.isInteger(error?.actualMicros) && error.actualMicros >= 0
-            ? error.actualMicros
-            : null;
-          await store.finalize({
-            requestId,
-            outcome: knownActual === null ? 'unknown' : 'failed',
-            actualMicros: knownActual,
-            resultId: null,
-            failureCode: knownActual === null ? 'provider_usage_unknown' : 'provider_failure',
-            now: now(),
-          });
-        }
-      } catch {
-        // The database reservation remains fail-closed if cleanup cannot complete.
-      }
-      return providerFailureResponse(error, requestId);
+    if (typeof defer === 'function') {
+      const completion = Promise.resolve().then(run);
+      defer(completion.then(() => undefined));
+      log({ requestId, stage: 'dispatched' });
+      return jsonResponse(202, { requestId, status: 'pending' });
     }
+    return run();
   };
 }
 
@@ -327,5 +413,3 @@ export const launchMessages = Object.freeze({
   quota: FRIENDLY_QUOTA_MESSAGE,
   paused: FRIENDLY_PAUSED_MESSAGE,
 });
-import { createPublicGenerationCacheKey, normalizeGenerationPrompt } from './generation-cache.js';
-import { validateVoxels } from '../../../src/voxels.js';
