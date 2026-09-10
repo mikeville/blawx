@@ -2,15 +2,16 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { mountGenerationProgress } from '../src/generation-progress.js';
 
-function harness(estimateRange = null) {
+function harness(estimateRange = null, elapsedHost = null) {
   let now=0, tick, cleared=false, cancelled=0;
   const item=()=>({dataset:{},attributes:{},setAttribute(k,v){this.attributes[k]=v;},removeAttribute(k){delete this.attributes[k];}});
-  const items=Array.from({length:3},item),elapsed={},live={},events=new Map();
+  const items=Array.from({length:3},item),elapsed={remove(){this.removed=true;}},live={},events=new Map();
+  const internalElapsedHost={remove(){this.removed=true;}};
   const cancel={addEventListener(k,v){events.set(k,v);},removeEventListener(k){events.delete(k);}};
-  const root={querySelectorAll(){return items;},querySelector(selector){return {'.generation-elapsed':elapsed,'.generation-phase-live':live,'.generation-cancel':cancel}[selector];}};
+  const root={querySelectorAll(){return items;},querySelector(selector){return {'.generation-elapsed':elapsed,'.generation-elapsed-slot':internalElapsedHost,'.generation-phase-live':live,'.generation-cancel':cancel}[selector];},insertBefore(node){this.inserted=node;}};
   const host={innerHTML:'',querySelector(){return root;},replaceChildren(){this.empty=true;}};
-  const progress=mountGenerationProgress(host,{estimateRange,now:()=>now,onCancel:()=>cancelled++,setIntervalFn(fn){tick=fn;return 1;},clearIntervalFn(){cleared=true;}});
-  return {items,elapsed,live,events,host,progress,advance(ms){now=ms;tick();},get cleared(){return cleared;},get cancelled(){return cancelled;}};
+  const progress=mountGenerationProgress(host,{estimateRange,elapsedHost,now:()=>now,onCancel:()=>cancelled++,setIntervalFn(fn){tick=fn;return 1;},clearIntervalFn(){cleared=true;}});
+  return {items,elapsed,internalElapsedHost,root,live,events,host,progress,advance(ms){now=ms;tick();},get cleared(){return cleared;},get cancelled(){return cancelled;}};
 }
 
 test('elapsed time never fabricates phase completion',()=>{
@@ -27,6 +28,15 @@ test('elapsed time never fabricates phase completion',()=>{
   h.progress.complete();
   assert.ok(h.cleared && h.host.empty);
   assert.equal(h.events.size,0);
+});
+
+test('an external prompt status hosts only the temporary elapsed timer',()=>{
+  const elapsedHost={append(node){this.child=node;}};
+  const h=harness(null,elapsedHost);
+  assert.equal(elapsedHost.child,h.elapsed);
+  assert.equal(h.internalElapsedHost.removed,true);
+  h.progress.complete();
+  assert.equal(h.elapsed.removed,true);
 });
 
 test('a supplied measured range gives way to overrun copy without inventing a new estimate',()=>{

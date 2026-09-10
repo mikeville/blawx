@@ -36,7 +36,7 @@ export function mountComposer({ composer, promptInput, form, mode = 'inline', ho
     closeButton = document.createElement('button');
     closeButton.className = 'composer-close';
     closeButton.type = 'button';
-    closeButton.setAttribute('aria-label', 'Close prompt');
+    closeButton.setAttribute('aria-label', mobile.matches ? 'Clear prompt' : 'Close prompt');
     closeButton.innerHTML = '<span aria-hidden="true"></span>';
     const buttonLabel = document.createElement('span');
     buttonLabel.className = 'composer-button-label';
@@ -54,7 +54,7 @@ export function mountComposer({ composer, promptInput, form, mode = 'inline', ho
     form.prepend(closeButton);
     if (formMessage) form.append(formMessage);
     composer.classList.add('floating-composer', `composer-${mode}`);
-    closeButton.addEventListener('click', onClose);
+    closeButton.addEventListener('click', onCloseButton);
     enhanced = true;
   }
 
@@ -75,7 +75,7 @@ export function mountComposer({ composer, promptInput, form, mode = 'inline', ho
 
   function unenhance() {
     if (!enhanced) return;
-    closeButton.removeEventListener('click', onClose);
+    closeButton.removeEventListener('click', onCloseButton);
     promptInput.disabled = false;
     promptField.inert = false;
     if (formMessage) {
@@ -102,12 +102,14 @@ export function mountComposer({ composer, promptInput, form, mode = 'inline', ho
   function syncContext() {
     if (mode === 'floating') {
       enhance();
+      closeButton.setAttribute('aria-label', mobile.matches ? 'Clear prompt' : 'Close prompt');
       setExpanded(latestIsDetail ? false : expanded);
       return;
     }
     if (mobile.matches) {
       document.body.append(composer);
       enhance();
+      closeButton.setAttribute('aria-label', 'Clear prompt');
       setExpanded(latestIsDetail ? false : mobileHomeExpanded);
     } else {
       if (enhanced && !latestIsDetail) mobileHomeExpanded = expanded;
@@ -123,19 +125,32 @@ export function mountComposer({ composer, promptInput, form, mode = 'inline', ho
     if (!latestIsDetail) mobileHomeExpanded = true;
     setExpanded(true, { focusInput: true });
   }
-  function onClose() {
+  function dismiss({ returnFocus = true } = {}) {
     if (!latestIsDetail) mobileHomeExpanded = false;
-    setExpanded(false, { returnFocus: true });
+    setExpanded(false, { returnFocus });
+  }
+  function onCloseButton() {
+    if (!mobile.matches) { dismiss(); return; }
+    if (promptInput.disabled || promptInput.readOnly || makeButton.disabled || form.getAttribute('aria-busy') === 'true') return;
+    promptInput.value = '';
+    promptInput.dispatchEvent(new Event('input', { bubbles: true }));
+    mobileHomeExpanded = true;
+    setExpanded(true, { focusInput: true });
   }
   function onKeydown(event) {
     if (event.key !== 'Escape' || !enhanced || !expanded) return;
     event.preventDefault();
-    onClose();
+    dismiss();
+  }
+  function onDocumentPointerDown(event) {
+    if (!mobile.matches || !enhanced || !expanded || composer.contains(event.target)) return;
+    dismiss({ returnFocus: false });
   }
   function onMediaChange() { syncContext(); }
 
   form.addEventListener('submit', onSubmit, { capture: true });
   composer.addEventListener('keydown', onKeydown);
+  document.addEventListener('pointerdown', onDocumentPointerDown);
   if (mode === 'circle') mobile.addEventListener('change', onMediaChange);
   syncContext();
 
@@ -148,6 +163,7 @@ export function mountComposer({ composer, promptInput, form, mode = 'inline', ho
       if (disposed) return;
       form.removeEventListener('submit', onSubmit, { capture: true });
       composer.removeEventListener('keydown', onKeydown);
+      document.removeEventListener('pointerdown', onDocumentPointerDown);
       if (mode === 'circle') mobile.removeEventListener('change', onMediaChange);
       unenhance();
       if (mode === 'circle') moveHome();

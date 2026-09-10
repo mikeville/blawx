@@ -18,6 +18,7 @@ function normalizedEstimate(range) {
 
 export function mountGenerationProgress(host, {
   onCancel,
+  elapsedHost = null,
   estimateRange = null,
   now = () => performance.now(),
   setIntervalFn = setInterval,
@@ -27,19 +28,25 @@ export function mountGenerationProgress(host, {
     <ol aria-label="Set progress">
       ${PHASES.map(({ key, label }) => `<li data-phase="${key}"><span class="generation-progress-node" aria-hidden="true"></span><span>${label}</span></li>`).join('')}
     </ol>
-    <p class="generation-elapsed"></p>
+    <div class="generation-elapsed-slot prompt-status"><p class="generation-elapsed"></p></div>
     <button class="generation-cancel" type="button">Cancel</button>
     <span class="sr-only generation-phase-live" role="status" aria-live="polite" aria-atomic="true"></span>
   </div>`;
   const root = host.querySelector('.generation-progress');
   const items = [...root.querySelectorAll('[data-phase]')];
   const elapsed = root.querySelector('.generation-elapsed');
+  const internalElapsedHost = root.querySelector('.generation-elapsed-slot');
   const live = root.querySelector('.generation-phase-live');
   const cancel = root.querySelector('.generation-cancel');
   const startedAt = now();
   const estimate = normalizedEstimate(estimateRange);
   let current = '';
   let disposed = false;
+
+  if (elapsedHost) {
+    elapsedHost.append(elapsed);
+    internalElapsedHost.remove();
+  }
 
   function updateElapsed() {
     const duration = now() - startedAt;
@@ -70,6 +77,7 @@ export function mountGenerationProgress(host, {
     disposed = true;
     clearIntervalFn(timer);
     cancel.removeEventListener('click', onCancelClick);
+    elapsed.remove();
     if (clear) host.replaceChildren();
   }
 

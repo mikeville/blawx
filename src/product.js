@@ -32,6 +32,11 @@ export function mountProductApp(host, options = {}) {
   stageFactory = mountModelStage,
   comparisonFactory = mountConstructionComparison,
   progressFactory = mountGenerationProgress,
+  recentFactory = mountRecentFeed,
+  composerFactory = mountComposer,
+  viewportFactory = mountViewportLayout,
+  promptFieldFactory = mountPromptField,
+  scrollHeaderFactory = mountScrollAwareHeader,
   generationEstimateRange = null,
   developerMode = isDeveloperMode(),
   } = options;
@@ -41,7 +46,7 @@ export function mountProductApp(host, options = {}) {
     : '';
   host.innerHTML = `<header class="brand-strip"><a class="brand" href="#" aria-label="Blawx home">Blawx</a></header>
     <main><div id="home-view"><section class="home-lead" aria-label="Featured set and prompt"><div class="home-hero"><div class="hero-mount"></div></div>
-      <div class="composer"><form id="prompt-form" novalidate><label class="sr-only" for="prompt">What would you like to build?</label><div class="prompt-field"><div class="prompt-invitation" aria-hidden="true"><span>What would you</span> <span>like to build?<span class="invitation-caret"></span></span></div><textarea id="prompt" rows="1" maxlength="500" autocomplete="off" spellcheck="true" placeholder=" " enterkeyhint="go"></textarea></div><button class="make-button" type="submit">Make it</button><p id="public-use" class="public-use" hidden>Prompts &amp; sets are public</p></form><p id="form-message" class="form-message" role="status"></p></div></section><section class="recent-host"></section></div>
+      <div class="composer"><form id="prompt-form" novalidate><label class="sr-only" for="prompt">What would you like to build?</label><div class="prompt-field"><div class="prompt-invitation" aria-hidden="true"><span>What would you</span> <span>like to build?<span class="invitation-caret"></span></span></div><textarea id="prompt" rows="1" maxlength="500" autocomplete="off" spellcheck="true" placeholder=" " enterkeyhint="go"></textarea></div><button class="make-button" type="submit">Make it</button><div class="prompt-status"><p id="public-use" class="public-use" hidden>Prompts &amp; sets are public</p></div></form><p id="form-message" class="form-message" role="status"></p></div></section><section class="recent-host"></section></div>
       <div id="detail-view" hidden><article class="set-detail"><div class="detail-hero hero-mount"></div><header class="detail-copy"><h1 id="detail-title" tabindex="-1"></h1><div class="generation-progress-host"></div><p class="detail-prompt"></p><span class="result-note" role="status"></span></header></article><section class="instructions"><div class="guide-host"></div></section></div></main>
     ${developerFooter}`;
 
@@ -50,6 +55,8 @@ export function mountProductApp(host, options = {}) {
   const composer = host.querySelector('.composer');
   const form = host.querySelector('#prompt-form');
   const input = host.querySelector('#prompt');
+  const promptStatus = host.querySelector('.prompt-status');
+  const publicUse = promptStatus.querySelector('#public-use');
   const message = host.querySelector('.form-message');
   const recentHost = host.querySelector('.recent-host');
   const homeHeroHost = host.querySelector('.home-hero .hero-mount');
@@ -64,16 +71,18 @@ export function mountProductApp(host, options = {}) {
   const devGeneration = host.querySelector('.developer-generation') ?? document.createElement('div');
   const devConstruction = host.querySelector('.developer-construction') ?? document.createElement('div');
   const brand = host.querySelector('.brand');
-  const scrollHeader = mountScrollAwareHeader(host.querySelector('.brand-strip'));
+  const scrollHeader = scrollHeaderFactory(host.querySelector('.brand-strip'));
   const makeButton = form.querySelector('.make-button');
   const storageMode = `product:${location.pathname}`;
   const restored = loadViewState({ mode: storageMode, recentCount: 9999 });
   input.value = restored.prompt;
   form.classList.toggle('has-prompt', Boolean(input.value.trim()));
   document.body.dataset.composer = 'circle';
-  const composerController = mountComposer({ composer, promptInput: input, form, mode: 'circle', homeHost: host.querySelector('.home-lead') });
-  const viewport = mountViewportLayout({ composer, promptInput: input });
-  const promptField = mountPromptField({ input, form, publicNote: composer.querySelector('#public-use') });
+  const composerController = composerFactory({ composer, promptInput: input, form, mode: 'circle', homeHost: host.querySelector('.home-lead') });
+  const viewport = viewportFactory({ composer, promptInput: input });
+  const promptField = promptFieldFactory({ input, form, publicNote: publicUse });
+  const promptStatusParent = promptStatus.parentNode;
+  const promptStatusNext = promptStatus.nextSibling;
   const generated = new Map();
   let activeFeedClient = feedClient;
   let feed;
@@ -95,6 +104,17 @@ export function mountProductApp(host, options = {}) {
 
   const locationKey = () => `${location.pathname}${location.search}${location.hash}`;
 
+  function capturePromptStatusPosition() {
+    const rect = promptStatus.getBoundingClientRect();
+    promptStatus.style.setProperty('--status-left', `${rect.left / window.innerWidth * 100}vw`);
+    promptStatus.style.setProperty('--status-top', `${rect.top / window.innerHeight * 100}vh`);
+    promptStatus.style.setProperty('--status-width', `${rect.width / window.innerWidth * 100}vw`);
+  }
+
+  function restorePromptStatus() {
+    promptStatusParent.insertBefore(promptStatus, promptStatusNext?.parentNode === promptStatusParent ? promptStatusNext : null);
+  }
+
   function persist() {
     saveViewState({ mode: storageMode, recentCount: 9999, state: { prompt: input.value.slice(0, 500), galleryCount, homeScrollY: home.hidden ? homeScrollY : window.scrollY } });
   }
@@ -111,7 +131,7 @@ export function mountProductApp(host, options = {}) {
     if (disposed || !page?.items.length) return;
     feed?.dispose();
     activeFeedClient = feedClient;
-    feed = mountRecentFeed(recentHost, {
+    feed = recentFactory(recentHost, {
       client: feedClient, previewClient, onOpenSet: openId, initialPage: page,
       onChange: ({ count }) => { galleryCount = count; persist(); },
     });
@@ -124,6 +144,7 @@ export function mountProductApp(host, options = {}) {
     detailStage?.dispose(); detailStage = null;
     comparisonDispose?.(); comparisonDispose = null;
     progressController?.dispose(); progressController = null;
+    restorePromptStatus();
     detailHeroHost.replaceChildren(); guideHost.replaceChildren(); devConstruction.replaceChildren();
     devRecord.textContent = ''; devGeneration.replaceChildren();
     detail.classList.remove('is-generated-result');
@@ -135,6 +156,7 @@ export function mountProductApp(host, options = {}) {
     else form.removeAttribute('aria-busy');
     input.readOnly = pending;
     makeButton.disabled = pending;
+    promptStatus.classList.toggle('is-pending', pending);
     promptField.sync();
   }
 
@@ -142,6 +164,7 @@ export function mountProductApp(host, options = {}) {
     if (activeRequest !== job) return false;
     activeRequest = null;
     progressController?.complete(); progressController = null;
+    restorePromptStatus();
     setSubmissionPending(false);
     return true;
   }
@@ -153,6 +176,7 @@ export function mountProductApp(host, options = {}) {
     job.controller.abort();
     comparisonDispose?.(); comparisonDispose = null;
     progressController?.dispose(); progressController = null;
+    restorePromptStatus();
     setSubmissionPending(false);
     if (returnHome) {
       history.replaceState(null, '', location.pathname + location.search);
@@ -227,7 +251,7 @@ export function mountProductApp(host, options = {}) {
       const library = await chooseLibrary();
       if (disposed || currentRoute !== routeVersion) return;
       activeFeedClient = library.client;
-      feed = mountRecentFeed(recentHost, {
+      feed = recentFactory(recentHost, {
         client: activeFeedClient, previewClient, examples: activeFeedClient === exampleClient, onOpenSet: openId,
         initialPage: library.page, restoreCount: galleryCount,
         onChange: ({ count }) => { galleryCount = count; persist(); },
@@ -244,6 +268,7 @@ export function mountProductApp(host, options = {}) {
   }
 
   function beginGeneratedDetail(job) {
+    capturePromptStatusPosition();
     job.routeVersion = ++routeVersion;
     if (!home.hidden) { homeScrollY = window.scrollY; persist(); }
     home.hidden = true;
@@ -256,6 +281,7 @@ export function mountProductApp(host, options = {}) {
     instructions.hidden = true;
     input.blur();
     setSubmissionPending(true);
+    document.body.append(promptStatus);
     window.scrollTo(0, 0);
     detailTitle.textContent = job.prompt;
     detailPrompt.textContent = '';
@@ -269,6 +295,7 @@ export function mountProductApp(host, options = {}) {
     });
     progressController = progressFactory(progressHost, {
       estimateRange: generationEstimateRange,
+      elapsedHost: promptStatus,
       onCancel: () => cancelActiveRequest({ returnHome: true }),
     });
   }
@@ -300,16 +327,14 @@ export function mountProductApp(host, options = {}) {
     sourceFocusId = null;
     detailTitle.textContent = result.submittedPrompt ?? job.prompt;
     detailPrompt.textContent = '';
-    resultNote.textContent = result.cacheHit ? 'Loaded an existing set' : result.saveStatus === 'failed' ? 'This set wasn’t added to Recently made.' : '';
+    resultNote.textContent = result.saveStatus === 'failed' ? 'This set wasn’t added to Recently made.' : '';
     document.title = `${detailTitle.textContent} — Blawx`;
     devRecord.textContent = typeof result.provenance === 'string' ? result.provenance : result.saveStatus === 'failed' ? 'Unsaved local result' : `Public result · ${result.id}`;
     renderGenerationDiagnostics(result);
 
     job.phase = 'bricks';
     progressController?.setPhase('bricks');
-    const preview = await previewClient.prepare(result.model, { signal: job.controller.signal });
-    if (disposed || activeRequest !== job || job.routeVersion !== routeVersion) return;
-    detailStage?.setModel(result.model.kind === 'bricks' ? result.model : preview, {
+    detailStage?.setModel(result.model, {
       animate: true,
       frameModel: result.model,
       label: `${result.prompt}, interactive 3D LEGO-style set`,
@@ -317,8 +342,6 @@ export function mountProductApp(host, options = {}) {
     detailStage?.setLoading?.(false);
     entranceAvailable = false;
 
-    job.phase = 'guide';
-    progressController?.setPhase('guide');
     const finishGuide = () => {
       if (disposed || activeRequest !== job || job.routeVersion !== routeVersion) return;
       instructions.hidden = false;
@@ -334,6 +357,11 @@ export function mountProductApp(host, options = {}) {
         allowSemanticInference: !result.example && !result.cacheHit && Boolean(result.metadata) && allowSemanticInference,
         constructionClient,
         hideLoadingMessage: true,
+        onPhase: phase => {
+          if (phase !== 'guide' || disposed || activeRequest !== job || job.routeVersion !== routeVersion) return;
+          job.phase = phase;
+          progressController?.setPhase(phase);
+        },
         onReady: finishGuide,
         onError: finishGuide,
       });
@@ -361,11 +389,9 @@ export function mountProductApp(host, options = {}) {
       if (disposed || currentRoute !== routeVersion) return;
       detailTitle.textContent = result.title || result.prompt;
       detailPrompt.textContent = result.title && result.title.toLowerCase() !== result.prompt.toLowerCase() ? result.prompt : '';
-      resultNote.textContent = result.cacheHit ? 'Loaded an existing set' : result.saveStatus === 'failed' ? 'This set wasn’t added to Recently made.' : '';
+      resultNote.textContent = result.saveStatus === 'failed' ? 'This set wasn’t added to Recently made.' : '';
       document.title = `${detailTitle.textContent} — Blawx`;
-      const preview = await previewClient.prepare(result.model, { signal });
-      if (disposed || currentRoute !== routeVersion) return;
-      detailStage = stageFactory(detailHeroHost, { model: preview, label: `${result.prompt}, interactive 3D LEGO-style set`, animate: entranceAvailable, heroRotation: HERO_ROTATION_DEFAULTS });
+      detailStage = stageFactory(detailHeroHost, { model: result.model, label: `${result.prompt}, interactive 3D LEGO-style set`, animate: entranceAvailable, heroRotation: HERO_ROTATION_DEFAULTS });
       entranceAvailable = false;
       devRecord.textContent = typeof result.provenance === 'string' ? result.provenance : result.example ? 'Saved example' : result.saveStatus === 'failed' ? 'Unsaved local result' : `Public result · ${result.id}`;
       renderGenerationDiagnostics(result);
@@ -379,7 +405,7 @@ export function mountProductApp(host, options = {}) {
 
   function route(force = false) {
     const nextLocation = locationKey();
-    if (force !== true && nextLocation === handledLocation && !activeRequest) return;
+    if (force !== true && nextLocation === handledLocation) return;
     handledLocation = nextLocation;
     cancelActiveRequest();
     setSubmissionPending(false);
@@ -412,6 +438,7 @@ export function mountProductApp(host, options = {}) {
       if (activeRequest !== job || error.name === 'AbortError') return;
       activeRequest = null;
       progressController?.dispose(); progressController = null;
+      restorePromptStatus();
       setSubmissionPending(false);
       history.replaceState(null, '', location.pathname + location.search);
       handledLocation = locationKey();

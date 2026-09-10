@@ -1,25 +1,25 @@
 .generation-progress-host { margin-top: 48px; }
 .generation-progress-host:empty { display: none; }
 .generation-progress { display: grid; justify-items: start; gap: 24px; }
-.generation-progress ol { display: grid; margin: 0; padding: 0; list-style: none; }
+.generation-progress ol { width: 100%; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); margin: 0; padding: 0; list-style: none; }
 .generation-progress li {
   position: relative;
-  min-height: 54px;
+  min-width: 0;
   display: grid;
-  grid-template-columns: 18px minmax(0, 1fr);
-  align-items: start;
-  gap: 12px;
+  grid-template-rows: 17px auto;
+  gap: 8px;
   color: var(--quiet);
   font-size: 13px;
   line-height: 18px;
 }
+.generation-progress li > span:last-child { padding: 0 8px 0 1px; overflow-wrap: anywhere; }
 .generation-progress li:not(:last-child)::after {
   position: absolute;
   z-index: 0;
-  top: 10px;
-  bottom: -10px;
+  top: 8px;
   left: 8px;
-  width: 1px;
+  width: 100%;
+  height: 1px;
   background: var(--rule);
   content: '';
 }
@@ -46,7 +46,7 @@
   animation: generation-progress-stripes 1.8s steps(5, end) infinite;
 }
 @keyframes generation-progress-stripes { to { transform: translateX(7.071068px); } }
-.generation-elapsed { margin: -6px 0 0; color: var(--quiet); font-size: 12px; font-variant-numeric: tabular-nums; line-height: 1.4; }
+.generation-progress > .prompt-status { margin-top: -6px; font-variant-numeric: tabular-nums; }
 .generation-cancel {
   min-height: 44px;
   padding: 0 20px;
@@ -63,7 +63,7 @@
 #detail-view.is-generated-result .detail-copy h1 {
   max-width: 12ch;
   font-size: 36px;
-  font-weight: 400;
+  font-weight: 700;
   line-height: 1.04;
   letter-spacing: -.045em;
 }
@@ -71,15 +71,14 @@
 @media (max-width: 760px) {
   .generation-progress-host { margin-top: 24px; }
   .generation-progress { gap: 16px; }
-  .generation-progress li { min-height: 46px; }
   #detail-view.is-generated-result .detail-copy {
     justify-content: flex-end;
   }
   #detail-view.is-generated-result .detail-copy h1 {
     max-width: none;
-    font-size: 16px;
-    line-height: 1.2;
-    letter-spacing: -.02em;
+    font-size: clamp(38px, 13vw, 62px);
+    line-height: .94;
+    letter-spacing: -.065em;
   }
 }
 

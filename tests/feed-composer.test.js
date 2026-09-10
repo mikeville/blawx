@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 
-import { mountComposer } from '../mockups/feed/round2/composer.js';
+import { mountComposer } from '../src/composer.js';
 
 class ClassList {
   constructor() { this.values = new Set(); }
@@ -26,6 +26,7 @@ class FakeNode {
     this.textContent = '';
     this.id = '';
     this.disabled = false;
+    this.readOnly = false;
     this.inert = false;
     this.hidden = false;
   }
@@ -72,6 +73,8 @@ class FakeNode {
     this.listeners.set(type, listeners);
   }
   removeEventListener(type, listener) { this.listeners.get(type)?.delete(listener); }
+  dispatch(type, event = {}) { for (const listener of this.listeners.get(type) ?? []) listener(event); }
+  dispatchEvent(event) { this.dispatch(event.type, event); return !event.defaultPrevented; }
   listenerCount(type) { return this.listeners.get(type)?.size ?? 0; }
   contains(node) {
     return this === node || this.children.some(child => child.contains(node));
@@ -132,14 +135,17 @@ function fixture({ mobile = false, hash = '' } = {}) {
   home.append(hero, composer);
   body.append(home);
   const media = new FakeMedia(mobile);
+  const documentListeners = new Map();
   globalThis.document = {
     body,
     activeElement: null,
     createElement: tag => new FakeNode(tag),
     createComment: () => new FakeNode('#comment'),
+    addEventListener(type, listener) { const values = documentListeners.get(type) ?? new Set(); values.add(listener); documentListeners.set(type, values); },
+    removeEventListener(type, listener) { documentListeners.get(type)?.delete(listener); },
   };
   globalThis.window = { location: { hash }, matchMedia: () => media };
-  return { body, home, composer, form, field, input, make, message, media };
+  return { body, home, hero, composer, form, field, input, make, message, media, dispatchDocument(type, event) { for (const listener of documentListeners.get(type) ?? []) listener(event); }, documentListenerCount(type) { return documentListeners.get(type)?.size ?? 0; } };
 }
 
 test('circle composer restores the native desktop form and preserves its draft across breakpoints', () => {
@@ -173,6 +179,30 @@ test('circle composer restores the native desktop form and preserves its draft a
   controller.dispose();
   assert.equal(view.media.listeners.size, 0);
   assert.equal(view.form.listenerCount('submit'), 0);
+});
+
+test('mobile clear empties the prompt while outside pointer and Escape dismiss without losing it', () => {
+  const view = fixture({ mobile: true });
+  const controller = mountComposer({ composer: view.composer, promptInput: view.input, form: view.form, mode: 'circle', homeHost: view.home });
+  const clear = view.composer.querySelector('.composer-close');
+  let inputEvents = 0;
+  view.input.addEventListener('input', () => { inputEvents += 1; });
+  assert.equal(clear.getAttribute('aria-label'), 'Clear prompt');
+  clear.dispatch('click');
+  assert.equal(view.input.value, '');
+  assert.equal(inputEvents, 1);
+  assert.equal(view.composer.classList.contains('is-expanded'), true);
+  view.input.value = 'preserve outside';
+  view.dispatchDocument('pointerdown', { target: view.hero });
+  assert.equal(view.composer.classList.contains('is-collapsed'), true);
+  assert.equal(view.input.value, 'preserve outside');
+  view.form.dispatch('submit', { defaultPrevented: false, preventDefault() {} });
+  view.input.value = 'preserve escape';
+  view.composer.dispatch('keydown', { key: 'Escape', preventDefault() {} });
+  assert.equal(view.composer.classList.contains('is-collapsed'), true);
+  assert.equal(view.input.value, 'preserve escape');
+  controller.dispose();
+  assert.equal(view.documentListenerCount('pointerdown'), 0);
 });
 
 test('direct mobile detail starts collapsed and remains usable after desktop restoration', () => {
