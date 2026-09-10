@@ -186,12 +186,15 @@ main { padding: 64px 0 40px; }
 .feed-heading h1, .instructions-heading h2 { margin: 0; font-size: 14px; }
 .feed-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); }
 .feed-card {
+  display: block;
   min-width: 0;
   padding: 18px var(--panel-inset) var(--panel-inset);
   border: 0;
   border-bottom: 1px solid var(--rule);
   background: transparent;
+  color: inherit;
   text-align: left;
+  text-decoration: none;
 }
 .feed-card:nth-child(3n + 1) { padding-left: var(--page-gutter); }
 .feed-card:nth-child(3n) { padding-right: var(--page-gutter); }
@@ -206,8 +209,7 @@ main { padding: 64px 0 40px; }
 .feed-stage canvas { display: block; width: 100%; height: 100%; touch-action: pan-y; }
 .feed-card:hover, .feed-card:focus-within { background: var(--panel-wash); }
 .feed-card:active { background: var(--panel-press); }
-.feed-caption { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: baseline; gap: 12px; padding-top: 10px; }
-.feed-caption:is(button) {
+.feed-caption {
   display: grid;
   width: 100%;
   min-height: 44px;

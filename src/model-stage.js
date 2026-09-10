@@ -50,7 +50,7 @@ function reducedMotion() {
 }
 
 /** A data-free live stage. It never loads or generates a model. */
-export function mountModelStage(host, { model = null, label = 'Interactive 3D LEGO-style set', onOpen, animate = true, heroRotation = null, loading = false } = {}) {
+export function mountModelStage(host, { model = null, label = 'Interactive 3D LEGO-style set', onOpen, animate = true, heroRotation = null, loading = false, linked = false } = {}) {
   const root = document.createElement('div');
   root.className = 'hero-renderer';
   Object.assign(root.style, { position: 'relative', width: '100%', height: '100%', overflow: 'hidden' });
@@ -58,9 +58,10 @@ export function mountModelStage(host, { model = null, label = 'Interactive 3D LE
   const canvas = document.createElement('canvas');
   canvas.className = 'hero-canvas';
   canvas.dataset.phase = 'loading';
-  canvas.tabIndex = 0;
-  canvas.setAttribute('role', onOpen ? 'button' : 'img');
-  canvas.setAttribute('aria-label', label);
+  canvas.tabIndex = linked ? -1 : 0;
+  canvas.setAttribute('role', linked ? 'img' : onOpen ? 'button' : 'img');
+  if (linked) canvas.setAttribute('aria-hidden', 'true');
+  else canvas.setAttribute('aria-label', label);
   Object.assign(canvas.style, {
     position: 'absolute', inset: '0', width: '100%', height: '100%',
     display: 'block', opacity: '0', touchAction: 'pan-y', cursor: 'grab', outlineOffset: '-3px',
@@ -469,7 +470,7 @@ export function mountModelStage(host, { model = null, label = 'Interactive 3D LE
     const wasClick = !pointer.dragged;
     pointer = null;
     canvas.style.cursor = 'grab';
-    if (wasClick && !loadingCarousel) onOpen?.();
+    if (wasClick && !loadingCarousel) onOpen?.(event);
   }
   function onPointerCancel() {
     pointer = null;
@@ -485,7 +486,7 @@ export function mountModelStage(host, { model = null, label = 'Interactive 3D LE
     }
     if (onOpen && !loadingCarousel && (event.key === 'Enter' || event.key === ' ')) {
       event.preventDefault();
-      onOpen();
+      onOpen(event);
     }
   }
 

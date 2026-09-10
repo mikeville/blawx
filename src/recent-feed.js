@@ -1,4 +1,5 @@
 import { mountModelStage } from './model-stage.js';
+import { hasModifiedLinkIntent, resultHref, shouldHandleLinkClick } from './link-navigation.js';
 
 export function formatAge(createdAt, now = Date.now()) {
   const time = Date.parse(createdAt);
@@ -80,8 +81,11 @@ export function mountRecentFeed(host, {
         record.stage = mountModelStage(record.host, {
           model,
           label: `${record.item.prompt}, interactive 3D LEGO-style set`,
-          onOpen: () => onOpenSet(record.item.id),
+          onOpen: event => {
+            if (!hasModifiedLinkIntent(event)) onOpenSet(record.item.id);
+          },
           animate: false,
+          linked: true,
         });
       })
       .catch(cause => {
@@ -93,13 +97,14 @@ export function mountRecentFeed(host, {
       .finally(() => { if (record.controller === controller) record.controller = null; });
   }
   function createCard(item) {
-    const card = document.createElement('article');
+    const card = document.createElement('a');
     card.className = 'feed-card';
+    card.href = resultHref(item.id);
+    card.setAttribute('aria-label', item.prompt);
     const stageHost = document.createElement('div');
     stageHost.className = 'feed-stage';
     stageHost.dataset.resultId = item.id;
-    const caption = document.createElement('button');
-    caption.type = 'button';
+    const caption = document.createElement('div');
     caption.className = 'feed-caption';
     const prompt = document.createElement('span');
     prompt.className = 'feed-prompt';
@@ -115,7 +120,12 @@ export function mountRecentFeed(host, {
     }
     card.append(stageHost, caption);
     card.addEventListener('click', event => {
-      if (event.target.closest('canvas')) return;
+      if (event.target.closest('canvas')) {
+        if (shouldHandleLinkClick(event)) event.preventDefault();
+        return;
+      }
+      if (!shouldHandleLinkClick(event)) return;
+      event.preventDefault();
       onOpenSet(item.id);
     });
     grid.append(card);

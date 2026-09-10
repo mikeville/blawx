@@ -331,6 +331,24 @@ test('late comparison callbacks are ignored after cancellation', async () => {
   app.dispose();
 });
 
+test('the brand exposes a real home URL and leaves command-click to the browser', () => {
+  const window = installBrowser('#set/recent-1');
+  const { host, nodes } = productHost();
+  const app = mountProductApp(host, mountOptions());
+  let prevented = false;
+
+  assert.equal(nodes.get('.brand').attributes.get('href'), '/');
+  nodes.get('.brand').dispatch('click', {
+    button: 0,
+    metaKey: true,
+    preventDefault() { prevented = true; },
+  });
+
+  assert.equal(prevented, false);
+  assert.equal(window.location.hash, '#set/recent-1');
+  app.dispose();
+});
+
 test('a failed request restores the shared status node before retry and cancellation', async () => {
   installBrowser();
   const { host, nodes, form } = productHost();

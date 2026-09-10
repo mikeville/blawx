@@ -21,6 +21,7 @@ import { isDeveloperMode } from './developer-mode.js';
 import { mountScrollAwareHeader } from './scroll-aware-header.js';
 import { openFullscreenLayer } from './fullscreen-layer.js';
 import { MAX_PROMPT_CHARACTERS, promptSizeTier, truncatePrompt } from './prompt-policy.js';
+import { homeHref, resultHref, shouldHandleLinkClick } from './link-navigation.js';
 
 export function mountProductApp(host, options = {}) {
   const {
@@ -73,6 +74,7 @@ export function mountProductApp(host, options = {}) {
   const devGeneration = host.querySelector('.developer-generation') ?? document.createElement('div');
   const devConstruction = host.querySelector('.developer-construction') ?? document.createElement('div');
   const brand = host.querySelector('.brand');
+  brand.setAttribute('href', homeHref(location));
   const aboutLink = host.querySelector('.about-link');
   const scrollHeader = scrollHeaderFactory(host.querySelector('.brand-strip'));
   const makeButton = form.querySelector('.make-button');
@@ -249,7 +251,7 @@ export function mountProductApp(host, options = {}) {
     navigateId(id);
   }
   function navigateId(id) {
-    const next = `#set/${encodeURIComponent(id)}`;
+    const next = resultHref(id);
     if (location.hash === next) route(true);
     else location.hash = next;
   }
@@ -288,7 +290,7 @@ export function mountProductApp(host, options = {}) {
     requestAnimationFrame(() => {
       if (currentRoute !== routeVersion) return;
       window.scrollTo(0, homeScrollY);
-      if (sourceFocusId) host.querySelector(`[data-result-id="${CSS.escape(sourceFocusId)}"]`)?.parentElement?.querySelector('button')?.focus({ preventScroll: true });
+      if (sourceFocusId) host.querySelector(`[data-result-id="${CSS.escape(sourceFocusId)}"]`)?.closest('.feed-card')?.focus({ preventScroll: true });
     });
   }
 
@@ -344,7 +346,7 @@ export function mountProductApp(host, options = {}) {
 
   async function continueGeneratedDetail(job, result) {
     const id = result.id;
-    const next = `#set/${encodeURIComponent(id)}`;
+    const next = resultHref(id);
     history.pushState(null, '', next);
     handledLocation = locationKey();
     job.resultId = id;
@@ -504,6 +506,7 @@ export function mountProductApp(host, options = {}) {
   form.addEventListener('submit', event => { if (event.defaultPrevented) return; event.preventDefault(); const value = input.value.trim(); if (!value) { input.closest('.prompt-field').classList.add('is-invited'); input.focus({ preventScroll: true }); return; } generate(value); });
   input.addEventListener('input', () => { if (!activeRequest) message.textContent = ''; input.closest('.prompt-field').classList.remove('is-invited'); form.classList.toggle('has-prompt', Boolean(input.value.trim())); persist(); });
   brand.addEventListener('click', event => {
+    if (!shouldHandleLinkClick(event)) return;
     event.preventDefault();
     if (activeRequest) { cancelActiveRequest({ returnHome: true }); return; }
     if (location.hash) location.hash = '';
