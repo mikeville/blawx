@@ -1,5 +1,5 @@
 .assembly-booklet,.manual-guide-top{--manual-gap:12px;--manual-muted:var(--faint,#77736b)}
-.assembly-booklet{--manual-paper:var(--paper,#f4f4f4);--manual-ink:var(--ink,#171612);--manual-rule:var(--rule,#c9c5b9);--manual-muted:var(--faint,#77736b);overflow:clip;overflow-anchor:none;color:var(--manual-ink);background:var(--manual-paper);font-family:Helvetica,Arial,sans-serif}
+.assembly-booklet{--manual-paper:var(--paper,#f4f4f4);--manual-ink:var(--ink,#171612);--manual-rule:var(--manual-ink);--manual-muted:var(--faint,#77736b);overflow:clip;overflow-anchor:none;color:var(--manual-ink);background:var(--manual-paper);font-family:Helvetica,Arial,sans-serif}
 .manual-scroll{width:100%;padding:40px 0 72px}
 .manual-scroll summary{list-style:none;cursor:pointer}
 .manual-scroll summary::-webkit-details-marker{display:none}

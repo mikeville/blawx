@@ -190,7 +190,7 @@ main { padding: 64px 0 40px; }
   min-width: 0;
   padding: 18px var(--panel-inset) var(--panel-inset);
   border: 0;
-  border-bottom: 1px solid var(--rule);
+  border-bottom: 1px solid var(--ink);
   background: transparent;
   color: inherit;
   text-align: left;
@@ -198,7 +198,7 @@ main { padding: 64px 0 40px; }
 }
 .feed-card:nth-child(3n + 1) { padding-left: var(--page-gutter); }
 .feed-card:nth-child(3n) { padding-right: var(--page-gutter); }
-.feed-card:not(:nth-child(3n)) { border-right: 1px solid var(--rule); }
+.feed-card:not(:nth-child(3n)) { border-right: 1px solid var(--ink); }
 .card-image, .feed-stage {
   display: block;
   width: 100%;
