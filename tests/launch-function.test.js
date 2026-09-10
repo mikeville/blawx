@@ -17,6 +17,7 @@ import {
   OpenAIProviderError,
   usageCostMicros,
 } from '../netlify/functions/_shared/openai-provider.js';
+import { createResendNotifier } from '../netlify/functions/_shared/resend-notifier.js';
 import { createSupabaseLaunchStore } from '../netlify/functions/_shared/supabase-launch-store.js';
 
 const ORIGIN = 'https://blawx.netlify.app';
@@ -403,6 +404,49 @@ test('spend alert delivery claims once, uses idempotency keys, and acknowledges 
     ['finish', 2, false, 'provider_timeout'],
   ]);
   assert.doesNotMatch(formatSpendAlert(alerts[1]).text, /00000000|usage_unknown/);
+});
+
+test('Resend notifier sends a bounded idempotent text email without exposing configuration', async () => {
+  const calls = [];
+  const notifier = createResendNotifier({
+    apiKey: 're_private',
+    from: 'Blawx Alerts <alerts@example.com>',
+    to: 'owner@example.com',
+    fetchImpl: async (url, init) => {
+      calls.push({ url, init });
+      return new Response(JSON.stringify({ id: 'email_1' }), { status: 200 });
+    },
+  });
+  await notifier.send({
+    subject: 'Blawx daily spend reached 95%',
+    text: 'Blawx has reserved or recorded $190.00.',
+    idempotencyKey: 'spend_threshold:day:2099-05-17:95',
+  });
+  assert.equal(calls.length, 1);
+  assert.equal(calls[0].url, 'https://api.resend.com/emails');
+  assert.equal(calls[0].init.headers.authorization, 'Bearer re_private');
+  assert.equal(calls[0].init.headers['idempotency-key'], 'spend_threshold:day:2099-05-17:95');
+  assert.equal(calls[0].init.headers['user-agent'], 'blawx-spend-alerts/1.0');
+  assert.deepEqual(JSON.parse(calls[0].init.body), {
+    from: 'Blawx Alerts <alerts@example.com>',
+    to: ['owner@example.com'],
+    subject: 'Blawx daily spend reached 95%',
+    text: 'Blawx has reserved or recorded $190.00.',
+  });
+});
+
+test('Resend notifier rejects header injection and reports provider failures safely', async () => {
+  assert.throws(() => createResendNotifier({
+    apiKey: 're_private', from: 'alerts@example.com\r\nBcc: attacker@example.com', to: 'owner@example.com',
+  }), /resend_from_invalid/);
+  const notifier = createResendNotifier({
+    apiKey: 're_private', from: 'alerts@example.com', to: 'owner@example.com',
+    fetchImpl: async () => new Response('{}', { status: 429 }),
+  });
+  await assert.rejects(
+    notifier.send({ subject: 'Alert', text: 'Spend alert.', idempotencyKey: 'alert-1' }),
+    error => error.code === 'resend_http_429' && !String(error).includes('re_private'),
+  );
 });
 
 test('Supabase alert adapter calls only the exact claim and acknowledgement RPCs', async () => {
