@@ -3,6 +3,14 @@ import test from 'node:test';
 import { bytesToPostgresBytea, hashConnection } from '../netlify/functions/_shared/connection-hash.js';
 import { deliverSpendAlerts, formatSpendAlert } from '../netlify/functions/_shared/alert-delivery.js';
 import { createGenerationStatusHandler } from '../netlify/functions/_shared/generation-status-handler.js';
+import { createBackgroundGenerationHandler } from '../netlify/functions/_shared/background-generation-handler.js';
+import {
+  backgroundGenerationTaskConfig,
+  createBackgroundGenerationDispatcher,
+  parseSignedGenerationTask,
+  serializeGenerationTask,
+  signGenerationTask,
+} from '../netlify/functions/_shared/background-generation-task.js';
 import {
   createPublicGenerationCacheKey,
   createPublicGenerationVersion,
@@ -158,15 +166,62 @@ test('successful provider result is reserved, marked, and finalized once', async
   ]);
 });
 
-test('deferred generation returns a job receipt before provider completion and saves atomically', async () => {
+test('launch returns a job receipt only after a true background dispatch is accepted', async () => {
   const calls = [];
-  let deferred;
-  let releaseProvider;
-  const providerGate = new Promise((resolve) => { releaseProvider = resolve; });
   const generationVersion = 'raw-' + 'd'.repeat(64);
   const store = {
     findCachedResult: async () => null,
     reserve: async () => ({ accepted: true, decision: 'reserved' }),
+    cancelBeforeProvider: async () => { throw new Error('dispatch should not be cancelled'); },
+  };
+  const provider = async () => { throw new Error('provider must run only in the worker'); };
+  provider.prepare = async (userPrompt) => ({ input: userPrompt, userPrompt });
+  const response = await createLaunchHandler(baseOptions({
+    store,
+    provider,
+    generationVersion,
+    dispatchGeneration: async (task) => { calls.push(task); },
+  }))(request(), context());
+
+  assert.equal(response.status, 202);
+  assert.deepEqual(await response.json(), { requestId: REQUEST_ID, status: 'pending' });
+  assert.deepEqual(calls, [{ requestId: REQUEST_ID, submittedPrompt: 'a tiny lighthouse' }]);
+});
+
+test('failed background dispatch refunds the pre-provider attempt', async () => {
+  const calls = [];
+  const store = {
+    reserve: async () => ({ accepted: true, decision: 'reserved' }),
+    cancelBeforeProvider: async (input) => { calls.push(input); return true; },
+  };
+  const provider = async () => { throw new Error('provider must not run'); };
+  provider.prepare = async (prompt) => prompt;
+  const response = await createLaunchHandler(baseOptions({
+    store,
+    provider,
+    dispatchGeneration: async () => { throw new Error('background unavailable'); },
+  }))(request(), context());
+  const payload = await response.json();
+
+  assert.equal(response.status, 503);
+  assert.equal(payload.error.code, 'generation-not-started');
+  assert.match(payload.error.message, /not counted/i);
+  assert.equal(calls.length, 1);
+  assert.equal(calls[0].failureCode, 'background_dispatch_failed');
+});
+
+test('signed background worker runs and atomically saves the reserved generation', async () => {
+  const calls = [];
+  const secret = 'w'.repeat(32);
+  const generationVersion = 'raw-' + 'e'.repeat(64);
+  const body = serializeGenerationTask({ requestId: REQUEST_ID, submittedPrompt: 'a tiny lighthouse' });
+  const signature = await signGenerationTask(body, secret);
+  const workerRequest = new Request(`${ORIGIN}/.netlify/functions/generation-worker`, {
+    method: 'POST',
+    headers: { 'content-type': 'application/json', [backgroundGenerationTaskConfig.signatureHeader]: signature },
+    body,
+  });
+  const store = {
     markProviderStarted: async ({ signal }) => { calls.push(['mark', signal]); return true; },
     completeGeneration: async (input) => {
       calls.push(['complete', input.requestId, input.actualMicros]);
@@ -184,10 +239,9 @@ test('deferred generation returns a job receipt before provider completion and s
   };
   const provider = async (_prepared, { requestId, signal }) => {
     calls.push(['provider', signal]);
-    await providerGate;
     return {
       actualMicros: 42000,
-      resultId: 'resp-deferred-1',
+      resultId: 'resp-worker-1',
       payload: {
         requestId,
         prompt: 'a tiny lighthouse',
@@ -198,25 +252,44 @@ test('deferred generation returns a job receipt before provider completion and s
       },
     };
   };
-  provider.prepare = async (userPrompt) => ({ input: userPrompt, userPrompt });
-  const response = await createLaunchHandler(baseOptions({
-    store,
-    provider,
-    generationVersion,
-    defer: (promise) => { deferred = promise; },
-  }))(request(), context());
+  provider.prepare = async (prompt) => ({ input: prompt, userPrompt: prompt });
+  const response = await createBackgroundGenerationHandler({
+    secret, store, provider, generationVersion, now: () => FIXED_TIME,
+  })(workerRequest);
 
-  assert.equal(response.status, 202);
-  assert.deepEqual(await response.json(), { requestId: REQUEST_ID, status: 'pending' });
-  assert.ok(deferred instanceof Promise);
-  assert.equal(calls.some(([stage]) => stage === 'complete'), false);
-  releaseProvider();
-  await deferred;
+  assert.equal(response.status, 200);
   assert.deepEqual(calls, [
     ['mark', undefined],
     ['provider', undefined],
     ['complete', REQUEST_ID, 42000],
   ]);
+});
+
+test('background task signatures prevent public worker entry and dispatcher requires a 202 acknowledgement', async () => {
+  const secret = 's'.repeat(32);
+  let dispatched;
+  const dispatch = createBackgroundGenerationDispatcher({
+    url: `${ORIGIN}/.netlify/functions/generation-worker`,
+    secret,
+    fetchImpl: async (url, init) => { dispatched = { url, init }; return { status: 202 }; },
+  });
+  await dispatch({ requestId: REQUEST_ID, submittedPrompt: 'a tiny lighthouse' });
+  assert.equal(dispatched.url.href, `${ORIGIN}/.netlify/functions/generation-worker`);
+  assert.deepEqual(
+    await parseSignedGenerationTask(new Request(dispatched.url, dispatched.init), secret),
+    { version: 1, requestId: REQUEST_ID, prompt: 'a tiny lighthouse' },
+  );
+  await assert.rejects(
+    parseSignedGenerationTask(new Request(dispatched.url, {
+      ...dispatched.init,
+      headers: { ...dispatched.init.headers, [backgroundGenerationTaskConfig.signatureHeader]: '0'.repeat(64) },
+    }), secret),
+    /worker_signature_invalid/,
+  );
+  const rejected = createBackgroundGenerationDispatcher({
+    url: `${ORIGIN}/.netlify/functions/generation-worker`, secret, fetchImpl: async () => ({ status: 200 }),
+  });
+  await assert.rejects(rejected({ requestId: REQUEST_ID, submittedPrompt: 'a tiny lighthouse' }), /worker_dispatch_rejected/);
 });
 
 test('generation status stays pending, is connection-bound, and returns a saved result', async () => {

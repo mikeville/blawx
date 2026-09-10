@@ -378,6 +378,42 @@ test('a failed request restores the shared status node before retry and cancella
   app.dispose();
 });
 
+test('a timed-out accepted build offers Check again and resumes without another generation POST', async () => {
+  installBrowser();
+  const { host, nodes, form } = productHost();
+  const completed = deferred();
+  let generateCalls = 0;
+  let resumeCalls = 0;
+  const timeout = Object.assign(new Error('Still building.'), {
+    code: 'generation-status-timeout',
+    requestId: 'accepted-job-1',
+  });
+  const app = mountProductApp(host, mountOptions({
+    generationClient: {
+      generate() { generateCalls += 1; return Promise.reject(timeout); },
+      resume(requestId) {
+        resumeCalls += 1;
+        assert.equal(requestId, 'accepted-job-1');
+        return completed.promise;
+      },
+    },
+    stageFactory: () => ({ dispose() {} }),
+    progressFactory: () => ({ setPhase() {}, complete() {}, dispose() {} }),
+  }));
+  nodes.get('#prompt').value = 'a small windmill';
+  form.dispatch('submit');
+  await settle();
+
+  const action = nodes.get('.form-message').children.at(-1);
+  assert.equal(action.textContent, 'Check again');
+  action.onclick();
+  assert.equal(generateCalls, 1);
+  assert.equal(resumeCalls, 1);
+  completed.reject(new DOMException('Cancelled', 'AbortError'));
+  await settle();
+  app.dispose();
+});
+
 test('opening a cached recent set mounts raw immediately and honors an explicit naming opt-out', async () => {
   const window = installBrowser('#set/recent-1');
   const { host } = productHost();

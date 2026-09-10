@@ -100,6 +100,46 @@ export function createGenerationClient(
       || typeof statusEndpoint !== 'function' || typeof now !== 'function') {
     throw new TypeError('Invalid generation polling configuration.');
   }
+  async function pollForResult(requestId, { signal } = {}) {
+    if (typeof requestId !== 'string' || !requestId) {
+      throw new GenerationClientError('The build receipt is missing.', { code: 'invalid-job-receipt' });
+    }
+    const deadline = now() + pollTimeoutMs;
+    while (true) {
+      if (now() >= deadline) {
+        throw new GenerationClientError(
+          'The build is still taking longer than expected. It may finish and appear in Recently made; check this same build again in a moment.',
+          { code: 'generation-status-timeout', status: 504, requestId },
+        );
+      }
+      await abortableDelay(pollIntervalMs, signal);
+      let response;
+      let payload;
+      try {
+        response = await fetchImpl(statusEndpoint(requestId), {
+          method: 'GET', headers: { accept: 'application/json' }, signal,
+        });
+        payload = await readJson(response);
+      } catch (cause) {
+        if (cause?.name === 'AbortError') throw cause;
+        if (now() < deadline) continue;
+        throw new GenerationClientError(
+          'Blawx could not check whether the build finished. It may still appear in Recently made; check this same build again in a moment.',
+          { code: 'generation-status-unavailable', requestId, cause },
+        );
+      }
+      if (response.status === 202) {
+        if (!pendingReceipt(payload, requestId)) {
+          throw new GenerationClientError('The build service returned an invalid job status.', { code: 'malformed-response', status: response.status, requestId });
+        }
+        continue;
+      }
+      if (response.status === 503 && payload?.error?.code === 'status-unavailable' && now() < deadline) continue;
+      if (!response.ok) throwHttpError(response, payload);
+      return validateResult(response, payload);
+    }
+  }
+
   return {
     async generate(prompt, { signal } = {}) {
       const normalizedPrompt = typeof prompt === 'string' ? prompt.trim() : '';
@@ -128,45 +168,12 @@ export function createGenerationClient(
         if (!pendingReceipt(payload)) {
           throw new GenerationClientError('The build service returned an invalid job receipt.', { code: 'malformed-response', status: response.status });
         }
-        const requestId = payload.requestId;
-        const deadline = now() + pollTimeoutMs;
-        while (true) {
-          if (now() >= deadline) {
-            throw new GenerationClientError(
-              'The build is still taking longer than expected. It may finish and appear in Recently made; wait a moment before trying again.',
-              { code: 'generation-status-timeout', status: 504, requestId },
-            );
-          }
-          await abortableDelay(pollIntervalMs, signal);
-          try {
-            response = await fetchImpl(statusEndpoint(requestId), {
-              method: 'GET',
-              headers: { accept: 'application/json' },
-              signal,
-            });
-            payload = await readJson(response);
-          } catch (cause) {
-            if (cause?.name === 'AbortError') throw cause;
-            if (now() < deadline) continue;
-            throw new GenerationClientError(
-              'Blawx could not check whether the build finished. It may still appear in Recently made; wait a moment before trying again.',
-              { code: 'generation-status-unavailable', requestId, cause },
-            );
-          }
-          if (response.status === 202) {
-            if (!pendingReceipt(payload, requestId)) {
-              throw new GenerationClientError('The build service returned an invalid job status.', { code: 'malformed-response', status: response.status, requestId });
-            }
-            continue;
-          }
-          if (response.status === 503 && payload?.error?.code === 'status-unavailable' && now() < deadline) {
-            continue;
-          }
-          if (!response.ok) throwHttpError(response, payload);
-          break;
-        }
+        return pollForResult(payload.requestId, { signal });
       }
       return validateResult(response, payload);
+    },
+    resume(requestId, { signal } = {}) {
+      return pollForResult(requestId, { signal });
     },
   };
 }

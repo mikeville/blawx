@@ -470,7 +470,7 @@ export function mountProductApp(host, options = {}) {
     mountDetail(id);
   }
 
-  async function generate(prompt) {
+  async function generate(prompt, { requestId = null } = {}) {
     if (activeRequest) return;
     if (!generationEnabled) {
       showMessage('Live generation is being prepared. Explore the saved sets below, or clone the repo and use your own API key to generate freely.');
@@ -483,7 +483,9 @@ export function mountProductApp(host, options = {}) {
     beginGeneratedDetail(job);
     try {
       const startedAt = performance.now();
-      const result = await generationClient.generate(prompt, { signal: job.controller.signal });
+      const result = requestId && typeof generationClient.resume === 'function'
+        ? await generationClient.resume(requestId, { signal: job.controller.signal })
+        : await generationClient.generate(prompt, { signal: job.controller.signal });
       const browserWaitMs = performance.now() - startedAt;
       if (activeRequest !== job || job.controller.signal.aborted || disposed || job.routeVersion !== routeVersion) return;
       await continueGeneratedDetail(job, rememberGeneratedResult(result, prompt, browserWaitMs));
@@ -498,7 +500,16 @@ export function mountProductApp(host, options = {}) {
       await mountHome();
       if (!disposed && !home.hidden) {
         if (error.code === 'static-demo') showMessage(error.message);
-        else showMessage(error.message || 'Couldn’t make that set.', 'Try again', () => generate(lastPrompt));
+        else {
+          const canResume = typeof error.requestId === 'string'
+            && ['generation-status-timeout', 'generation-status-unavailable'].includes(error.code)
+            && typeof generationClient.resume === 'function';
+          showMessage(
+            error.message || 'Couldn’t make that set.',
+            canResume ? 'Check again' : 'Try again',
+            () => generate(lastPrompt, canResume ? { requestId: error.requestId } : {}),
+          );
+        }
       }
     }
   }

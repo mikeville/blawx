@@ -5,6 +5,7 @@ import { createOpenAIProvider } from './_shared/openai-provider.js';
 import { createPublicGenerationVersion } from './_shared/generation-cache.js';
 import { OPENAI_LAUNCH_POLICY } from './_shared/openai-budget.js';
 import { createSupabaseLaunchStore } from './_shared/supabase-launch-store.js';
+import { createBackgroundGenerationDispatcher } from './_shared/background-generation-task.js';
 
 const PROMPT_TEMPLATE_URL = new URL('../../server/prompts/voxel-loft.txt', import.meta.url);
 
@@ -56,10 +57,20 @@ async function configuredRuntime() {
 export default async (request: Request, context: {
   ip?: string;
   requestId?: string;
-  waitUntil?: (promise: Promise<unknown>) => void;
+  site?: { url?: string };
 }) => {
   const secret = env('BLAWX_IP_HMAC_SECRET');
   const runtime = await configuredRuntime();
+  let dispatchGeneration;
+  try {
+    const siteUrl = env('DEPLOY_PRIME_URL') || context.site?.url || env('URL');
+    dispatchGeneration = createBackgroundGenerationDispatcher({
+      url: new URL('/.netlify/functions/generation-worker', siteUrl).href,
+      secret,
+    });
+  } catch {
+    dispatchGeneration = async () => { throw new Error('worker_dispatch_unavailable'); };
+  }
   const handler = createLaunchHandler({
     generationEnabled: env('GENERATION_ENABLED') === 'true',
     allowedOrigins: allowedOrigins(request),
@@ -72,9 +83,7 @@ export default async (request: Request, context: {
       ? async ({ ip, now }) => bytesToPostgresBytea(await hashConnection({ ip, secret, now }))
       : null,
     logEvent: (event) => console.info(JSON.stringify({ scope: 'blawx-generation', ...event })),
-    defer: typeof context.waitUntil === 'function'
-      ? (promise) => context.waitUntil?.(promise)
-      : null,
+    dispatchGeneration,
   });
   return handler(request, context);
 };

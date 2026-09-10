@@ -163,7 +163,7 @@ function storedFailureCode(error) {
     : 'provider_usage_unknown';
 }
 
-async function runReservedGeneration({
+export async function runReservedGeneration({
   requestId,
   submittedPrompt,
   providerInput,
@@ -312,7 +312,7 @@ export function createLaunchHandler({
   generationVersion = null,
   now = () => new Date(),
   logEvent = () => {},
-  defer = null,
+  dispatchGeneration = null,
 }) {
   const origins = new Set(allowedOrigins ?? []);
   const log = (event) => {
@@ -386,7 +386,35 @@ export function createLaunchHandler({
     if (!reservation?.accepted) return reservationRejection(reservation, requestId);
     log({ requestId, stage: 'reserved' });
 
-    const run = () => runReservedGeneration({
+    if (typeof dispatchGeneration === 'function') {
+      try {
+        await dispatchGeneration({ requestId, submittedPrompt: parsed.prompt });
+      } catch {
+        log({ requestId, stage: 'dispatch-failed' });
+        try {
+          const cancelled = await store.cancelBeforeProvider({
+            requestId,
+            failureCode: 'background_dispatch_failed',
+            now: now(),
+          });
+          if (cancelled) {
+            return errorResponse(
+              503,
+              'generation-not-started',
+              'The build could not start, so this attempt was not counted. Try again.',
+              requestId,
+            );
+          }
+        } catch {
+          // A reservation that cannot be safely cancelled remains fail-closed.
+        }
+        return errorResponse(503, 'generation-paused', FRIENDLY_PAUSED_MESSAGE, requestId);
+      }
+      log({ requestId, stage: 'dispatched' });
+      return jsonResponse(202, { requestId, status: 'pending' });
+    }
+
+    return runReservedGeneration({
       requestId,
       submittedPrompt: parsed.prompt,
       providerInput,
@@ -395,17 +423,9 @@ export function createLaunchHandler({
       cacheKey,
       generationVersion,
       now,
-      signal: typeof defer === 'function' ? undefined : request.signal,
+      signal: request.signal,
       log,
     });
-
-    if (typeof defer === 'function') {
-      const completion = Promise.resolve().then(run);
-      defer(completion.then(() => undefined));
-      log({ requestId, stage: 'dispatched' });
-      return jsonResponse(202, { requestId, status: 'pending' });
-    }
-    return run();
   };
 }
 

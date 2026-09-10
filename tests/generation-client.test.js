@@ -41,6 +41,21 @@ test('accepts a job receipt and polls with short requests until the saved set is
   ]);
 });
 
+test('resumes an accepted job with status GETs and never starts another build', async () => {
+  const calls = [];
+  const client = createGenerationClient(async (url, options) => {
+    calls.push({ url, method: options.method });
+    return response({ ...success, resultId: 'request-1', cacheHit: false, saveStatus: 'saved' });
+  }, '/api/generate', {
+    pollIntervalMs: 0,
+    statusEndpoint: (requestId) => `/api/generations/${requestId}`,
+  });
+
+  const result = await client.resume('request-1');
+  assert.equal(result.resultId, 'request-1');
+  assert.deepEqual(calls, [{ url: '/api/generations/request-1', method: 'GET' }]);
+});
+
 test('retries a transient unreadable status response without starting another build', async () => {
   let calls = 0;
   const client = createGenerationClient(async () => {
