@@ -30,6 +30,14 @@ The pipeline is roughly:
 
 `prompt → voxel model → brick packing → assembly plan → instructions`
 
+## Try it online
+
+The public demo is live at [blawx.netlify.app](https://blawx.netlify.app/).
+Saved sets work immediately. Fresh builds use a shared, server-side OpenAI
+connection with daily usage and spending limits, so generation may occasionally
+pause or ask you to try again later. API keys and quota data never enter the
+browser bundle.
+
 ## Run it locally
 
 Blawx is tested with Node.js 22.
@@ -44,12 +52,17 @@ a model call.
 
 To generate a new set, install and sign in to the
 [Codex CLI](https://developers.openai.com/codex/cli/), then submit a prompt in
-the app. Generation uses your local ChatGPT authentication; there is no paid API
-fallback. Prompts and results are stored in private application data outside the
-repository.
+the app. Local generation uses your own ChatGPT authentication through Codex;
+it does not use the public demo's API key, Supabase project, or shared quota.
+There is no paid API fallback in local mode. Prompts and results are stored in
+private application data outside the repository.
 
-The generation server is intended for local use only. A static build includes
-the viewer and saved sets, but not the prompt-generation backend.
+`npm run build` creates the static browser app. Running that build by itself
+includes the viewer and saved sets but not a usable generation backend. The
+hosted demo adds its generation endpoint through Netlify Functions. If you
+deploy your own copy, you must supply your own server-side provider and database
+configuration; nothing private is included in this repository or inherited
+from the public demo.
 
 ## Develop
 
