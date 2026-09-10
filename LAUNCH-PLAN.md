@@ -1,6 +1,6 @@
 # Blawx public launch plan
 
-Status: implementation in progress 2026-09-09. The generation-disabled static site is live at `https://blawx.netlify.app/`; a non-production disabled-Function canary is live at `https://6aa1cb3e81c66b91fb82210f--blawx.netlify.app/`. The home, six bundled examples, saved assets, hash detail route, and no-provider message were verified. The dedicated Free Plan Supabase project `Blawx` (`iveecrkegbqohgfkcbda`) is active and healthy in `us-east-1`. Migrations `20260909191649_launch_safety_controls`, `20260909202657_spend_alert_delivery_queue`, `20260909204919_public_generation_result_cache`, and `20260909210658_public_generation_feed_reads` are applied. The private quota/spend/lease/alert/result ledgers and server-role-only RPCs pass rollback and live transactional tests; exact raw-generation cache hits bypass quota and provider work, and sanitized feed/detail projections omit source, provider, diagnostic, and accounting fields. The kill switch is off and real attempt/spend/alert/result rows are empty. The Netlify request controller, Supabase adapter, bounded OpenAI provider, provider-neutral alert delivery layer, and public result handlers pass 50 focused tests. The app and three deployable Functions build successfully and contain no credential-shaped strings. They include the fixed prompt and provider code, but generation remains disabled and no production key is configured. No paid model call is authorized by this plan.
+Status: public generation launched 2026-09-10 at `https://blawx.netlify.app/`; immutable production deploy `https://6aa28ec83ac423752756e077--blawx.netlify.app/` is ready. The production-only browser and Netlify Function switches are `true`, the Supabase `generation_enabled` switch is `true`, and Deploy Preview generation remains off. The dedicated Free Plan Supabase project `Blawx` (`iveecrkegbqohgfkcbda`) is active and healthy in `us-east-1`; all six launch migrations are applied. The private quota/spend/lease/alert/result ledgers and server-role-only RPCs pass rollback and live transactional tests; exact raw-generation cache hits bypass quota and provider work, and sanitized feed/detail projections omit source, provider, diagnostic, and accounting fields. Anonymous hourly rollups count daily-rate, budget, concurrency, kill-switch, replay, and conflict rejections inside the atomic reservation transaction without retaining prompts, IPs, connection hashes, request IDs, or user agents. Owner-only `blawx_private.monitoring_dashboard` combines those gates with daily provider outcomes and spend while hiding preserved future-dated test fixtures. Live parallel races prove the 10-call concurrency ceiling and both monetary ceilings without provider entry. OpenAI project `Blawx` is verified Astra-only with a $1,000 enforced monthly limit, eight owner-email alerts, and 60 RPM / 500,000 TPM. Its service-account key is Restricted to model requests, with every unrelated API category set to None; it has no provider expiry, so a 90-day rotation reminder is planned. OpenAI, Supabase, IP-HMAC, and send-only Resend secrets are protected in Netlify for Production and Deploy Previews; the five-minute scheduled Resend worker is active on production and its isolated delivery test passed exactly once. One separately authorized paid smoke generated result `f935c1cc-b1e0-4217-8ead-5ca4bc17b04e` on `gpt-6-astra` with one request, zero retries, 19.185 seconds provider time, and $0.058780 actual spend. Launch verification served that result as a zero-cost production cache hit, recorded one deliberate database kill-switch rejection, and then enabled the final database switch without another paid call. Current controls are 3 fresh attempts per connection per UTC day, $200/day, $1,000/month, $0.20 reserved per request, and 10 concurrent generations; launch state is $0 reserved and zero active calls. `MONITORING.md` is the owner runbook.
 
 ## Launch outcome
 
@@ -13,9 +13,10 @@ Publish Blawx as an open-source portfolio app at a standalone Netlify URL and, a
 | Fresh provider attempts | 3 per connection per UTC day | Atomic Supabase reservation before provider entry |
 | Daily application ceiling | $200 per UTC day, editable | Same atomic reservation |
 | Monthly application ceiling | $1,000 per calendar month, editable | Same atomic reservation |
-| OpenAI project hard limit | $1,100 per month | OpenAI project settings, independent of the app |
+| OpenAI project hard limit | $1,000 per month | OpenAI project settings, independent of the app |
 | Per-request reservation | $0.20 maximum | Supabase ledger before provider entry |
-| Concurrent fresh generations | 2 globally | Atomic lease in Supabase |
+| Concurrent fresh generations | 10 globally | Atomic lease in Supabase |
+| OpenAI throughput | 60 RPM / 500,000 TPM | Project-level Astra limit |
 | Application retries | 0 | Netlify Function/provider adapter |
 | Provider fallbacks | 0 at launch | Netlify Function/provider adapter |
 | Prompt length | 500 Unicode characters | Browser and Function |
@@ -146,13 +147,13 @@ Friendly global closure copy:
 
 Configure independent channels so one broken subsystem cannot hide spend:
 
-1. OpenAI project budget notifications and the $1,100 hard project limit.
+1. OpenAI project budget notifications and the $1,000 enforced project limit.
 2. Application alerts from the Supabase ledger at daily $100, $160, $190, and $200; monthly $250, $500, $750, $900, and $1,000.
 3. Immediate alerts for kill-switch activation, unknown usage charged at reservation, reconciliation mismatch, repeated provider failures, and a ceiling rejection.
 4. A scheduled reconciliation compares application totals with available OpenAI project usage/cost data. Any material mismatch turns database generation off before notifying.
 5. Alert delivery is deduplicated in `spend_alerts`. Failed alert delivery does not re-enable generation or bypass a cap.
 
-Implemented now: daily thresholds at 50/80/95/100%, monthly thresholds at 25/50/75/90/100%, unknown-usage alerts, and accounting-breach alerts are enqueued atomically. Workers claim with `SKIP LOCKED`, pass the durable alert key to the notifier for provider-side idempotency, and dead-letter after five failed deliveries. The queue and mock delivery path are verified; the actual email destination/provider remains deliberately unconfigured until Mike chooses them.
+Implemented now: daily thresholds at 50/80/95/100%, monthly thresholds at 25/50/75/90/100%, unknown-usage alerts, and accounting-breach alerts are enqueued atomically. A Netlify scheduled function runs every five minutes on published deploys, claims with `SKIP LOCKED`, sends through Resend using the durable alert key as the provider idempotency key, and dead-letters after five failed deliveries. Missing mail configuration claims nothing. The queue, Resend adapter, disabled behavior, preview bundle, and mocked delivery path are verified; a send-only provider key and the recipient/sender are configured in Netlify. One isolated real delivery test was delivered and acknowledged exactly once.
 
 Email is the proposed first channel. Mike supplies the recipient and configures the mail provider/API key outside chat; Codex can implement and test delivery with a mock first.
 
@@ -164,13 +165,13 @@ Email is the proposed first channel. Mike supplies the recipient and configures 
 | 2 | Add Netlify build config, relative/subpath-safe resources, and static no-provider UI | Codex | Done; build and focused tests pass |
 | 3 | Build and deploy a draft Netlify site with generation disabled | Codex after Mike confirms it is a new site named `blawx` | Done; `https://blawx.netlify.app/` verified |
 | 4 | Confirm Supabase organization, new project name/region, and displayed recurring cost | Mike | Done; Free Plan, $0/month, no paid add-ons |
-| 5 | Create Supabase project and migrations; run security/performance advisors | Codex after step 4 | Done; quota/spend, alert-queue, exact result-cache, and server-only feed-read migrations applied; rollback/live tests pass, kill switch off, advisor notes are informational/expected |
+| 5 | Create Supabase project and migrations; run security/performance advisors | Codex after step 4 | Done; quota/spend, alert-queue, exact result-cache, server-only feed-read, anonymous gate-rollup, and owner-dashboard migrations applied; rollback/live tests pass, kill switch off, advisor notes are informational/expected |
 | 6 | Implement Netlify Functions and Supabase adapter against mocked OpenAI responses | Codex | Done; generation controller, connection hash, Supabase adapter, bounded one-request OpenAI adapter, and sanitized feed/detail handlers pass mocked HTTP tests |
-| 7 | Configure OpenAI project, $1,100 hard limit, alerts, and a project-scoped service-account key | Mike; Codex supplies click-by-click checklist | Not started |
-| 8 | Put OpenAI/Supabase/mail secrets in Netlify Function-only environment settings | Mike enters secrets directly; Codex verifies names/behavior without printing values | Not started |
-| 9 | Run quota, race, cap, kill-switch, failure, secret, alert-queue, cache, and bundle tests | Codex | In progress; database behavior, alert queue, exact cache bypass/version invalidation, public projection privacy, mocked failure/timeout/429/unknown-usage/delivery paths, 50 focused tests, Function bundle, and app build pass; source secret scan is clean; parallel database race remains |
-| 10 | Authorize one paid smoke test with an explicit maximum of $0.20 | Mike | Separate approval required |
-| 11 | Deploy a non-production canary, verify ledgers and alerts, then promote | Codex after gates pass | In progress; disabled-Function canary deployed and static/no-provider UI verified; server-only secrets, live ledger/alert verification, paid smoke authorization, and promotion remain |
+| 7 | Configure OpenAI project, enforced limit, alerts, rate limits, and a project-scoped service-account key | Mike; Codex supplies click-by-click checklist | Done; $1,000 limit, eight alerts, Astra-only allowlist, 60 RPM / 500,000 TPM, and Restricted model-request-only service-account key saved; key has no provider expiry, so schedule 90-day rotation |
+| 8 | Put OpenAI/Supabase/HMAC/Resend secrets in protected Netlify environment settings | Mike enters provider secrets directly; Codex generates the HMAC secret and verifies names/behavior without printing values | Done for Production and Deploy Previews; Resend is limited to Sending access and alert sender/recipient are configured |
+| 9 | Run quota, race, cap, kill-switch, failure, secret, alert-queue, cache, and bundle tests | Codex | Done; effective 594/594 test checkpoint, production build, live zero-ledger canary refusal, exact concurrency/daily/monthly parallel-race outcomes, database behavior, alert queue and Resend adapter, cache/privacy, mocked failure paths, and source secret scan pass |
+| 10 | Authorize one paid smoke test with an explicit maximum of $0.20 | Mike | Done 2026-09-10; separately authorized |
+| 11 | Deploy a non-production canary, verify ledgers and alerts, then promote | Codex after gates pass | Done 2026-09-10; paid canary reconciled at $0.058780, production deploy `6aa28ec83ac423752756e077` passed the database-gated preflight, and public generation is enabled. |
 | 12 | Add the `/blawx/` proxy in the portfolio repo and verify assets/API/hash routes | Codex after standalone stability | Not started |
 
 ## Mike’s required decisions/actions
@@ -179,14 +180,14 @@ These cannot be safely inferred or completed without Mike:
 
 1. Confirm that there is no legacy Blawx Netlify site to reuse and authorize creating a new Netlify project named `blawx` in the connected team.
 2. Confirm the connected Supabase organization, project name `Blawx`, region (proposed `us-east-1`), and the exact recurring cost returned by Supabase before creation.
-3. Choose the alert email address and enter any mail-provider secret directly in the provider/Netlify UI.
-4. In OpenAI, create or select the dedicated Blawx project, set the $1,100 monthly hard limit and alerts, create a project-scoped service account, and enter its key directly into Netlify.
-5. Explicitly authorize the bounded paid smoke test when all no-spend gates pass.
-6. Review the standalone canary, then approve public promotion and portfolio navigation placement.
+3. Done: Resend is signed in; a Sending-access key is protected in Netlify and the alert sender/recipient are configured for Production and Deploy Previews.
+4. Done: dedicated OpenAI project, $1,000 enforced monthly limit, alerts, Astra allowlist/rate limits, service account, and protected Netlify key are configured; Restricted model-request-only permissions and no provider expiry were verified before paid use.
+5. Done: the bounded paid smoke test was explicitly authorized, completed, and reconciled at $0.058780.
+6. Done for standalone public promotion. Portfolio navigation placement remains a separate decision.
 
 ## Autonomous Codex work
 
-Without further access or paid-call approval, Codex can:
+With standalone public generation live, Codex can:
 
 - finish and verify the static draft code;
 - create all database migrations and Function code locally with mocks;
@@ -196,7 +197,7 @@ Without further access or paid-call approval, Codex can:
 - prepare exact OpenAI and email dashboard checklists;
 - verify deployment health and portfolio subpath behavior without invoking the model.
 
-Codex will not create a billable Supabase project without cost confirmation, paste or retrieve secrets, enable generation, make a paid OpenAI call, promote to production, or change the portfolio site without the corresponding checkpoint above.
+Codex will not create a billable Supabase project without cost confirmation, paste or retrieve secrets, enable public generation, make any additional paid OpenAI call, promote generation, or change the portfolio site without the corresponding checkpoint above.
 
 ## Launch acceptance
 
@@ -213,4 +214,4 @@ Public generation is ready only when all checks pass:
 
 ## Rollback
 
-Turn off Netlify `GENERATION_ENABLED` first, then database `generation_enabled`. Keep the static site and saved sets online. Revoke the OpenAI project key if misuse is suspected. Roll back Functions independently from the static build; never delete spend/attempt rows during incident response.
+Turn off the Supabase `generation_enabled` switch first because it takes effect immediately, then set Netlify `GENERATION_ENABLED=false` and redeploy Production. Keep the static site and saved sets online. Revoke the OpenAI project key if misuse is suspected. Roll back Functions independently from the static build; never delete spend/attempt rows during incident response.
