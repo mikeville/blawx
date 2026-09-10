@@ -44,7 +44,7 @@ test('cached results remain available and fresh generation takes priority over s
     assert.equal(semanticCancelled, 1);
     assert.equal(checkGenerationBusy(), false);
     assert.equal(semanticOptions.allowExperimentalInference, true);
-    assert.equal(semanticOptions.strategy, 'parallel-fixed-v1');
+    assert.equal(semanticOptions.strategy, 'single-highlight-v1');
   } finally { await services.close(); }
 });
 

@@ -3,6 +3,7 @@ import { createGenerationService, GenerationError } from './generation-service.j
 import { createCachedGenerationService, createGenerationVersion } from './cached-generation-service.js';
 import { createResultStore } from './result-store.js';
 import { createSemanticGuideService } from './semantic-guide-service.js';
+import { SEMANTIC_NAMING_STRATEGY } from '../src/semantic-naming-version.js';
 import { ensurePrivateDirectory, resolvePrivateDataRoot } from './private-data-root.js';
 
 const DEFAULT_ROOT = resolve(import.meta.dirname, '..');
@@ -42,7 +43,7 @@ export async function createLocalAppServices({
       isGenerationBusy: () => generationRequested
         || (generation?.isBusy() ?? Boolean(rawGenerator.isBusy?.())),
       allowExperimentalInference: true,
-      strategy: 'parallel-fixed-v1',
+      strategy: SEMANTIC_NAMING_STRATEGY,
     });
     generation = createCachedGenerationService({
       store, generationVersion: version,

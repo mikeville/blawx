@@ -3,12 +3,15 @@ import { mkdir, readFile, rename, writeFile as nodeWriteFile } from 'node:fs/pro
 import { join, resolve } from 'node:path';
 import { parseEventsJsonl, summarizeProtocol } from '../scripts/run-voxel-pilot.mjs';
 import { validateSemanticGuideAnnotation, validateSemanticGuideInput } from '../src/semantic-guide.js';
+import { SEMANTIC_NAMING_STRATEGY } from '../src/semantic-naming-version.js';
 import {
   buildSemanticNamingPrompt,
   createSemanticNamingSummary,
   parseSemanticNamingResult,
 } from '../src/semantic-guide-summary.js';
 import { runCodex } from './codex-provider.js';
+import { SemanticGuideError } from './semantic-guide-error.js';
+import { createSingleSemanticGuideService } from './semantic-single-guide-service.js';
 import {
   CONSENSUS_NAMING_STAGE_ENVELOPE,
   NAMING_POLICY,
@@ -24,6 +27,7 @@ import {
 } from './naming-budget.js';
 import {
   renderSemanticGuideChapters,
+  renderSemanticGuideHighlightedChapters,
   renderSemanticGuideImages,
   renderSemanticGuideReferenceChapters,
 } from './semantic-guide-render.js';
@@ -85,13 +89,7 @@ export const PARALLEL_FIXED_SEMANTIC_GUIDE_SETTINGS = Object.freeze({
   maxApiCostUsd: PARALLEL_FIXED_NAMING_STAGE_ENVELOPE.ceilingUsd,
 });
 
-export class SemanticGuideError extends Error {
-  constructor(code, message, requestId = null) {
-    super(message);
-    this.code = code;
-    this.requestId = requestId;
-  }
-}
+export { SemanticGuideError } from './semantic-guide-error.js';
 
 function safeText(value) {
   return String(value ?? '')
@@ -233,6 +231,7 @@ export function createSemanticGuideService({
   provider = runCodex,
   renderImages = renderSemanticGuideImages,
   renderChapters = renderSemanticGuideChapters,
+  renderHighlightedChapters = renderSemanticGuideHighlightedChapters,
   renderReferenceChapters = renderSemanticGuideReferenceChapters,
   id = randomUUID,
   now = () => new Date(),
@@ -243,6 +242,20 @@ export function createSemanticGuideService({
   dataRoot,
   allowTestDataRoot = false,
 } = {}) {
+  if (strategy === SEMANTIC_NAMING_STRATEGY) {
+    return createSingleSemanticGuideService({
+      root,
+      provider,
+      renderChapters: renderHighlightedChapters,
+      id,
+      now,
+      isGenerationBusy,
+      allowExperimentalInference,
+      reserveBudget,
+      dataRoot,
+      allowTestDataRoot,
+    });
+  }
   if (typeof allowExperimentalInference !== 'boolean') {
     throw new TypeError('allowExperimentalInference must be a boolean.');
   }

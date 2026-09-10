@@ -1,5 +1,6 @@
 import { createSemanticGuideInput, validateSemanticGuideAnnotation, applySemanticGuide } from './semantic-guide.js';
 import { appResourcePath } from './app-path.js';
+import { SEMANTIC_NAMING_CACHE_IDENTITY, isCurrentSemanticReceipt } from './semantic-naming-version.js';
 
 function abortError() {
   return new DOMException('Section naming cancelled.', 'AbortError');
@@ -28,9 +29,9 @@ export function createSemanticGuideClient(fetchImpl = fetch, {
   const cache = new Map();
   const pending = new Map();
   const attempts = new Map();
-  const storageKey = 'blawx:part-names:parallel-fixed-v1:grouping-1';
+  const storageKey = `blawx:part-names:${SEMANTIC_NAMING_CACHE_IDENTITY}`;
   const attemptKey = `${storageKey}:attempts`;
-  const legacySuccessKey = 'blawx:part-names:consensus-v1';
+  const legacySuccessKeys = ['blawx:part-names:consensus-v1', 'blawx:part-names:parallel-fixed-v1:grouping-1'];
   if (persist && storage === undefined) {
     try { storage = globalThis.localStorage; } catch { storage = null; }
   }
@@ -42,7 +43,7 @@ export function createSemanticGuideClient(fetchImpl = fetch, {
       if (Array.isArray(entry) && entry.length === 2 && /^[a-f0-9]{64}$/u.test(entry[0])) saved.set(entry[0], entry[1]);
     }
   } catch { /* Browser storage is optional. */ }
-  if (persist && storage) try {
+  for (const legacySuccessKey of legacySuccessKeys) if (persist && storage) try {
     const entries = JSON.parse(storage.getItem(legacySuccessKey) ?? '[]');
     if (Array.isArray(entries)) for (const entry of entries.slice(-maxEntries)) {
       if (Array.isArray(entry) && entry.length === 2 && /^[a-f0-9]{64}$/u.test(entry[0])) {
@@ -70,7 +71,7 @@ export function createSemanticGuideClient(fetchImpl = fetch, {
     cache.delete(input.fingerprint);
     cache.set(input.fingerprint, receipt);
     while (cache.size > maxEntries) cache.delete(cache.keys().next().value);
-    if (!persist || !storage) return;
+    if (!persist || !storage || !isCurrentSemanticReceipt(receipt)) return;
     saved.delete(input.fingerprint);
     saved.set(input.fingerprint, receipt);
     while (saved.size > maxEntries || JSON.stringify([...saved]).length > 256_000) {
@@ -86,8 +87,9 @@ export function createSemanticGuideClient(fetchImpl = fetch, {
     return response.json();
   }
 
-  function validateReceipt(input, receipt) {
+  function validateReceipt(input, receipt, allowInference = false) {
     if (!receipt || typeof receipt !== 'object' || Array.isArray(receipt)) return null;
+    if (allowInference && !isCurrentSemanticReceipt(receipt)) return null;
     const annotation = validateSemanticGuideAnnotation(input, receipt.annotation);
     return { annotation, metadata: receipt.metadata ?? {} };
   }
@@ -101,7 +103,7 @@ export function createSemanticGuideClient(fetchImpl = fetch, {
       throwIfAborted(signal);
       const filename = index?.version === 1 ? index.entries?.[input.fingerprint] : null;
       if (typeof filename === 'string' && /^[a-zA-Z0-9_-]+\.json$/.test(filename)) {
-        validated = validateReceipt(input, await readJson(appResourcePath(`semantic-guides/${filename}`), { signal }));
+        validated = validateReceipt(input, await readJson(appResourcePath(`semantic-guides/${filename}`), { signal }), allowInference);
         if (validated) validated.metadata = { ...validated.metadata, cacheHit: true };
       }
     } catch (error) {
@@ -110,7 +112,7 @@ export function createSemanticGuideClient(fetchImpl = fetch, {
     throwIfAborted(signal);
     if (!validated) {
       try {
-        validated = validateReceipt(input, await readJson(`${appResourcePath('api/semantic-guide')}?fingerprint=${encodeURIComponent(input.fingerprint)}`, { signal }));
+        validated = validateReceipt(input, await readJson(`${appResourcePath('api/semantic-guide')}?fingerprint=${encodeURIComponent(input.fingerprint)}`, { signal }), allowInference);
         if (validated) validated.metadata = { ...validated.metadata, cacheHit: true };
       } catch (error) {
         if (error.name === 'AbortError') throw error;
@@ -119,7 +121,9 @@ export function createSemanticGuideClient(fetchImpl = fetch, {
     throwIfAborted(signal);
     if (!validated && allowInference) {
       // A concurrent cache-only reader may have found the receipt during lookup.
-      if (cache.has(input.fingerprint)) return cache.get(input.fingerprint);
+      if (cache.has(input.fingerprint) && (!allowInference || isCurrentSemanticReceipt(cache.get(input.fingerprint)))) {
+        return cache.get(input.fingerprint);
+      }
       if (attempts.has(input.fingerprint)) throw attempts.get(input.fingerprint);
       // Consume before POST; persist when possible so reload cannot retry silently.
       markAttempt(input.fingerprint);
@@ -129,7 +133,8 @@ export function createSemanticGuideClient(fetchImpl = fetch, {
           method: 'POST', signal,
           headers: { 'content-type': 'application/json' },
           body: JSON.stringify(input),
-        }));
+        }), true);
+        if (!validated) throw new Error('Section naming returned an outdated or invalid receipt.');
       } catch (error) {
         if (error.name === 'AbortError') throw error;
         inferenceError = error;
@@ -145,10 +150,12 @@ export function createSemanticGuideClient(fetchImpl = fetch, {
 
   async function get(input, { signal, allowInference = false } = {}) {
     throwIfAborted(signal);
-    if (cache.has(input.fingerprint)) return cache.get(input.fingerprint);
+    if (cache.has(input.fingerprint) && (!allowInference || isCurrentSemanticReceipt(cache.get(input.fingerprint)))) {
+      return cache.get(input.fingerprint);
+    }
     if (saved.has(input.fingerprint)) {
       try {
-        const receipt = validateReceipt(input, saved.get(input.fingerprint));
+        const receipt = validateReceipt(input, saved.get(input.fingerprint), allowInference);
         if (receipt) {
           receipt.metadata = { ...receipt.metadata, cacheHit: true, browserCacheHit: true };
           remember(input, receipt);
@@ -156,23 +163,23 @@ export function createSemanticGuideClient(fetchImpl = fetch, {
         }
       } catch { saved.delete(input.fingerprint); }
     }
-    if (legacySaved.has(input.fingerprint)) {
+    if (!allowInference && legacySaved.has(input.fingerprint)) {
       try {
         const legacy = legacySaved.get(input.fingerprint);
-        if (legacy?.metadata?.namingPolicy === 'consensus-v1') {
+        if (['consensus-v1', 'parallel-fixed-v1'].includes(legacy?.metadata?.namingPolicy)) {
           const receipt = validateReceipt(input, legacy);
           if (receipt) {
             receipt.metadata = {
               ...receipt.metadata,
               cacheHit: true,
               browserCacheHit: true,
-              cacheReusedFrom: 'consensus-v1',
+              cacheReusedFrom: legacy.metadata.namingPolicy,
             };
             remember(input, receipt);
             return receipt;
           }
         }
-      } catch { /* A stale legacy success cannot migrate to the new range cache. */ }
+      } catch { /* Old naming remains available only for cache-only readers. */ }
       legacySaved.delete(input.fingerprint);
     }
     const key = `${input.fingerprint}:${allowInference ? 'infer' : 'lookup'}`;

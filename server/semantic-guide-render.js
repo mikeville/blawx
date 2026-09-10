@@ -16,6 +16,7 @@ const BACKGROUND = [248, 247, 243, 255];
 const EDGE = [48, 48, 44, 255];
 const CONTEXT_EDGE = [188, 187, 181, 255];
 const CONTEXT_COLOR = [220, 219, 214];
+const ACTIVE_HIGHLIGHT_PINK = [230, 40, 130];
 
 const VIEWS = Object.freeze([
   {
@@ -227,6 +228,7 @@ function renderViewPixels(bricks, descriptor, {
   margin = MARGIN,
   fitBricks = bricks,
   activeBrickIds = null,
+  activeColor = null,
   work = { samples: 0, limit: MAX_RASTER_SAMPLES_PER_VIEW },
 } = {}) {
   const pixels = Buffer.alloc(width * height * 4);
@@ -263,7 +265,7 @@ function renderViewPixels(bricks, descriptor, {
       margin,
       depths: activeDepths,
       work,
-      colorForFace: (face) => shade(face.color, face.normal),
+      colorForFace: (face) => shade(activeColor ?? face.color, face.normal),
       edgeColor: EDGE,
     });
   }
@@ -382,6 +384,15 @@ function chapterSheetDescriptor(sheetNumber, totalSheets, chapterIndexes) {
     + 'original-color parts = exact chapter additions shown through context';
 }
 
+function highlightedChapterSheetDescriptor(sheetNumber, totalSheets, chapterIndexes) {
+  const rows = Array.from({ length: CHAPTERS_PER_SHEET }, (_, index) => chapterIndexes[index]
+    ? `${chapterIndexes[index]}`
+    : 'blank').join(', ');
+  return `highlighted chapter sheet ${sheetNumber}/${totalSheets}; rows ${rows} top-bottom; `
+    + 'left camera +x/-z iso, right camera -x/+z iso, +y up; gray complete-object context; '
+    + 'uniform pink = every meaningful part added in the numbered range, not the real brick color';
+}
+
 function referenceChapterSheetDescriptor(sheetNumber, totalSheets, chapterIndexes) {
   const rows = Array.from({ length: CHAPTERS_PER_SHEET }, (_, index) => chapterIndexes[index]
     ? `${chapterIndexes[index]}`
@@ -391,7 +402,11 @@ function referenceChapterSheetDescriptor(sheetNumber, totalSheets, chapterIndexe
     + 'left camera +x/-z iso, right camera -x/+z iso, +y up';
 }
 
-export function renderSemanticGuideChapters(rawInput, rawAnnotation, { size = DEFAULT_SHEET_SIZE } = {}) {
+function renderChapterSheets(rawInput, rawAnnotation, {
+  size,
+  activeColor = null,
+  describeSheet = chapterSheetDescriptor,
+} = {}) {
   const input = validateSemanticGuideInput(rawInput);
   const annotation = validateSemanticGuideAnnotation(input, rawAnnotation);
   if (annotation.sections.length > MAX_CHAPTERS) {
@@ -430,6 +445,7 @@ export function renderSemanticGuideChapters(rawInput, rawAnnotation, { size = DE
         height: panelHeight,
         margin: scaleSheetValue(14, size),
         activeBrickIds,
+        activeColor,
         work,
       }));
       blit(pixels, size, panels[0], panelWidth, panelHeight, leftPanelX, panelY);
@@ -439,10 +455,22 @@ export function renderSemanticGuideChapters(rawInput, rawAnnotation, { size = DE
       png: encodePng(pixels, size, size),
       width: size,
       height: size,
-      view: chapterSheetDescriptor(sheetIndex + 1, sheetCount, chapterIndexes),
+      view: describeSheet(sheetIndex + 1, sheetCount, chapterIndexes),
     });
   }
   return sheets;
+}
+
+export function renderSemanticGuideChapters(rawInput, rawAnnotation, { size = DEFAULT_SHEET_SIZE } = {}) {
+  return renderChapterSheets(rawInput, rawAnnotation, { size });
+}
+
+export function renderSemanticGuideHighlightedChapters(rawInput, rawAnnotation, { size = 512 } = {}) {
+  return renderChapterSheets(rawInput, rawAnnotation, {
+    size,
+    activeColor: ACTIVE_HIGHLIGHT_PINK,
+    describeSheet: highlightedChapterSheetDescriptor,
+  });
 }
 
 export function renderSemanticGuideReferenceChapters(rawInput, rawAnnotation, { size = DEFAULT_SHEET_SIZE } = {}) {

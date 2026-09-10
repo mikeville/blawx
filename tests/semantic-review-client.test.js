@@ -93,7 +93,7 @@ test('a review candidate loads only from its isolated static namespace', async (
     },
   });
 
-  const receipt = await client.get(input, { allowInference: false });
+  const receipt = await client.get(input, { allowInference: true });
 
   assert.equal(receipt.annotation.fingerprint, input.fingerprint);
   assert.equal(receipt.metadata.phase, 'consensus');

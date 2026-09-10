@@ -33,5 +33,11 @@ export function createSemanticReviewClient({ search = '', fetchImpl = fetch } = 
     const mappedUrl = semanticReviewUrl(url, reviewId);
     return mappedUrl ? fetchImpl(mappedUrl, options) : notFound();
   };
-  return { ...createSemanticGuideClient(reviewFetch), reviewId };
+  const client = createSemanticGuideClient(reviewFetch);
+  return {
+    reviewId,
+    get(input, options = {}) {
+      return client.get(input, { ...options, allowInference: false });
+    },
+  };
 }

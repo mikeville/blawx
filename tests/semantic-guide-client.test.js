@@ -5,6 +5,10 @@ import { createAssemblyPlan } from '../src/assembly.js';
 import { createGuideSections } from '../src/guide-sections.js';
 import { createSemanticGuideInput } from '../src/semantic-guide.js';
 import { createSemanticGuideClient, nameConstructionGuide } from '../src/semantic-guide-client.js';
+import { SEMANTIC_NAMING_STRATEGY, SEMANTIC_NAMING_GROUPING_VERSION, SEMANTIC_NAMING_CACHE_IDENTITY } from '../src/semantic-naming-version.js';
+
+const currentMetadata = { namingPolicy: SEMANTIC_NAMING_STRATEGY, strategy: SEMANTIC_NAMING_STRATEGY, groupingVersion: SEMANTIC_NAMING_GROUPING_VERSION, cacheIdentity: SEMANTIC_NAMING_CACHE_IDENTITY };
+const currentStorageKey = `blawx:part-names:${SEMANTIC_NAMING_CACHE_IDENTITY}`;
 
 function fixture() {
   const brickModel = {
@@ -124,7 +128,7 @@ test('inference makes one POST after bounded cache misses and enriches a derived
     if (url.startsWith('/api/semantic-guide?')) return jsonResponse(null, 404);
     if (url === '/api/semantic-guide' && options.method === 'POST') {
       assert.deepEqual(JSON.parse(options.body), input);
-      return jsonResponse({ annotation, metadata: { cacheHit: false, actualModel: 'test-model' } });
+      return jsonResponse({ annotation, metadata: { ...currentMetadata, cacheHit: false, actualModel: 'test-model' } });
     }
     throw new Error(`Unexpected request: ${url}`);
   });
@@ -203,7 +207,7 @@ test('overlapping readers share one naming job and one reader can leave without 
   controller.abort();
   await assert.rejects(first, error => error.name === 'AbortError');
   assert.equal(providerSignal.aborted, false);
-  finishPost(jsonResponse({ annotation, metadata: { namingPolicy: 'consensus-v1' } }));
+  finishPost(jsonResponse({ annotation, metadata: currentMetadata }));
   assert.equal((await second).annotation.sections[0].label, 'Red tower');
   assert.equal(posts, 1);
 });
@@ -226,7 +230,7 @@ test('successful small name receipts survive a new client without network calls'
   const values = new Map();
   const storage = { getItem: key => values.get(key) ?? null, setItem: (key, value) => values.set(key, value) };
   const writer = createSemanticGuideClient(async (_url, options = {}) => options.method === 'POST'
-    ? jsonResponse({ annotation, metadata: { namingPolicy: 'consensus-v1' } }) : jsonResponse(null, 404),
+    ? jsonResponse({ annotation, metadata: currentMetadata }) : jsonResponse(null, 404),
   { persist: true, storage });
   await writer.get(input, { allowInference: true });
   let reads = 0;
@@ -235,10 +239,10 @@ test('successful small name receipts survive a new client without network calls'
   assert.equal(receipt.annotation.sections[0].label, 'Red tower');
   assert.equal(receipt.metadata.browserCacheHit, true);
   assert.equal(reads, 0);
-  assert.equal(JSON.parse(values.get('blawx:part-names:parallel-fixed-v1:grouping-1'))[0][1].annotation.fingerprint, input.fingerprint);
+  assert.equal(JSON.parse(values.get(currentStorageKey))[0][1].annotation.fingerprint, input.fingerprint);
 });
 
-test('a validated consensus-v1 browser success migrates to the parallel cache without network access', async () => {
+test('a validated legacy success remains available for cache-only readers without migrating', async () => {
   const { input, annotation } = fixture();
   const legacyReceipt = {
     annotation,
@@ -254,7 +258,7 @@ test('a validated consensus-v1 browser success migrates to the parallel cache wi
     persist: true, storage,
   });
 
-  const receipt = await client.get(input, { allowInference: true });
+  const receipt = await client.get(input, { allowInference: false });
 
   assert.equal(reads, 0);
   assert.deepEqual(receipt.annotation, annotation);
@@ -263,8 +267,7 @@ test('a validated consensus-v1 browser success migrates to the parallel cache wi
   assert.equal(receipt.metadata.requestId, 'saved-consensus');
   assert.equal(receipt.metadata.cacheReusedFrom, 'consensus-v1');
   assert.equal(receipt.metadata.browserCacheHit, true);
-  const migrated = JSON.parse(values.get('blawx:part-names:parallel-fixed-v1:grouping-1'));
-  assert.deepEqual(migrated, [[input.fingerprint, receipt]]);
+  assert.equal(values.has(currentStorageKey), false);
 });
 
 test('a consensus-v1 browser success with stale geometry is rejected instead of migrated', async () => {
@@ -285,7 +288,7 @@ test('a consensus-v1 browser success with stale geometry is rejected instead of 
 
   assert.equal(await client.get(input, { allowInference: false }), null);
   assert.deepEqual(calls.map(({ method }) => method), ['GET', 'GET']);
-  assert.equal(values.has('blawx:part-names:parallel-fixed-v1:grouping-1'), false);
+  assert.equal(values.has(currentStorageKey), false);
 });
 
 test('a failed naming attempt survives reload without silently posting again', async () => {
@@ -315,12 +318,12 @@ test('the new range strategy ignores old browser receipts and failed-attempt mar
   const client = createSemanticGuideClient(async (_url, options = {}) => {
     if (options.method !== 'POST') return jsonResponse(null, 404);
     posts += 1;
-    return jsonResponse({ annotation, metadata: { namingPolicy: 'parallel-fixed-v1', groupingVersion: 1 } });
+    return jsonResponse({ annotation, metadata: currentMetadata });
   }, { persist: true, storage });
   const receipt = await client.get(input, { allowInference: true });
   assert.equal(posts, 1);
   assert.equal(receipt.annotation.sections[0].label, 'Red tower');
-  assert.equal(receipt.metadata.namingPolicy, 'parallel-fixed-v1');
+  assert.equal(receipt.metadata.namingPolicy, SEMANTIC_NAMING_STRATEGY);
   assert.equal(JSON.parse(values.get('blawx:part-names:consensus-v1'))[0][1].annotation.sections[0].label, 'Old range');
 });
 
@@ -334,8 +337,58 @@ test('bad persistent receipts and unavailable browser storage fall back safely',
   const client = createSemanticGuideClient(async (_url, options = {}) => {
     if (options.method !== 'POST') return jsonResponse(null, 404);
     posts += 1;
-    return jsonResponse({ annotation, metadata: {} });
+    return jsonResponse({ annotation, metadata: currentMetadata });
   }, { persist: true, storage });
   assert.equal((await client.get(input, { allowInference: true })).annotation.fingerprint, input.fingerprint);
+  assert.equal(posts, 1);
+});
+
+
+test('old parallel successes and failed attempts cannot suppress the new naming strategy', async () => {
+  const { input, annotation } = fixture();
+  const oldKey = 'blawx:part-names:parallel-fixed-v1:grouping-1';
+  const old = { annotation, metadata: { namingPolicy: 'parallel-fixed-v1', strategy: 'parallel-fixed-v1', groupingVersion: 1 } };
+  const values = new Map([[oldKey, JSON.stringify([[input.fingerprint, old]])], [`${oldKey}:attempts`, JSON.stringify([input.fingerprint])]]);
+  const snapshot = new Map(values);
+  const storage = { getItem: key => values.get(key) ?? null, setItem: (key, value) => values.set(key, value) };
+  let posts = 0;
+  const client = createSemanticGuideClient(async (_url, options = {}) => {
+    if (options.method !== 'POST') return jsonResponse(null, 404);
+    posts += 1;
+    return jsonResponse({ annotation, metadata: currentMetadata });
+  }, { persist: true, storage });
+  // A cached example read must not poison a later ordinary-set naming request.
+  assert.equal((await client.get(input)).metadata.namingPolicy, 'parallel-fixed-v1');
+  const current = await client.get(input, { allowInference: true });
+  assert.equal(posts, 1);
+  assert.equal(current.metadata.cacheIdentity, SEMANTIC_NAMING_CACHE_IDENTITY);
+  assert.equal(values.get(oldKey), snapshot.get(oldKey));
+  assert.equal(values.get(`${oldKey}:attempts`), snapshot.get(`${oldKey}:attempts`));
+  assert.ok(values.has(currentStorageKey));
+});
+
+test('old static and server receipts are skipped when current naming is enabled', async () => {
+  const { input, annotation } = fixture();
+  const calls = [];
+  const client = createSemanticGuideClient(async (url, options = {}) => {
+    calls.push(options.method ?? 'GET');
+    if (url === '/semantic-guides/index.json') return jsonResponse({ version: 1, entries: { [input.fingerprint]: 'old.json' } });
+    return jsonResponse({ annotation, metadata: options.method === 'POST' ? currentMetadata : { namingPolicy: 'parallel-fixed-v1' } });
+  });
+  const receipt = await client.get(input, { allowInference: true });
+  assert.equal(receipt.metadata.cacheIdentity, SEMANTIC_NAMING_CACHE_IDENTITY);
+  assert.deepEqual(calls, ['GET', 'GET', 'GET', 'POST']);
+});
+
+test('an outdated POST response is rejected and cannot silently retry', async () => {
+  const { input, annotation } = fixture();
+  let posts = 0;
+  const client = createSemanticGuideClient(async (_url, options = {}) => {
+    if (options.method !== 'POST') return jsonResponse(null, 404);
+    posts += 1;
+    return jsonResponse({ annotation, metadata: { ...currentMetadata, groupingVersion: 1 } });
+  });
+  await assert.rejects(client.get(input, { allowInference: true }), /outdated or invalid receipt/);
+  await assert.rejects(client.get(input, { allowInference: true }), /outdated or invalid receipt/);
   assert.equal(posts, 1);
 });
