@@ -105,6 +105,10 @@ test('handler rejects cross-origin and oversized requests before reservation', a
   const crossOrigin = await handler(request(undefined, { origin: 'https://example.com' }), context());
   assert.equal(crossOrigin.status, 403);
 
+  const tooLong = await handler(request({ prompt: 'x'.repeat(281) }), context());
+  assert.equal(tooLong.status, 400);
+  assert.equal((await tooLong.json()).error.code, 'prompt-too-long');
+
   const oversized = await handler(request({ prompt: 'x'.repeat(5000) }), context());
   assert.equal(oversized.status, 413);
   assert.equal(calls, 0);

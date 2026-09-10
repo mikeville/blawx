@@ -44,6 +44,8 @@ function fixture({ mobile = false, value = '', scrollHeight = 72, maxHeight = '1
     scrollTop: 0, selectionStart: 0, selectionEnd: 0,
     style: new Style(), attributes: new Map(), wrap: '',
     closest: selector => selector === '.prompt-field' ? field : null,
+    focus() { globalThis.document.activeElement = this; },
+    setSelectionRange(start, end) { this.selectionStart = start; this.selectionEnd = end; },
     setAttribute(name, next) { this.attributes.set(name, String(next)); },
     removeAttribute(name) { this.attributes.delete(name); },
     getAttribute(name) { return this.attributes.get(name) ?? null; },
@@ -96,6 +98,21 @@ test('initial restored draft and later typing keep state and public note in sync
   view.input.value = 'pickup';
   controller.sync();
   assert.equal(view.note.hidden, false);
+  controller.dispose();
+});
+
+test('typing and restored drafts are capped at the shared prompt limit', () => {
+  const view = fixture({ value: '🧱'.repeat(281) });
+  const controller = mountPromptField({ input: view.input, form: view.form, publicNote: view.note });
+  assert.equal(view.input.value, '🧱'.repeat(280));
+
+  globalThis.document.activeElement = view.input;
+  view.input.value = `A${'x'.repeat(280)}`;
+  view.input.selectionStart = view.input.value.length;
+  view.input.selectionEnd = view.input.value.length;
+  view.input.emit('input');
+  assert.equal(view.input.value.length, 280);
+  assert.equal(view.input.selectionStart, 280);
   controller.dispose();
 });
 

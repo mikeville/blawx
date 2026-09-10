@@ -1,4 +1,5 @@
 import { GenerationError } from './generation-service.js';
+import { PROMPT_TOO_LONG_MESSAGE } from '../src/prompt-policy.js';
 
 const MAX_BODY_BYTES = 2048;
 const LOCAL_HOST = /^(?:127\.0\.0\.1|localhost|\[::1\])(?::\d+)?$/i;
@@ -22,7 +23,7 @@ function publicError(error) {
     const knownMessages = new Set([
       'Prompt must be a string.',
       'Prompt must not be empty.',
-      'Prompt must be 500 characters or fewer.',
+      PROMPT_TOO_LONG_MESSAGE,
     ]);
     const message = knownMessages.has(error.message) ? error.message : 'Invalid generation request.';
     return { code: 'bad-request', message };

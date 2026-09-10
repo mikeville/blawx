@@ -1,5 +1,6 @@
+import { MAX_PROMPT_CHARACTERS, PROMPT_TOO_LONG_MESSAGE } from '../../../src/prompt-policy.js';
+
 const MAX_BODY_BYTES = 4096;
-const MAX_PROMPT_CHARACTERS = 500;
 const FRIENDLY_QUOTA_MESSAGE = 'Blawx is getting a lot of building requests today. This connection has used its three fresh builds for now—try again after midnight UTC. You can still explore saved sets, or clone the repo and connect your own API key to build without this demo’s shared limit.';
 const FRIENDLY_PAUSED_MESSAGE = 'Fresh builds are paused for a bit while I keep the public demo within its budget. Saved sets are still available. Try again later, or clone the repo and connect your own API key.';
 
@@ -60,7 +61,7 @@ async function readPrompt(request) {
   const prompt = body.prompt.trim();
   if (!prompt) return { error: errorResponse(400, 'invalid-prompt', 'Enter a name for your set.') };
   if (Array.from(prompt).length > MAX_PROMPT_CHARACTERS) {
-    return { error: errorResponse(400, 'prompt-too-long', 'Keep the set description under 500 characters.') };
+    return { error: errorResponse(400, 'prompt-too-long', PROMPT_TOO_LONG_MESSAGE) };
   }
   if (/\p{Cc}|\p{Cf}/u.test(prompt)) {
     return { error: errorResponse(400, 'invalid-prompt', 'Remove control characters from the set description.') };

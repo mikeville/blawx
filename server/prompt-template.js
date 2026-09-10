@@ -1,10 +1,12 @@
+import { MAX_PROMPT_CHARACTERS, PROMPT_TOO_LONG_MESSAGE, promptCharacterCount } from '../src/prompt-policy.js';
+
 const SUBJECT_LINE = /^USER PROMPT:.*$/gm;
 
 export function normalizeSubject(value) {
   if (typeof value !== 'string') throw new TypeError('Prompt must be a string.');
   const subject = value.trim().replace(/\s+/g, ' ');
   if (!subject) throw new TypeError('Prompt must not be empty.');
-  if (subject.length > 500) throw new RangeError('Prompt must be 500 characters or fewer.');
+  if (promptCharacterCount(subject) > MAX_PROMPT_CHARACTERS) throw new RangeError(PROMPT_TOO_LONG_MESSAGE);
   return subject;
 }
 

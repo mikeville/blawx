@@ -208,7 +208,7 @@ test('HTTP adapter enforces method, host/origin, content type, size, prompt, bus
     assert.equal((await requestMiddleware(service, { body: '{}' })).status, 415);
     assert.equal((await requestMiddleware(service, { headers: { 'content-type': 'application/json', origin: 'https://evil.test' }, body: '{}' })).status, 403);
     assert.equal((await requestMiddleware(service, { headers: { 'content-type': 'application/json' }, body: '{}' })).status, 400);
-    assert.equal((await requestMiddleware(service, { headers: { 'content-type': 'application/json' }, body: JSON.stringify({ prompt: 'x'.repeat(501) }) })).status, 400);
+    assert.equal((await requestMiddleware(service, { headers: { 'content-type': 'application/json' }, body: JSON.stringify({ prompt: 'x'.repeat(281) }) })).status, 400);
     assert.equal((await requestMiddleware(service, { headers: { 'content-type': 'application/json' }, body: JSON.stringify({ prompt: 'x'.repeat(3000) }) })).status, 413);
     mode = 'busy';
     assert.equal((await requestMiddleware(service, { headers: { 'content-type': 'application/json' }, body: '{"prompt":"cat"}' })).status, 409);

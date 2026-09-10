@@ -1,5 +1,6 @@
 import { validateVoxels } from './voxels.js';
 import { appResourcePath } from './app-path.js';
+import { MAX_PROMPT_CHARACTERS, PROMPT_TOO_LONG_MESSAGE, promptCharacterCount } from './prompt-policy.js';
 
 export class GenerationClientError extends Error {
   constructor(message, { code = 'generation-failed', status = null, requestId = null, cause } = {}) {
@@ -30,7 +31,9 @@ export function createGenerationClient(fetchImpl = fetch, endpoint = appResource
     async generate(prompt, { signal } = {}) {
       const normalizedPrompt = typeof prompt === 'string' ? prompt.trim() : '';
       if (!normalizedPrompt) throw new GenerationClientError('Enter a name for your set.', { code: 'invalid-prompt' });
-      if (normalizedPrompt.length > 500) throw new GenerationClientError('Keep the set description under 500 characters.', { code: 'prompt-too-long' });
+      if (promptCharacterCount(normalizedPrompt) > MAX_PROMPT_CHARACTERS) {
+        throw new GenerationClientError(PROMPT_TOO_LONG_MESSAGE, { code: 'prompt-too-long' });
+      }
 
       let response;
       try {

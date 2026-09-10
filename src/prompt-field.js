@@ -1,3 +1,5 @@
+import { truncatePrompt } from './prompt-policy.js';
+
 const MOBILE_QUERY = '(max-width: 760px)';
 
 /** Enhance the shared prompt textarea without owning its value or submission flow. */
@@ -48,6 +50,13 @@ export function mountPromptField({ input, form, publicNote } = {}) {
 
   function sync() {
     if (disposed) return;
+    const boundedValue = truncatePrompt(input.value);
+    if (boundedValue !== input.value) {
+      const selectionStart = Math.min(input.selectionStart ?? boundedValue.length, boundedValue.length);
+      const selectionEnd = Math.min(input.selectionEnd ?? selectionStart, boundedValue.length);
+      input.value = boundedValue;
+      if (document.activeElement === input) input.setSelectionRange?.(selectionStart, selectionEnd);
+    }
     const hasPrompt = Boolean(input.value.trim());
     form.classList.toggle('has-prompt', hasPrompt);
     field.classList.toggle('has-prompt', hasPrompt);

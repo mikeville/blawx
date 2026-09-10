@@ -20,6 +20,7 @@ import { isGenerationEnabled, isLocalSemanticNamingEnabled } from './app-path.js
 import { isDeveloperMode } from './developer-mode.js';
 import { mountScrollAwareHeader } from './scroll-aware-header.js';
 import { openFullscreenLayer } from './fullscreen-layer.js';
+import { MAX_PROMPT_CHARACTERS, promptSizeTier, truncatePrompt } from './prompt-policy.js';
 
 export function mountProductApp(host, options = {}) {
   const {
@@ -47,7 +48,7 @@ export function mountProductApp(host, options = {}) {
     : '';
   host.innerHTML = `<header class="brand-strip"><a class="brand" href="#" aria-label="Blawx home">Blawx</a><button class="about-link" type="button">About</button></header>
     <main><div id="home-view"><section class="home-lead" aria-label="Featured set and prompt"><div class="home-hero"><div class="hero-mount"></div></div>
-      <div class="composer"><form id="prompt-form" novalidate><label class="sr-only" for="prompt">What would you like to build?</label><div class="prompt-field"><div class="prompt-invitation" aria-hidden="true"><span>What would you</span> <span>like to build?<span class="invitation-caret"></span></span></div><textarea id="prompt" rows="1" maxlength="500" autocomplete="off" spellcheck="true" placeholder=" " enterkeyhint="go"></textarea></div><button class="make-button" type="submit">Make it</button><div class="prompt-status"><p id="public-use" class="public-use" hidden>Prompts &amp; sets are public</p></div></form><p id="form-message" class="form-message" role="status"></p></div></section><section class="recent-host"></section></div>
+      <div class="composer"><form id="prompt-form" novalidate><label class="sr-only" for="prompt">What would you like to build?</label><div class="prompt-field"><div class="prompt-invitation" aria-hidden="true"><span>What would you</span> <span>like to build?<span class="invitation-caret"></span></span></div><textarea id="prompt" rows="1" maxlength="${MAX_PROMPT_CHARACTERS}" autocomplete="off" spellcheck="true" placeholder=" " enterkeyhint="go"></textarea></div><button class="make-button" type="submit">Make it</button><div class="prompt-status"><p id="public-use" class="public-use" hidden>Prompts &amp; sets are public</p></div></form><p id="form-message" class="form-message" role="status"></p></div></section><section class="recent-host"></section></div>
       <div id="detail-view" hidden><article class="set-detail"><div class="detail-hero hero-mount"></div><header class="detail-copy"><h1 id="detail-title" tabindex="-1"></h1><div class="generation-progress-host"></div><p class="detail-prompt"></p><span class="result-note" role="status"></span></header></article><section class="instructions"><div class="guide-host"></div></section></div></main>
     ${developerFooter}`;
 
@@ -77,7 +78,7 @@ export function mountProductApp(host, options = {}) {
   const makeButton = form.querySelector('.make-button');
   const storageMode = `product:${location.pathname}`;
   const restored = loadViewState({ mode: storageMode, recentCount: 9999 });
-  input.value = restored.prompt;
+  input.value = truncatePrompt(restored.prompt);
   form.classList.toggle('has-prompt', Boolean(input.value.trim()));
   document.body.dataset.composer = 'circle';
   const composerController = composerFactory({ composer, promptInput: input, form, mode: 'circle', homeHost: host.querySelector('.home-lead') });
@@ -123,7 +124,7 @@ export function mountProductApp(host, options = {}) {
   }
 
   function persist() {
-    saveViewState({ mode: storageMode, recentCount: 9999, state: { prompt: input.value.slice(0, 500), galleryCount, homeScrollY: home.hidden ? homeScrollY : window.scrollY } });
+    saveViewState({ mode: storageMode, recentCount: 9999, state: { prompt: truncatePrompt(input.value), galleryCount, homeScrollY: home.hidden ? homeScrollY : window.scrollY } });
   }
   function showMessage(text, actionLabel, action) {
     message.replaceChildren(document.createTextNode(text));

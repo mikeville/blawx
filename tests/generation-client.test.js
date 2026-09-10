@@ -74,7 +74,7 @@ test('reports network errors and rejects invalid prompts before fetch', async ()
   const client = createGenerationClient(async () => { calls += 1; throw new TypeError('offline'); });
   await assert.rejects(client.generate('cat'), (error) => error instanceof GenerationClientError && error.code === 'network-error');
   await assert.rejects(client.generate('   '), { code: 'invalid-prompt' });
-  await assert.rejects(client.generate('x'.repeat(501)), { code: 'prompt-too-long' });
+  await assert.rejects(client.generate('x'.repeat(281)), { code: 'prompt-too-long' });
   assert.equal(calls, 1);
 });
 
