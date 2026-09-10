@@ -39,7 +39,7 @@ Blawx is tested with Node.js 22.
 npm run dev
 ```
 
-Open <http://127.0.0.1:5178>. The included sets work immediately and do not use
+Open <http://127.0.0.1:5179>. The included sets work immediately and do not use
 a model call.
 
 To generate a new set, install and sign in to the

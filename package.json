@@ -9,7 +9,7 @@
     "node": "22.x"
   },
   "scripts": {
-    "dev": "vite --host 127.0.0.1 --port 5178 --strictPort",
+    "dev": "vite --host 127.0.0.1 --port 5179 --strictPort",
     "build": "vite build",
     "preview": "vite preview --host 127.0.0.1 --port 4173 --strictPort",
     "test": "node --test tests/*.test.js"
