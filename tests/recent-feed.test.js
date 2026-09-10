@@ -61,6 +61,27 @@ test('restoration never shrinks an already expanded feed', () => {
   assert.equal(restoredFeedTarget(-2, -1), 0);
 });
 
+test('gallery links disable native dragging so their models remain rotatable', async () => {
+  installFeedDom();
+  const host = new FakeNode();
+  const feed = mountRecentFeed(host, {
+    client: {
+      list: async () => ({ items: [], nextCursor: null }),
+      getResult: async () => ({ model: { kind: 'bricks', bricks: [] } }),
+    },
+    previewClient: { prepare: async model => model },
+    onOpenSet() {},
+    initialPage: {
+      items: [{ id: 'one', prompt: 'a red lighthouse', createdAt: '2026-09-10T12:00:00Z' }],
+      nextCursor: null,
+    },
+  });
+  await feed.ready;
+
+  assert.equal(host.grid.children[0].attributes.get('draggable'), 'false');
+  feed.dispose();
+});
+
 test('returning gallery cards reuse prepared models after releasing their renderer', async () => {
   const getObserver = installFeedDom();
   const model = { kind: 'bricks', bricks: [] };

@@ -111,6 +111,7 @@ export function mountRecentFeed(host, {
     const card = document.createElement('a');
     card.className = 'feed-card';
     card.href = resultHref(item.id);
+    card.setAttribute('draggable', 'false');
     card.setAttribute('aria-label', item.prompt);
     const stageHost = document.createElement('div');
     stageHost.className = 'feed-stage';
