@@ -1,9 +1,12 @@
 const FINISHING_LABEL = 'finishing touches';
+const FINISHING_OOPS = 'Oops. More finishing touches.';
 const FINISHING_BEATS = Object.freeze([
-  'Oops. More finishing touches.',
   'Finishing touches, apparently',
   'Still finishing touches',
   'Okay, now finishing touches',
+  'Finishing touches continue',
+  'And yet, finishing touches',
+  'Finishing touches, ongoing',
 ]);
 const MORE_NOUNS = new Set(['body', 'shape', 'details', 'material']);
 
@@ -56,17 +59,27 @@ function renderOrdinary(template, label) {
     case 'more': return `More ${lowerInitialTitlecase(label)}`;
     case 'continued': return `${label}, continued`;
     case 'next': return `Next: ${lowerInitialTitlecase(label)}`;
+    case 'onward': return `Onward: ${lowerInitialTitlecase(label)}`;
+    case 'still': return `Still: ${lowerInitialTitlecase(label)}`;
+    case 'revisited': return `${label}, revisited`;
+    case 'resumes': return `${label} resumes`;
+    case 'returns': return `${label} returns`;
+    case 'continues': return `${label} continues`;
+    case 'onwardSuffix': return `${label}, onward`;
+    case 'encore': return `${label}, encore`;
     case 'hello': return `Hello, ${lowerInitialTitlecase(label)}`;
     case 'ah': return `Ah, ${lowerInitialTitlecase(label)}`;
     default: return `${label}, again`;
   }
 }
 
-function chooseTemplate(candidates, state, seed, identity, sectionIndex) {
-  const withoutImmediateRepeat = candidates.length > 1
-    ? candidates.filter((template) => template !== state.lastTemplate)
-    : candidates;
-  const pool = withoutImmediateRepeat.length ? withoutImmediateRepeat : candidates;
+function chooseTemplate(candidates, state, seed, identity, sectionIndex, render = (value) => value) {
+  const unusedLabels = candidates.filter((template) => !state.usedLabels.has(normalize(render(template))));
+  if (!unusedLabels.length) return null;
+  const withoutImmediateRepeat = unusedLabels.length > 1
+    ? unusedLabels.filter((template) => template !== state.lastTemplate)
+    : unusedLabels;
+  const pool = withoutImmediateRepeat.length ? withoutImmediateRepeat : unusedLabels;
   const selected = [...pool].sort((left, right) => {
     const leftUsage = state.usage.get(left) ?? { count: 0, lastIndex: -Infinity };
     const rightUsage = state.usage.get(right) ?? { count: 0, lastIndex: -Infinity };
@@ -77,25 +90,35 @@ function chooseTemplate(candidates, state, seed, identity, sectionIndex) {
   const usage = state.usage.get(selected) ?? { count: 0, lastIndex: -Infinity };
   state.usage.set(selected, { count: usage.count + 1, lastIndex: sectionIndex });
   state.lastTemplate = selected;
+  state.usedLabels.add(normalize(render(selected)));
   return selected;
 }
 
 function finishingBeat(seed, occurrence, total, state, sectionIndex) {
+  if (occurrence === 2) {
+    state.usedLabels.add(normalize(FINISHING_OOPS));
+    return FINISHING_OOPS;
+  }
   const nearEnd = occurrence >= 3 && occurrence >= total - 1;
   const eligible = FINISHING_BEATS.filter((beat) => nearEnd || !beat.startsWith('Okay,'));
-  return chooseTemplate(eligible, state, seed, `finishing:${occurrence}`, sectionIndex);
+  return chooseTemplate(eligible, state, seed, `finishing:${occurrence}`, sectionIndex)
+    ?? `Finishing touches · ${occurrence}`;
 }
 
 export function varyGuideSectionLabels(sections) {
   const seed = guideSeed(sections);
+  const sourceLabels = new Set(sections.flatMap((section) => {
+    const label = baseLabelFor(section);
+    return typeof label === 'string' && label.trim() ? [normalize(label)] : [];
+  }));
   const eligibleFinishingIndexes = sections.flatMap((section, index) => (
     section.repeatCount > 1 || normalize(String(baseLabelFor(section) ?? '')) !== FINISHING_LABEL ? [] : [index]
   ));
   const finishingRepeats = eligibleFinishingIndexes.length > 1;
   const jokeLimit = finishingRepeats ? 1 : 2;
   const jokeState = { count: 0, lastIndex: -Infinity };
-  const templateState = { usage: new Map(), lastTemplate: null };
-  const finishingState = { usage: new Map(), lastTemplate: null };
+  const templateState = { usage: new Map(), usedLabels: new Set(sourceLabels), lastTemplate: null };
+  const finishingState = { usage: new Map(), usedLabels: new Set(sourceLabels), lastTemplate: null };
   const occurrences = new Map();
   let previousCountedKey = null;
 
@@ -126,9 +149,19 @@ export function varyGuideSectionLabels(sections) {
     }
 
     const adjacent = previousCountedKey === key;
-    const ordinaryCandidates = adjacent
-      ? [...(allowsMore(baseLabel) ? ['more'] : []), 'continued', 'next']
-      : ['again', 'next'];
+    const ordinaryCandidates = [
+      ...(allowsMore(baseLabel) ? ['more'] : []),
+      ...(adjacent ? ['continued', 'next'] : ['again', 'next']),
+      'onward',
+      'still',
+      'revisited',
+      'resumes',
+      'returns',
+      'continues',
+      'onwardSuffix',
+      'encore',
+      ...(adjacent ? ['again'] : ['continued']),
+    ];
     const jokeAvailable = !adjacent && occurrence >= 3 && jokeState.count < jokeLimit
       && sectionIndex - jokeState.lastIndex >= 2
       && stableHash(`${seed}:${key}:${sectionIndex}:joke`) % 3 === 0;
@@ -139,12 +172,14 @@ export function varyGuideSectionLabels(sections) {
       seed,
       `${key}:${occurrence}:${sectionIndex}`,
       sectionIndex,
+      (candidate) => renderOrdinary(candidate, baseLabel),
     );
+    const variedLabel = template === null ? `${baseLabel} · ${occurrence}` : renderOrdinary(template, baseLabel);
     if (template === 'hello' || template === 'ah') {
       jokeState.count += 1;
       jokeState.lastIndex = sectionIndex;
     }
     previousCountedKey = key;
-    return { ...section, baseLabel, label: renderOrdinary(template, baseLabel) };
+    return { ...section, baseLabel, label: variedLabel };
   });
 }
