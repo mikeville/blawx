@@ -111,6 +111,7 @@ main { padding: 64px 0 40px; }
 .prompt-field {
   position: relative;
   width: 100%;
+  cursor: text;
   outline: 0 solid transparent;
   outline-offset: 0;
   transition: background-color 100ms steps(1, end), outline-color 100ms steps(1, end);

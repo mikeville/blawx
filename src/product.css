@@ -26,8 +26,9 @@ textarea#prompt { color: inherit; font-family: inherit; resize: none; }
     left: 0;
     display: block;
     height: calc(1.04 * 36px + 30px);
-    min-height: 0;
+    min-height: 100%;
     max-height: max(104.88px, min(400px, calc(50svh - 80px)));
+    padding-top: calc(1.04 * 36px + 12px);
     overflow-x: hidden;
     overflow-y: auto;
     white-space: pre-wrap;

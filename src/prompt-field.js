@@ -1,6 +1,7 @@
 import { truncatePrompt } from './prompt-policy.js';
 
 const MOBILE_QUERY = '(max-width: 760px)';
+const INTERACTIVE_TARGETS = 'input, textarea, select, button, a[href], [contenteditable]:not([contenteditable="false"])';
 
 /** Enhance the shared prompt textarea without owning its value or submission flow. */
 export function mountPromptField({ input, form, publicNote } = {}) {
@@ -11,6 +12,13 @@ export function mountPromptField({ input, form, publicNote } = {}) {
   let frame;
   let disposed = false;
   let observedWidth;
+
+  function focusAtEnd() {
+    if (input.disabled || input.readOnly) return;
+    input.focus({ preventScroll: true });
+    const end = input.value.length;
+    input.setSelectionRange?.(end, end);
+  }
 
   function clearDesktopSizing() {
     input.style.removeProperty('height');
@@ -94,8 +102,19 @@ export function mountPromptField({ input, form, publicNote } = {}) {
     form.requestSubmit();
   }
 
+  function onDocumentKeydown(event) {
+    if (media.matches || event.defaultPrevented || event.metaKey || event.ctrlKey || event.altKey) return;
+    if (event.isComposing || event.keyCode === 229 || document.activeElement === input) return;
+    if (input.disabled || input.readOnly || field.closest?.('[hidden], [inert]')) return;
+    if (event.key.length !== 1 && event.key !== 'Dead') return;
+    const target = event.target ?? document.activeElement;
+    if (target?.closest?.(INTERACTIVE_TARGETS)) return;
+    focusAtEnd();
+  }
+
   input.addEventListener('input', sync);
   input.addEventListener('keydown', onKeydown);
+  document.addEventListener('keydown', onDocumentKeydown);
   window.addEventListener('resize', schedule);
   media.addEventListener('change', schedule);
   const observer = new ResizeObserver(onResizeObserved);
@@ -110,6 +129,7 @@ export function mountPromptField({ input, form, publicNote } = {}) {
       disposed = true;
       input.removeEventListener('input', sync);
       input.removeEventListener('keydown', onKeydown);
+      document.removeEventListener('keydown', onDocumentKeydown);
       window.removeEventListener('resize', schedule);
       media.removeEventListener('change', schedule);
       observer.disconnect();

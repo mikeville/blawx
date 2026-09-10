@@ -36,7 +36,12 @@ class Media extends Target {
 
 function fixture({ mobile = false, value = '', scrollHeight = 72, maxHeight = '120px' } = {}) {
   const media = new Media(mobile);
-  const field = { classList: new ClassList(), width: 500, getBoundingClientRect() { return { width: this.width }; } };
+  const field = new Target();
+  Object.assign(field, {
+    classList: new ClassList(), width: 500,
+    getBoundingClientRect() { return { width: this.width }; },
+    closest() { return null; },
+  });
   const form = { classList: new ClassList(), submissions: 0, requestSubmit() { this.submissions += 1; } };
   const input = new Target();
   Object.assign(input, {
@@ -60,7 +65,9 @@ function fixture({ mobile = false, value = '', scrollHeight = 72, maxHeight = '1
   const frames = new Map();
   let observer;
   globalThis.window = windowTarget;
-  globalThis.document = { activeElement: null, fonts: undefined };
+  const documentTarget = new Target();
+  Object.assign(documentTarget, { activeElement: null, fonts: undefined });
+  globalThis.document = documentTarget;
   globalThis.getComputedStyle = () => ({ maxHeight });
   globalThis.requestAnimationFrame = callback => { const id = ++nextFrame; frames.set(id, callback); return id; };
   globalThis.cancelAnimationFrame = id => frames.delete(id);
@@ -70,7 +77,7 @@ function fixture({ mobile = false, value = '', scrollHeight = 72, maxHeight = '1
     disconnect() { this.disconnected = true; }
   };
   const flush = () => { const queued = [...frames.values()]; frames.clear(); queued.forEach(callback => callback()); };
-  return { media, field, form, input, note, windowTarget, flush, get observer() { return observer; } };
+  return { media, field, form, input, note, windowTarget, documentTarget, flush, get observer() { return observer; } };
 }
 
 function keydown(view, overrides = {}) {
@@ -199,4 +206,25 @@ test('Enter submits except composition and desktop Shift+Enter; mobile Shift+Ent
   assert.equal(keydown(view, { shiftKey: true }), true);
   assert.equal(view.form.submissions, 2);
   controller.dispose();
+});
+
+test('desktop typing focuses the prompt without stealing shortcuts or control input', () => {
+  const view = fixture({ value: 'draft' });
+  const controller = mountPromptField({ input: view.input, form: view.form, publicNote: view.note });
+  const page = { closest() { return null; } };
+  view.documentTarget.emit('keydown', { key: 'a', target: page, defaultPrevented: false });
+  assert.equal(globalThis.document.activeElement, view.input);
+  assert.equal(view.input.selectionStart, view.input.value.length);
+
+  globalThis.document.activeElement = null;
+  view.documentTarget.emit('keydown', { key: 'k', target: page, metaKey: true, defaultPrevented: false });
+  assert.equal(globalThis.document.activeElement, null);
+  view.documentTarget.emit('keydown', { key: 'a', target: { closest() { return this; } }, defaultPrevented: false });
+  assert.equal(globalThis.document.activeElement, null);
+
+  view.media.set(true);
+  view.documentTarget.emit('keydown', { key: 'a', target: page, defaultPrevented: false });
+  assert.equal(globalThis.document.activeElement, null);
+  controller.dispose();
+  assert.equal(view.documentTarget.listeners.get('keydown').size, 0);
 });
