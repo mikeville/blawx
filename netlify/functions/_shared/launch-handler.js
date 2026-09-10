@@ -3,7 +3,7 @@ import { createPublicGenerationCacheKey, normalizeGenerationPrompt } from './gen
 import { validateVoxels } from '../../../src/voxels.js';
 
 const MAX_BODY_BYTES = 4096;
-const FRIENDLY_QUOTA_MESSAGE = 'Blawx is getting a lot of building requests today. This connection has used its three fresh builds for now—try again after midnight UTC. You can still explore saved sets, or clone the repo and connect your own API key to build without this demo’s shared limit.';
+const FRIENDLY_QUOTA_MESSAGE = 'That network has reached today’s build allowance. Devices on the same Wi-Fi, VPN, office, or mobile network may share it. Try again after midnight UTC. Saved sets are still available.';
 const FRIENDLY_PAUSED_MESSAGE = 'Fresh builds are paused for a bit while I keep the public demo within its budget. Saved sets are still available. Try again later, or clone the repo and connect your own API key.';
 
 function jsonResponse(status, payload) {
