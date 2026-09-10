@@ -18,9 +18,16 @@ function isRecord(value) {
 
 async function readJson(response) {
   try {
+    if (typeof response.text === 'function') {
+      const text = await response.text();
+      return JSON.parse(text);
+    }
     return await response.json();
   } catch (cause) {
-    throw new GenerationClientError('The generator returned an unreadable response.', {
+    const message = response.status >= 500
+      ? 'The build service stopped before it could return a result. If generation had already started, this attempt may have counted. Wait a moment before trying again.'
+      : 'The build service returned an unreadable response, so no set was loaded.';
+    throw new GenerationClientError(message, {
       code: 'malformed-response', status: response.status, cause,
     });
   }
@@ -45,7 +52,7 @@ export function createGenerationClient(fetchImpl = fetch, endpoint = appResource
         });
       } catch (cause) {
         if (cause?.name === 'AbortError') throw cause;
-        throw new GenerationClientError('The local generator could not be reached.', { code: 'network-error', cause });
+        throw new GenerationClientError('The build service could not be reached. Check your connection and try again.', { code: 'network-error', cause });
       }
 
       const payload = await readJson(response);

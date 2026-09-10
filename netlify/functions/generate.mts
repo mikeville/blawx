@@ -67,6 +67,7 @@ export default async (request: Request, context: { ip?: string; requestId?: stri
     connectionHasher: secret
       ? async ({ ip, now }) => bytesToPostgresBytea(await hashConnection({ ip, secret, now }))
       : null,
+    logEvent: (event) => console.info(JSON.stringify({ scope: 'blawx-generation', ...event })),
   });
   return handler(request, context);
 };

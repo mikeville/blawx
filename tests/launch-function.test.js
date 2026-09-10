@@ -255,8 +255,12 @@ test('OpenAI provider performs exactly one bounded request and returns a validat
   assert.equal(calls[0].url, 'https://api.openai.com/v1/responses');
   assert.equal(calls[0].init.redirect, 'error');
   assert.equal(calls[0].init.headers.authorization, 'Bearer test-key-never-sent-to-openai');
+  assert.equal(calls[0].init.headers['idempotency-key'], 'request-openai-1');
   assert.doesNotMatch(calls[0].init.body, /test-key-never-sent-to-openai/);
-  assert.deepEqual(JSON.parse(calls[0].init.body), buildBoundedOpenAIRequest(prepared.input));
+  assert.deepEqual(JSON.parse(calls[0].init.body), {
+    ...buildBoundedOpenAIRequest(prepared.input),
+    background: true,
+  });
   assert.equal(result.actualMicros, 3320);
   assert.equal(result.resultId, 'resp_test_1');
   assert.equal(result.payload.requestId, 'request-openai-1');
@@ -266,6 +270,54 @@ test('OpenAI provider performs exactly one bounded request and returns a validat
   assert.equal(result.payload.diagnostics.valid, true);
   assert.equal(result.payload.metadata.requestCount, 1);
   assert.equal(result.payload.metadata.retries, 0);
+});
+
+test('OpenAI provider retrieves one acknowledged background response without another model attempt', async () => {
+  const calls = [];
+  const provider = createOpenAIProvider({
+    apiKey: 'test-key',
+    promptTemplate: TEMPLATE,
+    pollIntervalMs: 0,
+    fetchImpl: async (url, init) => {
+      calls.push({ url, init });
+      const payload = calls.length === 1
+        ? openAIResponse({ status: 'queued', output: [], usage: null })
+        : openAIResponse();
+      return new Response(JSON.stringify(payload), { status: 200 });
+    },
+  });
+
+  const result = await provider(await provider.prepare('pipe organ'), { requestId: 'request-background-1' });
+  assert.equal(result.resultId, 'resp_test_1');
+  assert.equal(calls.length, 2);
+  assert.equal(calls[0].init.method, 'POST');
+  assert.equal(JSON.parse(calls[0].init.body).background, true);
+  assert.equal(calls[1].url, 'https://api.openai.com/v1/responses/resp_test_1');
+  assert.equal(calls[1].init.method, 'GET');
+});
+
+test('OpenAI provider tolerates a transient retrieval failure without repeating the model request', async () => {
+  const calls = [];
+  const provider = createOpenAIProvider({
+    apiKey: 'test-key',
+    promptTemplate: TEMPLATE,
+    pollIntervalMs: 0,
+    fetchImpl: async (url, init) => {
+      calls.push({ url, init });
+      if (calls.length === 1) {
+        return new Response(JSON.stringify(openAIResponse({ status: 'in_progress', output: [], usage: null })), { status: 200 });
+      }
+      if (calls.length === 2) {
+        return new Response(JSON.stringify({ error: { code: 'server_error' } }), { status: 503 });
+      }
+      return new Response(JSON.stringify(openAIResponse()), { status: 200 });
+    },
+  });
+
+  const result = await provider(await provider.prepare('roller coaster'), { requestId: 'request-background-2' });
+  assert.equal(result.payload.prompt, 'roller coaster');
+  assert.equal(calls.filter(({ init }) => init.method === 'POST').length, 1);
+  assert.equal(calls.filter(({ init }) => init.method === 'GET').length, 2);
 });
 
 test('OpenAI provider never retries an HTTP rejection', async () => {
@@ -333,8 +385,29 @@ test('OpenAI provider rejects oversized responses and aborts at its deadline', a
   });
   await assert.rejects(
     timedOut(await timedOut.prepare('cat'), { requestId: 'timeout' }),
-    (error) => error.code === 'openai_request_aborted' && error.actualMicros === undefined,
+    (error) => error.code === 'openai_timeout' && error.actualMicros === undefined,
   );
+
+  let cancelled = false;
+  const stuckBody = createOpenAIProvider({
+    apiKey: 'test-key', promptTemplate: TEMPLATE, policy: timeoutPolicy,
+    fetchImpl: async () => ({
+      ok: true,
+      status: 200,
+      headers: new Headers(),
+      body: {
+        getReader: () => ({
+          read: () => new Promise(() => {}),
+          cancel: async () => { cancelled = true; },
+        }),
+      },
+    }),
+  });
+  await assert.rejects(
+    stuckBody(await stuckBody.prepare('cat'), { requestId: 'stuck-body' }),
+    (error) => error.code === 'openai_timeout',
+  );
+  assert.equal(cancelled, true);
 });
 
 test('provider prompt preparation happens before any quota reservation', async () => {
@@ -354,6 +427,32 @@ test('provider prompt preparation happens before any quota reservation', async (
   assert.equal(response.status, 400);
   assert.equal((await response.json()).error.code, 'prompt-too-complex');
   assert.deepEqual(calls, []);
+});
+
+test('provider failures distinguish timeout, invalid plan, and interrupted transport for the user', async () => {
+  for (const [providerCode, publicCode, status, messagePattern] of [
+    ['openai_timeout', 'generation-timeout', 504, /did not finish.*attempt counted/i],
+    ['openai_program_invalid', 'generation-invalid', 502, /brick plan.*attempt counted/i],
+    ['openai_network_failure', 'generation-interrupted', 502, /connection.*attempt counted/i],
+  ]) {
+    const store = {
+      reserve: async () => ({ accepted: true, decision: 'reserved' }),
+      markProviderStarted: async () => true,
+      finalize: async () => ({ finalized: true, decision: 'finalized' }),
+    };
+    const provider = async () => {
+      const error = new Error(providerCode);
+      error.code = providerCode;
+      if (providerCode === 'openai_program_invalid') error.actualMicros = 1234;
+      throw error;
+    };
+    const response = await createLaunchHandler(baseOptions({ store, provider }))(request(), context());
+    const payload = await response.json();
+    assert.equal(response.status, status);
+    assert.equal(payload.error.code, publicCode);
+    assert.match(payload.error.message, messagePattern);
+    assert.equal(payload.requestId, REQUEST_ID);
+  }
 });
 
 test('spend alert delivery claims once, uses idempotency keys, and acknowledges each result', async () => {

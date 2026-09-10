@@ -69,6 +69,21 @@ test('rejects unreadable, incomplete, and invalid-model success responses', asyn
   await assert.rejects(invalid.generate('cat'), { code: 'invalid-model' });
 });
 
+test('explains a non-JSON platform failure and whether the attempt may count', async () => {
+  const client = createGenerationClient(async () => ({
+    ok: false,
+    status: 502,
+    text: async () => '<html>Bad gateway</html>',
+  }));
+  await assert.rejects(client.generate('pipe organ'), (error) => {
+    assert.equal(error.code, 'malformed-response');
+    assert.equal(error.status, 502);
+    assert.match(error.message, /stopped before it could return/i);
+    assert.match(error.message, /may have counted/i);
+    return true;
+  });
+});
+
 test('reports network errors and rejects invalid prompts before fetch', async () => {
   let calls = 0;
   const client = createGenerationClient(async () => { calls += 1; throw new TypeError('offline'); });

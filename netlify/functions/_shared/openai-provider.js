@@ -4,6 +4,9 @@ import { substituteSubject } from '../../../server/prompt-template.js';
 import { buildBoundedOpenAIRequest, OPENAI_LAUNCH_POLICY } from './openai-budget.js';
 
 const RESPONSES_URL = 'https://api.openai.com/v1/responses';
+const BACKGROUND_ACK_TIMEOUT_MS = 10_000;
+const BACKGROUND_POLL_TIMEOUT_MS = 8_000;
+const BACKGROUND_POLL_INTERVAL_MS = 750;
 const MICROS_PER_DOLLAR = 1_000_000;
 const STANDARD_RATES_USD_PER_MILLION = Object.freeze({
   uncachedInput: 10,
@@ -48,13 +51,33 @@ export function usageCostMicros(usage, rates = STANDARD_RATES_USD_PER_MILLION) {
     + tokenCostMicros(output, rates.output);
 }
 
-async function readBoundedResponse(response, maxBytes) {
+async function boundedWait(promise, signal) {
+  if (signal.aborted) throw signal.reason ?? new Error('request_aborted');
+  let abort;
+  const aborted = new Promise((_, reject) => {
+    abort = () => reject(signal.reason ?? new Error('request_aborted'));
+    signal.addEventListener('abort', abort, { once: true });
+  });
+  try {
+    return await Promise.race([promise, aborted]);
+  } finally {
+    signal.removeEventListener('abort', abort);
+  }
+}
+
+function delay(ms, signal) {
+  let timer;
+  return boundedWait(new Promise((resolve) => { timer = setTimeout(resolve, ms); }), signal)
+    .finally(() => clearTimeout(timer));
+}
+
+async function readBoundedResponse(response, maxBytes, signal) {
   const declaredLength = Number(response.headers.get('content-length'));
   if (Number.isFinite(declaredLength) && declaredLength > maxBytes) {
     throw new OpenAIProviderError('openai_response_too_large');
   }
   if (!response.body?.getReader) {
-    const text = await response.text();
+    const text = await boundedWait(response.text(), signal);
     if (new TextEncoder().encode(text).byteLength > maxBytes) {
       throw new OpenAIProviderError('openai_response_too_large');
     }
@@ -65,15 +88,20 @@ async function readBoundedResponse(response, maxBytes) {
   const decoder = new TextDecoder();
   let bytes = 0;
   let text = '';
-  while (true) {
-    const { done, value } = await reader.read();
-    if (done) break;
-    bytes += value.byteLength;
-    if (bytes > maxBytes) {
-      await reader.cancel().catch(() => {});
-      throw new OpenAIProviderError('openai_response_too_large');
+  try {
+    while (true) {
+      const { done, value } = await boundedWait(reader.read(), signal);
+      if (done) break;
+      bytes += value.byteLength;
+      if (bytes > maxBytes) {
+        void reader.cancel().catch(() => {});
+        throw new OpenAIProviderError('openai_response_too_large');
+      }
+      text += decoder.decode(value, { stream: true });
     }
-    text += decoder.decode(value, { stream: true });
+  } catch (error) {
+    void reader.cancel().catch(() => {});
+    throw error;
   }
   return text + decoder.decode();
 }
@@ -138,17 +166,49 @@ function parseProgram(text, actualMicros) {
 
 function combineSignals(externalSignal, timeoutMs) {
   const controller = new AbortController();
+  let timedOut = false;
   const abort = () => controller.abort(externalSignal?.reason ?? new Error('request_aborted'));
   if (externalSignal?.aborted) abort();
   else externalSignal?.addEventListener('abort', abort, { once: true });
-  const timer = setTimeout(() => controller.abort(new Error('openai_timeout')), timeoutMs);
+  const timer = setTimeout(() => {
+    timedOut = true;
+    controller.abort(new Error('openai_timeout'));
+  }, timeoutMs);
   return {
     signal: controller.signal,
+    get timedOut() { return timedOut; },
     dispose() {
       clearTimeout(timer);
       externalSignal?.removeEventListener('abort', abort);
     },
   };
+}
+
+function responseUsageCost(responseJson) {
+  try {
+    return usageCostMicros(responseJson?.usage);
+  } catch (cause) {
+    throw new OpenAIProviderError('openai_usage_unknown', { cause });
+  }
+}
+
+function responseId(responseJson) {
+  if (typeof responseJson?.id !== 'string' || !/^resp_[A-Za-z0-9_-]+$/.test(responseJson.id)) {
+    throw new OpenAIProviderError('openai_response_id_missing');
+  }
+  return responseJson.id;
+}
+
+function isPendingResponse(responseJson) {
+  return responseJson?.status === 'queued' || responseJson?.status === 'in_progress';
+}
+
+function retryablePollStatus(status) {
+  return [404, 408, 409, 429].includes(status) || status >= 500;
+}
+
+function retryablePollError(error) {
+  return ['openai_network_failure', 'openai_timeout', 'openai_response_invalid_json'].includes(error?.code);
 }
 
 export function createOpenAIProvider({
@@ -157,52 +217,37 @@ export function createOpenAIProvider({
   fetchImpl = globalThis.fetch,
   policy = OPENAI_LAUNCH_POLICY,
   nowMs = () => Date.now(),
+  pollIntervalMs = BACKGROUND_POLL_INTERVAL_MS,
 } = {}) {
   if (typeof apiKey !== 'string' || !apiKey) throw new Error('openai_api_key_required');
   if (typeof promptTemplate !== 'string' || !promptTemplate) throw new Error('openai_prompt_template_required');
   if (typeof fetchImpl !== 'function') throw new Error('openai_fetch_required');
+  if (!Number.isFinite(pollIntervalMs) || pollIntervalMs < 0) throw new Error('openai_poll_interval_invalid');
 
-  const provider = async (prepared, { requestId, signal } = {}) => {
-    if (!prepared || typeof prepared !== 'object' || typeof prepared.input !== 'string'
-        || typeof prepared.userPrompt !== 'string') {
-      throw new OpenAIProviderError('openai_prepared_input_required');
-    }
-    const requestBody = buildBoundedOpenAIRequest(prepared.input, policy);
-    const combined = combineSignals(signal, policy.timeoutMs);
-    const startedAt = nowMs();
-    let response;
-    let responseText;
+  async function requestOpenAI(url, init, { signal, timeoutMs }) {
+    const combined = combineSignals(signal, timeoutMs);
     try {
-      response = await fetchImpl(RESPONSES_URL, {
-        method: 'POST',
-        headers: {
-          authorization: `Bearer ${apiKey}`,
-          'content-type': 'application/json',
-        },
-        body: JSON.stringify(requestBody),
-        redirect: 'error',
-        signal: combined.signal,
-      });
-      responseText = await readBoundedResponse(response, policy.maxResponseBytes);
+      const response = await boundedWait(fetchImpl(url, { ...init, signal: combined.signal }), combined.signal);
+      const responseText = await readBoundedResponse(response, policy.maxResponseBytes, combined.signal);
+      return { response, responseJson: parseResponseJson(responseText) };
     } catch (cause) {
       if (cause instanceof OpenAIProviderError) throw cause;
-      throw new OpenAIProviderError(combined.signal.aborted ? 'openai_request_aborted' : 'openai_network_failure', { cause });
+      const code = combined.timedOut
+        ? 'openai_timeout'
+        : combined.signal.aborted ? 'openai_request_aborted' : 'openai_network_failure';
+      throw new OpenAIProviderError(code, { cause });
     } finally {
       combined.dispose();
     }
+  }
 
-    const responseJson = parseResponseJson(responseText);
-    let actualMicros;
-    try {
-      actualMicros = usageCostMicros(responseJson.usage);
-    } catch (cause) {
-      throw new OpenAIProviderError('openai_usage_unknown', { cause });
-    }
-    if (!response.ok) {
-      throw new OpenAIProviderError('openai_http_failure', { actualMicros });
-    }
+  function finishResponse(responseJson, prepared, { requestId, startedAtMs }) {
+    const actualMicros = responseUsageCost(responseJson);
     if (responseJson.usage.output_tokens > policy.maxOutputTokens) {
       throw new OpenAIProviderError('openai_output_limit_exceeded', { actualMicros });
+    }
+    if (responseJson.status !== 'completed') {
+      throw new OpenAIProviderError(`openai_response_${responseJson.status ?? 'incomplete'}`, { actualMicros });
     }
 
     let outputText;
@@ -212,16 +257,9 @@ export function createOpenAIProvider({
       throw new OpenAIProviderError(cause.code ?? 'openai_output_invalid', { actualMicros, cause });
     }
     const { sourceProgram, model, diagnostics } = parseProgram(outputText, actualMicros);
-    const generationMs = Math.max(0, nowMs() - startedAt);
-    const resultId = typeof responseJson.id === 'string' && responseJson.id
-      ? responseJson.id
-      : requestId;
-    if (typeof resultId !== 'string' || !resultId) {
-      throw new OpenAIProviderError('openai_response_id_missing', { actualMicros });
-    }
     return {
       actualMicros,
-      resultId,
+      resultId: responseId(responseJson),
       payload: {
         requestId,
         prompt: prepared.userPrompt,
@@ -230,7 +268,7 @@ export function createOpenAIProvider({
         diagnostics,
         metadata: {
           runtime: 'openai-responses-api',
-          generationMs,
+          generationMs: Math.max(0, nowMs() - startedAtMs),
           timingScope: 'server request through local validation',
           requestedModel: policy.model,
           actualModel: typeof responseJson.model === 'string' ? responseJson.model : null,
@@ -242,6 +280,70 @@ export function createOpenAIProvider({
         },
       },
     };
+  }
+
+  const provider = async (prepared, { requestId, signal } = {}) => {
+    if (!prepared || typeof prepared !== 'object' || typeof prepared.input !== 'string'
+        || typeof prepared.userPrompt !== 'string' || typeof requestId !== 'string' || !requestId) {
+      throw new OpenAIProviderError('openai_prepared_input_required');
+    }
+    const startedAt = nowMs();
+    const overall = combineSignals(signal, policy.timeoutMs);
+    let acceptedResponseId = null;
+    try {
+      const { response, responseJson: initialResponse } = await requestOpenAI(RESPONSES_URL, {
+        method: 'POST',
+        headers: {
+          authorization: `Bearer ${apiKey}`,
+          'content-type': 'application/json',
+          'idempotency-key': requestId,
+        },
+        body: JSON.stringify({
+          ...buildBoundedOpenAIRequest(prepared.input, policy),
+          background: true,
+        }),
+        redirect: 'error',
+      }, { signal: overall.signal, timeoutMs: Math.min(policy.timeoutMs, BACKGROUND_ACK_TIMEOUT_MS) });
+      if (!response.ok) {
+        const actualMicros = initialResponse?.usage ? responseUsageCost(initialResponse) : undefined;
+        throw new OpenAIProviderError('openai_http_failure', { actualMicros, publicStatus: response.status });
+      }
+      acceptedResponseId = responseId(initialResponse);
+      let responseJson = initialResponse;
+
+      while (isPendingResponse(responseJson)) {
+        await delay(pollIntervalMs, overall.signal);
+        let polled;
+        try {
+          polled = await requestOpenAI(`${RESPONSES_URL}/${acceptedResponseId}`, {
+            method: 'GET',
+            headers: { authorization: `Bearer ${apiKey}` },
+            redirect: 'error',
+          }, { signal: overall.signal, timeoutMs: Math.min(policy.timeoutMs, BACKGROUND_POLL_TIMEOUT_MS) });
+        } catch (error) {
+          if (!overall.signal.aborted && retryablePollError(error)) continue;
+          throw error;
+        }
+        if (!polled.response.ok) {
+          if (retryablePollStatus(polled.response.status)) continue;
+          const actualMicros = polled.responseJson?.usage ? responseUsageCost(polled.responseJson) : undefined;
+          throw new OpenAIProviderError('openai_http_failure', {
+            actualMicros,
+            publicStatus: polled.response.status,
+          });
+        }
+        responseJson = polled.responseJson;
+      }
+
+      return finishResponse(responseJson, prepared, { requestId, startedAtMs: startedAt });
+    } catch (cause) {
+      if (overall.timedOut) {
+        throw new OpenAIProviderError('openai_timeout', { cause });
+      }
+      throw cause;
+    } finally {
+      overall.dispose();
+    }
   };
 
   provider.prepare = async (userPrompt) => {

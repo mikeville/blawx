@@ -113,6 +113,40 @@ function publicGeneratedPayload(payload) {
   return safe;
 }
 
+function providerFailureResponse(error, requestId) {
+  const code = typeof error?.code === 'string' ? error.code : '';
+  if (code === 'openai_timeout') {
+    return errorResponse(
+      504,
+      'generation-timeout',
+      'The model service did not finish this build in time. This attempt counted, but no set was saved. Try again later.',
+      requestId,
+    );
+  }
+  if (/refusal|program_invalid|output_(?:invalid|missing|unexpected|incomplete)|response_(?:failed|cancelled|incomplete)/.test(code)) {
+    return errorResponse(
+      502,
+      'generation-invalid',
+      'The model finished, but its brick plan was not valid enough to build. This attempt counted. Try one compact object with a few defining features.',
+      requestId,
+    );
+  }
+  if (/network|http_failure|request_aborted|response_invalid_json/.test(code)) {
+    return errorResponse(
+      502,
+      'generation-interrupted',
+      'The connection to the model service broke before Blawx received the set. This attempt counted. Wait a moment before trying again.',
+      requestId,
+    );
+  }
+  return errorResponse(
+    502,
+    'generation-failed',
+    'The build stopped after generation began. This attempt counted, but no set was saved. Try again later.',
+    requestId,
+  );
+}
+
 export function createLaunchHandler({
   generationEnabled,
   allowedOrigins,
@@ -121,8 +155,12 @@ export function createLaunchHandler({
   connectionHasher,
   generationVersion = null,
   now = () => new Date(),
+  logEvent = () => {},
 }) {
   const origins = new Set(allowedOrigins ?? []);
+  const log = (event) => {
+    try { logEvent(event); } catch { /* Observability must never affect generation. */ }
+  };
 
   return async function handle(request, context = {}) {
     if (request.method !== 'POST') {
@@ -189,11 +227,13 @@ export function createLaunchHandler({
       return errorResponse(503, 'generation-paused', FRIENDLY_PAUSED_MESSAGE, requestId);
     }
     if (!reservation?.accepted) return reservationRejection(reservation, requestId);
+    log({ requestId, stage: 'reserved' });
 
     let providerStarted = false;
     try {
       providerStarted = await store.markProviderStarted({ requestId, now: now(), signal: request.signal });
       if (!providerStarted) throw new Error('provider_start_rejected');
+      log({ requestId, stage: 'provider-started' });
 
       const generated = await provider(providerInput, { requestId, signal: request.signal });
       if (!generated || typeof generated !== 'object' || !Number.isInteger(generated.actualMicros)
@@ -201,6 +241,7 @@ export function createLaunchHandler({
           || !generated.payload || typeof generated.payload !== 'object') {
         throw new Error('provider_result_invalid');
       }
+      log({ requestId, stage: 'provider-completed' });
 
       const finalization = await store.finalize({
         requestId,
@@ -209,11 +250,11 @@ export function createLaunchHandler({
         resultId: requestId,
         failureCode: null,
         now: now(),
-        signal: request.signal,
       });
       if (!finalization?.finalized || finalization.decision !== 'finalized') {
         return errorResponse(503, 'generation-paused', FRIENDLY_PAUSED_MESSAGE, requestId);
       }
+      log({ requestId, stage: 'finalized' });
       if (cacheKey && typeof store.saveGenerationResult === 'function') {
         try {
           const saved = await store.saveGenerationResult({
@@ -228,7 +269,6 @@ export function createLaunchHandler({
             metadata: generated.payload.metadata,
             providerResultId: generated.resultId,
             now: now(),
-            signal: request.signal,
           });
           return jsonResponse(200, {
             ...publicGeneratedPayload(generated.payload),
@@ -250,6 +290,11 @@ export function createLaunchHandler({
       }
       return jsonResponse(200, publicGeneratedPayload(generated.payload));
     } catch (error) {
+      log({
+        requestId,
+        stage: 'failed',
+        failureCode: typeof error?.code === 'string' ? error.code : 'generation_internal_failure',
+      });
       try {
         if (!providerStarted) {
           await store.cancelBeforeProvider({
@@ -273,7 +318,7 @@ export function createLaunchHandler({
       } catch {
         // The database reservation remains fail-closed if cleanup cannot complete.
       }
-      return errorResponse(502, 'generation-failed', 'The set could not be generated. Your attempt was recorded safely.', requestId);
+      return providerFailureResponse(error, requestId);
     }
   };
 }
