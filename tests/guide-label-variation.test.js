@@ -6,36 +6,47 @@ import { deriveGuidePresentation } from '../src/guide-presentation.js';
 
 const section = (id, label, repeatCount = 1) => ({ id, label, repeatCount });
 
-test('interleaved repeated labels receive deterministic one-word playful prefixes', () => {
-  const source = [
-    section('a1', 'Body panels'),
-    section('detail', 'TV details'),
-    section('a2', 'body panels'),
-    section('a3', 'BODY PANELS'),
-    section('a4', 'Body   panels'),
-    section('a5', 'Body panels'),
-    section('a6', 'Body panels'),
-  ];
+test('ordinary labels distinguish adjacent continuation from a later return', () => {
+  const source = [section('a1', 'Body'), section('a2', 'body'), section('detail', 'Details'), section('a3', 'BODY')];
   const snapshot = structuredClone(source);
   const result = varyGuideSectionLabels(source);
 
-  assert.deepEqual(result.map(({ label }) => label), [
-    'Body panels',
-    'TV details',
-    'More body panels',
-    'Extra BODY PANELS',
-    'Yes, body   panels!',
-    'Encore, body panels!',
-    'More body panels',
-  ]);
+  assert.equal(result[0].label, 'Body');
+  assert.match(result[1].label, /^(?:More body|body, continued|Next: body)$/u);
+  assert.equal(result[2].label, 'Details');
+  assert.match(result[3].label, /^(?:BODY, again|Next: BODY)$/u);
   assert.deepEqual(result.map(({ baseLabel }) => baseLabel), source.map(({ label }) => label));
   assert.deepEqual(source, snapshot);
-  assert.ok(result.every((entry, index) => {
-    const addedWords = entry.label.trim().split(/\s+/u).length - entry.baseLabel.trim().split(/\s+/u).length;
-    return addedWords <= 1;
-  }));
   assert.deepEqual(varyGuideSectionLabels(source), result);
   assert.deepEqual(varyGuideSectionLabels(result), result);
+});
+
+test('ordinary templates share guide-wide history and avoid an obvious short cycle', () => {
+  const twoNames = varyGuideSectionLabels([
+    section('body-1', 'Body'), section('body-2', 'Body'),
+    section('detail-1', 'Details'), section('detail-2', 'Details'),
+  ]);
+  const template = (label) => label.startsWith('More ') ? 'more'
+    : label.endsWith(', continued') ? 'continued' : 'next';
+  assert.notEqual(template(twoNames[1].label), template(twoNames[3].label));
+
+  const mainCase = varyGuideSectionLabels(Array.from({ length: 9 }, (_, index) => (
+    section(`main-${index}`, 'Main shape')
+  )));
+  const followUps = mainCase.slice(1).map(({ label }) => template(label));
+  assert.notDeepEqual(followUps.slice(0, 3), followUps.slice(3, 6));
+  assert.ok(mainCase.every((entry, index) => index === 0 || entry.label !== mainCase[index - 1].label));
+});
+
+test('More is withheld from singular labels and titlecase lowering preserves acronyms', () => {
+  const result = varyGuideSectionLabels([
+    section('wheel-1', 'Wheel'), section('wheel-2', 'Wheel'), section('wheel-3', 'Wheel'),
+    section('tv-1', 'TV panels'), section('tv-2', 'TV panels'),
+    section('lego-1', 'LEGO details'), section('lego-2', 'LEGO details'),
+  ]);
+  assert.ok(result.slice(1, 3).every(({ label }) => !label.startsWith('More ')));
+  assert.ok(result[4].label.includes('TV'));
+  assert.ok(result[6].label.includes('LEGO'));
 });
 
 test('collapsed repeats remain unchanged and do not advance normal occurrence counts', () => {
@@ -45,8 +56,48 @@ test('collapsed repeats remain unchanged and do not advance normal occurrence co
     section('repeat-again', ' wheel ', 3),
     section('single-2', 'wheel'),
   ]);
-  assert.deepEqual(result.map(({ label }) => label), ['Wheel', 'Wheel', ' wheel ', 'More wheel']);
+  assert.deepEqual(result.slice(0, 3).map(({ label }) => label), ['Wheel', 'Wheel', ' wheel ']);
+  assert.match(result[3].label, /^(?:wheel, again|Next: wheel)$/u);
   assert.deepEqual(result.map(({ baseLabel }) => baseLabel), ['Wheel', 'Wheel', ' wheel ', 'wheel']);
+});
+
+test('the finishing script is bounded and pays off only at the actual final entry', () => {
+  const short = varyGuideSectionLabels([section('finish-1', 'Finishing touches'), section('finish-2', 'Finishing touches')]);
+  assert.deepEqual(short.map(({ label }) => label), ['Finishing touches', 'Finishing touches. For real.']);
+
+  const trailingDetails = varyGuideSectionLabels([
+    section('finish-1', 'Finishing touches'),
+    section('finish-2', 'Finishing touches'),
+    section('finish-3', 'Finishing touches'),
+    section('finish-4', 'Finishing touches'),
+    section('details', 'Details'),
+  ]);
+  const middle = trailingDetails.slice(1, 4).map(({ label }) => label);
+  assert.equal(new Set(middle).size, 3);
+  assert.ok(middle.every((label) => !label.includes('For real')));
+  const okayIndex = middle.findIndex((label) => label.startsWith('Okay,'));
+  assert.ok(okayIndex === -1 || okayIndex === middle.length - 1);
+
+  const nonconsecutivePayoff = varyGuideSectionLabels([
+    section('finish-1', 'Finishing touches'), section('details', 'Details'), section('finish-2', 'Finishing touches'),
+  ]);
+  assert.equal(nonconsecutivePayoff.at(-1).label, 'Finishing touches. For real.');
+});
+
+test('ordinary jokes stay sparse and become scarcer when the finishing script repeats', () => {
+  const labels = [];
+  for (let index = 0; index < 14; index += 1) {
+    labels.push('Body', `Separator ${index}`);
+  }
+  const jokeIndexes = varyGuideSectionLabels(labels.map((label, index) => section(`plain-${index}`, label)))
+    .flatMap(({ label }, index) => /^(?:Hello|Ah),/u.test(label) ? [index] : []);
+  assert.ok(jokeIndexes.length <= 2);
+  assert.ok(jokeIndexes.every((index, position) => position === 0 || index - jokeIndexes[position - 1] >= 2));
+
+  const withFinishing = [...labels, 'Finishing touches', 'Gap', 'Finishing touches'];
+  const finishingJokes = varyGuideSectionLabels(withFinishing.map((label, index) => section(`finish-${index}`, label)))
+    .filter(({ label }) => /^(?:Hello|Ah),/u.test(label));
+  assert.ok(finishingJokes.length <= 1);
 });
 
 function presentationFixture() {
@@ -122,7 +173,8 @@ test('presentation decorates after exact repeat collapse without changing source
   assert.equal(presentation.sections[0].repeatCount, 2);
   assert.equal(presentation.sections[0].label, 'Wheel');
   assert.equal(presentation.sections[0].baseLabel, 'Wheel');
-  assert.deepEqual(presentation.sections.slice(1).map(({ label }) => label), ['Body', 'More body']);
+  assert.equal(presentation.sections[1].label, 'Body');
+  assert.match(presentation.sections[2].label, /^(?:More body|Body, continued|Next: body)$/u);
   assert.deepEqual(presentation.sections.slice(1).map(({ baseLabel }) => baseLabel), ['Body', 'Body']);
   assert.deepEqual(presentation.sections[0].sectionIds, ['section-1', 'section-2']);
   assert.equal(presentation.stats.repeatedInstructionCount, 1);

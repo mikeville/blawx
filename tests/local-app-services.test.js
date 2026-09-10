@@ -8,18 +8,26 @@ import { createLocalAppServices } from '../server/local-app-services.js';
 const model = { version: 1, kind: 'voxels', cells: [{ x: 0, y: 0, z: 0, color: 'red' }], meta: { prompt: 'cat' } };
 const result = { requestId: 'private-attempt', prompt: 'cat', model, sourceProgram: { ops: [] }, diagnostics: { valid: true }, metadata: { generationMs: 1 } };
 
-test('semantic provider busy gates cache misses but never cached results or feed reads', async () => {
+test('cached results remain available and fresh generation takes priority over semantic work', async () => {
   const root = await mkdtemp(join(tmpdir(), 'blawx-services-'));
   const dataRoot = join(root, 'private-data');
   let calls = 0;
   let semanticBusy = false;
+  let semanticCancelled = 0;
   let checkGenerationBusy;
+  let semanticOptions;
   const services = await createLocalAppServices({
     root, dataRoot, allowTestDataRoot: true, generationVersion: 'fixture-v1',
     generator: { generate: async () => { calls++; return result; }, isBusy: () => false },
-    semanticFactory: ({ isGenerationBusy }) => {
+    semanticFactory: (options) => {
+      semanticOptions = options;
+      const { isGenerationBusy } = options;
       checkGenerationBusy = isGenerationBusy;
-      return { isBusy: () => semanticBusy, cancel() {} };
+      return {
+        isBusy: () => semanticBusy,
+        isInferenceBusy: () => semanticBusy,
+        cancel() { semanticCancelled += 1; semanticBusy = false; },
+      };
     },
   });
   try {
@@ -30,9 +38,13 @@ test('semantic provider busy gates cache misses but never cached results or feed
     assert.equal(reused.cacheHit, true);
     assert.equal(services.store.listVisible().items.length, 1);
     assert.equal(services.store.getVisible(first.resultId).prompt, 'cat');
-    await assert.rejects(services.generation.generate('dog'), { code: 'busy' });
-    assert.equal(calls, 1);
+    const fresh = await services.generation.generate('dog');
+    assert.equal(fresh.prompt, 'cat');
+    assert.equal(calls, 2);
+    assert.equal(semanticCancelled, 1);
     assert.equal(checkGenerationBusy(), false);
+    assert.equal(semanticOptions.allowExperimentalInference, true);
+    assert.equal(semanticOptions.strategy, 'parallel-fixed-v1');
   } finally { await services.close(); }
 });
 
@@ -61,7 +73,7 @@ test('shutdown waits for aborted generation before closing its database, and is 
   assert.equal(semanticCancelled, 1);
 });
 
-test('Vite explicitly denies private result databases, receipts, and logs', async () => {
+test('Vite explicitly denies private result databases and private attempt receipts', async () => {
   const config = await readFile(new URL('../vite.config.js', import.meta.url), 'utf8');
   for (const directory of ['app-runs', 'app-data', '.blawx-private']) {
     assert.ok(config.includes(`'**/${directory}/**'`), `missing ${directory}`);

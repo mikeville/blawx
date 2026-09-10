@@ -37,7 +37,6 @@ export function createBookletRenderer({ result, byId }) {
     stage.remove();
     return {
       observe(canvas) { drawFailure(canvas); },
-      refreshWithin() {},
       dispose() {},
     };
   }
@@ -81,8 +80,7 @@ export function createBookletRenderer({ result, byId }) {
   }
   const intersection = new IntersectionObserver(entries => entries.forEach(entry => {
     const record = records.get(entry.target); if (!record) return;
-    const reading = entry.target.closest('.manual-reading');
-    record.visible = entry.isIntersecting && (!reading || reading.open);
+    record.visible = entry.isIntersecting;
     if (record.visible) enqueue(entry.target); else pending.delete(entry.target);
   }), { rootMargin: '100px 0px' });
   const sizes = new ResizeObserver(entries => entries.forEach(entry => enqueue(entry.target.querySelector('canvas'))));
@@ -115,17 +113,6 @@ export function createBookletRenderer({ result, byId }) {
     intersection.observe(canvas);
     sizes.observe(canvas.parentElement);
   }
-  function refreshWithin(container) {
-    container.querySelectorAll('canvas').forEach(canvas => {
-      const record = records.get(canvas);
-      if (!record) return;
-      const reading = canvas.closest('.manual-reading');
-      const rect = canvas.getBoundingClientRect();
-      record.visible = (!reading || reading.open) && rect.bottom >= 0 && rect.top <= innerHeight;
-      if (record.visible) enqueue(canvas);
-      else pending.delete(canvas);
-    });
-  }
   function dispose() {
     if (disposed) return;
     disposed = true;
@@ -142,5 +129,5 @@ export function createBookletRenderer({ result, byId }) {
     viewer.dispose();
     stage.remove();
   }
-  return { observe, refreshWithin, dispose };
+  return { observe, dispose };
 }

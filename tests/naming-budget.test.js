@@ -1,10 +1,18 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {
+  CONSENSUS_NAMING_STAGE_ENVELOPE,
+  PARALLEL_FIXED_NAMING_POLICY,
+  PARALLEL_FIXED_NAMING_STAGE_ENVELOPE,
+  NAMING_CONSENSUS_POLICY,
   NAMING_PHASE_POLICIES,
   NAMING_POLICY,
   NAMING_STAGE_ENVELOPE,
   createNamingApiRequest,
+  createNamingStageReservation,
+  createParallelFixedNamingStageBudget,
+  createParallelFixedNamingStageReservation,
+  createConsensusNamingStageBudget,
   createNamingStageBudget,
   validateNamingImages,
 } from '../server/naming-budget.js';
@@ -84,6 +92,50 @@ test('fixed proposal and caption envelopes reserve the whole naming stage below 
   assert.ok(NAMING_STAGE_ENVELOPE.maxCostUsd < NAMING_POLICY.maxCostUsd);
 });
 
+test('consensus-v1 reserves all three Luna phases atomically before provider entry', () => {
+  assert.deepEqual(NAMING_CONSENSUS_POLICY, {
+    maxPromptBytes: 4_000,
+    maxOutputTokens: 1_024,
+    maxImages: 0,
+    maxCostUsd: 0.0024848,
+  });
+  assert.deepEqual(createConsensusNamingStageBudget(), CONSENSUS_NAMING_STAGE_ENVELOPE);
+  assert.equal(CONSENSUS_NAMING_STAGE_ENVELOPE.maxCostUsd, 0.011836);
+  assert.equal(CONSENSUS_NAMING_STAGE_ENVELOPE.ceilingUsd, 0.015);
+  assert.equal(CONSENSUS_NAMING_STAGE_ENVELOPE.phases.consensus.maxInputTokens, 5_024);
+
+  const request = createNamingApiRequest('x'.repeat(4_000), { phase: 'consensus' });
+  assert.equal(request.body.model, 'gpt-5.6-luna');
+  assert.equal(request.body.input.length, 4_000);
+  assert.equal(request.body.max_output_tokens, 1_024);
+  assert.equal(request.budget.maxCostUsd, 0.0024848);
+  assert.throws(() => createNamingApiRequest('x'.repeat(4_001), { phase: 'consensus' }), /4,000-byte/);
+  assert.throws(() => createNamingApiRequest('x', {
+    phase: 'consensus', images: [{ png: png(1, 1), width: 1, height: 1, view: 'front' }],
+  }), /do not accept images/);
+
+  const reservation = createNamingStageReservation('request-1');
+  assert.equal(reservation.requestId, 'request-1');
+  assert.equal(reservation.strategy, 'consensus-v1');
+  assert.equal(reservation.amountUsd, 0.011836);
+  assert.equal(reservation.envelope, CONSENSUS_NAMING_STAGE_ENVELOPE);
+});
+
+test('parallel-fixed-v1 reserves the two existing vision envelopes atomically', () => {
+  assert.deepEqual(PARALLEL_FIXED_NAMING_POLICY, {
+    strategy: 'parallel-fixed-v1', groupingVersion: 1, maxCostUsd: 0.01,
+  });
+  assert.deepEqual(createParallelFixedNamingStageBudget(), PARALLEL_FIXED_NAMING_STAGE_ENVELOPE);
+  assert.equal(PARALLEL_FIXED_NAMING_STAGE_ENVELOPE.maxCostUsd, 0.0093512);
+  assert.equal(PARALLEL_FIXED_NAMING_STAGE_ENVELOPE.phases, NAMING_STAGE_ENVELOPE.phases);
+  assert.equal(PARALLEL_FIXED_NAMING_STAGE_ENVELOPE.groupingVersion, 1);
+  const reservation = createParallelFixedNamingStageReservation('parallel-request-1');
+  assert.equal(reservation.strategy, 'parallel-fixed-v1');
+  assert.equal(reservation.groupingVersion, 1);
+  assert.equal(reservation.amountUsd, 0.0093512);
+  assert.equal(reservation.envelope, PARALLEL_FIXED_NAMING_STAGE_ENVELOPE);
+});
+
 test('image validation enforces count, bytes, dimensions, signature, and matching IHDR', () => {
   const good = { png: png(640, 480), width: 640, height: 480, view: 'front' };
   const [validated] = validateNamingImages([good]);
@@ -108,5 +160,8 @@ test('UTF-8 bytes bound the prompt without truncation', () => {
   assert.equal(createNamingApiRequest(captions, { phase: 'captions' }).budget.promptBytes, 2_000);
   assert.throws(() => createNamingApiRequest(`${captions}é`, { phase: 'captions' }), /2,000-byte production limit/);
   assert.throws(() => createNamingApiRequest('prompt', { phase: 'unknown' }), /proposal or captions/);
+  for (const phase of ['toString', '__proto__', 'constructor']) {
+    assert.throws(() => createNamingApiRequest('prompt', { phase }), /proposal or captions/);
+  }
   assert.throws(() => createNamingApiRequest(Buffer.from('prompt')), /must be a string/);
 });

@@ -39,6 +39,24 @@ export const NAMING_PHASE_POLICIES = Object.freeze({
   captions: phasePolicy(2_000, 1_280),
 });
 
+export const NAMING_CONSENSUS_POLICY = Object.freeze({
+  maxPromptBytes: 4_000,
+  maxOutputTokens: 1_024,
+  maxImages: 0,
+  maxCostUsd: 0.0024848,
+});
+
+export const CONSENSUS_NAMING_POLICY = Object.freeze({
+  strategy: 'consensus-v1',
+  maxCostUsd: 0.015,
+});
+
+export const PARALLEL_FIXED_NAMING_POLICY = Object.freeze({
+  strategy: 'parallel-fixed-v1',
+  groupingVersion: 1,
+  maxCostUsd: NAMING_POLICY.maxCostUsd,
+});
+
 export function validateNamingImages(images = []) {
   if (!Array.isArray(images)) throw new TypeError('Naming images must be an array.');
   if (images.length > NAMING_POLICY.maxImages) {
@@ -85,9 +103,11 @@ export function validateNamingImages(images = []) {
 }
 
 function phaseSettings(phase) {
-  const settings = NAMING_PHASE_POLICIES[phase];
-  if (!settings || !Object.hasOwn(NAMING_PHASE_POLICIES, phase)) {
-    throw new RangeError('Naming phase must be proposal or captions.');
+  const settings = phase === 'consensus'
+    ? NAMING_CONSENSUS_POLICY
+    : Object.hasOwn(NAMING_PHASE_POLICIES, phase) ? NAMING_PHASE_POLICIES[phase] : null;
+  if (!settings) {
+    throw new RangeError('Naming phase must be proposal or captions, or consensus.');
   }
   return settings;
 }
@@ -109,7 +129,7 @@ function estimateEnvelope(promptBytes, images, phase) {
     outputUsdPerMillion: OUTPUT_USD_PER_MILLION,
     maxInputCostUsd,
     maxOutputCostUsd,
-    maxCostUsd: maxInputCostUsd + maxOutputCostUsd,
+    maxCostUsd: Number((maxInputCostUsd + maxOutputCostUsd).toFixed(10)),
     pricingAsOf: NAMING_POLICY.pricingAsOf,
     basis: 'Conservative envelope at pinned published rates; not a billing guarantee if provider prices change.',
   });
@@ -135,10 +155,94 @@ export function createNamingStageBudget() {
 
 export const NAMING_STAGE_ENVELOPE = createNamingStageBudget();
 
+export function createConsensusNamingStageBudget() {
+  const maxCostUsd = Number((NAMING_STAGE_ENVELOPE.maxCostUsd
+    + NAMING_CONSENSUS_POLICY.maxCostUsd).toFixed(7));
+  if (maxCostUsd > CONSENSUS_NAMING_POLICY.maxCostUsd) {
+    throw new RangeError('Consensus naming stage exceeds its production cost ceiling.');
+  }
+  return Object.freeze({
+    strategy: CONSENSUS_NAMING_POLICY.strategy,
+    phases: Object.freeze({
+      ...NAMING_STAGE_ENVELOPE.phases,
+      consensus: Object.freeze({
+        phase: 'consensus',
+        promptBytes: NAMING_CONSENSUS_POLICY.maxPromptBytes,
+        imageCount: 0,
+        imageTokens: 0,
+        maxInputTokens: NAMING_CONSENSUS_POLICY.maxPromptBytes + NAMING_POLICY.overheadTokenAllowance,
+        maxOutputTokens: NAMING_CONSENSUS_POLICY.maxOutputTokens,
+        worstInputUsdPerMillion: WORST_INPUT_USD_PER_MILLION,
+        outputUsdPerMillion: OUTPUT_USD_PER_MILLION,
+        maxInputCostUsd: 0.001256,
+        maxOutputCostUsd: 0.0012288,
+        maxCostUsd: NAMING_CONSENSUS_POLICY.maxCostUsd,
+        pricingAsOf: NAMING_POLICY.pricingAsOf,
+        basis: 'Conservative envelope at pinned published rates; not a billing guarantee if provider prices change.',
+      }),
+    }),
+    maxCostUsd,
+    ceilingUsd: CONSENSUS_NAMING_POLICY.maxCostUsd,
+    pricingAsOf: NAMING_POLICY.pricingAsOf,
+    basis: 'Full proposal, reference-caption, and text-consensus envelopes reserved together before provider entry.',
+  });
+}
+
+export const CONSENSUS_NAMING_STAGE_ENVELOPE = createConsensusNamingStageBudget();
+
+export function createParallelFixedNamingStageBudget() {
+  if (NAMING_STAGE_ENVELOPE.maxCostUsd > PARALLEL_FIXED_NAMING_POLICY.maxCostUsd) {
+    throw new RangeError('Parallel fixed naming stage exceeds its production cost ceiling.');
+  }
+  return Object.freeze({
+    strategy: PARALLEL_FIXED_NAMING_POLICY.strategy,
+    groupingVersion: PARALLEL_FIXED_NAMING_POLICY.groupingVersion,
+    phases: NAMING_STAGE_ENVELOPE.phases,
+    maxCostUsd: NAMING_STAGE_ENVELOPE.maxCostUsd,
+    ceilingUsd: PARALLEL_FIXED_NAMING_POLICY.maxCostUsd,
+    pricingAsOf: NAMING_POLICY.pricingAsOf,
+    basis: 'Two independent vision envelopes reserved atomically before either concurrent provider entry.',
+  });
+}
+
+export const PARALLEL_FIXED_NAMING_STAGE_ENVELOPE = createParallelFixedNamingStageBudget();
+
+export function createNamingStageReservation(requestId) {
+  if (typeof requestId !== 'string' || !/^[a-zA-Z0-9_-]{1,128}$/.test(requestId)) {
+    throw new TypeError('Naming reservation requires a safe request id.');
+  }
+  return Object.freeze({
+    requestId,
+    strategy: CONSENSUS_NAMING_POLICY.strategy,
+    amountUsd: CONSENSUS_NAMING_STAGE_ENVELOPE.maxCostUsd,
+    currency: 'USD',
+    pricingAsOf: NAMING_POLICY.pricingAsOf,
+    envelope: CONSENSUS_NAMING_STAGE_ENVELOPE,
+  });
+}
+
+export function createParallelFixedNamingStageReservation(requestId) {
+  if (typeof requestId !== 'string' || !/^[a-zA-Z0-9_-]{1,128}$/.test(requestId)) {
+    throw new TypeError('Naming reservation requires a safe request id.');
+  }
+  return Object.freeze({
+    requestId,
+    strategy: PARALLEL_FIXED_NAMING_POLICY.strategy,
+    groupingVersion: PARALLEL_FIXED_NAMING_POLICY.groupingVersion,
+    amountUsd: PARALLEL_FIXED_NAMING_STAGE_ENVELOPE.maxCostUsd,
+    currency: 'USD',
+    pricingAsOf: NAMING_POLICY.pricingAsOf,
+    envelope: PARALLEL_FIXED_NAMING_STAGE_ENVELOPE,
+  });
+}
+
 export function createNamingApiRequest(prompt, { images = [], phase = 'proposal' } = {}) {
   if (typeof prompt !== 'string') throw new TypeError('Naming prompt must be a string.');
   const settings = phaseSettings(phase);
   const preparedImages = validateNamingImages(images);
+  if (phase === 'consensus' && preparedImages.length) {
+    throw new RangeError('Naming consensus requests do not accept images.');
+  }
   const promptBytes = Buffer.byteLength(prompt, 'utf8');
   if (promptBytes > settings.maxPromptBytes) {
     throw new RangeError(`Naming ${phase} prompt exceeds the ${settings.maxPromptBytes.toLocaleString('en-US')}-byte production limit.`);

@@ -1,5 +1,5 @@
 import { join, resolve } from 'node:path';
-import { createGenerationService, GenerationError } from './generation-service.js';
+import { createGenerationService } from './generation-service.js';
 import { createCachedGenerationService, createGenerationVersion } from './cached-generation-service.js';
 import { createResultStore } from './result-store.js';
 import { createSemanticGuideService } from './semantic-guide-service.js';
@@ -33,19 +33,31 @@ export async function createLocalAppServices({
   });
   let generation;
   let semantic;
+  let generationRequested = false;
   try {
     semantic = semanticFactory({
       root,
       dataRoot: privateRoot,
       allowTestDataRoot,
-      isGenerationBusy: () => generation?.isBusy() ?? Boolean(rawGenerator.isBusy?.()),
+      isGenerationBusy: () => generationRequested
+        || (generation?.isBusy() ?? Boolean(rawGenerator.isBusy?.())),
+      allowExperimentalInference: true,
+      strategy: 'parallel-fixed-v1',
     });
     generation = createCachedGenerationService({
       store, generationVersion: version,
       generator: {
-        generate(input, options) {
-          if (semantic.isBusy()) throw new GenerationError('busy', 'Another local model request is already running.', null);
-          return rawGenerator.generate(input, options);
+        async generate(input, options) {
+          generationRequested = true;
+          try {
+            if (semantic.isInferenceBusy?.()) {
+              if (semantic.cancelAndWait) await semantic.cancelAndWait({ timeoutMs: 1_000 });
+              else semantic.cancel();
+            }
+            return await rawGenerator.generate(input, options);
+          } finally {
+            generationRequested = false;
+          }
         },
         isBusy: () => Boolean(rawGenerator.isBusy?.()),
       },

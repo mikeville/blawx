@@ -3,12 +3,12 @@ import { createConstructionClient } from './construction-client.js';
 import { createSemanticGuideClient, nameConstructionGuide } from './semantic-guide-client.js';
 
 const client = createConstructionClient();
-const semanticClient = createSemanticGuideClient();
+const semanticClient = createSemanticGuideClient(fetch, { persist: true });
 const number = value => Number(value ?? 0).toLocaleString();
 
 export function mountConstructionComparison(host, {
   rawModel, sourceProgram = null, viewer, devHost, subject = null, allowSemanticInference = false,
-  constructionClient = client, onReady, onError, hideLoadingMessage = false,
+  constructionClient = client, namingClient = semanticClient, onPhase, onReady, onError, hideLoadingMessage = false,
 }) {
   const controller = new AbortController();
   let operationId = 0;
@@ -44,13 +44,21 @@ export function mountConstructionComparison(host, {
       scrollY: window.scrollY,
       anchorStepId: anchor?.parentElement?.dataset.firstStep ?? null,
       anchorTop: anchor?.getBoundingClientRect().top ?? null,
+      openChapterStepId: host.querySelector('.manual-chapter[open]')?.dataset.firstStep ?? null,
     };
+  }
+
+  function isReadingOpenChapter() {
+    const open = host.querySelector('.manual-chapter[open]');
+    if (!open) return false;
+    const bounds = open.getBoundingClientRect();
+    return bounds.top < window.innerHeight && bounds.bottom > 64;
   }
 
   function applyDeferredSemanticResult() {
     if (disposed || !deferredSemanticResult || active !== 'adjusted') return;
     if (results.get('adjusted') !== deferredSemanticResult) return;
-    if (host.querySelector('.manual-chapter[open]')) return;
+    if (isReadingOpenChapter()) return;
     const result = deferredSemanticResult;
     deferredSemanticResult = null;
     describe(result, { preserveReaderState: true });
@@ -126,14 +134,25 @@ export function mountConstructionComparison(host, {
     semanticRequested = true;
     const named = await nameConstructionGuide(result, {
       subject,
-      client: semanticClient,
+      client: namingClient,
       signal: controller.signal,
       allowInference: allowSemanticInference,
     });
     if (disposed || results.get('adjusted') !== result) return;
     results.set('adjusted', named);
     if (active !== 'adjusted') return;
-    if (host.querySelector('.manual-chapter[open]')) deferredSemanticResult = named;
+    if (!named.semanticGuide) {
+      // A failed lookup must not rebuild the already usable generic booklet.
+      let status = devHost.querySelector('.semantic-status');
+      if (!status) {
+        status = document.createElement('p');
+        status.className = 'semantic-status';
+        devHost.querySelector('.assembly-diagnostics').append(status);
+      }
+      status.textContent = named.semanticStatus ?? '';
+      return;
+    }
+    if (isReadingOpenChapter()) deferredSemanticResult = named;
     else describe(named, { preserveReaderState: true });
   }
 
@@ -158,6 +177,7 @@ export function mountConstructionComparison(host, {
       const result = await constructionClient.convert({ rawModel, sourceProgram, adjustments: stage === 'adjusted' }, { signal: controller.signal });
       if (disposed || currentOperation !== operationId) return;
       results.set(stage, result);
+      if (!initialGuideReady) onPhase?.('guide');
       loading.hidden = true;
       if (selectWhenReady && requestedStage === stage) show(stage);
       else { describe(results.get('bricks') ?? result); note.textContent = 'Original preserved. Bricks are ready to compare.'; }
@@ -189,6 +209,13 @@ export function mountConstructionComparison(host, {
     if (stage === 'raw' || results.has(stage)) show(stage);
     else convert(stage, true);
   }; });
+  const onReaderScroll = () => applyDeferredSemanticResult();
+  window.addEventListener('scroll', onReaderScroll, { passive: true });
   convert('adjusted', true);
-  return () => { disposed = true; controller.abort(); disposeBooklet?.(); };
+  return () => {
+    disposed = true;
+    controller.abort();
+    window.removeEventListener('scroll', onReaderScroll);
+    disposeBooklet?.();
+  };
 }

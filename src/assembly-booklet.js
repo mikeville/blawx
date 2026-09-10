@@ -16,7 +16,7 @@ export function mountAssemblyBooklet(host, {
   }
   const { sourcePlan, plan, sourceGuide, presentation, numbering } = view;
   const byId = new Map(plan.bricks.map(brick => [brick.id, brick]));
-  const initialState = resolveBookletInitialState(readerState, presentation.sections.length);
+  const initialState = resolveBookletInitialState(readerState, presentation.sections.length, presentation.sections);
   let disposed = false;
   let renderer = null;
   let activeDetails = null;
@@ -126,6 +126,7 @@ export function mountAssemblyBooklet(host, {
   document.addEventListener('pointerdown', onOutsidePointer);
   function expandChapter(details) {
     if (disposed) return;
+    const switchedChapters = Boolean(activeDetails && activeDetails !== details);
     if (activeDetails && activeDetails!==details) {
       activeDetails.open = false;
       activeDetails.querySelector('.manual-chapter-body').replaceChildren();
@@ -135,6 +136,7 @@ export function mountAssemblyBooklet(host, {
     const section = presentation.sections[+details.dataset.chapter];
     const chapter = createChapterDiagramData(section, plan, numbering);
     const specs = chapter.specs;
+    const stepSpecs = [...specs];
     const warning = spec => {
       const id = `manual-tooltip-${details.dataset.chapter}-${spec.index}`;
       return `<span class="manual-issue-wrap"><button class="manual-issue" type="button" aria-describedby="${id}" aria-expanded="false"><span aria-hidden="true">△</span><span class="sr-only">Connection warning</span></button><span class="manual-tooltip" id="${id}" role="tooltip">Connection needs review</span></span>`;
@@ -155,22 +157,13 @@ export function mountAssemblyBooklet(host, {
       const specIndex = specs.push({ visible:plan.bricks.map(brick=>brick.id), highlight:ids, insertionDirection:null, joinContext:null })-1;
       placements = `<figure class="manual-diagram manual-placement"><figcaption><strong>${section.repeatCount}×</strong></figcaption><div class="manual-canvas-wrap"><canvas tabindex="0" data-diagram="${specIndex}" aria-label="${escape(section.label)} · positions of all ${section.repeatCount} copies"></canvas></div></figure>`;
     }
-    const figures = chapter.parts.length === 1
-      ? `<div class="manual-diagram-grid">${chapter.parts[0].figures.map(figure).join('')}${placements}</div>`
-      : chapter.parts.map((part,index)=>`<details class="manual-reading" ${index===0?'open':''}><summary aria-label="Steps ${part.range.start} through ${part.range.end}"><span class="manual-range-label">${guideRangeMarkup(part.range)}</span></summary><div class="manual-diagram-grid">${part.figures.map(figure).join('')}${index===chapter.parts.length-1?placements:''}</div></details>`).join('');
+    const figures = `<div class="manual-diagram-grid">${stepSpecs.map(figure).join('')}${placements}</div>`;
     const sectionInventory = sorted(section.totalInventory ?? section.inventory);
     const sectionPartCount = sectionInventory.reduce((sum, entry) => sum + (Number(entry.count) || 0), 0);
     details.querySelector('.manual-chapter-body').innerHTML = `<details class="manual-section-parts"><summary><span class="manual-parts-collapsed">Parts</span><span class="manual-parts-expanded">${sectionPartCount} Parts</span></summary><ul class="manual-inventory-grid">${inventoryMarkup(sectionInventory)}</ul></details>${figures}`;
     renderer = createBookletRenderer({ result, byId });
     details.querySelectorAll('canvas').forEach(canvas=>renderer.observe(canvas,specs[+canvas.dataset.diagram]));
-    details.querySelectorAll('.manual-reading').forEach(part=>{
-      part.addEventListener('toggle',()=>{
-        renderer?.refreshWithin(part);
-        if (!part.open) return;
-        if (!details.open) return;
-        details.querySelectorAll('.manual-reading').forEach(other=>{if(other!==part) other.open=false;});
-      });
-    });
+    if (switchedChapters) details.scrollIntoView({ block: 'start', behavior: 'instant' });
   }
   host.querySelectorAll('.manual-chapter').forEach(details=>{
     details.addEventListener('toggle',()=>{

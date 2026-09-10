@@ -180,3 +180,162 @@ test('aborting while the shared index is pending prevents stale follow-up reques
 
   assert.deepEqual(calls, [{ url: '/semantic-guides/index.json', method: 'GET' }]);
 });
+
+test('overlapping readers share one naming job and one reader can leave without cancelling the other', async () => {
+  const { input, annotation } = fixture();
+  let finishPost;
+  const posted = new Promise(resolve => { finishPost = resolve; });
+  let notifyStarted;
+  const started = new Promise(resolve => { notifyStarted = resolve; });
+  let posts = 0;
+  let providerSignal;
+  const client = createSemanticGuideClient(async (_url, options = {}) => {
+    if (options.method !== 'POST') return jsonResponse(null, 404);
+    posts += 1;
+    providerSignal = options.signal;
+    notifyStarted();
+    return posted;
+  });
+  const controller = new AbortController();
+  const first = client.get(input, { allowInference: true, signal: controller.signal });
+  const second = client.get(input, { allowInference: true });
+  await started;
+  controller.abort();
+  await assert.rejects(first, error => error.name === 'AbortError');
+  assert.equal(providerSignal.aborted, false);
+  finishPost(jsonResponse({ annotation, metadata: { namingPolicy: 'consensus-v1' } }));
+  assert.equal((await second).annotation.sections[0].label, 'Red tower');
+  assert.equal(posts, 1);
+});
+
+test('reopening a failed guide does not automatically retry inference in the same page', async () => {
+  const { input } = fixture();
+  let posts = 0;
+  const client = createSemanticGuideClient(async (_url, options = {}) => {
+    if (options.method !== 'POST') return jsonResponse(null, 404);
+    posts += 1;
+    throw new Error('provider unavailable');
+  });
+  await assert.rejects(client.get(input, { allowInference: true }), /provider unavailable/);
+  await assert.rejects(client.get(input, { allowInference: true }), /provider unavailable/);
+  assert.equal(posts, 1);
+});
+
+test('successful small name receipts survive a new client without network calls', async () => {
+  const { input, annotation } = fixture();
+  const values = new Map();
+  const storage = { getItem: key => values.get(key) ?? null, setItem: (key, value) => values.set(key, value) };
+  const writer = createSemanticGuideClient(async (_url, options = {}) => options.method === 'POST'
+    ? jsonResponse({ annotation, metadata: { namingPolicy: 'consensus-v1' } }) : jsonResponse(null, 404),
+  { persist: true, storage });
+  await writer.get(input, { allowInference: true });
+  let reads = 0;
+  const reader = createSemanticGuideClient(async () => { reads += 1; throw new Error('offline'); }, { persist: true, storage });
+  const receipt = await reader.get(input, { allowInference: true });
+  assert.equal(receipt.annotation.sections[0].label, 'Red tower');
+  assert.equal(receipt.metadata.browserCacheHit, true);
+  assert.equal(reads, 0);
+  assert.equal(JSON.parse(values.get('blawx:part-names:parallel-fixed-v1:grouping-1'))[0][1].annotation.fingerprint, input.fingerprint);
+});
+
+test('a validated consensus-v1 browser success migrates to the parallel cache without network access', async () => {
+  const { input, annotation } = fixture();
+  const legacyReceipt = {
+    annotation,
+    metadata: { namingPolicy: 'consensus-v1', strategy: 'consensus-v1', requestId: 'saved-consensus' },
+  };
+  const values = new Map([
+    ['blawx:part-names:consensus-v1', JSON.stringify([[input.fingerprint, legacyReceipt]])],
+    ['blawx:part-names:consensus-v1:attempts', JSON.stringify([input.fingerprint])],
+  ]);
+  const storage = { getItem: key => values.get(key) ?? null, setItem: (key, value) => values.set(key, value) };
+  let reads = 0;
+  const client = createSemanticGuideClient(async () => { reads += 1; throw new Error('network must stay idle'); }, {
+    persist: true, storage,
+  });
+
+  const receipt = await client.get(input, { allowInference: true });
+
+  assert.equal(reads, 0);
+  assert.deepEqual(receipt.annotation, annotation);
+  assert.equal(receipt.metadata.namingPolicy, 'consensus-v1');
+  assert.equal(receipt.metadata.strategy, 'consensus-v1');
+  assert.equal(receipt.metadata.requestId, 'saved-consensus');
+  assert.equal(receipt.metadata.cacheReusedFrom, 'consensus-v1');
+  assert.equal(receipt.metadata.browserCacheHit, true);
+  const migrated = JSON.parse(values.get('blawx:part-names:parallel-fixed-v1:grouping-1'));
+  assert.deepEqual(migrated, [[input.fingerprint, receipt]]);
+});
+
+test('a consensus-v1 browser success with stale geometry is rejected instead of migrated', async () => {
+  const { input, annotation } = fixture();
+  const staleReceipt = {
+    annotation: { ...annotation, fingerprint: '0'.repeat(64) },
+    metadata: { namingPolicy: 'consensus-v1', strategy: 'consensus-v1' },
+  };
+  const values = new Map([
+    ['blawx:part-names:consensus-v1', JSON.stringify([[input.fingerprint, staleReceipt]])],
+  ]);
+  const storage = { getItem: key => values.get(key) ?? null, setItem: (key, value) => values.set(key, value) };
+  const calls = [];
+  const client = createSemanticGuideClient(async (url, options = {}) => {
+    calls.push({ url, method: options.method ?? 'GET' });
+    return jsonResponse(null, 404);
+  }, { persist: true, storage });
+
+  assert.equal(await client.get(input, { allowInference: false }), null);
+  assert.deepEqual(calls.map(({ method }) => method), ['GET', 'GET']);
+  assert.equal(values.has('blawx:part-names:parallel-fixed-v1:grouping-1'), false);
+});
+
+test('a failed naming attempt survives reload without silently posting again', async () => {
+  const { input } = fixture();
+  const values = new Map();
+  const storage = { getItem: key => values.get(key) ?? null, setItem: (key, value) => values.set(key, value) };
+  let posts = 0;
+  const fetchImpl = async (_url, options = {}) => {
+    if (options.method !== 'POST') return jsonResponse(null, 404);
+    posts += 1;
+    throw new Error('provider unavailable');
+  };
+  await assert.rejects(createSemanticGuideClient(fetchImpl, { persist: true, storage }).get(input, { allowInference: true }));
+  await assert.rejects(createSemanticGuideClient(fetchImpl, { persist: true, storage }).get(input, { allowInference: true }), /already attempted/);
+  assert.equal(posts, 1);
+});
+
+test('the new range strategy ignores old browser receipts and failed-attempt markers', async () => {
+  const { input, annotation } = fixture();
+  const oldReceipt = { annotation: { ...annotation, sections: annotation.sections.map(section => ({ ...section, label: 'Old range' })) } };
+  const values = new Map([
+    ['blawx:part-names:consensus-v1', JSON.stringify([[input.fingerprint, oldReceipt]])],
+    ['blawx:part-names:consensus-v1:attempts', JSON.stringify([input.fingerprint])],
+  ]);
+  const storage = { getItem: key => values.get(key) ?? null, setItem: (key, value) => values.set(key, value) };
+  let posts = 0;
+  const client = createSemanticGuideClient(async (_url, options = {}) => {
+    if (options.method !== 'POST') return jsonResponse(null, 404);
+    posts += 1;
+    return jsonResponse({ annotation, metadata: { namingPolicy: 'parallel-fixed-v1', groupingVersion: 1 } });
+  }, { persist: true, storage });
+  const receipt = await client.get(input, { allowInference: true });
+  assert.equal(posts, 1);
+  assert.equal(receipt.annotation.sections[0].label, 'Red tower');
+  assert.equal(receipt.metadata.namingPolicy, 'parallel-fixed-v1');
+  assert.equal(JSON.parse(values.get('blawx:part-names:consensus-v1'))[0][1].annotation.sections[0].label, 'Old range');
+});
+
+test('bad persistent receipts and unavailable browser storage fall back safely', async () => {
+  const { input, annotation } = fixture();
+  const storage = {
+    getItem: () => JSON.stringify([[input.fingerprint, { annotation: { ...annotation, fingerprint: '0'.repeat(64) } }]]),
+    setItem() { throw new Error('quota'); },
+  };
+  let posts = 0;
+  const client = createSemanticGuideClient(async (_url, options = {}) => {
+    if (options.method !== 'POST') return jsonResponse(null, 404);
+    posts += 1;
+    return jsonResponse({ annotation, metadata: {} });
+  }, { persist: true, storage });
+  assert.equal((await client.get(input, { allowInference: true })).annotation.fingerprint, input.fingerprint);
+  assert.equal(posts, 1);
+});

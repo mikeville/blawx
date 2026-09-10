@@ -4,9 +4,12 @@ import { mkdir, mkdtemp, readFile, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { createSemanticGuideInput } from '../src/semantic-guide.js';
+import { createGuideSectionsFromRanges } from '../src/guide-sections.js';
 import {
   buildSemanticGuidePrompt,
+  CONSENSUS_SEMANTIC_GUIDE_SETTINGS,
   createSemanticGuideService as createRealSemanticGuideService,
+  PARALLEL_FIXED_SEMANTIC_GUIDE_SETTINGS,
   SEMANTIC_GUIDE_SETTINGS,
   SemanticGuideError,
 } from '../server/semantic-guide-service.js';
@@ -37,18 +40,37 @@ function mockChapterImages(count = 1) {
   }));
 }
 
+function mockParallelChapterImages(count = 1) {
+  return Array.from({ length: count }, (_, index) => ({
+    png: minimalPng(1024, 1024, index + 20),
+    width: 1024,
+    height: 1024,
+    view: `chapters ${index * 3 + 1}-${index * 3 + 3}`,
+  }));
+}
+
+function mockParallelOverviewImages() {
+  return ['front-right', 'rear-left', 'front', 'right-side'].map((view, index) => ({
+    png: minimalPng(1024, 1024, index + 30), width: 1024, height: 1024, view,
+  }));
+}
+
 function createSemanticGuideService(options) {
-  const testPrivacy = options?.root ? {
-    dataRoot: join(options.root, 'private-data'),
-    allowTestDataRoot: true,
-  } : {};
+  const privacy = options?.root ? privateOptions(options.root) : {};
   return createRealSemanticGuideService({
     allowExperimentalInference: true,
     renderImages: async () => mockImages(),
     renderChapters: async () => mockChapterImages(),
-    ...testPrivacy,
+    ...privacy,
     ...options,
   });
+}
+
+function privateOptions(root) {
+  return {
+    dataRoot: join(root, 'private-data'),
+    allowTestDataRoot: true,
+  };
 }
 
 function protocolEvent(usage = { input_tokens: 320, output_tokens: 48 }, overrides = {}) {
@@ -77,6 +99,29 @@ function semanticInput(subject = 'red pickup truck') {
     graph: { edges: [{ a: 'brick-1', b: 'brick-2', studs: 2 }] },
   };
   return createSemanticGuideInput({ plan, subject });
+}
+
+function repeatedSemanticInput() {
+  const bricks = [
+    { id: 'repeat-left', x: 0, y: 0, z: 0, w: 1, d: 1, color: 'red' },
+    { id: 'repeat-right', x: 4, y: 0, z: 0, w: 1, d: 1, color: 'red' },
+  ];
+  const plan = {
+    bricks,
+    modules: bricks.map((brick, index) => ({
+      id: `repeat-module-${index + 1}`, kind: 'grounded', brickIds: [brick.id],
+      componentIds: [`repeat-component-${index + 1}`],
+    })),
+    steps: bricks.map((brick, index) => ({
+      id: `repeat-step-${index + 1}`, moduleId: `repeat-module-${index + 1}`,
+      kind: 'build', newBrickIds: [brick.id], issues: [],
+    })),
+    graph: { edges: [] },
+  };
+  const guide = createGuideSectionsFromRanges(plan, plan.steps.map((step) => ({
+    startStepId: step.id, endStepId: step.id,
+  })));
+  return createSemanticGuideInput({ plan, guide, subject: 'matching appendages' });
 }
 
 function annotationFor(input, overrides = {}) {
@@ -200,9 +245,8 @@ test('default research gate serves valid caches but blocks every uncached infere
   let providerCalls = 0;
   let renderCalls = 0;
   const service = createRealSemanticGuideService({
+    ...privateOptions(root),
     root,
-    dataRoot: join(root, 'private-data'),
-    allowTestDataRoot: true,
     provider: async () => { providerCalls += 1; return outcome(uncachedInput); },
     renderImages: async () => { renderCalls += 1; return mockImages(); },
     renderChapters: async () => { renderCalls += 1; return mockChapterImages(); },
@@ -342,6 +386,417 @@ test('subscription annotation validates output and preserves exact private recei
   assert.deepEqual(cacheHit.annotation, result.annotation);
   assert.equal(cacheHit.metadata.cacheHit, true);
   assert.equal(calls.length, 2);
+});
+
+test('consensus-v1 reserves the full envelope once, runs three bounded phases, and caches only the refined final annotation', async () => {
+  const root = await fixtureRoot();
+  const input = semanticInput('consensus pickup');
+  const events = [];
+  const service = createRealSemanticGuideService({
+    ...privateOptions(root),
+    root,
+    id: () => 'consensus-request-1',
+    allowExperimentalInference: true,
+    strategy: 'consensus-v1',
+    renderImages: async () => { events.push('render-proposal'); return mockImages(); },
+    renderReferenceChapters: async () => { events.push('render-captions'); return mockChapterImages(); },
+    reserveBudget: async (reservation) => {
+      events.push('reserve');
+      return { ...reservation, reservationId: 'atomic-reservation-1' };
+    },
+    provider: async (prompt, options) => {
+      events.push(`provider-${options.phase}`);
+      if (options.phase === 'proposal') return outcome(input, { phase: options.phase });
+      if (options.phase === 'captions') return outcome(input, {
+        phase: options.phase,
+        finalRaw: JSON.stringify({ labels: ['Truck chassis'] }),
+      });
+      assert.equal(options.phase, 'consensus');
+      assert.deepEqual(options.images, []);
+      assert.match(prompt, /most specific safe shared category/);
+      return outcome(input, {
+        phase: options.phase,
+        finalRaw: JSON.stringify({ labels: ['Body'] }),
+      });
+    },
+  });
+
+  const result = await service.annotate(input);
+  assert.deepEqual(events, [
+    'reserve', 'render-proposal', 'provider-proposal', 'render-captions',
+    'provider-captions', 'provider-consensus',
+  ]);
+  assert.equal(result.annotation.sections[0].label, 'Body');
+  assert.equal(result.metadata.namingPolicy, 'consensus-v1');
+  assert.equal(result.metadata.strategy, 'consensus-v1');
+  assert.equal(result.metadata.requestBudget.stageEnvelope.maxCostUsd, 0.011836);
+  assert.equal(result.metadata.requestBudget.reservation.reservationId, 'atomic-reservation-1');
+  assert.deepEqual(Object.keys(result.metadata.stageUsage), [
+    'proposal', 'captions', 'consensus', 'proposalReplayed',
+  ]);
+
+  const runDir = join(root, 'private-data', 'semantic-guides', 'consensus-request-1');
+  assert.deepEqual(
+    JSON.parse(await readFile(join(runDir, 'settings.json'), 'utf8')),
+    CONSENSUS_SEMANTIC_GUIDE_SETTINGS,
+  );
+  const record = JSON.parse(await readFile(join(runDir, 'record.json'), 'utf8'));
+  assert.deepEqual(Object.keys(record.stages), ['proposal', 'captions', 'consensus', 'localRefinement']);
+  assert.equal(record.stages.consensus.status, 'valid');
+  assert.equal(record.stages.localRefinement.runtime, 'deterministic-local');
+  assert.equal(await readFile(join(runDir, 'consensus-prompt.txt'), 'utf8').then((value) => /Truck chassis/.test(value)), true);
+  const cached = JSON.parse(await readFile(
+    join(root, 'private-data', 'semantic-guides', 'cache', `${input.fingerprint}.consensus-v1.json`), 'utf8',
+  ));
+  assert.equal(cached.annotation.sections[0].label, 'Body');
+  assert.equal(cached.metadata.namingPolicy, 'consensus-v1');
+});
+
+test('consensus-v1 budget refusal stops before rendering and provider entry', async () => {
+  const input = semanticInput('no budget pickup');
+  const root = await fixtureRoot();
+  let renders = 0;
+  let providers = 0;
+  const service = createRealSemanticGuideService({
+    ...privateOptions(root),
+    root,
+    id: () => 'budget-refused',
+    allowExperimentalInference: true,
+    strategy: 'consensus-v1',
+    reserveBudget: async () => null,
+    renderImages: async () => { renders += 1; return mockImages(); },
+    provider: async () => { providers += 1; return outcome(input); },
+  });
+  await assert.rejects(service.annotate(input), (error) => error.code === 'unavailable');
+  assert.equal(renders, 0);
+  assert.equal(providers, 0);
+});
+
+test('consensus-v1 rejects non-finite reservations before rendering or provider entry', async () => {
+  const input = semanticInput('invalid reserve pickup');
+  const root = await fixtureRoot();
+  let providers = 0;
+  const service = createRealSemanticGuideService({
+    ...privateOptions(root),
+    root,
+    id: () => 'invalid-reserve',
+    allowExperimentalInference: true,
+    strategy: 'consensus-v1',
+    reserveBudget: async (reservation) => ({ ...reservation, amountUsd: Number.NaN }),
+    provider: async () => { providers += 1; return outcome(input); },
+  });
+  await assert.rejects(service.annotate(input), (error) => error.code === 'unavailable');
+  assert.equal(providers, 0);
+});
+
+test('consensus-v1 ignores legacy local inference caches while preserving its own namespace', async () => {
+  const root = await fixtureRoot();
+  const input = semanticInput('namespaced pickup');
+  const cacheDir = join(root, 'private-data', 'semantic-guides', 'cache');
+  await mkdir(cacheDir, { recursive: true });
+  await writeFile(join(cacheDir, `${input.fingerprint}.json`), `${JSON.stringify({
+    annotation: annotationFor(input), metadata: { namingPolicy: 'broad-when-ambiguous-v1' },
+  })}\n`);
+  let providers = 0;
+  const service = createRealSemanticGuideService({
+    ...privateOptions(root),
+    root,
+    allowExperimentalInference: true,
+    strategy: 'consensus-v1',
+    provider: async (_prompt, { phase }) => {
+      providers += 1;
+      return outcome(input, { phase });
+    },
+    renderImages: async () => mockImages(),
+    renderReferenceChapters: async () => mockChapterImages(),
+  });
+  const result = await service.annotate(input);
+  assert.equal(providers, 3);
+  assert.equal(result.metadata.namingPolicy, 'consensus-v1');
+  assert.equal((await service.lookup(input.fingerprint)).metadata.namingPolicy, 'consensus-v1');
+});
+
+test('consensus-stage failure preserves its reported usage and never caches an intermediate label', async () => {
+  const root = await fixtureRoot();
+  const input = semanticInput('consensus failure pickup');
+  const service = createRealSemanticGuideService({
+    ...privateOptions(root),
+    root,
+    id: () => 'consensus-failure',
+    allowExperimentalInference: true,
+    strategy: 'consensus-v1',
+    renderImages: async () => mockImages(),
+    renderReferenceChapters: async () => mockChapterImages(),
+    provider: async (_prompt, { phase }) => phase === 'consensus'
+      ? outcome(input, { phase, exit: { code: 1, signal: null }, finalRaw: null })
+      : outcome(input, { phase }),
+  });
+  await assert.rejects(service.annotate(input), (error) => error.code === 'annotator-failed');
+  assert.equal(await service.lookup(input.fingerprint), null);
+  const record = JSON.parse(await readFile(
+    join(root, 'private-data', 'semantic-guides', 'consensus-failure', 'record.json'), 'utf8',
+  ));
+  assert.deepEqual(record.usage, { input_tokens: 560, output_tokens: 72 });
+  assert.equal(record.usageComplete, true);
+  assert.deepEqual(record.stageUsage.consensus, { input_tokens: 120, output_tokens: 12 });
+  assert.equal(record.stages.consensus.status, 'failed');
+  assert.equal(record.captionAnnotation.sections[0].label, 'Truck chassis');
+  assert.equal(record.consensusAnnotation, null);
+});
+
+test('parallel-fixed-v1 prepares both fixed-range requests before concurrent entry and caches only their local consensus', async () => {
+  const root = await fixtureRoot();
+  const input = repeatedSemanticInput();
+  const cacheDir = join(root, 'private-data', 'semantic-guides', 'cache');
+  await mkdir(cacheDir, { recursive: true });
+  await writeFile(join(cacheDir, `${input.fingerprint}.json`), `${JSON.stringify({
+    annotation: annotationFor(semanticInput()), metadata: { strategy: 'legacy-two-stage' },
+  })}\n`);
+  await writeFile(
+    join(cacheDir, `${input.fingerprint}.parallel-fixed-v1.grouping-1.json`),
+    `${JSON.stringify({
+      annotation: {
+        version: 1, fingerprint: input.fingerprint,
+        sections: input.protectedRanges.map((range) => ({
+          startStepId: range.startStepId, endStepId: range.endStepId,
+          label: 'Stale', confidence: 'inferred', evidence: 'Stale grouping receipt.',
+        })),
+      },
+      metadata: { strategy: 'parallel-fixed-v1', groupingVersion: 0, cacheIdentity: 'parallel-fixed-v1:grouping-0' },
+    })}\n`,
+  );
+
+  const events = [];
+  const signals = [];
+  let releaseProviders;
+  const providerGate = new Promise((resolve) => { releaseProviders = resolve; });
+  let providerEntries = 0;
+  const service = createRealSemanticGuideService({
+    ...privateOptions(root),
+    root,
+    id: () => 'parallel-success',
+    allowExperimentalInference: true,
+    strategy: 'parallel-fixed-v1',
+    reserveBudget: async (reservation) => {
+      events.push('reserve');
+      return { ...reservation, reservationId: 'parallel-reservation' };
+    },
+    renderReferenceChapters: async () => { events.push('render-isolated'); return mockParallelChapterImages(); },
+    renderImages: async () => { events.push('render-overview'); return mockParallelOverviewImages(); },
+    provider: async (_prompt, options) => {
+      signals.push(options.signal);
+      events.push(`provider-${options.semanticRole}`);
+      providerEntries += 1;
+      if (providerEntries === 2) releaseProviders();
+      await providerGate;
+      return outcome(input, {
+        phase: options.phase,
+        finalRaw: JSON.stringify({
+          labels: options.semanticRole === 'overview' ? ['Tail', 'Tail'] : ['Leg', 'Leg'],
+        }),
+      });
+    },
+  });
+
+  const result = await service.annotate(input);
+  assert.equal(events[0], 'reserve');
+  assert.equal(providerEntries, 2);
+  assert.equal(signals[0], signals[1]);
+  assert.deepEqual(result.annotation.sections.map((section) => section.label), ['Appendage', 'Appendage']);
+  assert.deepEqual(result.annotation.sections.map(({ startStepId, endStepId }) => [startStepId, endStepId]), [
+    ['repeat-step-1', 'repeat-step-1'], ['repeat-step-2', 'repeat-step-2'],
+  ]);
+  assert.equal(result.metadata.strategy, 'parallel-fixed-v1');
+  assert.equal(result.metadata.groupingVersion, 1);
+  assert.equal(result.metadata.cacheIdentity, 'parallel-fixed-v1:grouping-1');
+  assert.equal(result.metadata.requestBudget.prospectiveMaxCostUsd, 0.0093512);
+  assert.equal(result.metadata.requestBudget.reservation.reservationId, 'parallel-reservation');
+  assert.ok(result.metadata.timings.preparationMs >= 0);
+  assert.ok(result.metadata.timings.providerWallMs >= 0);
+  assert.ok(result.metadata.timings.totalMs >= result.metadata.timings.providerWallMs);
+
+  const runDir = join(root, 'private-data', 'semantic-guides', 'parallel-success');
+  assert.deepEqual(JSON.parse(await readFile(join(runDir, 'settings.json'), 'utf8')), PARALLEL_FIXED_SEMANTIC_GUIDE_SETTINGS);
+  const packet = JSON.parse(await readFile(join(runDir, 'compact-packet.json'), 'utf8'));
+  assert.equal(packet.projectionVersion, 'parallel-fixed-v1:grouping-1');
+  assert.equal(packet.packet.fingerprint, input.fingerprint);
+  assert.deepEqual(packet.packet.ranges, [
+    ['repeat-step-1', 'repeat-step-1'], ['repeat-step-2', 'repeat-step-2'],
+  ]);
+  assert.equal(Object.hasOwn(packet.packet, 'stepDigests'), false);
+  const record = JSON.parse(await readFile(join(runDir, 'record.json'), 'utf8'));
+  assert.deepEqual(Object.keys(record.stages), [
+    'localGrouping', 'isolated', 'overview', 'localConsensus', 'localRefinement',
+  ]);
+  assert.equal(record.stages.isolated.providerPhase, 'captions');
+  assert.equal(record.stages.overview.providerPhase, 'proposal');
+  assert.equal(record.consensusAnnotation.sections[0].label, 'Appendage');
+  assert.equal(record.projectionVersion, 'parallel-fixed-v1:grouping-1');
+  const cached = JSON.parse(await readFile(
+    join(cacheDir, `${input.fingerprint}.parallel-fixed-v1.grouping-1.json`), 'utf8',
+  ));
+  assert.deepEqual(cached, result);
+  assert.equal((await service.lookup(input.fingerprint)).metadata.cacheHit, false);
+});
+
+test('parallel-fixed-v1 reuses a valid consensus-v1 cache without relabeling it or entering providers', async () => {
+  const root = await fixtureRoot();
+  const input = semanticInput('accepted cached names');
+  const cacheDir = join(root, 'private-data', 'semantic-guides', 'cache');
+  await mkdir(cacheDir, { recursive: true });
+  const accepted = {
+    annotation: annotationFor(input, {
+      sections: [{
+        startStepId: 'step-1', endStepId: 'step-2', label: 'Accepted body',
+        confidence: 'inferred', evidence: 'Previously accepted consensus evidence.',
+      }],
+    }),
+    metadata: {
+      requestId: 'accepted-consensus',
+      namingPolicy: 'consensus-v1',
+      strategy: 'consensus-v1',
+      provenance: { source: 'completed-consensus-run', receipt: 'receipt-1' },
+      cacheHit: false,
+    },
+  };
+  await writeFile(
+    join(cacheDir, `${input.fingerprint}.consensus-v1.json`),
+    `${JSON.stringify(accepted)}\n`,
+  );
+  let providerCalls = 0;
+  let renderCalls = 0;
+  const service = createRealSemanticGuideService({
+    ...privateOptions(root),
+    root,
+    allowExperimentalInference: true,
+    strategy: 'parallel-fixed-v1',
+    provider: async () => { providerCalls += 1; return outcome(input); },
+    renderImages: async () => { renderCalls += 1; return mockParallelOverviewImages(); },
+    renderReferenceChapters: async () => { renderCalls += 1; return mockParallelChapterImages(); },
+  });
+
+  const result = await service.annotate(input);
+  assert.deepEqual(result.annotation, accepted.annotation);
+  assert.equal(result.metadata.namingPolicy, 'consensus-v1');
+  assert.equal(result.metadata.strategy, 'consensus-v1');
+  assert.deepEqual(result.metadata.provenance, accepted.metadata.provenance);
+  assert.equal(result.metadata.cacheReusedFrom, 'consensus-v1');
+  assert.equal(result.metadata.cacheHit, true);
+  assert.equal(providerCalls, 0);
+  assert.equal(renderCalls, 0);
+  await assert.rejects(
+    readFile(join(cacheDir, `${input.fingerprint}.parallel-fixed-v1.grouping-1.json`)),
+    { code: 'ENOENT' },
+  );
+});
+
+test('parallel-fixed-v1 ignores wrong-policy, wrong-fingerprint, legacy, and static cache candidates', async () => {
+  const root = await fixtureRoot();
+  const wrongPolicy = semanticInput('wrong cached policy');
+  const wrongFingerprint = semanticInput('wrong cached fingerprint');
+  const legacyOnly = semanticInput('legacy cache only');
+  const staticOnly = semanticInput('static cache only');
+  const cacheDir = join(root, 'private-data', 'semantic-guides', 'cache');
+  const staticDir = join(root, 'public', 'semantic-guides');
+  await Promise.all([
+    mkdir(cacheDir, { recursive: true }),
+    mkdir(staticDir, { recursive: true }),
+  ]);
+  await Promise.all([
+    writeFile(join(cacheDir, `${wrongPolicy.fingerprint}.consensus-v1.json`), `${JSON.stringify({
+      annotation: annotationFor(wrongPolicy),
+      metadata: { namingPolicy: 'broad-when-ambiguous-v1', strategy: 'consensus-v1' },
+    })}\n`),
+    writeFile(join(cacheDir, `${wrongFingerprint.fingerprint}.consensus-v1.json`), `${JSON.stringify({
+      annotation: annotationFor(wrongPolicy),
+      metadata: { namingPolicy: 'consensus-v1', strategy: 'consensus-v1' },
+    })}\n`),
+    writeFile(join(cacheDir, `${legacyOnly.fingerprint}.json`), `${JSON.stringify({
+      annotation: annotationFor(legacyOnly), metadata: { namingPolicy: 'broad-when-ambiguous-v1' },
+    })}\n`),
+    writeFile(join(staticDir, 'static-only.json'), `${JSON.stringify({
+      annotation: annotationFor(staticOnly), metadata: { namingPolicy: 'consensus-v1', strategy: 'consensus-v1' },
+    })}\n`),
+    writeFile(join(staticDir, 'index.json'), `${JSON.stringify({
+      version: 1, entries: { [staticOnly.fingerprint]: 'static-only.json' },
+    })}\n`),
+  ]);
+  const service = createRealSemanticGuideService({ ...privateOptions(root), root, strategy: 'parallel-fixed-v1' });
+  for (const input of [wrongPolicy, wrongFingerprint, legacyOnly, staticOnly]) {
+    assert.equal(await service.lookup(input.fingerprint), null);
+  }
+});
+
+test('parallel-fixed-v1 settles and saves both outcomes when one branch fails, without exposing or caching the other', async () => {
+  const root = await fixtureRoot();
+  const input = semanticInput('parallel failure');
+  const service = createRealSemanticGuideService({
+    ...privateOptions(root),
+    root,
+    id: () => 'parallel-failure',
+    allowExperimentalInference: true,
+    strategy: 'parallel-fixed-v1',
+    renderReferenceChapters: async () => mockParallelChapterImages(),
+    renderImages: async () => mockParallelOverviewImages(),
+    provider: async (_prompt, options) => outcome(input, {
+      phase: options.phase,
+      finalRaw: JSON.stringify({ labels: [options.semanticRole === 'isolated' ? 'Leg' : 'Tail'] }),
+      ...(options.semanticRole === 'overview' ? { exit: { code: 1, signal: null } } : {}),
+    }),
+  });
+  await assert.rejects(service.annotate(input), (error) => error.code === 'annotator-failed');
+  assert.equal(await service.lookup(input.fingerprint), null);
+  const runDir = join(root, 'private-data', 'semantic-guides', 'parallel-failure');
+  const record = JSON.parse(await readFile(join(runDir, 'record.json'), 'utf8'));
+  assert.equal(record.stages.isolated.status, 'valid');
+  assert.equal(record.stages.overview.status, 'failed');
+  assert.equal(record.isolatedAnnotation.sections[0].label, 'Leg');
+  assert.equal(record.overviewAnnotation, null);
+  assert.equal(record.consensusAnnotation, null);
+  assert.equal(record.usageComplete, true);
+  await Promise.all([
+    readFile(join(runDir, 'isolated-final.json')),
+    readFile(join(runDir, 'overview-final.json')),
+  ]);
+});
+
+test('parallel-fixed-v1 shares cancellation across both branches and saves both settled abort receipts', async () => {
+  const root = await fixtureRoot();
+  const input = semanticInput('parallel abort');
+  let entered = 0;
+  let bothEntered;
+  const enteredPromise = new Promise((resolve) => { bothEntered = resolve; });
+  const service = createRealSemanticGuideService({
+    ...privateOptions(root),
+    root,
+    id: () => 'parallel-abort',
+    allowExperimentalInference: true,
+    strategy: 'parallel-fixed-v1',
+    renderReferenceChapters: async () => mockParallelChapterImages(),
+    renderImages: async () => mockParallelOverviewImages(),
+    provider: (_prompt, options) => new Promise((_resolve, reject) => {
+      entered += 1;
+      if (entered === 2) bothEntered();
+      options.signal.addEventListener('abort', () => reject(
+        new DOMException('Cancelled by shared signal.', 'AbortError'),
+      ), { once: true });
+    }),
+  });
+  const pending = service.annotate(input);
+  await enteredPromise;
+  service.cancel();
+  await assert.rejects(pending, (error) => error.code === 'cancelled');
+  assert.equal(await service.lookup(input.fingerprint), null);
+  const runDir = join(root, 'private-data', 'semantic-guides', 'parallel-abort');
+  const record = JSON.parse(await readFile(join(runDir, 'record.json'), 'utf8'));
+  assert.equal(record.status, 'cancelled');
+  assert.equal(record.stages.isolated.status, 'cancelled');
+  assert.equal(record.stages.overview.status, 'cancelled');
+  assert.ok(record.timings.providerWallMs >= 0);
+  await Promise.all([
+    readFile(join(runDir, 'isolated-events.jsonl')),
+    readFile(join(runDir, 'overview-events.jsonl')),
+  ]);
 });
 
 test('proposal replay makes only the caption call and excludes historical proposal usage', async () => {
@@ -773,5 +1228,25 @@ test('an abort ignored by the provider cannot be accepted or cached', async () =
   controller.abort();
   finish();
   await assert.rejects(running, (error) => error.code === 'cancelled');
+  assert.equal(await service.lookup(input.fingerprint), null);
+});
+
+test('generation-priority cancellation waits briefly but does not depend on a provider honoring abort', async () => {
+  const root = await fixtureRoot();
+  const input = semanticInput('priority pickup');
+  let finish;
+  const service = createSemanticGuideService({
+    root,
+    id: () => 'priority-cancel',
+    provider: async () => new Promise((resolve) => { finish = () => resolve(outcome(input)); }),
+  });
+  const running = service.annotate(input);
+  while (!finish) await new Promise((resolve) => setImmediate(resolve));
+  const settledWithinWindow = await service.cancelAndWait({ timeoutMs: 5 });
+  assert.equal(settledWithinWindow, false);
+  assert.equal(service.isInferenceBusy(), true);
+  finish();
+  await assert.rejects(running, (error) => error.code === 'cancelled');
+  assert.equal(service.isInferenceBusy(), false);
   assert.equal(await service.lookup(input.fingerprint), null);
 });
