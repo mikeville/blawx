@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import { PALETTE } from './geometry.js';
-import { brickPreviewData } from './brick-preview.js';
+import { brickPreviewData, voxelPreviewData } from './brick-preview.js';
 import { BrickOutlineBatch } from './brick-outlines.js';
 import { groupBrickOutlinesBySourceColor } from './black-piece-ink.js';
 import { getBrickFaceColor } from './product-viewer.js';
@@ -35,20 +35,7 @@ export function modelStageGeometry(model) {
     ...brickPreviewData(model),
     sourceBricks: model.bricks,
     voxelMm: model.meta?.scale?.voxelMm ?? 8,
-  } : {
-    bodies: model.cells.map(cell => ({
-      ...cell,
-      x: cell.x + .5,
-      y: cell.y + .5,
-      z: cell.z + .5,
-      w: .96,
-      h: .96,
-      d: .96,
-    })),
-    studs: [],
-    sourceBricks: model.cells.map(cell => ({ ...cell, w: 1, h: 1, d: 1 })),
-    voxelMm: 8,
-  };
+  } : voxelPreviewData(model);
 }
 
 export function modelStageOutlineGroups(model, { bodies, studs }) {

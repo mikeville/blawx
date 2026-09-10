@@ -160,7 +160,12 @@ export function mountConstructionComparison(host, {
     active = stage;
     buttons.forEach(b => b.setAttribute('aria-pressed', String(b.dataset.stage === stage)));
     const result = stage === 'raw' ? results.get('bricks') ?? results.get('adjusted') : results.get(stage);
-    viewer.setModel(stage === 'raw' ? rawModel : result.brickModel, { frameModel: rawModel });
+    viewer.setModel(stage === 'raw' ? rawModel : result.brickModel, {
+      frameModel: rawModel,
+      label: stage === 'raw'
+        ? `${subject ?? 'Set'}, 1×1 brick preview`
+        : `${subject ?? 'Set'}, interactive 3D LEGO-style set`,
+    });
     note.textContent = stage === 'raw' ? 'Original geometry and colors. No construction changes.' : stage === 'adjusted'
       ? `${number(result.metrics.structuralAddedVoxelCount)} source voxels added for local connections. ${result.metrics.adjustmentSearch?.packingRetiled ? "Packing reworked. " : ""}Height rounding also applies. Buildability unverified.`
       : 'Bricks with measured height rounding. Thin details may change; buildability unverified.';

@@ -2,6 +2,7 @@ import { escapeMarkup as escape, inventoryMarkup } from './part-illustration.js'
 import { createBookletPresentation, createChapterDiagramData, guideRangeMarkup, resolveBookletInitialState } from './assembly-booklet-presentation.js';
 import { createBookletRenderer } from './assembly-booklet-renderer.js';
 import { mountBookletNavigation } from './assembly-booklet-navigation.js';
+import { openFullscreenLayer } from './fullscreen-layer.js';
 import './assembly-booklet.css';
 import './assembly-booklet-ui.css';
 
@@ -20,6 +21,8 @@ export function mountAssemblyBooklet(host, {
   let disposed = false;
   let renderer = null;
   let activeDetails = null;
+  let fullscreenStep = null;
+  const wideGuide = matchMedia('(min-width: 641px)');
   const sorted = inventory => [...inventory].sort((a,b) => a.color.localeCompare(b.color) || b.w*b.d-a.w*a.d);
 
   host.innerHTML = `<div class="manual-scroll">
@@ -83,7 +86,8 @@ export function mountAssemblyBooklet(host, {
     renderer = null;
   }
   function closeIssueTooltips(except = null) {
-    host.querySelectorAll('.manual-issue-wrap.is-open').forEach(wrapper => {
+    const roots = [host, fullscreenStep?.element].filter(Boolean);
+    roots.flatMap(root => [...root.querySelectorAll('.manual-issue-wrap.is-open')]).forEach(wrapper => {
       if (wrapper === except) return;
       wrapper.classList.remove('is-open');
       wrapper.querySelector('.manual-issue')?.setAttribute('aria-expanded', 'false');
@@ -91,7 +95,7 @@ export function mountAssemblyBooklet(host, {
   }
   function onIssueClick(event) {
     const trigger = event.target.closest('.manual-issue');
-    if (!trigger || !host.contains(trigger)) return;
+    if (!trigger || (!host.contains(trigger) && !fullscreenStep?.element.contains(trigger))) return;
     const wrapper = trigger.closest('.manual-issue-wrap');
     wrapper.classList.remove('is-dismissed');
     const opening = !wrapper.classList.contains('is-open');
@@ -149,7 +153,7 @@ export function mountAssemblyBooklet(host, {
         const supportCount = spec.joinContext?.supportGroups?.length ?? 0;
         const action = downwardJoin ? ` · lower the assembled section onto ${supportCount} ${supportCount === 1 ? 'support' : 'supports'}`
           : spec.insertionDirection === 'up' ? ' · attach from below' : '';
-        return `<figure class="manual-diagram" data-step-id="${escape(spec.stepId)}"><figcaption><strong>${number}</strong>${direction}${spec.unresolved ? warning(spec) : ''}</figcaption><div class="manual-canvas-wrap"><canvas tabindex="0" data-diagram="${spec.index}" aria-label="${escape(section.label)} · step ${number}${action}"></canvas></div></figure>`;
+        return `<figure class="manual-diagram" data-step-id="${escape(spec.stepId)}"><figcaption><button class="manual-step-expand" type="button" aria-label="Enlarge step ${number}"${wideGuide.matches ? '' : ' disabled'}>${number}</button>${direction}${spec.unresolved ? warning(spec) : ''}</figcaption><div class="manual-canvas-wrap"><canvas tabindex="0" data-diagram="${spec.index}" aria-label="${escape(section.label)} · step ${number}${action}"></canvas></div></figure>`;
     };
     let placements = '';
     if (section.repeatCount>1) {
@@ -165,6 +169,37 @@ export function mountAssemblyBooklet(host, {
     details.querySelectorAll('canvas').forEach(canvas=>renderer.observe(canvas,specs[+canvas.dataset.diagram]));
     if (switchedChapters) details.scrollIntoView({ block: 'start', behavior: 'instant' });
   }
+  function closeFullscreenStep() {
+    fullscreenStep?.close();
+  }
+  function onStepExpand(event) {
+    const trigger = event.target.closest('.manual-step-expand');
+    if (!trigger || trigger.disabled || !wideGuide.matches) return;
+    const figure = trigger.closest('.manual-diagram');
+    if (!figure) return;
+    const parent = figure.parentNode;
+    const next = figure.nextSibling;
+    fullscreenStep = openFullscreenLayer({
+      content: figure,
+      className: 'fullscreen-step',
+      label: `Step ${trigger.textContent.trim()}`,
+      returnFocus: trigger,
+      onClose: () => {
+        parent.insertBefore(figure, next?.parentNode === parent ? next : null);
+        fullscreenStep = null;
+      },
+    });
+    fullscreenStep.element.addEventListener('click', onIssueClick);
+    fullscreenStep.element.addEventListener('keydown', onIssueKeydown);
+    fullscreenStep.element.addEventListener('pointerout', onIssuePointerOut);
+    fullscreenStep.element.addEventListener('focusout', onIssueFocusOut);
+  }
+  function syncStepExpansion(event) {
+    host.querySelectorAll('.manual-step-expand').forEach(button => { button.disabled = !event.matches; });
+    if (!event.matches) closeFullscreenStep();
+  }
+  host.addEventListener('click', onStepExpand);
+  wideGuide.addEventListener?.('change', syncStepExpansion);
   host.querySelectorAll('.manual-chapter').forEach(details=>{
     details.addEventListener('toggle',()=>{
       if (details.open) expandChapter(details);
@@ -177,5 +212,5 @@ export function mountAssemblyBooklet(host, {
   const initial = initialState.openChapterIndex >= 0
     ? host.querySelector(`.manual-chapter[data-chapter="${initialState.openChapterIndex}"]`) : null;
   if (initial) initial.open = true;
-  return ()=>{disposed=true;releaseAll();disposeNavigation();host.removeEventListener('click', onIssueClick);host.removeEventListener('keydown', onIssueKeydown);host.removeEventListener('pointerout', onIssuePointerOut);host.removeEventListener('focusout', onIssueFocusOut);document.removeEventListener('pointerdown', onOutsidePointer);host.replaceChildren();diagnosticsHost?.replaceChildren();};
+  return ()=>{disposed=true;closeFullscreenStep();releaseAll();disposeNavigation();wideGuide.removeEventListener?.('change', syncStepExpansion);host.removeEventListener('click', onStepExpand);host.removeEventListener('click', onIssueClick);host.removeEventListener('keydown', onIssueKeydown);host.removeEventListener('pointerout', onIssuePointerOut);host.removeEventListener('focusout', onIssueFocusOut);document.removeEventListener('pointerdown', onOutsidePointer);host.replaceChildren();diagnosticsHost?.replaceChildren();};
 }

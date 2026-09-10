@@ -23,13 +23,16 @@ export function mountGenerationProgress(host, {
   now = () => performance.now(),
   setIntervalFn = setInterval,
   clearIntervalFn = clearInterval,
+  initialPhase = 'designing',
 } = {}) {
   host.innerHTML = `<div class="generation-progress">
-    <ol aria-label="Set progress">
-      ${PHASES.map(({ key, label }) => `<li data-phase="${key}"><span class="generation-progress-node" aria-hidden="true"></span><span>${label}</span></li>`).join('')}
-    </ol>
+    <div class="generation-progress-status">
+      <ol aria-label="Set progress">
+        ${PHASES.map(({ key, label }) => `<li data-phase="${key}"><span class="generation-progress-node" aria-hidden="true"></span><span>${label}</span></li>`).join('')}
+      </ol>
+    </div>
     <div class="generation-actions">
-      <button class="generation-cancel" type="button">Cancel</button>
+      ${typeof onCancel === 'function' ? '<button class="generation-cancel" type="button">Cancel</button>' : ''}
       <div class="generation-elapsed-slot prompt-status"><p class="generation-elapsed"></p></div>
     </div>
     <span class="sr-only generation-phase-live" role="status" aria-live="polite" aria-atomic="true"></span>
@@ -79,7 +82,7 @@ export function mountGenerationProgress(host, {
     if (disposed) return;
     disposed = true;
     clearIntervalFn(timer);
-    cancel.removeEventListener('click', onCancelClick);
+    cancel?.removeEventListener('click', onCancelClick);
     elapsed.remove();
     if (clear) host.replaceChildren();
   }
@@ -88,8 +91,8 @@ export function mountGenerationProgress(host, {
     if (!disposed) onCancel?.();
   }
 
-  cancel.addEventListener('click', onCancelClick);
-  setPhase('designing');
+  cancel?.addEventListener('click', onCancelClick);
+  setPhase(initialPhase);
   updateElapsed();
   const timer = setIntervalFn(updateElapsed, 1000);
 

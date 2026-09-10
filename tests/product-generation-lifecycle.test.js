@@ -144,7 +144,7 @@ function productHost() {
     '#home-view', '#detail-view', '.composer', '#prompt-form', '#prompt', '.prompt-status',
     '.form-message', '.recent-host', '.home-hero .hero-mount', '.detail-hero', '.detail-copy h1',
     '.detail-copy p', '.generation-progress-host', '.result-note', '.instructions', '.guide-host',
-    '.developer-record', '.developer-generation', '.developer-construction', '.brand', '.home-lead',
+    '.developer-record', '.developer-generation', '.developer-construction', '.brand', '.about-link', '.home-lead',
   ];
   const nodes = new Map(selectors.map(selector => [selector, new Node()]));
   const host = new Node();
@@ -174,6 +174,7 @@ function mountOptions(overrides = {}) {
     viewportFactory: () => ({ dispose() {} }),
     promptFieldFactory: () => ({ sync() {}, dispose() {} }),
     scrollHeaderFactory: () => ({ dispose() {} }),
+    progressFactory: () => ({ setPhase() {}, complete() {}, dispose() {} }),
     ...overrides,
   };
 }
@@ -367,26 +368,63 @@ test('opening a cached recent set mounts raw immediately and honors an explicit 
   const stageModels = [];
   let comparisonOptions;
   let progressCalls = 0;
+  let progressOptions;
+  const progressPhases = [];
+  let progressCompleted = 0;
   const result = { id: 'recent-1', prompt: 'a tiny train', model: rawModel, cacheHit: true, saveStatus: 'saved' };
   const app = mountProductApp(host, mountOptions({
     allowSemanticInference: false,
     feedClient: { list: async () => ({ items: [result] }), async getResult() { reads += 1; return result; } },
     previewClient: { async prepare(model) { previewCalls += 1; return model; }, dispose() {} },
     stageFactory(_host, options) { stageModels.push(options.model); return { setModel() {}, dispose() {} }; },
-    progressFactory() { progressCalls += 1; return { setPhase() {}, complete() {}, dispose() {} }; },
+    progressFactory(_host, options) {
+      progressCalls += 1;
+      progressOptions = options;
+      return { setPhase(phase) { progressPhases.push(phase); }, complete() { progressCompleted += 1; }, dispose() {} };
+    },
     comparisonFactory(_host, options) { comparisonOptions = options; return () => {}; },
   }));
   await settle();
   assert.deepEqual(stageModels, [rawModel]);
   assert.equal(previewCalls, 0);
   assert.equal(comparisonOptions.allowSemanticInference, false);
-  assert.equal(progressCalls, 0);
+  assert.equal(progressCalls, 1);
+  assert.equal(progressOptions.initialPhase, 'bricks');
+  assert.equal(host.querySelector('.instructions').hidden, true);
+
+  comparisonOptions.onPhase('guide');
+  assert.deepEqual(progressPhases, ['guide']);
+  comparisonOptions.onReady();
+  assert.equal(progressCompleted, 1);
+  assert.equal(host.querySelector('.instructions').hidden, false);
 
   window.dispatch('hashchange');
   window.dispatch('popstate');
   await settle();
   assert.equal(reads, 1);
   assert.deepEqual(stageModels, [rawModel]);
+  app.dispose();
+});
+
+test('a saved set keeps its studded raw preview when instruction setup fails synchronously', async () => {
+  installBrowser('#set/recent-error');
+  const { host } = productHost();
+  const models = [];
+  let progressCompleted = 0;
+  const result = { id: 'recent-error', prompt: 'a tiny ferry', model: rawModel, saveStatus: 'saved' };
+  const app = mountProductApp(host, mountOptions({
+    feedClient: { list: async () => ({ items: [result] }), async getResult() { return result; } },
+    stageFactory(_host, options) { models.push(options.model); return { setModel() {}, dispose() {} }; },
+    progressFactory: () => ({ setPhase() {}, complete() { progressCompleted += 1; }, dispose() {} }),
+    comparisonFactory() { throw new Error('comparison mount failed'); },
+  }));
+
+  await settle();
+  assert.deepEqual(models, [rawModel]);
+  assert.match(host.querySelector('.guide-host').innerHTML, /Instructions unavailable/);
+  assert.equal(host.querySelector('.instructions').hidden, false);
+  assert.equal(progressCompleted, 1);
+  assert.equal(host.querySelector('.detail-copy h1').textContent, 'a tiny ferry');
   app.dispose();
 });
 

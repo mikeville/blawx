@@ -6,8 +6,6 @@ export function mountBookletNavigation(host) {
   const button = document.createElement('button');
   button.type = 'button';
   button.className = 'manual-guide-top';
-  button.style.backgroundColor = 'var(--paper, #f4f4f4)';
-  button.style.color = 'var(--ink, #171612)';
   button.hidden = true;
   button.title = 'Back to top';
   button.setAttribute('aria-label', 'Back to top');

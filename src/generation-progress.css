@@ -1,6 +1,7 @@
 .generation-progress-host { margin-top: 48px; }
 .generation-progress-host:empty { display: none; }
 .generation-progress { display: grid; justify-items: start; gap: 24px; }
+.generation-progress-status { display: grid; }
 .generation-progress ol { display: grid; margin: 0; padding: 0; list-style: none; }
 .generation-progress li {
   position: relative;
@@ -82,7 +83,7 @@
   #detail-view.is-generated-result .detail-copy h1 {
     max-width: none;
     font-size: clamp(38px, 13vw, 62px);
-    line-height: .94;
+    line-height: .98;
     letter-spacing: -.065em;
   }
 }

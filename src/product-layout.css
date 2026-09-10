@@ -50,6 +50,8 @@ button:focus-visible, input:focus-visible, a:focus-visible {
   height: 64px;
   display: flex;
   align-items: center;
+  justify-content: space-between;
+  gap: 24px;
   padding: 0 var(--page-gutter);
   border-bottom: 1px solid var(--ink);
   background: var(--paper);
@@ -66,6 +68,20 @@ button:focus-visible, input:focus-visible, a:focus-visible {
   text-decoration: none;
 }
 .brand:hover, .brand:active { background: transparent; }
+.about-link {
+  min-height: 44px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--quiet);
+  font-size: 13px;
+}
+.about-link:hover, .about-link:active {
+  background: transparent;
+  color: var(--ink);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
 main { padding: 64px 0 40px; }
 [hidden] { display: none !important; }
 
@@ -73,7 +89,7 @@ main { padding: 64px 0 40px; }
   min-height: calc(100vh - 64px);
   min-height: calc(100svh - 64px);
   display: grid;
-  grid-template-columns: minmax(0, 1.62fr) minmax(320px, .72fr);
+  grid-template-columns: minmax(0, 1.62fr) minmax(clamp(320px, 44vw, 400px), .72fr);
   border-bottom: 1px solid var(--ink);
 }
 .home-hero {
@@ -240,7 +256,7 @@ main { padding: 64px 0 40px; }
   justify-content: flex-end;
   padding: 48px 6px 48px clamp(34px, 4.5vw, 78px);
 }
-.detail-copy h1 { margin: 0; font-size: clamp(46px, 13.5cqi, 78px); line-height: .94; letter-spacing: -.065em; text-wrap: balance; }
+.detail-copy h1 { margin: 0; font-size: clamp(46px, 13.5cqi, 78px); line-height: .98; letter-spacing: -.065em; text-wrap: balance; }
 #detail-title:focus { outline: none; }
 .detail-prompt { max-width: 32ch; margin: 25px 0 0; font-size: 16px; line-height: 1.45; }
 .instructions { padding: 30px 0 72px; }

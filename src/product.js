@@ -19,6 +19,7 @@ import { mountGenerationProgress } from './generation-progress.js';
 import { isGenerationEnabled, isLocalSemanticNamingEnabled } from './app-path.js';
 import { isDeveloperMode } from './developer-mode.js';
 import { mountScrollAwareHeader } from './scroll-aware-header.js';
+import { openFullscreenLayer } from './fullscreen-layer.js';
 
 export function mountProductApp(host, options = {}) {
   const {
@@ -44,7 +45,7 @@ export function mountProductApp(host, options = {}) {
   const developerFooter = developerMode
     ? `<footer class="developer-footer"><details class="developer-tools"><summary>Developer</summary><div class="developer-body"><p class="developer-record"></p><div class="developer-generation"></div><div class="developer-construction"></div></div></details></footer>`
     : '';
-  host.innerHTML = `<header class="brand-strip"><a class="brand" href="#" aria-label="Blawx home">Blawx</a></header>
+  host.innerHTML = `<header class="brand-strip"><a class="brand" href="#" aria-label="Blawx home">Blawx</a><button class="about-link" type="button">About</button></header>
     <main><div id="home-view"><section class="home-lead" aria-label="Featured set and prompt"><div class="home-hero"><div class="hero-mount"></div></div>
       <div class="composer"><form id="prompt-form" novalidate><label class="sr-only" for="prompt">What would you like to build?</label><div class="prompt-field"><div class="prompt-invitation" aria-hidden="true"><span>What would you</span> <span>like to build?<span class="invitation-caret"></span></span></div><textarea id="prompt" rows="1" maxlength="500" autocomplete="off" spellcheck="true" placeholder=" " enterkeyhint="go"></textarea></div><button class="make-button" type="submit">Make it</button><div class="prompt-status"><p id="public-use" class="public-use" hidden>Prompts &amp; sets are public</p></div></form><p id="form-message" class="form-message" role="status"></p></div></section><section class="recent-host"></section></div>
       <div id="detail-view" hidden><article class="set-detail"><div class="detail-hero hero-mount"></div><header class="detail-copy"><h1 id="detail-title" tabindex="-1"></h1><div class="generation-progress-host"></div><p class="detail-prompt"></p><span class="result-note" role="status"></span></header></article><section class="instructions"><div class="guide-host"></div></section></div></main>
@@ -71,6 +72,7 @@ export function mountProductApp(host, options = {}) {
   const devGeneration = host.querySelector('.developer-generation') ?? document.createElement('div');
   const devConstruction = host.querySelector('.developer-construction') ?? document.createElement('div');
   const brand = host.querySelector('.brand');
+  const aboutLink = host.querySelector('.about-link');
   const scrollHeader = scrollHeaderFactory(host.querySelector('.brand-strip'));
   const makeButton = form.querySelector('.make-button');
   const storageMode = `product:${location.pathname}`;
@@ -101,6 +103,7 @@ export function mountProductApp(host, options = {}) {
   let galleryCount = Math.max(9, restored.galleryCount);
   let sourceFocusId = null;
   let handledLocation = '';
+  let aboutLayer = null;
 
   const locationKey = () => `${location.pathname}${location.search}${location.hash}`;
 
@@ -128,6 +131,18 @@ export function mountProductApp(host, options = {}) {
     const button = document.createElement('button');
     button.type = 'button'; button.textContent = actionLabel; button.onclick = action;
     message.append(' ', button);
+  }
+  function openAbout() {
+    const content = document.createElement('div');
+    content.className = 'fullscreen-about-content';
+    content.innerHTML = `<p>An <a href="https://github.com/mikeville/blawx" target="_blank" rel="noreferrer">open-source</a> community project, not affiliated with or endorsed by the LEGO Group.</p><p>See <a href="https://mikemake.com/" target="_blank" rel="noreferrer">more projects</a> by Mike.</p>`;
+    aboutLayer = openFullscreenLayer({
+      content,
+      className: 'fullscreen-about',
+      label: 'About Blawx',
+      returnFocus: aboutLink,
+      onClose: () => { aboutLayer = null; },
+    });
   }
   async function refreshLibrary() {
     if (activeFeedClient !== exampleClient) { void feed?.refresh(); return; }
@@ -340,7 +355,7 @@ export function mountProductApp(host, options = {}) {
     detailStage?.setModel(result.model, {
       animate: true,
       frameModel: result.model,
-      label: `${result.prompt}, interactive 3D LEGO-style set`,
+      label: `${result.prompt}, 1×1 brick preview; final pieces and instructions in progress`,
     });
     detailStage?.setLoading?.(false);
     entranceAvailable = false;
@@ -394,11 +409,38 @@ export function mountProductApp(host, options = {}) {
       detailPrompt.textContent = result.title && result.title.toLowerCase() !== result.prompt.toLowerCase() ? result.prompt : '';
       resultNote.textContent = result.saveStatus === 'failed' ? 'This set wasn’t added to Recently made.' : '';
       document.title = `${detailTitle.textContent} — Blawx`;
-      detailStage = stageFactory(detailHeroHost, { model: result.model, label: `${result.prompt}, interactive 3D LEGO-style set`, animate: entranceAvailable, heroRotation: HERO_ROTATION_DEFAULTS });
+      detailStage = stageFactory(detailHeroHost, { model: result.model, label: `${result.prompt}, 1×1 brick preview; final pieces and instructions in progress`, animate: entranceAvailable, heroRotation: HERO_ROTATION_DEFAULTS });
       entranceAvailable = false;
       devRecord.textContent = typeof result.provenance === 'string' ? result.provenance : result.example ? 'Saved example' : result.saveStatus === 'failed' ? 'Unsaved local result' : `Public result · ${result.id}`;
       renderGenerationDiagnostics(result);
-      comparisonDispose = comparisonFactory(guideHost, { rawModel: result.model, sourceProgram: result.sourceProgram ?? null, viewer: detailStage, devHost: devConstruction, subject: result.prompt, allowSemanticInference: !result.example && allowSemanticInference, constructionClient });
+      instructions.hidden = true;
+      progressController = progressFactory(progressHost, { initialPhase: 'bricks' });
+      const finishDetail = () => {
+        if (disposed || currentRoute !== routeVersion) return;
+        instructions.hidden = false;
+        progressController?.complete();
+        progressController = null;
+      };
+      try {
+        comparisonDispose = comparisonFactory(guideHost, {
+          rawModel: result.model,
+          sourceProgram: result.sourceProgram ?? null,
+          viewer: detailStage,
+          devHost: devConstruction,
+          subject: result.prompt,
+          allowSemanticInference: !result.example && allowSemanticInference,
+          constructionClient,
+          hideLoadingMessage: true,
+          onPhase: phase => {
+            if (phase === 'guide' && !disposed && currentRoute === routeVersion) progressController?.setPhase(phase);
+          },
+          onReady: finishDetail,
+          onError: finishDetail,
+        });
+      } catch {
+        guideHost.innerHTML = '<p class="guide-loading" role="status">Instructions unavailable</p>';
+        finishDetail();
+      }
       detailTitle.focus({ preventScroll: true });
     } catch (error) {
       if (disposed || currentRoute !== routeVersion || error.name === 'AbortError') return;
@@ -462,13 +504,14 @@ export function mountProductApp(host, options = {}) {
     else if (home.hidden) void mountHome();
     else window.scrollTo(0, 0);
   });
+  aboutLink.addEventListener('click', openAbout);
   const onPageHide = () => { persist(); cancelActiveRequest(); };
   window.addEventListener('hashchange', route);
   window.addEventListener('popstate', route);
   window.addEventListener('pagehide', onPageHide);
   route();
 
-  return { dispose() { disposed = true; cancelActiveRequest(); feed?.dispose(); homeStage?.dispose(); clearDetail(); previewClient.dispose?.(); promptField.dispose(); composerController.dispose(); viewport.dispose(); scrollHeader.dispose(); mobileProgress.removeEventListener?.('change', onProgressViewportChange); window.removeEventListener('hashchange', route); window.removeEventListener('popstate', route); window.removeEventListener('pagehide', onPageHide); host.replaceChildren(); } };
+  return { dispose() { disposed = true; aboutLayer?.close({ restoreFocus: false }); aboutLayer = null; aboutLink.removeEventListener('click', openAbout); cancelActiveRequest(); feed?.dispose(); homeStage?.dispose(); clearDetail(); previewClient.dispose?.(); promptField.dispose(); composerController.dispose(); viewport.dispose(); scrollHeader.dispose(); mobileProgress.removeEventListener?.('change', onProgressViewportChange); window.removeEventListener('hashchange', route); window.removeEventListener('popstate', route); window.removeEventListener('pagehide', onPageHide); host.replaceChildren(); } };
 }
 
 const defaultHost = document.querySelector('#app');

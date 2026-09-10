@@ -2,16 +2,16 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { mountGenerationProgress } from '../src/generation-progress.js';
 
-function harness(estimateRange = null, elapsedHost = null) {
+function harness(estimateRange = null, elapsedHost = null, { initialPhase = 'designing', withCancel = true } = {}) {
   let now=0, tick, cleared=false, cancelled=0;
   const item=()=>({dataset:{},attributes:{},setAttribute(k,v){this.attributes[k]=v;},removeAttribute(k){delete this.attributes[k];}});
   const items=Array.from({length:3},item),elapsed={remove(){this.removed=true;}},live={},events=new Map();
   const internalElapsedHost={remove(){this.removed=true;}};
   const statusHost={};
   const cancel={addEventListener(k,v){events.set(k,v);},removeEventListener(k){events.delete(k);}};
-  const root={querySelectorAll(){return items;},querySelector(selector){return {'.generation-elapsed':elapsed,'.generation-elapsed-slot':internalElapsedHost,'.generation-phase-live':live,'.generation-cancel':cancel,'.generation-actions':statusHost}[selector];},insertBefore(node){this.inserted=node;}};
+  const root={querySelectorAll(){return items;},querySelector(selector){return {'.generation-elapsed':elapsed,'.generation-elapsed-slot':internalElapsedHost,'.generation-phase-live':live,'.generation-cancel':withCancel?cancel:null,'.generation-actions':statusHost}[selector];},insertBefore(node){this.inserted=node;}};
   const host={innerHTML:'',querySelector(){return root;},replaceChildren(){this.empty=true;}};
-  const progress=mountGenerationProgress(host,{estimateRange,elapsedHost,now:()=>now,onCancel:()=>cancelled++,setIntervalFn(fn){tick=fn;return 1;},clearIntervalFn(){cleared=true;}});
+  const progress=mountGenerationProgress(host,{estimateRange,elapsedHost,initialPhase,now:()=>now,onCancel:withCancel?()=>cancelled++:undefined,setIntervalFn(fn){tick=fn;return 1;},clearIntervalFn(){cleared=true;}});
   return {items,elapsed,internalElapsedHost,statusHost,root,live,events,host,progress,advance(ms){now=ms;tick();},get cleared(){return cleared;},get cancelled(){return cancelled;}};
 }
 
@@ -29,6 +29,14 @@ test('elapsed time never fabricates phase completion',()=>{
   h.progress.complete();
   assert.ok(h.cleared && h.host.empty);
   assert.equal(h.events.size,0);
+});
+
+test('an existing set starts at packing and can omit the generation cancel action',()=>{
+  const h=harness(null,null,{initialPhase:'bricks',withCancel:false});
+  assert.deepEqual(h.items.map(i=>i.dataset.state),['complete','current','future']);
+  assert.equal(h.live.textContent,'Stacking bricks');
+  assert.doesNotMatch(h.host.innerHTML,/Cancel/);
+  h.progress.dispose();
 });
 
 test('an external prompt status hosts only the temporary elapsed timer',()=>{

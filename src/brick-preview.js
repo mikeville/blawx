@@ -26,3 +26,39 @@ export function brickPreviewData(model) {
     studs,
   };
 }
+
+// The source model is useful before local packing finishes, but bare cubes make
+// that preview feel like a different material. Render each source cell as a
+// temporary 1×1 brick and expose only studs that are not covered by the cell
+// directly above it. Generated IDs keep bodies and studs together in entrance
+// motion without changing the source model.
+export function voxelPreviewData(model) {
+  const voxelMm = model.meta?.scale?.voxelMm ?? 8;
+  const occupied = new Set(model.cells.map(cell => `${cell.x},${cell.y},${cell.z}`));
+  const sourceBricks = model.cells.map((cell, index) => ({
+    ...cell,
+    id: cell.id ?? `voxel-${index}`,
+    w: 1,
+    h: 1,
+    d: 1,
+  }));
+  const bodies = sourceBricks.map(cell => ({
+    ...cell,
+    x: cell.x + .5,
+    y: cell.y + .5,
+    z: cell.z + .5,
+    w: .96,
+    h: .96,
+    d: .96,
+  }));
+  const studs = sourceBricks
+    .filter(cell => !occupied.has(`${cell.x},${cell.y + 1},${cell.z}`))
+    .map(cell => ({
+      x: cell.x + .5,
+      y: cell.y + 1 + .9 / voxelMm,
+      z: cell.z + .5,
+      color: cell.color,
+      id: cell.id,
+    }));
+  return { bodies, studs, sourceBricks, voxelMm };
+}

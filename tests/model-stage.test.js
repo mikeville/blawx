@@ -17,12 +17,16 @@ test('shared stage retains the approved reference motion and camera constants', 
   });
 });
 
-test('raw stage geometry preserves cubic proportions and input data', () => {
-  const model = { version: 1, kind: 'voxels', cells: [{ x: 2, y: 4, z: 6, color: 'black' }] };
+test('raw stage geometry presents exposed voxels as temporary 1×1 bricks without changing input data', () => {
+  const model = { version: 1, kind: 'voxels', cells: [
+    { x: 2, y: 4, z: 6, color: 'black' },
+    { x: 2, y: 5, z: 6, color: 'red' },
+  ] };
   const before = JSON.stringify(model);
   const geometry = modelStageGeometry(model);
-  assert.deepEqual(geometry.bodies[0], { x: 2.5, y: 4.5, z: 6.5, color: 'black', w: .96, h: .96, d: .96 });
-  assert.deepEqual(geometry.studs, []);
+  assert.deepEqual(geometry.bodies[0], { id: 'voxel-0', x: 2.5, y: 4.5, z: 6.5, color: 'black', w: .96, h: .96, d: .96 });
+  assert.deepEqual(geometry.studs, [{ id: 'voxel-1', x: 2.5, y: 6.1125, z: 6.5, color: 'red' }]);
+  assert.equal(geometry.sourceBricks[0].id, 'voxel-0');
   assert.equal(JSON.stringify(model), before);
 });
 
@@ -59,11 +63,12 @@ test('shared stage uses soft ink only for source-black LEGO pieces', () => {
 test('shared stage keeps raw voxel outlines in one dark batch', () => {
   const data = {
     bodies: [{ color: 'black' }, { color: 'red' }],
-    studs: [],
+    studs: [{ color: 'black' }, { color: 'red' }],
   };
   const groups = modelStageOutlineGroups({ kind: 'voxels' }, data);
 
   assert.equal(groups.length, 1);
   assert.equal(groups[0].color, DARK_BRICK_OUTLINE_COLOR);
   assert.strictEqual(groups[0].bodies, data.bodies);
+  assert.strictEqual(groups[0].studs, data.studs);
 });

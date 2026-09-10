@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import { PALETTE } from './geometry.js';
-import { brickPreviewData } from './brick-preview.js';
+import { brickPreviewData, voxelPreviewData } from './brick-preview.js';
 import { createAssemblyJoinPreview } from './assembly-join-preview.js';
 import { BRICK_OUTLINE_WIDTH, BrickOutlineBatch } from './brick-outlines.js';
 import {
@@ -323,10 +323,7 @@ export class ProductViewer {
       ? createAssemblyJoinPreview({ model, highlightIds, joinContext })
       : { active: false, model, arrows: [] };
     const renderModel = joinPreview.active ? joinPreview.model : model;
-    let data = isBricks ? brickPreviewData(renderModel) : {
-      bodies: model.cells.map(c => ({ ...c, x: c.x + .5, y: c.y + .5, z: c.z + .5, w: .96, h: .96, d: .96 })),
-      studs: [],
-    };
+    let data = isBricks ? brickPreviewData(renderModel) : voxelPreviewData(renderModel);
     const appearance = ACCEPTED_INSTRUCTION_APPEARANCE;
     const instructionDiagram = highlightIds !== null;
     const fromBelow = insertionDirection === 'up';
@@ -457,28 +454,19 @@ export class ProductViewer {
         }
       }
     } else {
-      if (isBricks) {
-        for (const outlineGroup of groupBrickOutlinesBySourceColor(data, blackPieceOutline)) {
-          const outlines = new BrickOutlineBatch({
-            bodies: outlineGroup.bodies,
-            studs: outlineGroup.studs,
-            studRadius,
-            studHeight,
-            color: outlineGroup.color,
-            sidewallColor: outlineGroup.sidewallColor,
-            linewidth: BRICK_OUTLINE_WIDTH * 8 / voxelMm,
-            renderOrder: 3,
-          });
-          this.renderObjects.push(outlines);
-          this.group.add(outlines);
-        }
-      } else {
-        const lineGeometry = makeEdgeGeometry(data.bodies);
-        const lineMaterial = new THREE.LineBasicMaterial({ color: 0x000000, transparent: true, opacity: .68 });
-        const lines = new THREE.LineSegments(lineGeometry, lineMaterial);
-        this.renderObjects.push(lines);
-        this.group.add(lines);
-        this.resources.push(lineGeometry, lineMaterial);
+      for (const outlineGroup of groupBrickOutlinesBySourceColor(data, isBricks ? blackPieceOutline : 'dark')) {
+        const outlines = new BrickOutlineBatch({
+          bodies: outlineGroup.bodies,
+          studs: outlineGroup.studs,
+          studRadius,
+          studHeight,
+          color: outlineGroup.color,
+          sidewallColor: outlineGroup.sidewallColor,
+          linewidth: BRICK_OUTLINE_WIDTH * 8 / voxelMm,
+          renderOrder: 3,
+        });
+        this.renderObjects.push(outlines);
+        this.group.add(outlines);
       }
     }
 
