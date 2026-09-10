@@ -46,14 +46,16 @@ export function assessAssemblyQuality(plan) {
 }
 
 export function orderQualityRejections(before, after) {
-  const reasons = [];
   for (const key of ['lateFoundationCount', 'downwardReturnCount', 'downwardCourseDistance']) {
-    if (after[key] > before[key]) reasons.push(`${key} increased`);
+    if (after[key] < before[key]) return [];
+    if (after[key] > before[key]) return [`${key} increased`];
   }
-  return reasons;
+  return [];
 }
 
 export function orderQualityImproved(before, after) {
-  return ['rootFailureCount', 'unresolvedBrickCount', 'lateFoundationCount', 'downwardReturnCount', 'downwardCourseDistance']
-    .some(key => after[key] < before[key]);
+  for (const key of ['rootFailureCount', 'unresolvedBrickCount', 'lateFoundationCount', 'downwardReturnCount', 'downwardCourseDistance']) {
+    if (after[key] !== before[key]) return after[key] < before[key];
+  }
+  return false;
 }

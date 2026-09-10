@@ -3,7 +3,7 @@ export const CONSTRUCTION_CACHE_SCHEMA_VERSION = 1;
 // Bump this whenever construction-worker.js or any module in its conversion
 // pipeline can produce different placements, plans, guide data, or diagnostics.
 // The version is part of every key, so old browser entries become harmless misses.
-export const CONSTRUCTION_PIPELINE_VERSION = '2026-09-09.1';
+export const CONSTRUCTION_PIPELINE_VERSION = '2026-09-10.2';
 
 const DATABASE_NAME = 'blawx-construction-cache';
 const STORE_NAME = 'results';

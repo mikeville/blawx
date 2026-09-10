@@ -185,6 +185,38 @@ test('a grounded replay descriptor cannot absorb an unrelated floating component
   }), /cannot include a groundless stud component/);
 });
 
+test('shared ground layout replay requires real edge contact between its grounded components', () => {
+  const source = model([
+    brick(0, 0, 0), brick(0, 1, 0),
+    brick(1, 0, 0, 1, 1, 'blue'), brick(1, 1, 0, 1, 1, 'blue'),
+  ]);
+  const before = createAssemblyPlan({ brickModel: source });
+  const descriptor = before.modules.map((module) => ({
+    id: module.id,
+    label: module.label,
+    kind: module.kind,
+    brickIds: module.brickIds,
+    brickOrder: before.steps.filter(({ moduleId }) => moduleId === module.id).flatMap(({ newBrickIds }) => newBrickIds),
+    ...(module.groupType ? { groupType: module.groupType } : {}),
+  }));
+  const replayed = createAssemblyPlan({ brickModel: source, moduleReplay: descriptor });
+  assert.equal(replayed.modules[0].groupType, 'shared-ground-layout');
+
+  const distant = model([
+    brick(0, 0, 0), brick(0, 1, 0),
+    brick(10, 0, 0, 1, 1, 'blue'), brick(10, 1, 0, 1, 1, 'blue'),
+  ]);
+  const distantPlan = createAssemblyPlan({ brickModel: distant });
+  const allIds = distantPlan.bricks.map(({ id }) => id);
+  assert.throws(() => createAssemblyPlan({
+    brickModel: distant,
+    moduleReplay: [{
+      id: 'unsafe-layout', label: 'Shared build area', kind: 'grounded', groupType: 'shared-ground-layout',
+      brickIds: allIds, brickOrder: allIds,
+    }],
+  }), /must contain ground-course bricks from multiple components/);
+});
+
 test('replay retains an existing rectangular work-surface recipe without a second band split', () => {
   const bricks = [
     brick(0, 0, 0, 4, 1),

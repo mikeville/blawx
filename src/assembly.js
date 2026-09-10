@@ -312,6 +312,107 @@ function deriveModuleGroups(bricks, graph) {
   return groups;
 }
 
+function createSharedGroundLayoutGroups(groups, bricks, graph) {
+  const ownerByBrickIndex = new Map();
+  for (let groupIndex = 0; groupIndex < groups.length; groupIndex += 1) {
+    const group = groups[groupIndex];
+    if (group.kind !== 'grounded') continue;
+    for (const index of group.indexes) if (bricks[index].y === 0) ownerByBrickIndex.set(index, groupIndex);
+  }
+  const groundIndexes = [...ownerByBrickIndex.keys()];
+  if (groundIndexes.length < 2) return groups;
+
+  const componentByBrickIndex = new Map();
+  graph.components.forEach((indexes, componentIndex) => {
+    for (const index of indexes) componentByBrickIndex.set(index, componentIndex);
+  });
+  const connectedLayouts = new DisjointSet(bricks.length);
+  const firstGroundByComponent = new Map();
+  const groundCells = new Map();
+  for (const index of groundIndexes) {
+    const componentIndex = componentByBrickIndex.get(index);
+    const first = firstGroundByComponent.get(componentIndex);
+    if (first === undefined) firstGroundByComponent.set(componentIndex, index);
+    else connectedLayouts.union(first, index);
+    const brick = bricks[index];
+    for (let z = brick.z; z < brick.z + brick.d; z += 1) for (let x = brick.x; x < brick.x + brick.w; x += 1) {
+      groundCells.set(cellKey(x, z), index);
+    }
+  }
+  for (const index of groundIndexes) {
+    const brick = bricks[index];
+    for (let z = brick.z; z < brick.z + brick.d; z += 1) for (let x = brick.x; x < brick.x + brick.w; x += 1) {
+      const right = groundCells.get(cellKey(x + 1, z));
+      const forward = groundCells.get(cellKey(x, z + 1));
+      if (right !== undefined && right !== index) connectedLayouts.union(index, right);
+      if (forward !== undefined && forward !== index) connectedLayouts.union(index, forward);
+    }
+  }
+
+  const layoutsByRoot = new Map();
+  for (const index of groundIndexes) {
+    const root = connectedLayouts.find(index);
+    if (!layoutsByRoot.has(root)) layoutsByRoot.set(root, []);
+    layoutsByRoot.get(root).push(index);
+  }
+  const sharedLayouts = [...layoutsByRoot.values()].flatMap((indexes) => {
+    const componentIndexes = [...new Set(indexes.map((index) => componentByBrickIndex.get(index)))].sort((a, b) => a - b);
+    if (componentIndexes.length < 2) return [];
+    const ownerGroupIndexes = [...new Set(indexes.map((index) => ownerByBrickIndex.get(index)))].sort((a, b) => a - b);
+    return [{
+      componentIndexes,
+      ownerGroupIndexes,
+      firstOwnerGroupIndex: ownerGroupIndexes[0],
+    }];
+  });
+  if (!sharedLayouts.length) return groups;
+
+  const layoutByOwnerGroup = new Map();
+  for (const layout of sharedLayouts) {
+    for (const groupIndex of layout.ownerGroupIndexes) layoutByOwnerGroup.set(groupIndex, layout);
+  }
+  const output = [];
+  for (let groupIndex = 0; groupIndex < groups.length; groupIndex += 1) {
+    const group = groups[groupIndex];
+    const layout = layoutByOwnerGroup.get(groupIndex);
+    if (!layout) {
+      output.push(group);
+      continue;
+    }
+    if (groupIndex === layout.firstOwnerGroupIndex) output.push({
+      indexes: layout.ownerGroupIndexes.flatMap((ownerIndex) => groups[ownerIndex].indexes)
+        .sort((a, b) => compareBricks(bricks[a], bricks[b])),
+      kind: 'grounded',
+      groupType: 'shared-ground-layout',
+      componentIndex: layout.componentIndexes[0],
+      componentIndexes: layout.componentIndexes,
+      internallyConnected: false,
+    });
+  }
+  return output;
+}
+
+function connectsGroundComponents(indexes, bricks, componentByBrickIndex, componentIndexes) {
+  const components = new DisjointSet(Math.max(...componentIndexes) + 1);
+  const groundCells = new Map();
+  for (const index of indexes) {
+    const brick = bricks[index];
+    if (brick.y !== 0) continue;
+    for (let z = brick.z; z < brick.z + brick.d; z += 1) for (let x = brick.x; x < brick.x + brick.w; x += 1) {
+      groundCells.set(cellKey(x, z), index);
+    }
+  }
+  for (const [key, index] of groundCells) {
+    const [x, z] = key.split(',').map(Number);
+    for (const neighborKey of [cellKey(x + 1, z), cellKey(x, z + 1)]) {
+      const neighbor = groundCells.get(neighborKey);
+      if (neighbor === undefined) continue;
+      components.union(componentByBrickIndex.get(index), componentByBrickIndex.get(neighbor));
+    }
+  }
+  return new Set(componentIndexes.map((componentIndex) => components.find(componentIndex))).size === 1;
+}
+
 function studAdjacency(brickCount, graph) {
   const adjacency = Array.from({ length: brickCount }, () => new Set());
   for (const { lower, upper } of graph.indexEdges) {
@@ -334,7 +435,7 @@ function splitWorkSurfaceGroup(groups, brickIds, bricks, graph, orderPolicy) {
     return index;
   });
   const selected = new Set(indexes);
-  const ownerIndex = groups.findIndex((group) => group.kind === 'grounded'
+  const ownerIndex = groups.findIndex((group) => group.kind === 'grounded' && group.groupType !== 'shared-ground-layout'
     && indexes.every((index) => group.indexes.includes(index)));
   if (ownerIndex < 0) {
     throw new RangeError('Work-surface bricks must all belong to one existing derived grounded module.');
@@ -416,7 +517,9 @@ function replayModuleGroups(moduleReplay, bricks, graph) {
       throw new RangeError(`moduleReplay module ${descriptor.id} brickOrder must exactly match its brickIds.`);
     }
     const replayRank = new Map(descriptor.brickOrder.map((id, rank) => [indexById.get(id), rank]));
-    const allowedGroupTypes = new Set(['branch', 'color', 'detached-parts', 'work-surface', 'continuation']);
+    const allowedGroupTypes = new Set([
+      'branch', 'color', 'detached-parts', 'work-surface', 'continuation', 'shared-ground-layout',
+    ]);
     if (descriptor.groupType !== undefined && !allowedGroupTypes.has(descriptor.groupType)) {
       throw new RangeError(`moduleReplay module ${descriptor.id} has invalid groupType ${String(descriptor.groupType)}.`);
     }
@@ -447,6 +550,12 @@ function replayModuleGroups(moduleReplay, bricks, graph) {
     if (descriptor.groupType === 'continuation') {
       if (kind !== 'grounded' || !priorWasWorkSurface) {
         throw new RangeError(`moduleReplay continuation ${descriptor.id} must immediately follow a work-surface module.`);
+      }
+    }
+    if (descriptor.groupType === 'shared-ground-layout') {
+      if (kind !== 'grounded' || !containsGround || componentIndexes.length < 2
+        || !connectsGroundComponents(indexes, bricks, componentByBrickIndex, componentIndexes)) {
+        throw new RangeError(`moduleReplay shared ground layout ${descriptor.id} must contain ground-course bricks from multiple components.`);
       }
     }
     const isWorkSurface = descriptor.groupType === 'work-surface';
@@ -1067,6 +1176,7 @@ export function createAssemblyPlan({
       if (a.groupType !== b.groupType) return a.groupType === 'branch' ? -1 : 1;
       return b.indexes.length - a.indexes.length || compareBricks(bricks[a.indexes[0]], bricks[b.indexes[0]]);
     });
+    groups = createSharedGroundLayoutGroups(groups, bricks, graphData);
     if (workSurfaceBrickIds !== null) {
       groups = splitWorkSurfaceGroup(groups, workSurfaceBrickIds, bricks, graphData, workSurfaceOrder);
     }
@@ -1084,7 +1194,8 @@ export function createAssemblyPlan({
     if (group.groupType === 'color') detailNumber += 1;
     if (group.kind === 'floating') floatingNumber += 1;
     if (group.groupType === 'work-surface') workSurfaceNumber += 1;
-    const label = group.label ?? (group.groupType === 'branch' ? `Upper section ${branchNumber}`
+    const label = group.label ?? (group.groupType === 'shared-ground-layout' ? `Shared build area ${buildAreaNumber}`
+      : group.groupType === 'branch' ? `Upper section ${branchNumber}`
       : group.groupType === 'color' ? `Color detail ${detailNumber}`
       : group.groupType === 'detached-parts' ? 'Unresolved detached parts'
       : group.groupType === 'work-surface' ? `Work-surface section ${workSurfaceNumber}`
@@ -1179,7 +1290,8 @@ export function createAssemblyPlan({
     ...module
   }) => ({
     ...module,
-    ...((workSurfaceBrickIds !== null || moduleReplay !== null) && groupType ? { groupType } : {}),
+    ...((workSurfaceBrickIds !== null || moduleReplay !== null
+      || groupType === 'shared-ground-layout') && groupType ? { groupType } : {}),
   }));
   return {
     version: 1,

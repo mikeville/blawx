@@ -139,6 +139,30 @@ test('independent grounded stud components become separate local build areas', (
   }
 });
 
+test('edge-adjacent grounded components become one contextual build area before an overhang blocks the floor', () => {
+  const plan = createAssemblyPlan({ brickModel: model([
+    brick(0, 0, 0, 2, 2),
+    brick(0, 1, 0, 2, 2),
+    brick(0, 2, 0, 4, 2),
+    brick(2, 0, 0, 2, 2, 'blue'),
+  ]) });
+  const shared = plan.modules.find(({ groupType }) => groupType === 'shared-ground-layout');
+  const groundIds = plan.bricks.filter(({ y }) => y === 0).map(({ id }) => id);
+  const sharedSteps = plan.steps.filter(({ moduleId }) => moduleId === shared.id);
+  const overhangId = plan.bricks.find(({ y }) => y === 2).id;
+  const overhangStep = sharedSteps.findIndex(({ newBrickIds }) => newBrickIds.includes(overhangId));
+
+  assert.ok(shared);
+  assert.deepEqual(new Set(shared.brickIds), new Set(plan.bricks.map(({ id }) => id)));
+  assert.equal(shared.componentIds.length, 2);
+  assert.equal(sharedSteps.every(({ kind, issues }) => kind === 'build' && issues.length === 0), true);
+  assert.equal(groundIds.every((id) => sharedSteps.slice(0, overhangStep + 1)
+    .some(({ newBrickIds }) => newBrickIds.includes(id))), true);
+  assert.deepEqual(new Set(sharedSteps.at(-1).visibleBrickIds), new Set(shared.brickIds));
+  assert.equal(plan.stats.unresolvedBrickCount, 0);
+  assert.equal(plan.stats.coverageComplete, true);
+});
+
 test('a groundless cluster is built as handled work and ends with an explicit unresolved join', () => {
   const plan = createAssemblyPlan({ brickModel: model([
     brick(0, 0, 0, 2, 2),

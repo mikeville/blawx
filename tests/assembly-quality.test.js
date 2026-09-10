@@ -12,4 +12,12 @@ test('late foundations and downward returns are measured inside each successful 
   assert.equal(result.downwardCourseDistance, 3);
   assert.equal(result.lateFoundations[0].stepId, 's2');
   assert.deepEqual(orderQualityRejections(result, {...result, lateFoundationCount:2}), ['lateFoundationCount increased']);
+  assert.deepEqual(orderQualityRejections(
+    {...result, lateFoundationCount:3, downwardReturnCount:13, downwardCourseDistance:70},
+    {...result, lateFoundationCount:0, downwardReturnCount:12, downwardCourseDistance:75},
+  ), []);
+  assert.deepEqual(orderQualityRejections(
+    {...result, lateFoundationCount:0, downwardReturnCount:12, downwardCourseDistance:70},
+    {...result, lateFoundationCount:0, downwardReturnCount:12, downwardCourseDistance:75},
+  ), ['downwardCourseDistance increased']);
 });
