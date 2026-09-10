@@ -23,6 +23,10 @@ export function mountBookletNavigation(host) {
     const lineHeight = parseFloat(style.lineHeight) || fontSize * 1.2;
     return rect.top + (lineHeight - fontSize) / 2 + fontSize * .8;
   };
+  const headerHeight = () => {
+    const value = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--header-visible-height'));
+    return Number.isFinite(value) ? value : 64;
+  };
   function update() {
     if (disposed) return;
     cancelAnimationFrame(frame);
@@ -31,9 +35,10 @@ export function mountBookletNavigation(host) {
       const guide = host.querySelector('.manual-scroll');
       const chapters = [...host.querySelectorAll('.manual-chapter > summary')];
       if (!guide) { button.hidden = true; return; }
+      const top = headerHeight();
       const pinned = chapters.filter(element => {
         const rect = element.getBoundingClientRect();
-        return rect.top <= 65 && rect.bottom > 64;
+        return rect.top <= top + 1 && rect.bottom > top;
       }).at(-1);
       const height = pinned?.getBoundingClientRect().height
         || (matchMedia('(max-width: 640px)').matches ? 64 : 72);
@@ -42,7 +47,7 @@ export function mountBookletNavigation(host) {
         const label = pinned.querySelector(':scope > span') || pinned.querySelector('strong');
         button.style.setProperty('--manual-top-y', `${baseline(label) - 28.5}px`);
       }
-      button.hidden = !pinned || guide.getBoundingClientRect().bottom <= 64 + height;
+      button.hidden = !pinned || guide.getBoundingClientRect().bottom <= top + height;
     });
   }
   function returnToTop() {

@@ -46,7 +46,7 @@ textarea#prompt { color: inherit; font-family: inherit; resize: none; }
 .feed-stage { position: relative; }
 .stage-unavailable { display: grid; place-items: center; min-height: 100%; padding: 24px; color: var(--quiet); font-size: 12px; }
 .detail-copy p:empty, .result-note:empty { display: none; }
-.detail-copy h1 { overflow-wrap: anywhere; }
+.detail-copy h1 { overflow-wrap: break-word; word-break: normal; }
 .result-note { margin-top: 16px; color: var(--quiet); font-size: 12px; line-height: 1.4; }
 .guide-loading { margin: 30px var(--page-gutter); color: var(--quiet); font-size: 13px; }
 .developer-footer { padding: 0 var(--page-gutter) 40px; }

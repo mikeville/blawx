@@ -21,7 +21,7 @@ test('elapsed time never fabricates phase completion',()=>{
   assert.equal(h.elapsed.textContent,'2:00 elapsed');
   h.progress.setPhase('bricks');
   assert.deepEqual(h.items.map(i=>i.dataset.state),['complete','current','future']);
-  assert.equal(h.live.textContent,'Choosing bricks');
+  assert.equal(h.live.textContent,'Stacking bricks');
   h.progress.setPhase('guide');
   assert.equal(h.items[2].attributes['aria-current'],'step');
   h.progress.complete();

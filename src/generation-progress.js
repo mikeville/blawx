@@ -1,6 +1,6 @@
 const PHASES = Object.freeze([
   Object.freeze({ key: 'designing', label: 'Designing' }),
-  Object.freeze({ key: 'bricks', label: 'Choosing bricks' }),
+  Object.freeze({ key: 'bricks', label: 'Stacking bricks' }),
   Object.freeze({ key: 'guide', label: 'Preparing guide' }),
 ]);
 

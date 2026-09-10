@@ -3,6 +3,7 @@ import { createBookletPresentation, createChapterDiagramData, guideRangeMarkup, 
 import { createBookletRenderer } from './assembly-booklet-renderer.js';
 import { mountBookletNavigation } from './assembly-booklet-navigation.js';
 import './assembly-booklet.css';
+import './assembly-booklet-ui.css';
 
 export function mountAssemblyBooklet(host, {
   result, subject = null, diagnosticsHost, onReaderStateChange = null, readerState = null,
@@ -23,7 +24,7 @@ export function mountAssemblyBooklet(host, {
 
   host.innerHTML = `<div class="manual-scroll">
     <div class="manual-title"><h2 tabindex="-1">Instructions</h2></div>
-    <details class="manual-total-parts"${initialState.partsOpen ? ' open' : ''}><summary><span>Parts</span><span>${plan.bricks.length}</span></summary><ul class="manual-inventory-grid">${inventoryMarkup(sorted(plan.inventory))}</ul></details>
+    <details class="manual-total-parts"${initialState.partsOpen ? ' open' : ''}><summary><span class="manual-parts-collapsed">Parts</span><span class="manual-parts-expanded">${plan.bricks.length} Parts</span></summary><ul class="manual-inventory-grid">${inventoryMarkup(sorted(plan.inventory))}</ul></details>
     <div class="manual-sections">${presentation.sections.map((section,index)=>{const range=numbering.sectionRanges.get(section.id);return `<details class="manual-chapter" data-chapter="${index}" data-first-step="${escape(section.groups.flatMap(group=>group.stepIds)[0] ?? '')}"><summary><strong class="manual-range-label">${guideRangeMarkup(range)}</strong><span>${escape(section.label)}</span>${section.repeatCount>1 ? `<b class="manual-repeat">${section.repeatCount}×</b>` : ''}</summary><div class="manual-chapter-body"></div></details>`}).join('')}</div>
   </div>`;
   const disposeNavigation = mountBookletNavigation(host);
@@ -81,6 +82,48 @@ export function mountAssemblyBooklet(host, {
     renderer?.dispose();
     renderer = null;
   }
+  function closeIssueTooltips(except = null) {
+    host.querySelectorAll('.manual-issue-wrap.is-open').forEach(wrapper => {
+      if (wrapper === except) return;
+      wrapper.classList.remove('is-open');
+      wrapper.querySelector('.manual-issue')?.setAttribute('aria-expanded', 'false');
+    });
+  }
+  function onIssueClick(event) {
+    const trigger = event.target.closest('.manual-issue');
+    if (!trigger || !host.contains(trigger)) return;
+    const wrapper = trigger.closest('.manual-issue-wrap');
+    wrapper.classList.remove('is-dismissed');
+    const opening = !wrapper.classList.contains('is-open');
+    closeIssueTooltips(wrapper);
+    wrapper.classList.toggle('is-open', opening);
+    trigger.setAttribute('aria-expanded', String(opening));
+  }
+  function onIssueKeydown(event) {
+    if (event.key !== 'Escape') return;
+    const wrapper = event.target.closest('.manual-issue-wrap');
+    if (!wrapper) return;
+    wrapper.classList.remove('is-open');
+    wrapper.classList.add('is-dismissed');
+    const trigger = wrapper.querySelector('.manual-issue');
+    trigger?.setAttribute('aria-expanded', 'false');
+    trigger?.focus();
+  }
+  function onIssuePointerOut(event) {
+    const wrapper = event.target.closest('.manual-issue-wrap');
+    if (wrapper && !wrapper.contains(event.relatedTarget)) wrapper.classList.remove('is-dismissed');
+  }
+  function onIssueFocusOut(event) {
+    event.target.closest('.manual-issue-wrap')?.classList.remove('is-dismissed');
+  }
+  function onOutsidePointer(event) {
+    if (!event.target.closest('.manual-issue-wrap')) closeIssueTooltips();
+  }
+  host.addEventListener('click', onIssueClick);
+  host.addEventListener('keydown', onIssueKeydown);
+  host.addEventListener('pointerout', onIssuePointerOut);
+  host.addEventListener('focusout', onIssueFocusOut);
+  document.addEventListener('pointerdown', onOutsidePointer);
   function expandChapter(details) {
     if (disposed) return;
     if (activeDetails && activeDetails!==details) {
@@ -92,7 +135,10 @@ export function mountAssemblyBooklet(host, {
     const section = presentation.sections[+details.dataset.chapter];
     const chapter = createChapterDiagramData(section, plan, numbering);
     const specs = chapter.specs;
-    const warning = '<span class="manual-issue" title="Connection needs review" aria-label="Connection needs review">△</span>';
+    const warning = spec => {
+      const id = `manual-tooltip-${details.dataset.chapter}-${spec.index}`;
+      return `<span class="manual-issue-wrap"><button class="manual-issue" type="button" aria-describedby="${id}" aria-expanded="false"><span aria-hidden="true">△</span><span class="sr-only">Connection warning</span></button><span class="manual-tooltip" id="${id}" role="tooltip">Connection needs review</span></span>`;
+    };
     const figure = spec => {
         const number = String(spec.number);
         const downwardJoin = spec.joinContext?.direction === 'down';
@@ -101,7 +147,7 @@ export function mountAssemblyBooklet(host, {
         const supportCount = spec.joinContext?.supportGroups?.length ?? 0;
         const action = downwardJoin ? ` · lower the assembled section onto ${supportCount} ${supportCount === 1 ? 'support' : 'supports'}`
           : spec.insertionDirection === 'up' ? ' · attach from below' : '';
-        return `<figure class="manual-diagram" data-step-id="${escape(spec.stepId)}"><figcaption><strong>${number}</strong>${direction}${spec.unresolved ? warning : ''}</figcaption><div class="manual-canvas-wrap"><canvas tabindex="0" data-diagram="${spec.index}" aria-label="${escape(section.label)} · step ${number}${action}"></canvas></div></figure>`;
+        return `<figure class="manual-diagram" data-step-id="${escape(spec.stepId)}"><figcaption><strong>${number}</strong>${direction}${spec.unresolved ? warning(spec) : ''}</figcaption><div class="manual-canvas-wrap"><canvas tabindex="0" data-diagram="${spec.index}" aria-label="${escape(section.label)} · step ${number}${action}"></canvas></div></figure>`;
     };
     let placements = '';
     if (section.repeatCount>1) {
@@ -112,7 +158,9 @@ export function mountAssemblyBooklet(host, {
     const figures = chapter.parts.length === 1
       ? `<div class="manual-diagram-grid">${chapter.parts[0].figures.map(figure).join('')}${placements}</div>`
       : chapter.parts.map((part,index)=>`<details class="manual-reading" ${index===0?'open':''}><summary aria-label="Steps ${part.range.start} through ${part.range.end}"><span class="manual-range-label">${guideRangeMarkup(part.range)}</span></summary><div class="manual-diagram-grid">${part.figures.map(figure).join('')}${index===chapter.parts.length-1?placements:''}</div></details>`).join('');
-    details.querySelector('.manual-chapter-body').innerHTML = `<details class="manual-section-parts"><summary>Parts</summary><ul class="manual-inventory-grid">${inventoryMarkup(sorted(section.totalInventory ?? section.inventory))}</ul></details>${figures}`;
+    const sectionInventory = sorted(section.totalInventory ?? section.inventory);
+    const sectionPartCount = sectionInventory.reduce((sum, entry) => sum + (Number(entry.count) || 0), 0);
+    details.querySelector('.manual-chapter-body').innerHTML = `<details class="manual-section-parts"><summary><span class="manual-parts-collapsed">Parts</span><span class="manual-parts-expanded">${sectionPartCount} Parts</span></summary><ul class="manual-inventory-grid">${inventoryMarkup(sectionInventory)}</ul></details>${figures}`;
     renderer = createBookletRenderer({ result, byId });
     details.querySelectorAll('canvas').forEach(canvas=>renderer.observe(canvas,specs[+canvas.dataset.diagram]));
     details.querySelectorAll('.manual-reading').forEach(part=>{
@@ -136,5 +184,5 @@ export function mountAssemblyBooklet(host, {
   const initial = initialState.openChapterIndex >= 0
     ? host.querySelector(`.manual-chapter[data-chapter="${initialState.openChapterIndex}"]`) : null;
   if (initial) initial.open = true;
-  return ()=>{disposed=true;releaseAll();disposeNavigation();host.replaceChildren();diagnosticsHost?.replaceChildren();};
+  return ()=>{disposed=true;releaseAll();disposeNavigation();host.removeEventListener('click', onIssueClick);host.removeEventListener('keydown', onIssueKeydown);host.removeEventListener('pointerout', onIssuePointerOut);host.removeEventListener('focusout', onIssueFocusOut);document.removeEventListener('pointerdown', onOutsidePointer);host.replaceChildren();diagnosticsHost?.replaceChildren();};
 }
