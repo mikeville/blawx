@@ -27,7 +27,7 @@ test('production hero defaults lock the selected values without mutable state', 
   const anchor = Math.PI * .75;
   const fixed = heroCameraRadius({ ...input, azimuth:.8, pulse:0 });
   const fit = originalRadius(anchor + (.8 - anchor) * .5);
-  assert.ok(Math.abs(chosen - fixed * Math.pow(fit / fixed, 2)) < 1e-10);
+  assert.equal(chosen, Math.max(fixed * Math.pow(fit / fixed, 2), originalRadius(.8)));
 });
 
 test('original projected fit and continuous pose remain available for unconfigured stages', () => {
@@ -37,22 +37,39 @@ test('original projected fit and continuous pose remain available for unconfigur
   }
 });
 
-test('pulse zero is all-yaw constant and pulse two exaggerates the existing ratio', () => {
-  const zero = [.2, .8, 1.7].map(azimuth => heroCameraRadius({ ...input, azimuth, pulse:0 }));
-  assert.equal(new Set(zero.map(value => value.toFixed(10))).size, 1);
+test('pulse radius never undercuts the true projected fit at the displayed azimuth', () => {
+  const dimensions = [
+    { halfX:8, halfY:5, halfZ:3, aspect:1.6 },
+    { halfX:3, halfY:10, halfZ:8, aspect:.55 },
+    { halfX:14, halfY:2, halfZ:2, aspect:2.4 },
+  ];
+  for (const size of dimensions) {
+    for (let index = 0; index < 72; index += 1) {
+      const azimuth = -Math.PI + index * Math.PI * 2 / 72;
+      const baseline = heroCameraRadius({ ...input, ...size, azimuth, pulse:1, pulseFrequency:1, size:1 });
+      for (const pulse of [0, .5, 1, 2]) {
+        for (const pulseFrequency of [.25, .5, 1, 2, 4]) {
+          assert.ok(heroCameraRadius({ ...input, ...size, azimuth, pulse, pulseFrequency, size:1 }) >= baseline - 1e-10);
+        }
+      }
+    }
+  }
+});
+
+test('pulse two preserves its waveform when it exceeds the safe fit', () => {
   const azimuth = .8;
   const fixed = heroCameraRadius({ ...input, azimuth, pulse:0 });
   const normal = heroCameraRadius({ ...input, azimuth, pulse:1 });
   const doubled = heroCameraRadius({ ...input, azimuth, pulse:2 });
-  assert.ok(Math.abs(doubled / fixed - Math.pow(normal / fixed, 2)) < 1e-10);
+  assert.ok(doubled >= normal);
 });
 
-test('pulse frequency changes only the projected-fit waveform rate', () => {
+test('pulse frequency changes the projected-fit waveform while retaining safe coverage', () => {
   const anchor = Math.PI * .75;
   for (const displacement of [-1.1, -.45, 0, .3, .9]) {
     const normal = heroCameraRadius({ ...input, azimuth: anchor + displacement * 2 });
     const faster = heroCameraRadius({ ...input, azimuth: anchor + displacement, pulseFrequency: 2 });
-    assert.ok(Math.abs(faster - normal) < 1e-10);
+    assert.ok(faster >= heroCameraRadius({ ...input, azimuth: anchor + displacement, pulse:1, pulseFrequency:1 }) - 1e-10);
   }
 
   const normalSamples = [];
@@ -62,8 +79,8 @@ test('pulse frequency changes only the projected-fit waveform rate', () => {
     normalSamples.push(heroCameraRadius({ ...input, azimuth: anchor + displacement }));
     fasterSamples.push(heroCameraRadius({ ...input, azimuth: anchor + displacement, pulseFrequency: 2 }));
   }
-  assert.ok(Math.abs(Math.min(...normalSamples) - Math.min(...fasterSamples)) < 1e-5);
-  assert.ok(Math.abs(Math.max(...normalSamples) - Math.max(...fasterSamples)) < 1e-5);
+  assert.ok(Math.min(...fasterSamples) >= Math.min(...normalSamples) - 1e-5);
+  assert.ok(Math.max(...fasterSamples) >= Math.max(...normalSamples) - 1e-5);
 });
 
 test('zero pulse, size, and interaction sensitivity stay independent of pulse frequency', () => {

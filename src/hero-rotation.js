@@ -42,7 +42,12 @@ export function heroCameraRadius({ halfX, halfY, halfZ, aspect, elevation, azimu
   const verticalProjected = Math.abs(Math.sin(elevation)) * (Math.abs(Math.sin(fitAzimuth)) * hx + Math.abs(Math.cos(fitAzimuth)) * hz)
     + Math.abs(Math.cos(elevation)) * hy;
   const existing = Math.max(verticalProjected, horizontalProjected / safeAspect, 1) * padding;
+  const actualHorizontalProjected = Math.abs(Math.cos(azimuth)) * hx + Math.abs(Math.sin(azimuth)) * hz;
+  const actualVerticalProjected = Math.abs(Math.sin(elevation)) * (Math.abs(Math.sin(azimuth)) * hx + Math.abs(Math.cos(azimuth)) * hz)
+    + Math.abs(Math.cos(elevation)) * hy;
+  const actualFit = Math.max(actualVerticalProjected, actualHorizontalProjected / safeAspect, 1) * padding;
   const safePulse = Math.max(0, Math.min(2, finite(pulse, 1)));
   const safeSize = Math.max(.65, Math.min(1.5, finite(size, 1)));
-  return fixed * Math.pow(existing / fixed, safePulse) / safeSize;
+  const pulseRadius = fixed * Math.pow(existing / fixed, safePulse);
+  return Math.max(pulseRadius, actualFit) / safeSize;
 }
