@@ -67,6 +67,37 @@ function bookletFixture(groupSizes, { join = false, warningStep = -1 } = {}) {
   return { assemblyPlan:plan, guide };
 }
 
+function oneGroupGuideSections(result, labels) {
+  const source = result.guide.sections[0];
+  const bricksById = new Map(result.assemblyPlan.bricks.map(brick => [brick.id, brick]));
+  result.guide = {
+    version: 1,
+    sections: source.groups.map((group, index) => {
+      const bricks = group.brickIds.map(brickId => bricksById.get(brickId));
+      const label = labels[index];
+      const moduleIds = [...new Set(group.stepIds.map(stepId =>
+        result.assemblyPlan.steps.find(step => step.id === stepId).moduleId))];
+      return {
+        ...source,
+        id: `section-${index + 1}`,
+        label: label.text,
+        semanticLabel: label.confidence === 'uncertain' ? null : label.text,
+        semanticConfidence: label.confidence,
+        semanticEvidence: `Evidence ${index + 1}`,
+        moduleIds,
+        stepIds: [...group.stepIds],
+        brickIds: [...group.brickIds],
+        brickCount: group.brickIds.length,
+        inventory: [{ key:'1x1:red', w:1, d:1, color:'red', count:group.brickIds.length }],
+        courseRange: { min:Math.min(...bricks.map(brick => brick.y)), max:Math.max(...bricks.map(brick => brick.y)) },
+        groups: [{ ...group, id:`section-${index + 1}-group-1` }],
+      };
+    }),
+    stats: { sectionCount:source.groups.length, brickCount:source.brickIds.length, coverageComplete:true },
+  };
+  return result;
+}
+
 test('chapter presentation preserves group order, source ids, warnings, and join context', () => {
   const joinContext = { direction: 'down', supportGroups: [{ id: 'support-a' }] };
   const plan = { steps: [
@@ -144,6 +175,82 @@ test('a long source chapter becomes inventory-accurate peer sections at coherent
   assert.equal(diagrams.find(spec => spec.stepId === 'step-14').unresolved, true);
   assert.equal(diagrams.find(spec => spec.stepId === 'join-step').joinContext,
     result.assemblyPlan.steps.at(-1).joinContext);
+});
+
+test('a long source chapter absorbs a tiny final reading chunk without exceeding eighteen steps', () => {
+  const result = bookletFixture([6, 6, 6, 6, 1]);
+  const view = createBookletPresentation(result);
+
+  assert.deepEqual(view.rawPresentation.sections[0].parts.map(part => part.stepIds.length), [12, 12, 1]);
+  assert.deepEqual(view.presentation.sections.map(section => section.stepIds.length), [12, 13]);
+  assert.equal(view.presentation.stats.shortSectionCount, 0);
+  assert.equal(view.presentation.stats.maxStepsPerDisplaySection, 13);
+  assert.deepEqual(
+    view.presentation.sections.flatMap(section => section.stepIds),
+    view.rawPresentation.sections[0].stepIds,
+  );
+});
+
+test('compatible adjacent unnamed tiny sections combine and discard stale range evidence', () => {
+  const result = oneGroupGuideSections(bookletFixture([1, 1, 1, 2]), Array.from({ length: 4 }, () => ({
+    text: 'Finishing details', confidence: 'uncertain',
+  })));
+  const view = createBookletPresentation(result);
+  const section = view.presentation.sections[0];
+
+  assert.equal(view.rawPresentation.sections.length, 4);
+  assert.equal(view.presentation.sections.length, 1);
+  assert.equal(view.presentation.stats.mergedSectionCount, 3);
+  assert.deepEqual(section.stepIds, result.assemblyPlan.steps.map(step => step.id));
+  assert.deepEqual(section.groups.map(group => group.id), result.guide.sections.map(source => source.groups[0].id));
+  assert.equal(section.semanticLabel, null);
+  assert.equal(section.semanticConfidence, 'uncertain');
+  assert.equal(section.semanticEvidence, '');
+  assert.deepEqual(section.displayMerge.sourcePresentationSectionIds, [
+    'presentation-1', 'presentation-2', 'presentation-3', 'presentation-4',
+  ]);
+  assert.equal(section.inventory.reduce((sum, entry) => sum + entry.count, 0), 5);
+  assert.deepEqual(view.presentation.sequence.map(entry => entry.presentationSectionId), Array(4).fill(section.id));
+});
+
+test('short named assembly purposes remain separate truthful exceptions', () => {
+  const result = oneGroupGuideSections(bookletFixture([1, 2]), [
+    { text:'Tower cap', confidence:'inferred' },
+    { text:'Roof', confidence:'high' },
+  ]);
+  const view = createBookletPresentation(result);
+
+  assert.deepEqual(view.presentation.sections.map(section => section.stepIds.length), [1, 2]);
+  assert.deepEqual(view.presentation.sections.map(section => section.label), ['Tower cap', 'Roof']);
+  assert.deepEqual(view.presentation.stats.shortSectionReasons.map(entry => entry.reason), [
+    'named assembly purpose', 'named assembly purpose',
+  ]);
+});
+
+test('matching fallback wording alone does not merge spatially disconnected assemblies', () => {
+  const result = bookletFixture([1, 1]);
+  result.assemblyPlan.bricks[1].x = 100;
+  result.assemblyPlan.modules.push({
+    id:'module-2', label:'Separate build area', brickIds:['brick-2'], kind:'grounded', status:'ready', componentIds:['component-2'],
+  });
+  result.assemblyPlan.modules[0].brickIds = ['brick-1'];
+  result.assemblyPlan.steps[1].moduleId = 'module-2';
+  result.assemblyPlan.steps[1].insertionDirection = 'up';
+  oneGroupGuideSections(result, [
+    { text:'Finishing details', confidence:'uncertain' },
+    { text:'Finishing details', confidence:'uncertain' },
+  ]);
+  const view = createBookletPresentation(result);
+
+  assert.deepEqual(view.presentation.sections.map(section => section.stepIds.length), [1, 1]);
+  assert.equal(view.presentation.stats.mergedSectionCount, 0);
+});
+
+test('a complete two-step guide stays unpadded and records its short-guide exception', () => {
+  const view = createBookletPresentation(bookletFixture([2]));
+
+  assert.deepEqual(view.presentation.sections.map(section => section.stepIds.length), [2]);
+  assert.deepEqual(view.presentation.stats.shortSectionReasons.map(entry => entry.reason), ['complete guide']);
 });
 
 test('finishing wording runs after flat splitting so only the actual last range promises an ending', () => {
