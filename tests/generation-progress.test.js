@@ -7,11 +7,12 @@ function harness(estimateRange = null, elapsedHost = null) {
   const item=()=>({dataset:{},attributes:{},setAttribute(k,v){this.attributes[k]=v;},removeAttribute(k){delete this.attributes[k];}});
   const items=Array.from({length:3},item),elapsed={remove(){this.removed=true;}},live={},events=new Map();
   const internalElapsedHost={remove(){this.removed=true;}};
+  const statusHost={};
   const cancel={addEventListener(k,v){events.set(k,v);},removeEventListener(k){events.delete(k);}};
-  const root={querySelectorAll(){return items;},querySelector(selector){return {'.generation-elapsed':elapsed,'.generation-elapsed-slot':internalElapsedHost,'.generation-phase-live':live,'.generation-cancel':cancel}[selector];},insertBefore(node){this.inserted=node;}};
+  const root={querySelectorAll(){return items;},querySelector(selector){return {'.generation-elapsed':elapsed,'.generation-elapsed-slot':internalElapsedHost,'.generation-phase-live':live,'.generation-cancel':cancel,'.generation-actions':statusHost}[selector];},insertBefore(node){this.inserted=node;}};
   const host={innerHTML:'',querySelector(){return root;},replaceChildren(){this.empty=true;}};
   const progress=mountGenerationProgress(host,{estimateRange,elapsedHost,now:()=>now,onCancel:()=>cancelled++,setIntervalFn(fn){tick=fn;return 1;},clearIntervalFn(){cleared=true;}});
-  return {items,elapsed,internalElapsedHost,root,live,events,host,progress,advance(ms){now=ms;tick();},get cleared(){return cleared;},get cancelled(){return cancelled;}};
+  return {items,elapsed,internalElapsedHost,statusHost,root,live,events,host,progress,advance(ms){now=ms;tick();},get cleared(){return cleared;},get cancelled(){return cancelled;}};
 }
 
 test('elapsed time never fabricates phase completion',()=>{
@@ -35,6 +36,7 @@ test('an external prompt status hosts only the temporary elapsed timer',()=>{
   const h=harness(null,elapsedHost);
   assert.equal(elapsedHost.child,h.elapsed);
   assert.equal(h.internalElapsedHost.removed,true);
+  assert.equal(h.progress.statusHost,h.statusHost);
   h.progress.complete();
   assert.equal(h.elapsed.removed,true);
 });

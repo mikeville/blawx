@@ -28,8 +28,10 @@ export function mountGenerationProgress(host, {
     <ol aria-label="Set progress">
       ${PHASES.map(({ key, label }) => `<li data-phase="${key}"><span class="generation-progress-node" aria-hidden="true"></span><span>${label}</span></li>`).join('')}
     </ol>
-    <div class="generation-elapsed-slot prompt-status"><p class="generation-elapsed"></p></div>
-    <button class="generation-cancel" type="button">Cancel</button>
+    <div class="generation-actions">
+      <button class="generation-cancel" type="button">Cancel</button>
+      <div class="generation-elapsed-slot prompt-status"><p class="generation-elapsed"></p></div>
+    </div>
     <span class="sr-only generation-phase-live" role="status" aria-live="polite" aria-atomic="true"></span>
   </div>`;
   const root = host.querySelector('.generation-progress');
@@ -38,6 +40,7 @@ export function mountGenerationProgress(host, {
   const internalElapsedHost = root.querySelector('.generation-elapsed-slot');
   const live = root.querySelector('.generation-phase-live');
   const cancel = root.querySelector('.generation-cancel');
+  const statusHost = root.querySelector('.generation-actions');
   const startedAt = now();
   const estimate = normalizedEstimate(estimateRange);
   let current = '';
@@ -91,6 +94,7 @@ export function mountGenerationProgress(host, {
   const timer = setIntervalFn(updateElapsed, 1000);
 
   return {
+    statusHost,
     setPhase,
     complete() {
       dispose();

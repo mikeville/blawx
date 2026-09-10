@@ -75,8 +75,15 @@ function deferred() {
   return { promise, resolve, reject };
 }
 
-function installBrowser(hash = '') {
+function installBrowser(hash = '', { mobile = false } = {}) {
   const listeners = new Map();
+  const mediaListeners = new Set();
+  const media = {
+    matches: mobile,
+    addEventListener(type, listener) { if (type === 'change') mediaListeners.add(listener); },
+    removeEventListener(type, listener) { if (type === 'change') mediaListeners.delete(listener); },
+    setMatches(matches) { this.matches = matches; for (const listener of mediaListeners) listener({ matches }); },
+  };
   const location = { pathname: '/', search: '', hash };
   const window = {
     location,
@@ -84,6 +91,7 @@ function installBrowser(hash = '') {
     innerHeight: 900,
     scrollX: 0,
     scrollY: 0,
+    matchMedia: () => media,
     addEventListener(type, listener) {
       const values = listeners.get(type) ?? new Set();
       values.add(listener);
@@ -96,6 +104,7 @@ function installBrowser(hash = '') {
       else { this.scrollX = x; this.scrollY = y; }
     },
   };
+  window.media = media;
   const setUrl = url => {
     if (url.startsWith('#')) location.hash = url;
     else location.hash = url.includes('#') ? url.slice(url.indexOf('#')) : '';
@@ -181,6 +190,7 @@ test('fresh generation displays raw geometry immediately and advances only on re
   let stageDisposed = 0;
   let generationSignal;
   let previewCalls = 0;
+  const progressActions = new Node();
   const app = mountProductApp(host, mountOptions({
     generationClient: { generate(_prompt, { signal }) { generationSignal = signal; return generation.promise; } },
     previewClient: { async prepare(model) { previewCalls += 1; return model; }, dispose() {} },
@@ -199,6 +209,7 @@ test('fresh generation displays raw geometry immediately and advances only on re
         complete() { events.push(['complete']); },
         dispose() { events.push(['progress-dispose']); },
         cancel: options.onCancel,
+        statusHost: progressActions,
       };
     },
     comparisonFactory(_host, options) {
@@ -210,8 +221,11 @@ test('fresh generation displays raw geometry immediately and advances only on re
 
   nodes.get('#prompt').value = 'a tiny observatory';
   form.dispatch('submit');
+  assert.equal(nodes.get('.prompt-status').parentNode, progressActions);
+  window.media.setMatches(true);
   assert.equal(nodes.get('.prompt-status').parentNode, document.body);
-  assert.equal(nodes.get('.prompt-status').style['--status-left'], '75vw');
+  window.media.setMatches(false);
+  assert.equal(nodes.get('.prompt-status').parentNode, progressActions);
   generation.resolve({ resultId: 'fresh-1', prompt: 'a tiny observatory', submittedPrompt: 'a tiny observatory', model: rawModel, saveStatus: 'saved', cacheHit: false });
   await settle();
 
@@ -308,10 +322,40 @@ test('late comparison callbacks are ignored after cancellation', async () => {
   await settle();
   assert.deepEqual(phases, ['bricks']);
   nodes.get('.brand').dispatch('click');
+  assert.equal(nodes.get('.prompt-status').parentNode, form);
   callbacks.onPhase('guide');
   callbacks.onReady();
   assert.deepEqual(phases, ['bricks']);
   assert.equal(completed, 0);
+  app.dispose();
+});
+
+test('a failed request restores the shared status node before retry and cancellation', async () => {
+  installBrowser();
+  const { host, nodes, form } = productHost();
+  const retry = deferred();
+  const progressActions = new Node();
+  let calls = 0;
+  const app = mountProductApp(host, mountOptions({
+    generationClient: {
+      generate() {
+        calls += 1;
+        if (calls === 1) return Promise.reject(new Error('Temporary failure'));
+        return retry.promise;
+      },
+    },
+    stageFactory: () => ({ dispose() {} }),
+    progressFactory: () => ({ statusHost: progressActions, setPhase() {}, complete() {}, dispose() {} }),
+  }));
+  nodes.get('#prompt').value = 'a small windmill';
+  form.dispatch('submit');
+  assert.equal(nodes.get('.prompt-status').parentNode, progressActions);
+  await settle();
+  assert.equal(nodes.get('.prompt-status').parentNode, form);
+  nodes.get('.form-message').children.at(-1).onclick();
+  assert.equal(nodes.get('.prompt-status').parentNode, progressActions);
+  nodes.get('.brand').dispatch('click');
+  assert.equal(nodes.get('.prompt-status').parentNode, form);
   app.dispose();
 });
 

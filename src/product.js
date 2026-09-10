@@ -104,12 +104,16 @@ export function mountProductApp(host, options = {}) {
 
   const locationKey = () => `${location.pathname}${location.search}${location.hash}`;
 
-  function capturePromptStatusPosition() {
-    const rect = promptStatus.getBoundingClientRect();
-    promptStatus.style.setProperty('--status-left', `${rect.left / window.innerWidth * 100}vw`);
-    promptStatus.style.setProperty('--status-top', `${rect.top / window.innerHeight * 100}vh`);
-    promptStatus.style.setProperty('--status-width', `${rect.width / window.innerWidth * 100}vw`);
+  const mobileProgress = window.matchMedia?.('(max-width: 760px)') ?? { matches: false };
+
+  function placePendingPromptStatus() {
+    if (!activeRequest || !progressController) return;
+    const target = mobileProgress.matches ? document.body : progressController.statusHost;
+    (target ?? document.body).append(promptStatus);
   }
+
+  const onProgressViewportChange = () => placePendingPromptStatus();
+  mobileProgress.addEventListener?.('change', onProgressViewportChange);
 
   function restorePromptStatus() {
     promptStatusParent.insertBefore(promptStatus, promptStatusNext?.parentNode === promptStatusParent ? promptStatusNext : null);
@@ -268,7 +272,6 @@ export function mountProductApp(host, options = {}) {
   }
 
   function beginGeneratedDetail(job) {
-    capturePromptStatusPosition();
     job.routeVersion = ++routeVersion;
     if (!home.hidden) { homeScrollY = window.scrollY; persist(); }
     home.hidden = true;
@@ -281,7 +284,6 @@ export function mountProductApp(host, options = {}) {
     instructions.hidden = true;
     input.blur();
     setSubmissionPending(true);
-    document.body.append(promptStatus);
     window.scrollTo(0, 0);
     detailTitle.textContent = job.prompt;
     detailPrompt.textContent = '';
@@ -298,6 +300,7 @@ export function mountProductApp(host, options = {}) {
       elapsedHost: promptStatus,
       onCancel: () => cancelActiveRequest({ returnHome: true }),
     });
+    placePendingPromptStatus();
   }
 
   function rememberGeneratedResult(result, prompt, browserWaitMs) {
@@ -465,7 +468,7 @@ export function mountProductApp(host, options = {}) {
   window.addEventListener('pagehide', onPageHide);
   route();
 
-  return { dispose() { disposed = true; cancelActiveRequest(); feed?.dispose(); homeStage?.dispose(); clearDetail(); previewClient.dispose?.(); promptField.dispose(); composerController.dispose(); viewport.dispose(); scrollHeader.dispose(); window.removeEventListener('hashchange', route); window.removeEventListener('popstate', route); window.removeEventListener('pagehide', onPageHide); host.replaceChildren(); } };
+  return { dispose() { disposed = true; cancelActiveRequest(); feed?.dispose(); homeStage?.dispose(); clearDetail(); previewClient.dispose?.(); promptField.dispose(); composerController.dispose(); viewport.dispose(); scrollHeader.dispose(); mobileProgress.removeEventListener?.('change', onProgressViewportChange); window.removeEventListener('hashchange', route); window.removeEventListener('popstate', route); window.removeEventListener('pagehide', onPageHide); host.replaceChildren(); } };
 }
 
 const defaultHost = document.querySelector('#app');
