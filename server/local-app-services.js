@@ -1,5 +1,5 @@
 import { join, resolve } from 'node:path';
-import { createGenerationService } from './generation-service.js';
+import { createGenerationService, GenerationError } from './generation-service.js';
 import { createCachedGenerationService, createGenerationVersion } from './cached-generation-service.js';
 import { createResultStore } from './result-store.js';
 import { createSemanticGuideService } from './semantic-guide-service.js';
@@ -51,8 +51,12 @@ export async function createLocalAppServices({
           generationRequested = true;
           try {
             if (semantic.isInferenceBusy?.()) {
-              if (semantic.cancelAndWait) await semantic.cancelAndWait({ timeoutMs: 1_000 });
-              else semantic.cancel();
+              const settled = semantic.cancelAndWait
+                ? await semantic.cancelAndWait({ timeoutMs: 1_000 })
+                : (semantic.cancel(), !semantic.isInferenceBusy?.());
+              if (!settled || semantic.isInferenceBusy?.()) {
+                throw new GenerationError('busy', 'Another local model request is already running.', null);
+              }
             }
             return await rawGenerator.generate(input, options);
           } finally {

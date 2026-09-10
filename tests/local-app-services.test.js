@@ -48,6 +48,58 @@ test('cached results remain available and fresh generation takes priority over s
   } finally { await services.close(); }
 });
 
+test('fresh generation fails closed when semantic cancellation has not settled, then recovers', async () => {
+  const root = await mkdtemp(join(tmpdir(), 'blawx-services-semantic-timeout-'));
+  const dataRoot = join(root, 'private-data');
+  let providerCalls = 0;
+  let semanticBusy = false;
+  let settleSemantic;
+  let generationBusy;
+  const services = await createLocalAppServices({
+    root, dataRoot, allowTestDataRoot: true, generationVersion: 'fixture-v1',
+    generator: {
+      generate: async (prompt) => {
+        providerCalls += 1;
+        return { ...result, prompt, model: { ...model, meta: { prompt } } };
+      },
+      isBusy: () => false,
+    },
+    semanticFactory: ({ isGenerationBusy }) => {
+      generationBusy = isGenerationBusy;
+      return {
+        isInferenceBusy: () => semanticBusy,
+        isBusy: () => semanticBusy || isGenerationBusy(),
+        cancel() {},
+        async cancelAndWait() {
+          await new Promise(resolve => { settleSemantic = resolve; });
+          return false;
+        },
+      };
+    },
+  });
+  try {
+    const cached = await services.generation.generate('cat');
+    semanticBusy = true;
+    const reused = await services.generation.generate(' CAT ');
+    assert.equal(reused.resultId, cached.resultId);
+    assert.equal(reused.cacheHit, true);
+    assert.equal(providerCalls, 1);
+
+    const blocked = services.generation.generate('dog');
+    await new Promise(resolve => setImmediate(resolve));
+    assert.equal(providerCalls, 1);
+    settleSemantic();
+    await assert.rejects(blocked, error => error?.code === 'busy');
+    assert.equal(providerCalls, 1);
+    semanticBusy = false;
+    assert.equal(generationBusy(), false);
+
+    const recovered = await services.generation.generate('dog');
+    assert.equal(recovered.prompt, 'dog');
+    assert.equal(providerCalls, 2);
+  } finally { await services.close(); }
+});
+
 test('shutdown waits for aborted generation before closing its database, and is idempotent', async () => {
   const root = await mkdtemp(join(tmpdir(), 'blawx-services-close-'));
   const dataRoot = join(root, 'private-data');
