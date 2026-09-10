@@ -1,7 +1,7 @@
 import './composer.css';
 import './product.css';
 import './generation-progress.css';
-import { createGenerationClient } from './generation-client.js';
+import { createGenerationClient, createStaticGenerationClient } from './generation-client.js';
 import { createFeedClient } from './feed-client.js';
 import { createExampleClient } from './example-client.js';
 import { createPreviewClient } from './preview-client.js';
@@ -16,9 +16,14 @@ import { generationDiagnosticRows } from './generation-diagnostics.js';
 import { HERO_ROTATION_DEFAULTS } from './hero-rotation.js';
 import { mountPromptField } from './prompt-field.js';
 import { mountGenerationProgress } from './generation-progress.js';
+import { isGenerationEnabled } from './app-path.js';
+import { isDeveloperMode } from './developer-mode.js';
+import { mountScrollAwareHeader } from './scroll-aware-header.js';
 
-export function mountProductApp(host, {
-  generationClient = createGenerationClient(),
+export function mountProductApp(host, options = {}) {
+  const {
+  generationClient: providedGenerationClient,
+  generationEnabled = isGenerationEnabled(),
   feedClient = createFeedClient(),
   exampleClient = createExampleClient(),
   previewClient = createPreviewClient(),
@@ -28,12 +33,17 @@ export function mountProductApp(host, {
   comparisonFactory = mountConstructionComparison,
   progressFactory = mountGenerationProgress,
   generationEstimateRange = null,
-} = {}) {
+  developerMode = isDeveloperMode(),
+  } = options;
+  const generationClient = providedGenerationClient ?? (generationEnabled ? createGenerationClient() : createStaticGenerationClient());
+  const developerFooter = developerMode
+    ? `<footer class="developer-footer"><details class="developer-tools"><summary>Developer</summary><div class="developer-body"><p class="developer-record"></p><div class="developer-generation"></div><div class="developer-construction"></div></div></details></footer>`
+    : '';
   host.innerHTML = `<header class="brand-strip"><a class="brand" href="#" aria-label="Blawx home">Blawx</a></header>
     <main><div id="home-view"><section class="home-lead" aria-label="Featured set and prompt"><div class="home-hero"><div class="hero-mount"></div></div>
-      <div class="composer"><form id="prompt-form" novalidate><label class="sr-only" for="prompt">What would you like to build?</label><div class="prompt-field"><div class="prompt-invitation" aria-hidden="true"><span>What would you</span> <span>like to build?<span class="invitation-caret"></span></span></div><textarea id="prompt" rows="1" maxlength="500" autocomplete="off" spellcheck="true" placeholder=" " enterkeyhint="go"></textarea></div><button class="make-button" type="submit">Make it</button><p id="public-use" class="public-use" hidden>Prompts &amp; sets are public.</p></form><p id="form-message" class="form-message" role="status"></p></div></section><section class="recent-host"></section></div>
+      <div class="composer"><form id="prompt-form" novalidate><label class="sr-only" for="prompt">What would you like to build?</label><div class="prompt-field"><div class="prompt-invitation" aria-hidden="true"><span>What would you</span> <span>like to build?<span class="invitation-caret"></span></span></div><textarea id="prompt" rows="1" maxlength="500" autocomplete="off" spellcheck="true" placeholder=" " enterkeyhint="go"></textarea></div><button class="make-button" type="submit">Make it</button><p id="public-use" class="public-use" hidden>Prompts &amp; sets are public</p></form><p id="form-message" class="form-message" role="status"></p></div></section><section class="recent-host"></section></div>
       <div id="detail-view" hidden><article class="set-detail"><div class="detail-hero hero-mount"></div><header class="detail-copy"><h1 id="detail-title" tabindex="-1"></h1><div class="generation-progress-host"></div><p class="detail-prompt"></p><span class="result-note" role="status"></span></header></article><section class="instructions"><div class="guide-host"></div></section></div></main>
-    <footer class="developer-footer"><details class="developer-tools"><summary>Developer</summary><div class="developer-body"><p class="developer-record"></p><div class="developer-generation"></div><div class="developer-construction"></div></div></details></footer>`;
+    ${developerFooter}`;
 
   const home = host.querySelector('#home-view');
   const detail = host.querySelector('#detail-view');
@@ -50,10 +60,11 @@ export function mountProductApp(host, {
   const resultNote = host.querySelector('.result-note');
   const instructions = host.querySelector('.instructions');
   const guideHost = host.querySelector('.guide-host');
-  const devRecord = host.querySelector('.developer-record');
-  const devGeneration = host.querySelector('.developer-generation');
-  const devConstruction = host.querySelector('.developer-construction');
+  const devRecord = host.querySelector('.developer-record') ?? document.createElement('p');
+  const devGeneration = host.querySelector('.developer-generation') ?? document.createElement('div');
+  const devConstruction = host.querySelector('.developer-construction') ?? document.createElement('div');
   const brand = host.querySelector('.brand');
+  const scrollHeader = mountScrollAwareHeader(host.querySelector('.brand-strip'));
   const makeButton = form.querySelector('.make-button');
   const storageMode = `product:${location.pathname}`;
   const restored = loadViewState({ mode: storageMode, recentCount: 9999 });
@@ -195,6 +206,7 @@ export function mountProductApp(host, {
   }
 
   async function chooseLibrary() {
+    if (!generationEnabled) return { client: exampleClient, page: await exampleClient.list() };
     try {
       const page = await feedClient.list();
       if (page.items.length) return { client: feedClient, page };
@@ -206,6 +218,8 @@ export function mountProductApp(host, {
     const currentRoute = ++routeVersion;
     clearDetail(); detail.hidden = true; home.hidden = false; composerController.setRoute(false);
     setSubmissionPending(false);
+    input.value = '';
+    input.closest('.prompt-field').classList.remove('is-invited');
     promptField.sync();
     document.title = 'Blawx';
     mountFeatured();
@@ -379,6 +393,10 @@ export function mountProductApp(host, {
 
   async function generate(prompt) {
     if (activeRequest) return;
+    if (!generationEnabled) {
+      showMessage('Live generation is being prepared. Explore the saved sets below, or clone the repo and use your own API key to generate freely.');
+      return;
+    }
     const job = { controller: new AbortController(), prompt, phase: 'designing', routeVersion: 0 };
     activeRequest = job;
     lastPrompt = prompt;
@@ -398,7 +416,10 @@ export function mountProductApp(host, {
       history.replaceState(null, '', location.pathname + location.search);
       handledLocation = locationKey();
       await mountHome();
-      if (!disposed && !home.hidden) showMessage(error.message || 'Couldn’t make that set.', 'Try again', () => generate(lastPrompt));
+      if (!disposed && !home.hidden) {
+        if (error.code === 'static-demo') showMessage(error.message);
+        else showMessage(error.message || 'Couldn’t make that set.', 'Try again', () => generate(lastPrompt));
+      }
     }
   }
 
@@ -417,7 +438,7 @@ export function mountProductApp(host, {
   window.addEventListener('pagehide', onPageHide);
   route();
 
-  return { dispose() { disposed = true; cancelActiveRequest(); feed?.dispose(); homeStage?.dispose(); clearDetail(); previewClient.dispose?.(); promptField.dispose(); composerController.dispose(); viewport.dispose(); window.removeEventListener('hashchange', route); window.removeEventListener('popstate', route); window.removeEventListener('pagehide', onPageHide); host.replaceChildren(); } };
+  return { dispose() { disposed = true; cancelActiveRequest(); feed?.dispose(); homeStage?.dispose(); clearDetail(); previewClient.dispose?.(); promptField.dispose(); composerController.dispose(); viewport.dispose(); scrollHeader.dispose(); window.removeEventListener('hashchange', route); window.removeEventListener('popstate', route); window.removeEventListener('pagehide', onPageHide); host.replaceChildren(); } };
 }
 
 const defaultHost = document.querySelector('#app');

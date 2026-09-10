@@ -1,4 +1,5 @@
 import { validateVoxels } from './voxels.js';
+import { appResourcePath } from './app-path.js';
 
 const SAFE_ID = /^[A-Za-z0-9_-]+$/;
 const isRecord = value => value !== null && typeof value === 'object' && !Array.isArray(value);
@@ -30,7 +31,7 @@ function awaitCaller(promise, signal) {
   });
 }
 
-export function createFeedClient(fetchImpl = fetch, base = '/api', { now = Date.now, resultTtlMs = 60_000, maxResults = 24 } = {}) {
+export function createFeedClient(fetchImpl = fetch, base = appResourcePath('api'), { now = Date.now, resultTtlMs = 60_000, maxResults = 24 } = {}) {
   const results = new Map();
   function remember(value) {
     const checked = result(value, value?.id, { allowMissingProvenance: true });

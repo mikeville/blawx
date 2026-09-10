@@ -1,4 +1,5 @@
 import { validateVoxels } from './voxels.js';
+import { appResourcePath } from './app-path.js';
 
 export class GenerationClientError extends Error {
   constructor(message, { code = 'generation-failed', status = null, requestId = null, cause } = {}) {
@@ -24,7 +25,7 @@ async function readJson(response) {
   }
 }
 
-export function createGenerationClient(fetchImpl = fetch, endpoint = '/api/generate') {
+export function createGenerationClient(fetchImpl = fetch, endpoint = appResourcePath('api/generate')) {
   return {
     async generate(prompt, { signal } = {}) {
       const normalizedPrompt = typeof prompt === 'string' ? prompt.trim() : '';
@@ -69,6 +70,17 @@ export function createGenerationClient(fetchImpl = fetch, endpoint = '/api/gener
         throw new GenerationClientError('The generated shape was not safe to preview.', { code: 'invalid-model', status: response.status, requestId: payload.requestId });
       }
       return payload;
+    },
+  };
+}
+
+export function createStaticGenerationClient() {
+  return {
+    async generate() {
+      throw new GenerationClientError(
+        'Live generation is being prepared. Explore the saved sets below, or clone the repo and use your own API key to generate freely.',
+        { code: 'static-demo' },
+      );
     },
   };
 }

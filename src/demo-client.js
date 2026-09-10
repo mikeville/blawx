@@ -1,3 +1,5 @@
+import { appResourcePath } from './app-path.js';
+
 export const DEMO_EXAMPLES = [
   { shape: 43, name: 'cat', aliases: ['a cat'] },
   { shape: 44, name: 'red pickup', aliases: ['pickup', 'pickup truck', 'red pickup truck'] },
@@ -16,7 +18,7 @@ export function findDemoExample(prompt) {
   return DEMO_EXAMPLES.find(({ name, aliases }) => [name, ...aliases].some((term) => normalizePrompt(term) === query)) ?? null;
 }
 
-export function createSavedDemoClient(fetchImpl = fetch) {
+export function createSavedDemoClient(fetchImpl = fetch, resourcePath = appResourcePath) {
   return {
     async generate(prompt) {
       const example = findDemoExample(prompt);
@@ -25,13 +27,13 @@ export function createSavedDemoClient(fetchImpl = fetch) {
         error.code = 'unsupported-demo-prompt';
         throw error;
       }
-      const indexResponse = await fetchImpl('/examples/index.json');
+      const indexResponse = await fetchImpl(resourcePath('examples/index.json'));
       if (!indexResponse.ok) throw new Error('The saved example index could not be loaded.');
       const index = await indexResponse.json();
       const record = index.find((entry) => entry?.shape === example.shape
         || entry?.id === `shape-${String(example.shape).padStart(2, '0')}`);
       if (!record?.url) throw new Error(`Saved Shape ${example.shape} is unavailable.`);
-      const modelResponse = await fetchImpl(record.url);
+      const modelResponse = await fetchImpl(resourcePath(record.url));
       if (!modelResponse.ok) throw new Error(`Saved Shape ${example.shape} could not be loaded.`);
       return { example, record, model: await modelResponse.json() };
     },

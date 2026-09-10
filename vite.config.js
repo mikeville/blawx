@@ -54,6 +54,9 @@ function localGenerationPlugin() {
 
 export default defineConfig({
   plugins: [localGenerationPlugin()],
+  // Relative built asset URLs work both on the Netlify root site and when the
+  // site is proxied below mikemake.com/blawx/.
+  base: './',
   build: { rollupOptions: { input: { app: 'index.html' } } },
   server: {
     host: '127.0.0.1',

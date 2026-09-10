@@ -2,6 +2,8 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createFeedClient } from '../src/feed-client.js';
 import { createExampleClient } from '../src/example-client.js';
+import { createSavedDemoClient } from '../src/demo-client.js';
+import { appResourcePath } from '../src/app-path.js';
 
 const model = { version: 1, kind: 'voxels', cells: [{ x: 0, y: 0, z: 0, color: 'red' }] };
 const publicFields = { createdAt: '2026-09-08T12:00:00.000Z', provenance: { method: 'voxel-loft' } };
@@ -74,4 +76,16 @@ test('examples remain separate stable ids without invented timestamps', async ()
   const page = await client.list();
   assert.ok(page.items.every(item => item.id.startsWith('example-') && item.createdAt === undefined));
   assert.equal((await client.getResult('example-cat')).id, 'example-cat');
+});
+
+test('saved example records resolve root-absolute URLs through the configured app base', async () => {
+  const calls = [];
+  const saved = createSavedDemoClient(async url => {
+    calls.push(url);
+    if (url === './examples/index.json') return response([{ shape: 43, url: '/examples/shape-43.json' }]);
+    return response(model);
+  }, path => appResourcePath(path, './'));
+  const result = await saved.generate('cat');
+  assert.equal(result.model, model);
+  assert.deepEqual(calls, ['./examples/index.json', './examples/shape-43.json']);
 });

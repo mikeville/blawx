@@ -1,4 +1,5 @@
 import { createSemanticGuideInput, validateSemanticGuideAnnotation, applySemanticGuide } from './semantic-guide.js';
+import { appResourcePath } from './app-path.js';
 
 function abortError() {
   return new DOMException('Section naming cancelled.', 'AbortError');
@@ -41,12 +42,12 @@ export function createSemanticGuideClient(fetchImpl = fetch) {
     if (cache.has(input.fingerprint)) return cache.get(input.fingerprint);
     let validated = null;
     try {
-      staticIndex ??= readJson('/semantic-guides/index.json').catch(() => null);
+      staticIndex ??= readJson(appResourcePath('semantic-guides/index.json')).catch(() => null);
       const index = await waitFor(staticIndex, signal);
       throwIfAborted(signal);
       const filename = index?.version === 1 ? index.entries?.[input.fingerprint] : null;
       if (typeof filename === 'string' && /^[a-zA-Z0-9_-]+\.json$/.test(filename)) {
-        validated = validateReceipt(input, await readJson(`/semantic-guides/${filename}`, { signal }));
+        validated = validateReceipt(input, await readJson(appResourcePath(`semantic-guides/${filename}`), { signal }));
         if (validated) validated.metadata = { ...validated.metadata, cacheHit: true };
       }
     } catch (error) {
@@ -55,7 +56,7 @@ export function createSemanticGuideClient(fetchImpl = fetch) {
     throwIfAborted(signal);
     if (!validated) {
       try {
-        validated = validateReceipt(input, await readJson(`/api/semantic-guide?fingerprint=${encodeURIComponent(input.fingerprint)}`, { signal }));
+        validated = validateReceipt(input, await readJson(`${appResourcePath('api/semantic-guide')}?fingerprint=${encodeURIComponent(input.fingerprint)}`, { signal }));
         if (validated) validated.metadata = { ...validated.metadata, cacheHit: true };
       } catch (error) {
         if (error.name === 'AbortError') throw error;
@@ -65,7 +66,7 @@ export function createSemanticGuideClient(fetchImpl = fetch) {
     if (!validated && allowInference) {
       let inferenceError = null;
       try {
-        validated = validateReceipt(input, await readJson('/api/semantic-guide', {
+        validated = validateReceipt(input, await readJson(appResourcePath('api/semantic-guide'), {
           method: 'POST', signal,
           headers: { 'content-type': 'application/json' },
           body: JSON.stringify(input),

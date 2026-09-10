@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { createGenerationClient, GenerationClientError } from '../src/generation-client.js';
+import { createGenerationClient, createStaticGenerationClient, GenerationClientError } from '../src/generation-client.js';
 
 const model = { version: 1, kind: 'voxels', cells: [{ x: 0, y: 0, z: 0, color: 'red' }] };
 const success = { requestId: 'request-1', prompt: 'cat', model, sourceProgram: { ops: [] }, diagnostics: {}, metadata: { runtime: 'codex-cli-subscription', generationMs: 1200 } };
@@ -76,4 +76,13 @@ test('reports network errors and rejects invalid prompts before fetch', async ()
   await assert.rejects(client.generate('   '), { code: 'invalid-prompt' });
   await assert.rejects(client.generate('x'.repeat(501)), { code: 'prompt-too-long' });
   assert.equal(calls, 1);
+});
+
+test('static generation is explicitly gated without making a request', async () => {
+  await assert.rejects(createStaticGenerationClient().generate('cat'), error => {
+    assert.equal(error.code, 'static-demo');
+    assert.match(error.message, /saved sets/i);
+    assert.match(error.message, /clone the repo/i);
+    return true;
+  });
 });
