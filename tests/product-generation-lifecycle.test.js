@@ -359,7 +359,7 @@ test('a failed request restores the shared status node before retry and cancella
   app.dispose();
 });
 
-test('opening a cached recent set mounts raw immediately without preview packing and blocks fresh naming', async () => {
+test('opening a cached recent set mounts raw immediately and honors an explicit naming opt-out', async () => {
   const window = installBrowser('#set/recent-1');
   const { host } = productHost();
   let reads = 0;
@@ -369,6 +369,7 @@ test('opening a cached recent set mounts raw immediately without preview packing
   let progressCalls = 0;
   const result = { id: 'recent-1', prompt: 'a tiny train', model: rawModel, cacheHit: true, saveStatus: 'saved' };
   const app = mountProductApp(host, mountOptions({
+    allowSemanticInference: false,
     feedClient: { list: async () => ({ items: [result] }), async getResult() { reads += 1; return result; } },
     previewClient: { async prepare(model) { previewCalls += 1; return model; }, dispose() {} },
     stageFactory(_host, options) { stageModels.push(options.model); return { setModel() {}, dispose() {} }; },
@@ -386,5 +387,75 @@ test('opening a cached recent set mounts raw immediately without preview packing
   await settle();
   assert.equal(reads, 1);
   assert.deepEqual(stageModels, [rawModel]);
+  app.dispose();
+});
+
+test('a metadata-free saved set can request local background naming', async () => {
+  installBrowser('#set/recent-2');
+  const { host } = productHost();
+  let previewCalls = 0;
+  const stageModels = [];
+  let comparisonOptions;
+  const result = { id: 'recent-2', prompt: 'a small garden', model: rawModel, saveStatus: 'saved' };
+  const app = mountProductApp(host, mountOptions({
+    allowSemanticInference: true,
+    feedClient: { list: async () => ({ items: [result] }), async getResult() { return result; } },
+    previewClient: { async prepare(model) { previewCalls += 1; return model; }, dispose() {} },
+    stageFactory(_host, options) { stageModels.push(options.model); return { setModel() {}, dispose() {} }; },
+    comparisonFactory(_host, options) { comparisonOptions = options; return () => {}; },
+  }));
+
+  await settle();
+  assert.deepEqual(stageModels, [rawModel]);
+  assert.equal(previewCalls, 0);
+  assert.equal(comparisonOptions.allowSemanticInference, true);
+  app.dispose();
+});
+
+test('a fresh raw cache hit can request local background naming', async () => {
+  installBrowser();
+  const { host, nodes, form } = productHost();
+  let previewCalls = 0;
+  const stageModels = [];
+  let comparisonOptions;
+  const app = mountProductApp(host, mountOptions({
+    allowSemanticInference: true,
+    generationClient: {
+      async generate() {
+        return { resultId: 'cache-hit-1', prompt: 'a small greenhouse', model: rawModel, cacheHit: true, saveStatus: 'saved' };
+      },
+    },
+    previewClient: { async prepare(model) { previewCalls += 1; return model; }, dispose() {} },
+    stageFactory(_host, options) {
+      if (options.model) stageModels.push(options.model);
+      return { setModel(model) { stageModels.push(model); }, setLoading() {}, dispose() {} };
+    },
+    progressFactory: () => ({ setPhase() {}, complete() {}, dispose() {} }),
+    comparisonFactory(_host, options) { comparisonOptions = options; return () => {}; },
+  }));
+
+  nodes.get('#prompt').value = 'a small greenhouse';
+  form.dispatch('submit');
+  await settle();
+  assert.deepEqual(stageModels, [rawModel]);
+  assert.equal(previewCalls, 0);
+  assert.equal(comparisonOptions.allowSemanticInference, true);
+  app.dispose();
+});
+
+test('saved examples remain cache-only when local naming is enabled', async () => {
+  installBrowser('#set/example-1');
+  const { host } = productHost();
+  let comparisonOptions;
+  const result = { id: 'example-1', prompt: 'a saved lighthouse', model: rawModel, example: true };
+  const app = mountProductApp(host, mountOptions({
+    allowSemanticInference: true,
+    exampleClient: { list: async () => ({ items: [result] }), async getResult() { return result; } },
+    stageFactory: () => ({ setModel() {}, dispose() {} }),
+    comparisonFactory(_host, options) { comparisonOptions = options; return () => {}; },
+  }));
+
+  await settle();
+  assert.equal(comparisonOptions.allowSemanticInference, false);
   app.dispose();
 });

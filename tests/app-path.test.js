@@ -1,6 +1,10 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { appResourcePath, isGenerationEnabled } from '../src/app-path.js';
+import {
+  appResourcePath,
+  isGenerationEnabled,
+  isLocalSemanticNamingEnabled
+} from '../src/app-path.js';
 
 test('resource paths are root-relative for a standalone site and relative for a /blawx/ proxy', () => {
   assert.equal(appResourcePath('/examples/index.json', '/'), '/examples/index.json');
@@ -13,4 +17,13 @@ test('generation defaults off in production but can be explicitly enabled', () =
   assert.equal(isGenerationEnabled({ DEV: false, VITE_GENERATION_ENABLED: 'false' }), false);
   assert.equal(isGenerationEnabled({ DEV: false, VITE_GENERATION_ENABLED: 'true' }), true);
   assert.equal(isGenerationEnabled({ DEV: true }), true);
+});
+
+test('semantic naming is enabled only in the local dev environment', () => {
+  assert.equal(isLocalSemanticNamingEnabled({ DEV: true }), true);
+  assert.equal(isLocalSemanticNamingEnabled({ DEV: false }), false);
+  assert.equal(
+    isLocalSemanticNamingEnabled({ DEV: false, VITE_GENERATION_ENABLED: 'true' }),
+    false
+  );
 });

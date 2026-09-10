@@ -11,3 +11,7 @@ export function appResourcePath(path, base = BUILD_BASE) {
 export function isGenerationEnabled(env = import.meta.env ?? {}) {
   return env.DEV === true || env.VITE_GENERATION_ENABLED === 'true';
 }
+
+export function isLocalSemanticNamingEnabled(env = import.meta.env ?? {}) {
+  return env.DEV === true;
+}

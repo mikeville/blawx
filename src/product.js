@@ -16,7 +16,7 @@ import { generationDiagnosticRows } from './generation-diagnostics.js';
 import { HERO_ROTATION_DEFAULTS } from './hero-rotation.js';
 import { mountPromptField } from './prompt-field.js';
 import { mountGenerationProgress } from './generation-progress.js';
-import { isGenerationEnabled } from './app-path.js';
+import { isGenerationEnabled, isLocalSemanticNamingEnabled } from './app-path.js';
 import { isDeveloperMode } from './developer-mode.js';
 import { mountScrollAwareHeader } from './scroll-aware-header.js';
 
@@ -27,7 +27,7 @@ export function mountProductApp(host, options = {}) {
   feedClient = createFeedClient(),
   exampleClient = createExampleClient(),
   previewClient = createPreviewClient(),
-  allowSemanticInference = true,
+  allowSemanticInference = isLocalSemanticNamingEnabled(),
   constructionClient,
   stageFactory = mountModelStage,
   comparisonFactory = mountConstructionComparison,
@@ -357,7 +357,7 @@ export function mountProductApp(host, options = {}) {
         viewer: detailStage,
         devHost: devConstruction,
         subject: result.prompt,
-        allowSemanticInference: !result.example && !result.cacheHit && Boolean(result.metadata) && allowSemanticInference,
+        allowSemanticInference: !result.example && allowSemanticInference,
         constructionClient,
         hideLoadingMessage: true,
         onPhase: phase => {
@@ -398,7 +398,7 @@ export function mountProductApp(host, options = {}) {
       entranceAvailable = false;
       devRecord.textContent = typeof result.provenance === 'string' ? result.provenance : result.example ? 'Saved example' : result.saveStatus === 'failed' ? 'Unsaved local result' : `Public result · ${result.id}`;
       renderGenerationDiagnostics(result);
-      comparisonDispose = comparisonFactory(guideHost, { rawModel: result.model, sourceProgram: result.sourceProgram ?? null, viewer: detailStage, devHost: devConstruction, subject: result.prompt, allowSemanticInference: !result.example && !result.cacheHit && Boolean(result.metadata) && allowSemanticInference, constructionClient });
+      comparisonDispose = comparisonFactory(guideHost, { rawModel: result.model, sourceProgram: result.sourceProgram ?? null, viewer: detailStage, devHost: devConstruction, subject: result.prompt, allowSemanticInference: !result.example && allowSemanticInference, constructionClient });
       detailTitle.focus({ preventScroll: true });
     } catch (error) {
       if (disposed || currentRoute !== routeVersion || error.name === 'AbortError') return;
