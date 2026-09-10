@@ -227,6 +227,24 @@ test('short named assembly purposes remain separate truthful exceptions', () => 
   ]);
 });
 
+test('tiny sections with the same named purpose combine and retain their truthful label', () => {
+  const result = oneGroupGuideSections(bookletFixture([8, 1, 1, 4, 1]), Array.from({ length: 5 }, () => ({
+    text: 'Upper details', confidence: 'inferred',
+  })));
+  const view = createBookletPresentation(result);
+  const section = view.presentation.sections[0];
+
+  assert.deepEqual(view.rawPresentation.sections.map(source => source.stepIds.length), [8, 1, 1, 4, 1]);
+  assert.deepEqual(view.presentation.sections.map(display => display.stepIds.length), [15]);
+  assert.equal(view.presentation.stats.shortSectionCount, 0);
+  assert.equal(view.presentation.stats.mergedSectionCount, 4);
+  assert.equal(section.semanticLabel, 'Upper details');
+  assert.equal(section.semanticConfidence, 'inferred');
+  assert.equal(section.semanticEvidence, '');
+  assert.deepEqual(section.stepIds, result.assemblyPlan.steps.map(step => step.id));
+  assert.equal(section.inventory.reduce((sum, entry) => sum + entry.count, 0), 15);
+});
+
 test('matching fallback wording alone does not merge spatially disconnected assemblies', () => {
   const result = bookletFixture([1, 1]);
   result.assemblyPlan.bricks[1].x = 100;

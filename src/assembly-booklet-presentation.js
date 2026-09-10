@@ -138,6 +138,17 @@ function hasNamedPurpose(section) {
     && typeof section.semanticLabel === 'string' && section.semanticLabel.trim().length > 0;
 }
 
+function normalizedSemanticLabel(section) {
+  return hasNamedPurpose(section)
+    ? section.semanticLabel.trim().replace(/\s+/gu, ' ').toLowerCase()
+    : '';
+}
+
+function hasSharedNamedPurpose(left, right) {
+  const label = normalizedSemanticLabel(left);
+  return label !== '' && label === normalizedSemanticLabel(right);
+}
+
 function sourcePresentationSectionIds(section) {
   if (Array.isArray(section.displayMerge?.sourcePresentationSectionIds)) {
     return section.displayMerge.sourcePresentationSectionIds;
@@ -198,13 +209,16 @@ function assemblyCompatible(left, right, plan) {
   return spatialGap(left, right, plan) <= 4;
 }
 
-function compatibleTinyNeighbors(left, right, plan) {
+function compatibleAdjacentSections(left, right, plan) {
+  const bothUnnamed = !hasNamedPurpose(left) && !hasNamedPurpose(right);
+  const sharedNamedPurpose = hasSharedNamedPurpose(left, right);
+  const hasTinySection = left.stepIds.length < MIN_ORDINARY_SECTION_STEPS
+    || right.stepIds.length < MIN_ORDINARY_SECTION_STEPS;
   return left.repeatCount === 1
     && right.repeatCount === 1
-    && !hasNamedPurpose(left)
-    && !hasNamedPurpose(right)
     && normalizedBaseLabel(left) !== ''
     && normalizedBaseLabel(left) === normalizedBaseLabel(right)
+    && (sharedNamedPurpose || (bothUnnamed && hasTinySection))
     && assemblyCompatible(left, right, plan)
     && left.stepIds.length + right.stepIds.length <= MAX_FLAT_SECTION_STEPS;
 }
@@ -219,14 +233,20 @@ function mergeDisplaySections(left, right, plan) {
   const sourceIds = [...sourcePresentationSectionIds(left), ...sourcePresentationSectionIds(right)];
   const id = `${sourceIds[0]}-through-${sourceIds.at(-1)}`;
   const part = partForGroups(`${id}-part`, groups, plan);
+  const sharedNamedPurpose = hasSharedNamedPurpose(left, right);
+  const semanticEvidence = sharedNamedPurpose
+    ? [...new Set([left.semanticEvidence, right.semanticEvidence].filter(value => typeof value === 'string' && value.trim()))].join(' ')
+    : '';
   return {
     ...left,
     id,
     label: baseLabel(left),
     baseLabel: baseLabel(left),
-    semanticLabel: null,
-    semanticConfidence: 'uncertain',
-    semanticEvidence: '',
+    semanticLabel: sharedNamedPurpose ? left.semanticLabel : null,
+    semanticConfidence: sharedNamedPurpose
+      ? left.semanticConfidence === 'high' && right.semanticConfidence === 'high' ? 'high' : 'inferred'
+      : 'uncertain',
+    semanticEvidence,
     status: part.status,
     moduleIds,
     stepIds,
@@ -249,18 +269,17 @@ function mergeDisplaySections(left, right, plan) {
   };
 }
 
-function combineCompatibleTinySections(sections, plan) {
+function combineCompatibleSections(sections, plan) {
   const result = [...sections];
   while (result.length > 1) {
     let best = null;
     for (let index = 0; index < result.length; index += 1) {
-      if (result[index].stepIds.length >= MIN_ORDINARY_SECTION_STEPS) continue;
       for (const neighbor of [index - 1, index + 1]) {
         if (neighbor < 0 || neighbor >= result.length) continue;
         const start = Math.min(index, neighbor);
         const left = result[start];
         const right = result[start + 1];
-        if (!compatibleTinyNeighbors(left, right, plan)) continue;
+        if (!compatibleAdjacentSections(left, right, plan)) continue;
         const total = left.stepIds.length + right.stepIds.length;
         const distance = spatialGap(left, right, plan);
         if (!best || total < best.total
@@ -303,7 +322,7 @@ export function createFlatBookletPresentation(rawPresentation, plan) {
     if (slices.length > 1) splitSectionCount += 1;
     return slices;
   });
-  const sections = combineCompatibleTinySections(splitSections, plan);
+  const sections = combineCompatibleSections(splitSections, plan);
   for (const section of sections) for (const sourceId of sourcePresentationSectionIds(section)) {
     const displays = displaysBySourceId.get(sourceId) ?? [];
     displays.push(section);
@@ -327,7 +346,7 @@ export function createFlatBookletPresentation(rawPresentation, plan) {
 
   return {
     ...rawPresentation,
-    version: 3,
+    version: 4,
     sections: varyGuideSectionLabels(sections),
     sequence,
     stats: {
