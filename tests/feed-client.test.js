@@ -75,6 +75,7 @@ test('examples remain separate stable ids without invented timestamps', async ()
   const client = createExampleClient({ generate: async prompt => ({ example: { shape: 43, name: prompt }, model }) });
   const page = await client.list();
   assert.ok(page.items.every(item => item.id.startsWith('example-') && item.createdAt === undefined));
+  assert.ok(page.items.every(item => !('title' in item)));
   assert.equal((await client.getResult('example-cat')).id, 'example-cat');
 });
 

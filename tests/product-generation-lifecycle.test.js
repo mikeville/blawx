@@ -371,7 +371,7 @@ test('opening a cached recent set mounts raw immediately and honors an explicit 
   let progressOptions;
   const progressPhases = [];
   let progressCompleted = 0;
-  const result = { id: 'recent-1', prompt: 'a tiny train', model: rawModel, cacheHit: true, saveStatus: 'saved' };
+  const result = { id: 'recent-1', title: 'Tiny train', prompt: 'a tiny train', model: rawModel, cacheHit: true, saveStatus: 'saved' };
   const app = mountProductApp(host, mountOptions({
     allowSemanticInference: false,
     feedClient: { list: async () => ({ items: [result] }), async getResult() { reads += 1; return result; } },
@@ -391,6 +391,9 @@ test('opening a cached recent set mounts raw immediately and honors an explicit 
   assert.equal(progressCalls, 1);
   assert.equal(progressOptions.initialPhase, 'bricks');
   assert.equal(host.querySelector('.instructions').hidden, true);
+  assert.equal(host.querySelector('.detail-copy h1').textContent, 'a tiny train');
+  assert.equal(host.querySelector('.detail-copy h1').dataset.promptSize, 'short');
+  assert.equal(host.querySelector('.detail-copy p').textContent, '');
 
   comparisonOptions.onPhase('guide');
   assert.deepEqual(progressPhases, ['guide']);

@@ -69,6 +69,8 @@
   line-height: 1.04;
   letter-spacing: -.045em;
 }
+#detail-view.is-generated-result .detail-copy h1[data-prompt-size="long"] { font-size: 30px; }
+#detail-view.is-generated-result .detail-copy h1[data-prompt-size="extended"] { font-size: 24px; }
 
 @media (max-width: 760px) {
   .generation-progress-host { margin-top: 24px; }
@@ -86,6 +88,9 @@
     line-height: .98;
     letter-spacing: -.065em;
   }
+  #detail-view.is-generated-result .detail-copy h1[data-prompt-size="medium"] { font-size: clamp(32px, 10vw, 48px); }
+  #detail-view.is-generated-result .detail-copy h1[data-prompt-size="long"] { font-size: clamp(27px, 8vw, 38px); }
+  #detail-view.is-generated-result .detail-copy h1[data-prompt-size="extended"] { font-size: clamp(23px, 7vw, 32px); }
 }
 
 @media (prefers-reduced-motion: reduce) {

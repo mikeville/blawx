@@ -126,6 +126,11 @@ export function mountProductApp(host, options = {}) {
   function persist() {
     saveViewState({ mode: storageMode, recentCount: 9999, state: { prompt: truncatePrompt(input.value), galleryCount, homeScrollY: home.hidden ? homeScrollY : window.scrollY } });
   }
+  function setDetailTitle(text, { prompt = false } = {}) {
+    detailTitle.textContent = text;
+    if (prompt) detailTitle.dataset.promptSize = promptSizeTier(text);
+    else delete detailTitle.dataset.promptSize;
+  }
   function showMessage(text, actionLabel, action) {
     message.replaceChildren(document.createTextNode(text));
     if (!actionLabel) return;
@@ -301,7 +306,7 @@ export function mountProductApp(host, options = {}) {
     input.blur();
     setSubmissionPending(true);
     window.scrollTo(0, 0);
-    detailTitle.textContent = job.prompt;
+    setDetailTitle(job.prompt, { prompt: true });
     detailPrompt.textContent = '';
     resultNote.textContent = '';
     document.title = `${job.prompt} — Blawx`;
@@ -344,7 +349,7 @@ export function mountProductApp(host, options = {}) {
     handledLocation = locationKey();
     job.resultId = id;
     sourceFocusId = null;
-    detailTitle.textContent = result.submittedPrompt ?? job.prompt;
+    setDetailTitle(result.submittedPrompt ?? job.prompt, { prompt: true });
     detailPrompt.textContent = '';
     resultNote.textContent = result.saveStatus === 'failed' ? 'This set wasn’t added to Recently made.' : '';
     document.title = `${detailTitle.textContent} — Blawx`;
@@ -402,12 +407,12 @@ export function mountProductApp(host, options = {}) {
     detailRequest = new AbortController();
     const signal = detailRequest.signal;
     window.scrollTo(0, 0);
-    detailTitle.textContent = 'Loading set'; detailPrompt.textContent = ''; resultNote.textContent = '';
+    setDetailTitle('Loading set'); detailPrompt.textContent = ''; resultNote.textContent = '';
     try {
       const result = await getResult(id, { signal });
       if (disposed || currentRoute !== routeVersion) return;
-      detailTitle.textContent = result.title || result.prompt;
-      detailPrompt.textContent = result.title && result.title.toLowerCase() !== result.prompt.toLowerCase() ? result.prompt : '';
+      setDetailTitle(result.prompt, { prompt: true });
+      detailPrompt.textContent = '';
       resultNote.textContent = result.saveStatus === 'failed' ? 'This set wasn’t added to Recently made.' : '';
       document.title = `${detailTitle.textContent} — Blawx`;
       detailStage = stageFactory(detailHeroHost, { model: result.model, label: `${result.prompt}, 1×1 brick preview; final pieces and instructions in progress`, animate: entranceAvailable, heroRotation: HERO_ROTATION_DEFAULTS });
@@ -445,7 +450,7 @@ export function mountProductApp(host, options = {}) {
       detailTitle.focus({ preventScroll: true });
     } catch (error) {
       if (disposed || currentRoute !== routeVersion || error.name === 'AbortError') return;
-      detailTitle.textContent = 'Set unavailable'; detailPrompt.textContent = error.message;
+      setDetailTitle('Set unavailable'); detailPrompt.textContent = error.message;
     }
   }
 

@@ -1,10 +1,8 @@
 import { createSavedDemoClient, DEMO_EXAMPLES } from './demo-client.js';
 
-const EXAMPLE_TITLES = ['Cat', 'Red pickup', 'Dragon & lighthouse', 'Spaghetti', 'Nostalgia', 'Coral reef'];
 const EXAMPLE_PROMPTS = ['cat', 'red pickup truck', 'dragon curled around a lighthouse', 'person eating spaghetti', 'nostalgia', 'an underwater research station built into a coral reef'];
 export const EXAMPLE_SUMMARIES = DEMO_EXAMPLES.map((example, index) => ({
   id: `example-${example.name.replace(/\s+/g, '-')}`,
-  title: EXAMPLE_TITLES[index],
   prompt: EXAMPLE_PROMPTS[index],
   example: true,
 }));
