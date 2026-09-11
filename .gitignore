@@ -55,3 +55,22 @@ receipts/
 # only as a last-resort defense; the runtime also rejects in-tree roots.
 artifacts/
 experiments/
+
+# Plans, proposals, research, and agent handoffs are private by default.
+# Create them under .blawx-private/plans/; public usage/API docs are separate.
+# Never force-add planning files. Ignore rules do not erase tracked history.
+plans/
+planning/
+specs/
+*PLAN*.md
+*plan*.md
+*SPEC*.md
+*spec*.md
+*BRIEF*.md
+*brief*.md
+*HANDOFF*.md
+*handoff*.md
+*ROADMAP*.md
+*roadmap*.md
+*CHECKLIST*.md
+*checklist*.md
