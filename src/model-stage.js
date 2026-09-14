@@ -14,6 +14,7 @@ import {
 } from './model-stage-motion.js';
 import { HERO_ROTATION_DEFAULTS, heroCameraRadius, normalizeHeroRotation, quantizeHeroAzimuth } from './hero-rotation.js';
 import { createLoadingCarousel } from './loading-carousel.js';
+import { mountStaticModelStage } from './static-model-stage.js';
 
 const FRAME_MS = 1000 / LEGO_MOVIE.fps;
 const ISO_AZIMUTH = Math.PI * 0.75;
@@ -50,7 +51,16 @@ function reducedMotion() {
 }
 
 /** A data-free live stage. It never loads or generates a model. */
-export function mountModelStage(host, { model = null, label = 'Interactive 3D LEGO-style set', onOpen, animate = true, heroRotation = null, loading = false, linked = false } = {}) {
+export function mountModelStage(host, {
+  model = null,
+  label = 'Interactive 3D LEGO-style set',
+  onOpen,
+  animate = true,
+  heroRotation = null,
+  loading = false,
+  linked = false,
+  rendererFactory = canvas => new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true }),
+} = {}) {
   const root = document.createElement('div');
   root.className = 'hero-renderer';
   Object.assign(root.style, { position: 'relative', width: '100%', height: '100%', overflow: 'hidden' });
@@ -71,22 +81,10 @@ export function mountModelStage(host, { model = null, label = 'Interactive 3D LE
 
   let renderer;
   try {
-    renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+    renderer = rendererFactory(canvas);
   } catch {
-    canvas.remove();
-    const unavailable = document.createElement('p');
-    unavailable.className = 'stage-unavailable';
-    unavailable.setAttribute('role', 'status');
-    unavailable.textContent = '3D preview unavailable.';
-    root.append(unavailable);
-    return {
-      element: root,
-      setModel(_nextModel, { label: nextLabel } = {}) {
-        if (nextLabel) unavailable.setAttribute('aria-label', nextLabel);
-      },
-      setLoading() {},
-      dispose() { root.remove(); },
-    };
+    root.remove();
+    return mountStaticModelStage(host, { model, label, onOpen, loading, linked });
   }
   renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
   renderer.outputColorSpace = THREE.SRGBColorSpace;
