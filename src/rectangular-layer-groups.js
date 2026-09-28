@@ -171,6 +171,7 @@ export function createRectangularLayerGroups(bricks, {
   maxBricks = 12,
   maxSpan = 24,
   maxPartTypes = 4,
+  balancePanels = false,
 } = {}) {
   if (!Array.isArray(bricks)) throw new TypeError('bricks must be an array.');
   assertPositiveInteger('maxBricks', maxBricks);
@@ -208,8 +209,16 @@ export function createRectangularLayerGroups(bricks, {
     const layerBounds = boundsFor(unsortedLayer);
     const longAxis = layerBounds.width >= layerBounds.depth ? 'x' : 'z';
     const layer = [...unsortedLayer].sort((a, b) => compareAlong(a, b, longAxis));
-    const partition = packAdjoining(guillotinePartition(layer, longAxis, limits, partitionBudget), limits)
+    let partition = packAdjoining(guillotinePartition(layer, longAxis, limits, partitionBudget), limits)
       .sort((a, b) => compareGroupPosition(a, b, longAxis));
+    if (balancePanels && partition.length > 1) {
+      const targetSize = Math.ceil(layer.length / Math.ceil(layer.length / maxBricks));
+      const candidates = [partition, ...['x', 'z'].map(axis =>
+        spatialSweep(layer, axis, {...limits, maxBricks:targetSize}))];
+      candidates.sort((a,b) => a.length-b.length
+        || Math.min(...b.map(g=>g.length))-Math.min(...a.map(g=>g.length)));
+      partition = candidates[0];
+    }
     groups.push(...partition.map((group) => publicGroup(
       [...group].sort((a, b) => compareAlong(a, b, longAxis)),
       course,

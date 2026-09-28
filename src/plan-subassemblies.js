@@ -5,6 +5,7 @@ import { deriveGuidePresentation } from './guide-presentation.js';
 import { prepareAssemblyGuide } from './prepare-assembly-guide.js';
 import { assemblyRejectionReasons, unresolvedCells } from './refine-construction.js';
 import { refineWorkSurfaceOrder } from './refine-work-surface-order.js';
+import { completeBaseRegions } from './assembly-supports.js';
 
 const BAND_COURSES = [2, 3, 4];
 const MIN_BAND_BRICKS = 2;
@@ -331,8 +332,12 @@ function publicProposal(proposal) {
   return fields;
 }
 
-export function planSubassemblies(result) {
+export function planSubassemblies(result, {maxEvaluations = MAX_FULL_EVALUATIONS, completeSupports = false} = {}) {
   validateResult(result);
+  if (typeof completeSupports !== 'boolean') throw new TypeError('completeSupports must be a boolean.');
+  if (!Number.isInteger(maxEvaluations) || maxEvaluations < 0 || maxEvaluations > MAX_FULL_EVALUATIONS) {
+    throw new RangeError('Subassembly evaluation allowance must be between zero and eight.');
+  }
   const started = now();
   const geometrySnapshot = JSON.stringify(result.brickModel);
   const before = planMetrics(result);
@@ -340,19 +345,31 @@ export function planSubassemblies(result) {
   const attempts = [];
   const accepted = [];
 
-  for (const proposal of proposals.slice(0, MAX_FULL_EVALUATIONS)) {
+  for (const proposal of proposals.slice(0, maxEvaluations)) {
     const attemptStarted = now();
     let candidateResult = null;
     let rejectionReasons = [];
+    let completedSupportBrickCount = 0;
     try {
-      const candidatePlan = createAssemblyPlan({
+      let candidatePlan = createAssemblyPlan({
         brickModel: result.brickModel,
+        integratedBuild: result.assemblyPlan.integratedBuild ?? false,
         workSurfaceBrickIds: proposal.brickIds,
         preferLocalProgress: true,
         preferLocalFoundations: true,
       });
+      if (completeSupports) {
+        const replay = candidatePlan.modules.map(module => ({...module,
+          brickOrder: candidatePlan.steps.filter(step => step.moduleId === module.id).flatMap(step => step.newBrickIds)}));
+        const completed = completeBaseRegions(replay, candidatePlan, {splitComplete: true});
+        completedSupportBrickCount = completed.moved;
+        if (completed.replay !== replay) candidatePlan = createAssemblyPlan({brickModel: result.brickModel,
+          moduleReplay: completed.replay, preferLocalProgress: true, preferLocalFoundations: true});
+      }
       candidateResult = prepareAssemblyGuide({ ...result, assemblyPlan: candidatePlan });
-      rejectionReasons = candidateRejections(result, candidateResult, proposal);
+      const expected = completeSupports ? {...proposal,
+        brickIds: candidatePlan.modules.find(module => module.buildContext)?.brickIds ?? proposal.brickIds} : proposal;
+      rejectionReasons = candidateRejections(result, candidateResult, expected);
     } catch (error) {
       rejectionReasons = [`Candidate evaluation failed: ${error instanceof Error ? error.message : String(error)}`];
     }
@@ -364,6 +381,7 @@ export function planSubassemblies(result) {
       rejectionReasons,
       after,
       evaluationMs: now() - attemptStarted,
+      ...(completeSupports ? {completedSupportBrickCount} : {}),
     };
     attempts.push(attempt);
     if (!rejectionReasons.length) accepted.push({ proposal, result: candidateResult, after, attempt });
@@ -388,7 +406,7 @@ export function planSubassemblies(result) {
       maxBandBricks: MAX_BAND_BRICKS,
       maxHorizontalSpanStuds: MAX_HORIZONTAL_SPAN,
       maxTargetSupportGroups: MAX_TARGET_SUPPORT_GROUPS,
-      maxFullCandidates: MAX_FULL_EVALUATIONS,
+      maxFullCandidates: maxEvaluations,
       maxSelectedRepairs: 1,
     },
     proposalCount: proposals.length,
@@ -397,11 +415,12 @@ export function planSubassemblies(result) {
     proposals: proposals.map(publicProposal),
     attempts,
     selectedProposalId: selected?.proposal.id ?? null,
-    selectedBrickIds: selected ? [...selected.proposal.brickIds] : [],
+    selectedBrickIds: selected ? [...completeResult.assemblyPlan.modules.find(module => module.buildContext).brickIds] : [],
     before,
     after,
     stageMs,
     geometryChanges: 0,
+    ...(completeSupports ? {completeSupports, completedSupportBrickCount: selected?.attempt.completedSupportBrickCount ?? 0} : {}),
     colorChanges: 0,
     limitations: 'A selected band can be table-built and aligned downward onto at most four independently grounded supports. The upright downward rigid-body corridor is checked; general motion, table stability, hand access, clutch strength, balance, and physical buildability remain unverified.',
   };
@@ -418,4 +437,19 @@ export function planSubassemblies(result) {
       },
     },
   };
+}
+
+// A successful interface repair may ground a previously detached support.
+// Discovery made before that repair is stale, but an established recipe stays
+// protected and the second pass shares the original evaluation allowance.
+export function revisitSubassembliesAfterAttachment(result) {
+  const previous = result.subassemblyRefinement;
+  const remaining = MAX_FULL_EVALUATIONS - (previous?.evaluatedCount ?? 0);
+  if (!result.attachmentRefinement?.selected || !previous || previous.revisitedAfterAttachment
+    || !result.assemblyPlan.stats.rootFailureCount || remaining <= 0
+    || result.assemblyPlan.modules.some(module => module.buildContext)) return result;
+  const revised = planSubassemblies(result, {maxEvaluations: remaining});
+  return {...revised, subassemblyRefinement: {...revised.subassemblyRefinement,
+    revisitedAfterAttachment: true, previous,
+    totalEvaluatedCount: previous.evaluatedCount + revised.subassemblyRefinement.evaluatedCount}};
 }

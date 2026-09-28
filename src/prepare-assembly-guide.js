@@ -13,8 +13,9 @@ export function prepareAssemblyGuide(result, {moduleReplay = null} = {}) {
   let plan = original;
   const attempts = [];
   const workSurface = original.modules.find(module => module.buildContext?.kind === 'work-surface');
-  const candidate = createAssemblyPlan({
+  const candidate = original.moduleRecipes ? original : createAssemblyPlan({
     brickModel: result.brickModel, preferLocalProgress: true, preferLocalFoundations: true,
+    integratedBuild: original.integratedBuild ?? false,
     ...(moduleReplay ? {moduleReplay} : workSurface ? {workSurfaceBrickIds:workSurface.brickIds,
       workSurfaceOrder:workSurface.buildContext.orderPolicy ?? 'course-first'} : {}),
   });

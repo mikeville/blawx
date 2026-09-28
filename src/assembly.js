@@ -1,5 +1,7 @@
 import { FOOTPRINTS, PALETTE } from './geometry.js';
 import { createRectangularLayerGroups } from './rectangular-layer-groups.js';
+import { orderAssemblyDependencies } from './assembly-dependencies.js';
+import { createNestedModuleBuild } from './nested-module-build.js';
 
 const MAX_BRICKS = 5_000;
 const MAX_FOOTPRINT_CELLS = 1_500_000;
@@ -217,7 +219,7 @@ function isTopAttachedRegion(region, outside, adjacency, graph) {
   return true;
 }
 
-function deriveModuleGroups(bricks, graph) {
+function deriveModuleGroups(bricks, graph, integratedBuild = false) {
   const adjacency = bricks.map(() => new Set());
   for (const { lower, upper } of graph.indexEdges) {
     adjacency[lower].add(upper);
@@ -230,6 +232,10 @@ function deriveModuleGroups(bricks, graph) {
     const grounded = component.some((index) => bricks[index].y === 0);
     if (!grounded) {
       groups.push({ indexes: [...component], kind: 'floating', componentIndex });
+      continue;
+    }
+    if (integratedBuild) {
+      groups.push({ indexes: [...component], kind: 'grounded', componentIndex });
       continue;
     }
 
@@ -435,7 +441,7 @@ function splitWorkSurfaceGroup(groups, brickIds, bricks, graph, orderPolicy) {
     return index;
   });
   const selected = new Set(indexes);
-  const ownerIndex = groups.findIndex((group) => group.kind === 'grounded' && group.groupType !== 'shared-ground-layout'
+  const ownerIndex = groups.findIndex((group) => group.kind === 'grounded'
     && indexes.every((index) => group.indexes.includes(index)));
   if (ownerIndex < 0) {
     throw new RangeError('Work-surface bricks must all belong to one existing derived grounded module.');
@@ -450,11 +456,20 @@ function splitWorkSurfaceGroup(groups, brickIds, bricks, graph, orderPolicy) {
   const lowerIndexes = owner.indexes.filter((index) => bricks[index].y < floorY);
   if (!lowerIndexes.length) throw new RangeError('A work-surface band requires a nonempty lower remainder.');
   const continuationIndexes = owner.indexes.filter((index) => !selected.has(index) && bricks[index].y >= floorY);
+  // A shared work area can contain several actual stud components. Derive
+  // ownership from each selected subset, not from its contextual parent.
+  const componentByIndex = new Map(graph.components.flatMap((component, componentIndex) =>
+    component.map((index) => [index, componentIndex])));
+  const subset = (indexes) => {
+    const componentIndexes = [...new Set(indexes.map((index) => componentByIndex.get(index)))].sort((a, b) => a - b);
+    return {indexes, componentIndex: componentIndexes[0], componentIndexes,
+      internallyConnected: connectedWithin(new Set(indexes), adjacency)};
+  };
   const replacement = [
-    { ...owner, indexes: lowerIndexes },
+    { ...owner, ...subset(lowerIndexes) },
     {
       ...owner,
-      indexes: indexes.slice().sort((a, b) => compareBricks(bricks[a], bricks[b])),
+      ...subset(indexes.slice().sort((a, b) => compareBricks(bricks[a], bricks[b]))),
       kind: 'detail',
       groupType: 'work-surface',
       buildContext: {
@@ -466,14 +481,14 @@ function splitWorkSurfaceGroup(groups, brickIds, bricks, graph, orderPolicy) {
   ];
   if (continuationIndexes.length) replacement.push({
     ...owner,
-    indexes: continuationIndexes,
+    ...subset(continuationIndexes),
     kind: 'grounded',
     groupType: 'continuation',
   });
   return [...groups.slice(0, ownerIndex), ...replacement, ...groups.slice(ownerIndex + 1)];
 }
 
-function replayModuleGroups(moduleReplay, bricks, graph) {
+function replayModuleGroups(moduleReplay, bricks, graph, nestedRecipeDepth = 0, foundationRecipeIds = new Set()) {
   if (!Array.isArray(moduleReplay)) throw new TypeError('moduleReplay must be an array when provided.');
   if (!moduleReplay.length) throw new RangeError('moduleReplay must contain at least one module.');
   const indexById = new Map(bricks.map(({ id }, index) => [id, index]));
@@ -517,8 +532,17 @@ function replayModuleGroups(moduleReplay, bricks, graph) {
       throw new RangeError(`moduleReplay module ${descriptor.id} brickOrder must exactly match its brickIds.`);
     }
     const replayRank = new Map(descriptor.brickOrder.map((id, rank) => [indexById.get(id), rank]));
+    let placementGroupByIndex;
+    if (descriptor.placementGroups !== undefined) {
+      const ids = descriptor.placementGroups.flat();
+      if (!descriptor.placementGroups.every(group => Array.isArray(group) && group.length)
+        || ids.length !== indexes.length || new Set(ids).size !== indexes.length
+        || ids.some(id => !descriptor.brickIds.includes(id))) throw new RangeError('Placement groups must cover their module exactly once.');
+      placementGroupByIndex = new Map(descriptor.placementGroups.flatMap((group, groupIndex) =>
+        group.map(id => [indexById.get(id), `${descriptor.id}-patch-${groupIndex+1}`])));
+    }
     const allowedGroupTypes = new Set([
-      'branch', 'color', 'detached-parts', 'work-surface', 'continuation', 'shared-ground-layout',
+      'branch', 'color', 'detached-parts', 'work-surface', 'continuation', 'shared-ground-layout', 'supported-additions', 'table-root',
     ]);
     if (descriptor.groupType !== undefined && !allowedGroupTypes.has(descriptor.groupType)) {
       throw new RangeError(`moduleReplay module ${descriptor.id} has invalid groupType ${String(descriptor.groupType)}.`);
@@ -533,7 +557,7 @@ function replayModuleGroups(moduleReplay, bricks, graph) {
       kind = 'detail';
       if (/^Unresolved (?:cluster\b|detached parts$)/.test(label)) label = `Assembly ${descriptorIndex + 1}`;
     }
-    if (kind === 'grounded' && descriptor.groupType !== 'continuation' && !containsGround) {
+    if (kind === 'grounded' && !['continuation','supported-additions','table-root'].includes(descriptor.groupType) && !containsGround) {
       throw new RangeError(`moduleReplay grounded module ${descriptor.id} must contain a ground-course brick.`);
     }
     if (kind === 'grounded'
@@ -552,30 +576,56 @@ function replayModuleGroups(moduleReplay, bricks, graph) {
         throw new RangeError(`moduleReplay continuation ${descriptor.id} must immediately follow a work-surface module.`);
       }
     }
+    if (descriptor.groupType === 'supported-additions') {
+      const current = new Set(indexes), available = new Set([...ownedIndexes].filter(i => !current.has(i)));
+      if (kind !== 'grounded' || containsGround) {
+        throw new RangeError(`moduleReplay supported additions ${descriptor.id} must extend earlier grounded work.`);
+      }
+      for (const id of descriptor.brickOrder) {
+        const index = indexById.get(id);
+        if (![...adjacency[index]].some(i => available.has(i) && bricks[i].y === bricks[index].y-1)) {
+          throw new RangeError(`moduleReplay supported additions ${descriptor.id} must retain earlier lower supports.`);
+        }
+        available.add(index);
+      }
+    }
     if (descriptor.groupType === 'shared-ground-layout') {
       if (kind !== 'grounded' || !containsGround || componentIndexes.length < 2
         || !connectsGroundComponents(indexes, bricks, componentByBrickIndex, componentIndexes)) {
         throw new RangeError(`moduleReplay shared ground layout ${descriptor.id} must contain ground-course bricks from multiple components.`);
       }
     }
-    const isWorkSurface = descriptor.groupType === 'work-surface';
+    // A nested recipe may start with its raised core on the table, then attach
+    // complete hanging components. This is never a free foundation in the main
+    // model; the enclosing assembly must still pass its actual final join.
+    const tableRoot = descriptor.groupType === 'table-root';
+    if (tableRoot && (!nestedRecipeDepth || descriptorIndex !== 0 || kind !== 'grounded')) {
+      throw new RangeError('A table root must be the first grounded layout of a nested recipe.');
+    }
+    const isWorkSurface = descriptor.groupType === 'work-surface' || tableRoot;
     if (isWorkSurface) {
       const context = descriptor.buildContext;
       const orderPolicy = context?.orderPolicy ?? 'course-first';
-      if (kind !== 'detail' || context?.kind !== 'work-surface'
-        || !Number.isSafeInteger(context.floorY) || context.floorY <= 0
+      const zeroFloorChild = !tableRoot && nestedRecipeDepth > 0
+        && moduleReplay[0].groupType === 'table-root' && context?.joinDirection === 'up';
+      if (kind !== (tableRoot ? 'grounded' : 'detail') || context?.kind !== 'work-surface'
+        || !Number.isSafeInteger(context.floorY) || context.floorY < (tableRoot || zeroFloorChild ? 0 : 1)
         || context.floorY !== Math.min(...indexes.map((index) => bricks[index].y))
-        || !['course-first', 'connected-patches', 'rectangular-layers'].includes(orderPolicy)) {
+        || !['course-first', 'connected-patches', 'rectangular-layers', 'planned-actions'].includes(orderPolicy)) {
         throw new RangeError(`moduleReplay work-surface module ${descriptor.id} has invalid build context.`);
       }
+      if (context.joinDirection !== undefined && !['down','up'].includes(context.joinDirection)) {
+        throw new RangeError(`moduleReplay work-surface module ${descriptor.id} has invalid join direction.`);
+      }
       const contextKeys = Object.keys(context);
-      if (contextKeys.some((key) => !['kind', 'floorY', 'orderPolicy'].includes(key))) {
+      if (contextKeys.some((key) => !['kind', 'floorY', 'orderPolicy', 'joinDirection'].includes(key))) {
         throw new RangeError(`moduleReplay work-surface module ${descriptor.id} has unsupported build context fields.`);
       }
     } else if (descriptor.buildContext !== undefined) {
       throw new RangeError(`moduleReplay module ${descriptor.id} has buildContext outside a work-surface module.`);
     }
-    priorWasWorkSurface = isWorkSurface;
+    priorWasWorkSurface = isWorkSurface || (kind === 'grounded'
+      && foundationRecipeIds.has(descriptor.id));
     return {
       id: descriptor.id,
       label,
@@ -587,6 +637,8 @@ function replayModuleGroups(moduleReplay, bricks, graph) {
       componentIndexes,
       internallyConnected,
       replayRank,
+      placementGroupByIndex,
+      actionOrder: descriptor.actionOrder === true,
     };
   });
   if (ownedIndexes.size !== bricks.length) throw new RangeError('Every brick must belong to exactly one moduleReplay module.');
@@ -666,20 +718,61 @@ function recoverableUnderAttachment({
   upperIndex, moduleSet, remaining, placed, validPlaced, stepStartValid, priorScene, bricks, graph,
 }) {
   const unfinishedLower = [...graph.blocksLower[upperIndex]].filter((index) => remaining.has(index));
-  if (unfinishedLower.length !== 1) return null;
-  const lowerIndex = unfinishedLower[0];
-  const lower = bricks[lowerIndex];
-  if (!moduleSet.has(lowerIndex) || lower.y < 1 || !graph.below[upperIndex].has(lowerIndex)) return null;
-  if (graph.blocksLower[lowerIndex].size > 0) return null;
+  if (!unfinishedLower.length) return null;
+  // Closing an upper course is valid only with a complete, bounded recipe for
+  // every unfinished piece in its underside sweep, including wider descendants.
+  const hanging = new Set(unfinishedLower);
+  for (const index of hanging) {
+    if (hanging.size > 12 || !moduleSet.has(index) || !remaining.has(index)
+      || bricks[index].y < 1 || bricks[upperIndex].y - bricks[index].y > 3) return null;
+    for (const lower of graph.blocksLower[index]) {
+      if (!remaining.has(lower) || !moduleSet.has(lower)) return null;
+      hanging.add(lower);
+    }
+  }
   const independentSupports = [...graph.below[upperIndex].keys()]
-    .filter((index) => index !== lowerIndex && stepStartValid.has(index));
+    .filter((index) => !hanging.has(index) && (stepStartValid.has(index) || priorScene.has(index)));
   if (!independentSupports.length) return null;
   const failedSupports = [...graph.below[upperIndex].keys()]
     .filter((index) => placed.has(index) && !validPlaced.has(index));
   if (failedSupports.length) return null;
   const solidIndexes = new Set([...priorScene, ...validPlaced]);
   if (insertionBlockers(upperIndex, solidIndexes, graph).length) return null;
-  return lowerIndex;
+  const attached = new Set([upperIndex]), recipe = new Map();
+  const pending = new Set([...hanging].sort((a,b) => bricks[b].y-bricks[a].y));
+  while (pending.size) {
+    const index = [...pending].find(lower => [...graph.directAbove[lower].keys()].some(upper => attached.has(upper)));
+    if (index === undefined) return null;
+    const upper = [...graph.directAbove[index].keys()].find(candidate => attached.has(candidate));
+    recipe.set(index, upper); attached.add(index); pending.delete(index);
+  }
+  return recipe;
+}
+
+function sharedUnderAttachmentTask(recipes, pathPreserving, bricks) {
+  const groups = new Map();
+  for (const [upper, recipe] of recipes) {
+    const lower = [...recipe.keys()], first = bricks[lower[0]];
+    if (!lower.every(index => bricks[index].y === first.y
+      && partTypeKey(bricks[index]) === partTypeKey(first))) continue;
+    const key = `${bricks[upper].y}:${first.y}:${partTypeKey(first)}`;
+    if (!groups.has(key)) groups.set(key, []);
+    groups.get(key).push({upper, lower});
+  }
+  const tasks = [];
+  for (const group of groups.values()) {
+    const upper = new Set(group.map(item => item.upper));
+    const lower = new Set(group.flatMap(item => item.lower));
+    if (upper.size < 2 || upper.size > MAX_COHERENT_STEP_BRICKS
+      || lower.size > MAX_COHERENT_STEP_BRICKS) continue;
+    const course = bricks[group[0].upper].y;
+    if (pathPreserving.some(index => bricks[index].y < course)) continue;
+    if (![...upper].every(index => fitsStepBatch([...upper], index, bricks))
+      || ![...lower].every(index => fitsStepBatch([...lower], index, bricks))) continue;
+    tasks.push({upper, lower, course});
+  }
+  tasks.sort((a,b) => a.course-b.course || b.lower.size-a.lower.size);
+  return tasks[0] ?? null;
 }
 
 function partTypeKey(brick) {
@@ -726,18 +819,21 @@ function horizontalFootprintGap(a, b) {
 }
 
 function orderedLocalCandidates(candidates, bricks, anchor, assembled, graph, insertionDirectionFor, preferLocalFoundations) {
-  const engagedStuds = (index) => {
-    const contacts = insertionDirectionFor(index) === 'up' ? graph.directAbove[index] : graph.below[index];
-    return [...contacts].reduce((sum, [other, studs]) => sum + (assembled.has(other) ? studs : 0), 0);
-  };
+  // Candidate scores are constant during this sort. Compute each once rather
+  // than revisiting the contact graph for every comparator invocation.
+  const ordered = [...candidates];
   const lowCourseBricks = [...assembled].filter((index) => bricks[index].y <= 1);
-  const nearbyFoundation = (index) => preferLocalFoundations && bricks[index].y === 0
-    && lowCourseBricks.some((other) => horizontalFootprintGap(bricks[index], bricks[other]) <= MAX_FOUNDATION_LOOKAHEAD_GAP);
-  return [...candidates].sort((a, b) => {
-    const engagementA = engagedStuds(a);
-    const engagementB = engagedStuds(b);
-    const foundationA = nearbyFoundation(a);
-    const foundationB = nearbyFoundation(b);
+  const scores = new Map(ordered.map(index => {
+    const contacts = insertionDirectionFor(index) === 'up' ? graph.directAbove[index] : graph.below[index];
+    let engagement = 0;
+    for (const [other, studs] of contacts) if (assembled.has(other)) engagement += studs;
+    const foundation = preferLocalFoundations && bricks[index].y === 0
+      && lowCourseBricks.some(other => horizontalFootprintGap(bricks[index],bricks[other]) <= MAX_FOUNDATION_LOOKAHEAD_GAP);
+    return [index,{engagement,foundation}];
+  }));
+  return ordered.sort((a,b) => {
+    const {engagement:engagementA,foundation:foundationA} = scores.get(a);
+    const {engagement:engagementB,foundation:foundationB} = scores.get(b);
     if (foundationA !== foundationB) return foundationA ? -1 : 1;
     if (Boolean(engagementA) !== Boolean(engagementB)) return engagementB - engagementA;
     if (anchor !== null) {
@@ -756,20 +852,25 @@ function orderedLocalCandidates(candidates, bricks, anchor, assembled, graph, in
 }
 
 function planModuleBuild({
-  module, bricks, graph, priorScene, nextStepId, referenceBudget, allowUnderAttachments, preferLocalProgress,
-  preferLocalFoundations,
+  module, bricks, graph, priorScene, nextStepId, referenceBudget, allowUnderAttachments, allowWorkSurfaceUnderAttachments, preferLocalProgress,
+  preferLocalFoundations, groupUnderAttachments,
 }) {
   const moduleSet = new Set(module.indexes);
   const remaining = new Set(module.indexes);
+  // Replay validation guarantees a unique rank for every member. Its order
+  // stays fixed as placed members leave the remaining set.
+  const plannedOrder = module.actionOrder
+    ? [...module.indexes].sort((a,b) => module.replayRank.get(a)-module.replayRank.get(b)) : [];
+  let plannedCursor = 0;
   const placed = new Set();
   const validPlaced = new Set();
   const steps = [];
-  const offline = module.kind !== 'grounded';
+  const offline = module.kind !== 'grounded' || module.groupType === 'table-root';
   const workSurfaceFloor = module.buildContext?.kind === 'work-surface' ? module.buildContext.floorY : null;
   const connectedPatchOrder = module.buildContext?.orderPolicy === 'connected-patches';
   const rectangularLayerOrder = module.buildContext?.orderPolicy === 'rectangular-layers';
-  const buildsOnPriorScene = module.groupType === 'continuation';
-  const completesFoundationByCourse = (workSurfaceFloor !== null && !connectedPatchOrder) || buildsOnPriorScene;
+  const buildsOnPriorScene = ['continuation','supported-additions'].includes(module.groupType);
+  const completesFoundationByCourse = !module.actionOrder && ((workSurfaceFloor !== null && !connectedPatchOrder) || buildsOnPriorScene);
   const useLocalProgress = preferLocalProgress && !offline;
   const localFloor = Math.min(...module.indexes.map((index) => bricks[index].y));
   let anchor = null;
@@ -785,6 +886,18 @@ function planModuleBuild({
     : [];
   let rectangularGroupCursor = 0;
   const pendingUnderAttachments = new Map();
+  let activeUnderTask = null;
+  const canAttachUnder = allowUnderAttachments && (!offline
+    || allowWorkSurfaceUnderAttachments && workSurfaceFloor !== null);
+  // A separate assembly has no collision with the main model until its join.
+  // Lifting is allowed only after the pieces already laid out form one unit.
+  if (offline && canAttachUnder) {
+    priorScene = new Set();
+    graph = {...graph,
+      blocksLower:graph.blocksLower.map(set => new Set([...set].filter(index => moduleSet.has(index)))),
+      above:graph.above.map(set => new Set([...set].filter(index => moduleSet.has(index))))};
+  }
+  const localAdjacency = offline && canAttachUnder ? studAdjacency(bricks.length,graph) : null;
 
   while (remaining.size) {
     while (rectangularGroupCursor < rectangularGroups.length
@@ -800,34 +913,56 @@ function planModuleBuild({
     const batchIssues = [];
     let batchKind = null;
     let batchDirection = null;
+    let placementGroupId = null;
     const stepStartValid = new Set(validPlaced);
-    while (batch.length < MAX_COHERENT_STEP_BRICKS && remaining.size) {
-      const awaitsNextStep = [...pendingUnderAttachments]
-        .some(([lowerIndex, upperIndex]) => remaining.has(lowerIndex)
-          && validPlaced.has(upperIndex) && !stepStartValid.has(upperIndex));
-      if (batch.length && awaitsNextStep) break;
-      const downwardSupported = [...remaining].filter((index) => {
+    // Supports are evaluated against the scene at the start of this step;
+    // placing another brick in the same batch cannot change this eligibility.
+    const downwardEligible = new Set([...remaining].filter((index) => {
         const internalBelow = [...graph.below[index].keys()].filter((lower) => moduleSet.has(lower));
         return internalBelow.some((lower) => stepStartValid.has(lower))
           || (buildsOnPriorScene && [...graph.below[index].keys()].some((lower) => priorScene.has(lower)))
           || (!offline && bricks[index].y === 0)
           || (offline && internalBelow.length === 0
             && (workSurfaceFloor === null || bricks[index].y === workSurfaceFloor));
-      });
-      const upwardSupported = !offline && allowUnderAttachments ? [...remaining].filter((index) => {
+    }));
+    const assembled = offline ? stepStartValid : new Set([...priorScene,...stepStartValid]);
+    // A planned bridge can be laid on the table before the whole layout is
+    // bonded. Connectivity is required when that layout is actually lifted,
+    // using the scene before this step, not another addition in the same batch.
+    const canLift = canAttachUnder && (!offline || placed.size === stepStartValid.size
+      && connectedWithin(stepStartValid, localAdjacency));
+    while (batch.length < MAX_COHERENT_STEP_BRICKS && remaining.size) {
+      const awaitsNextStep = [...pendingUnderAttachments]
+        .some(([lowerIndex, upperIndex]) => remaining.has(lowerIndex)
+          && validPlaced.has(upperIndex) && !stepStartValid.has(upperIndex));
+      if (activeUnderTask && [...activeUnderTask.lower].every(index => !remaining.has(index))) activeUnderTask = null;
+      if (batch.length && awaitsNextStep
+        && ![...(activeUnderTask?.upper ?? [])].some(index => remaining.has(index))) break;
+      const downwardSupported = [...remaining].filter(index => downwardEligible.has(index));
+      const upwardSupported = canAttachUnder && canLift ? [...remaining].filter((index) => {
         const upperIndex = pendingUnderAttachments.get(index);
-        return upperIndex !== undefined && stepStartValid.has(upperIndex)
-          && graph.directAbove[index].has(upperIndex) && graph.blocksLower[index].size === 0;
+        const priorUpper = buildsOnPriorScene && [...graph.directAbove[index].keys()].some(upper => priorScene.has(upper));
+        const clear = [...graph.blocksLower[index]].every(lower => remaining.has(lower) && pendingUnderAttachments.has(lower));
+        return clear && (priorUpper || upperIndex !== undefined
+          && stepStartValid.has(upperIndex) && graph.directAbove[index].has(upperIndex));
       }) : [];
       const supported = [...new Set([...downwardSupported, ...upwardSupported])];
       if (supported.length === 0 && batch.length && batchKind === 'build') break;
-      const pathPreserving = supported.filter((index) => ![...graph.blocksLower[index]].some((unfinished) => remaining.has(unfinished)));
+      const pathPreserving = supported.filter((index) => upwardSupported.includes(index)
+        || ![...graph.blocksLower[index]].some((unfinished) => remaining.has(unfinished)));
+      while (plannedCursor < plannedOrder.length && !remaining.has(plannedOrder[plannedCursor])) plannedCursor++;
+      const nextPlanned = module.actionOrder ? plannedOrder[plannedCursor] : null;
+      const plannedGroup = nextPlanned === null ? null : module.placementGroupByIndex.get(nextPlanned);
+      const needsPlannedBridge = module.actionOrder && !pathPreserving.some(index=>module.placementGroupByIndex.get(index)===plannedGroup);
       const recoverableBridges = new Map();
-      if (!offline && allowUnderAttachments && pathPreserving.length === 0) for (const upperIndex of downwardSupported) {
-        const lowerIndex = recoverableUnderAttachment({
+      // A scheduled action may use a validated bridge even when an unrelated
+      // placement elsewhere is ready. Do not discard its insertion strategy
+      // before the planned-action filter has a chance to select it.
+      if (canAttachUnder && (!offline || module.actionOrder || connectedWithin(validPlaced,localAdjacency)) && (pathPreserving.length === 0 || offline || groupUnderAttachments || needsPlannedBridge)) for (const upperIndex of downwardSupported) {
+        const recipe = recoverableUnderAttachment({
           upperIndex, moduleSet, remaining, placed, validPlaced, stepStartValid, priorScene, bricks, graph,
         });
-        if (lowerIndex !== null) recoverableBridges.set(upperIndex, lowerIndex);
+        if (recipe !== null) recoverableBridges.set(upperIndex, recipe);
       }
       const lowerObstacles = new Set();
       if (supported.length && !pathPreserving.length && !recoverableBridges.size) for (const index of supported) {
@@ -835,9 +970,21 @@ function planModuleBuild({
       }
       let forced = supported.length === 0 || lowerObstacles.size > 0;
       let closesFuturePath = !forced && pathPreserving.length === 0 && recoverableBridges.size === 0;
-      const candidates = pathPreserving.length ? pathPreserving : recoverableBridges.size ? recoverableBridges.keys()
+      const candidates = (offline || groupUnderAttachments || needsPlannedBridge) && recoverableBridges.size ? [...new Set([...pathPreserving,...recoverableBridges.keys()])]
+        : pathPreserving.length ? pathPreserving : recoverableBridges.size ? recoverableBridges.keys()
         : lowerObstacles.size ? lowerObstacles : forced ? remaining : supported;
       let patchCandidates = [...candidates];
+      if ((offline || groupUnderAttachments) && canAttachUnder && !module.actionOrder && !connectedPatchOrder && !rectangularLayerOrder) {
+        activeUnderTask ??= sharedUnderAttachmentTask(recoverableBridges,pathPreserving,bricks);
+        if (activeUnderTask) {
+          const upperRemaining = [...activeUnderTask.upper].some(index => remaining.has(index));
+          const task = upperRemaining ? activeUnderTask.upper : activeUnderTask.lower;
+          const scheduled = patchCandidates.filter(index => task.has(index));
+          if (scheduled.length) patchCandidates = scheduled;
+          else if (batch.length) break;
+          else activeUnderTask = null;
+        }
+      }
       if (connectedPatchOrder) {
         if (activeWorkSurfaceBond !== null && !remaining.has(activeWorkSurfaceBond)) activeWorkSurfaceBond = null;
         if (activeWorkSurfaceBond === null) {
@@ -866,6 +1013,15 @@ function planModuleBuild({
           }
         }
       }
+      if (module.actionOrder) {
+        const group = plannedGroup;
+        const scheduled = patchCandidates.filter(index=>module.placementGroupByIndex.get(index)===group);
+        if (!scheduled.length) {
+          if (batch.length) break;
+          throw new RangeError('Planned action cannot be placed before its prerequisites.');
+        }
+        patchCandidates = scheduled;
+      }
       if (rectangularLayerOrder) {
         const scheduled = patchCandidates.filter((candidate) => rectangularGroupSet.has(candidate));
         if (scheduled.length) {
@@ -880,26 +1036,30 @@ function planModuleBuild({
       const insertionDirectionFor = (candidate) => upwardSupported.includes(candidate) ? 'up' : 'down';
       const directionCandidates = batchDirection === null ? patchCandidates
         : patchCandidates.filter((candidate) => insertionDirectionFor(candidate) === batchDirection);
-      const assembled = offline ? stepStartValid : new Set([...priorScene, ...stepStartValid]);
       const useLocalBatch = useLocalProgress && batchKind !== 'unresolved';
-      const heuristicOrder = rectangularLayerOrder
-        ? [...directionCandidates].sort((a, b) => rectangularRank.get(a) - rectangularRank.get(b))
+      // Every replay candidate has a distinct explicit rank. A heuristic
+      // tiebreak can never be reached, so avoid calculating it during replay.
+      const locallyOrdered = module.replayRank
+        ? [...directionCandidates].sort((a,b) => module.replayRank.get(a)-module.replayRank.get(b))
+        : rectangularLayerOrder
+        ? [...directionCandidates].sort((a,b) => rectangularRank.get(a)-rectangularRank.get(b))
         : useLocalBatch
         ? orderedLocalCandidates(directionCandidates, bricks, anchor, assembled, graph, insertionDirectionFor, preferLocalFoundations)
         : orderedCandidates(directionCandidates, bricks, anchor);
-      const heuristicRank = new Map(heuristicOrder.map((index, rank) => [index, rank]));
-      const locallyOrdered = module.replayRank
-        ? [...directionCandidates].sort((a, b) => module.replayRank.get(a) - module.replayRank.get(b)
-          || heuristicRank.get(a) - heuristicRank.get(b))
-        : heuristicOrder;
       const sameDirection = completesFoundationByCourse ? lowestCourseFirst(locallyOrdered, bricks) : locallyOrdered;
       if (batch.length && sameDirection.length === 0) break;
       const coherent = batch.length ? sameDirection.filter((candidate) => (useLocalBatch
         ? fitsLocalProgressBatch(batch, candidate, bricks) : fitsStepBatch(batch, candidate, bricks))) : sameDirection;
       if (batch.length && useLocalBatch && coherent.length === 0) break;
+      if (batch.length && offline && canAttachUnder && coherent.length === 0) break;
       if (batch.length && connectedPatchOrder && coherent.length === 0) break;
       if (!useLocalBatch && batch.length >= MAX_STEP_BRICKS && coherent.length === 0) break;
       const index = (coherent.length ? coherent : sameDirection)[0];
+      const proposedGroup = module.placementGroupByIndex
+        ? activeWorkSurfaceBond !== null ? `${module.id}-bond-${activeWorkSurfaceBond}` : module.placementGroupByIndex.get(index)
+        : null;
+      if (batch.length && proposedGroup !== placementGroupId) break;
+      placementGroupId = proposedGroup;
       const completesWorkSurfaceBond = connectedPatchOrder && index === activeWorkSurfaceBond;
       const brick = bricks[index];
       const insertionDirection = insertionDirectionFor(index);
@@ -948,7 +1108,7 @@ function planModuleBuild({
       placed.add(index);
       if (additionKind === 'build') validPlaced.add(index);
       if (additionKind === 'build' && recoverableBridges.has(index)) {
-        pendingUnderAttachments.set(recoverableBridges.get(index), index);
+        for (const [lowerIndex, upperIndex] of recoverableBridges.get(index)) pendingUnderAttachments.set(lowerIndex, upperIndex);
       }
       if (insertionDirection === 'up') pendingUnderAttachments.delete(index);
       anchor = index;
@@ -971,6 +1131,7 @@ function planModuleBuild({
       visibleBrickIds,
       highlightBrickIds: newBrickIds,
       issues: batchIssues,
+      ...(placementGroupId ? {placementGroupId} : {}),
       ...(batchDirection === 'up' ? { insertionDirection: 'up' } : {}),
     };
     reserveStepReferences(referenceBudget, step);
@@ -997,6 +1158,7 @@ function coalesceGroundedSteps(steps, module, bricks, preferLocalProgress) {
       ? fitsLocalProgressBatch(combinedIndexes.slice(0, position), index, bricks)
       : fitsStepBatch(combinedIndexes.slice(0, position), index, bricks)));
     const mergeable = prior
+      && prior.placementGroupId === step.placementGroupId
       && (step.kind === 'build' || step.kind === 'unresolved')
       && prior.kind === step.kind
       && (prior.insertionDirection ?? 'down') === (step.insertionDirection ?? 'down')
@@ -1018,19 +1180,22 @@ function coalesceGroundedSteps(steps, module, bricks, preferLocalProgress) {
 }
 
 function joinAssessment(module, bricks, graph, priorScene) {
+  const direction = module.buildContext?.joinDirection ?? 'down';
+  const receiver = direction === 'up' ? 'upper' : 'lower';
+  const moving = direction === 'up' ? 'lower' : 'upper';
   const moduleSet = new Set(module.indexes);
   const crossingEdges = graph.indexEdges.filter(({ lower, upper }) => {
     if (moduleSet.has(lower) === moduleSet.has(upper)) return false;
     const outside = moduleSet.has(lower) ? upper : lower;
     return priorScene.has(outside);
   });
-  let downwardCrossingEdges = module.buildContext?.kind === 'work-surface'
-    ? graph.indexEdges.filter(({ lower, upper }) => !moduleSet.has(lower) && moduleSet.has(upper) && priorScene.has(lower))
+  let attachmentEdges = module.buildContext?.kind === 'work-surface'
+    ? graph.indexEdges.filter(edge => !moduleSet.has(edge[receiver]) && moduleSet.has(edge[moving]) && priorScene.has(edge[receiver]))
     : crossingEdges;
   let supportGroups = [];
   if (module.buildContext?.kind === 'work-surface') {
     const adjacency = studAdjacency(bricks.length, graph);
-    const contacted = new Set(downwardCrossingEdges.map(({ lower }) => lower));
+    const contacted = new Set(attachmentEdges.map(edge => edge[receiver]));
     const assigned = new Set();
     for (const start of [...contacted].sort((a, b) => a - b)) {
       if (assigned.has(start)) continue;
@@ -1045,33 +1210,42 @@ function joinAssessment(module, bricks, graph, priorScene) {
           pending.push(next);
         }
       }
-      if (![...component].some((index) => bricks[index].y === 0)) continue;
-      const contacts = downwardCrossingEdges.filter(({ lower }) => component.has(lower));
+      if (![...component].some((index) => bricks[index].y === (graph.supportFloorY ?? 0))) continue;
+      const contacts = attachmentEdges.filter(edge => component.has(edge[receiver]));
       supportGroups.push({
         brickIds: [...component].sort((a, b) => a - b).map((index) => bricks[index].id),
-        contacts: contacts.map(({ lower, upper, studs }) => ({
-          supportBrickId: bricks[lower].id,
-          bandBrickId: bricks[upper].id,
-          studs,
+        contacts: contacts.map(edge => ({
+          supportBrickId: bricks[edge[receiver]].id,
+          bandBrickId: bricks[edge[moving]].id,
+          studs: edge.studs,
         })),
       });
     }
     const groundedContactIds = new Set(supportGroups.flatMap(({ contacts }) => contacts.map(({ supportBrickId }) => supportBrickId)));
-    downwardCrossingEdges = downwardCrossingEdges.filter(({ lower }) => groundedContactIds.has(bricks[lower].id));
+    attachmentEdges = attachmentEdges.filter(edge => groundedContactIds.has(bricks[edge[receiver]].id));
   }
   const blockers = new Set();
-  for (const index of module.indexes) for (const blocker of insertionBlockers(index, priorScene, graph)) blockers.add(blocker);
+  for (const index of module.indexes) {
+    const obstruction = direction === 'up'
+      ? [...graph.blocksLower[index]].filter(other => priorScene.has(other))
+      : insertionBlockers(index, priorScene, graph);
+    for (const blocker of obstruction) blockers.add(blocker);
+  }
   const internallyConnected = module.buildContext?.kind !== 'work-surface'
     || connectedWithin(new Set(module.indexes), studAdjacency(bricks.length, graph));
-  const studs = downwardCrossingEdges.reduce((sum, edge) => sum + edge.studs, 0);
-  return { crossingEdges: downwardCrossingEdges, blockers: [...blockers], internallyConnected, studs, supportGroups };
+  const studs = attachmentEdges.reduce((sum, edge) => sum + edge.studs, 0);
+  return { crossingEdges: attachmentEdges, blockers: [...blockers], internallyConnected, studs, supportGroups };
 }
 
 function addJoinStep({ module, bricks, graph, priorScene, visibleScene, buildResolved, nextStepId, referenceBudget }) {
   const assessment = joinAssessment(module, bricks, graph, priorScene);
   if (module.buildContext?.kind === 'work-surface') module.joinContext = {
-    direction: 'down',
+    direction: module.buildContext.joinDirection ?? 'down',
     supportGroups: assessment.supportGroups,
+    ...(graph.supportFloorY && assessment.supportGroups.length ? {
+      supportFloorY: Math.min(...assessment.supportGroups.flatMap(group => group.brickIds)
+        .map(id => bricks.find(brick => brick.id === id).y)),
+    } : {}),
     requiresAlignment: assessment.supportGroups.length > 1,
   };
   const moduleIds = module.indexes.map((index) => bricks[index].id);
@@ -1089,6 +1263,10 @@ function addJoinStep({ module, bricks, graph, priorScene, visibleScene, buildRes
   if (!buildResolved) {
     kind = 'unresolved';
     issues.push(issue('unresolved-prerequisite', 'The module has unresolved build additions and cannot be shown as successfully joined.', moduleIds, 'error'));
+  }
+  if (module.joinContext?.direction === 'up' && assessment.supportGroups.length > 1) {
+    kind = 'unresolved';
+    issues.push(issue('disconnected-receiver', 'An upward attachment requires one connected receiving assembly to support while joining.', moduleIds, 'error'));
   }
   if (assessment.studs === 0) {
     kind = 'unresolved';
@@ -1108,6 +1286,7 @@ function addJoinStep({ module, bricks, graph, priorScene, visibleScene, buildRes
       highlightBrickIds: moduleIds,
       issues,
       ...(module.joinContext ? { joinContext: structuredClone(module.joinContext) } : {}),
+      ...(module.joinContext?.direction === 'up' ? { insertionDirection:'up' } : {}),
   };
   reserveStepReferences(referenceBudget, step);
   return {
@@ -1123,16 +1302,27 @@ export function createAssemblyPlan({
   rawModel = null,
   sourceProgram = null,
   allowUnderAttachments = false,
+  allowWorkSurfaceUnderAttachments = false,
+  groupUnderAttachments = false,
   preferLocalProgress = false,
   preferLocalFoundations = false,
   workSurfaceBrickIds = null,
   workSurfaceOrder = 'course-first',
   moduleReplay = null,
+  moduleRecipes = null,
+  nestedRecipeDepth = 0,
+  integratedBuild = false,
 } = {}) {
   const started = now();
   void rawModel;
   void sourceProgram;
+  if (!Number.isSafeInteger(nestedRecipeDepth) || nestedRecipeDepth < 0 || nestedRecipeDepth > 3) {
+    throw new RangeError('Nested recipe depth must be an integer from zero through three.');
+  }
+  if (typeof integratedBuild !== 'boolean') throw new TypeError('integratedBuild must be a boolean.');
+  if (typeof allowWorkSurfaceUnderAttachments !== 'boolean') throw new TypeError('allowWorkSurfaceUnderAttachments must be a boolean.');
   if (typeof allowUnderAttachments !== 'boolean') throw new TypeError('allowUnderAttachments must be a boolean.');
+  if (typeof groupUnderAttachments !== 'boolean') throw new TypeError('groupUnderAttachments must be a boolean.');
   if (typeof preferLocalProgress !== 'boolean') throw new TypeError('preferLocalProgress must be a boolean.');
   if (typeof preferLocalFoundations !== 'boolean') throw new TypeError('preferLocalFoundations must be a boolean.');
   if (workSurfaceBrickIds !== null && !Array.isArray(workSurfaceBrickIds)) {
@@ -1148,9 +1338,13 @@ export function createAssemblyPlan({
   const graphData = buildContactGraph(bricks);
   let groups;
   if (moduleReplay !== null) {
-    groups = replayModuleGroups(moduleReplay, bricks, graphData);
+    const foundationRecipeIds = new Set(Object.entries(moduleRecipes ?? {})
+      .filter(([,recipe]) => recipe?.kind === 'foundation').map(([id]) => id));
+    groups = replayModuleGroups(moduleReplay, bricks, graphData, nestedRecipeDepth, foundationRecipeIds);
+    const tableRoot = groups.find(group => group.groupType === 'table-root');
+    if (tableRoot) graphData.supportFloorY = tableRoot.buildContext.floorY;
   } else {
-    const derivedGroups = deriveModuleGroups(bricks, graphData);
+    const derivedGroups = deriveModuleGroups(bricks, graphData, integratedBuild);
     const smallFloating = derivedGroups.filter((group) => group.kind === 'floating' && group.indexes.length <= 8);
     groups = derivedGroups.filter((group) => !smallFloating.includes(group));
     if (smallFloating.length) groups.push({
@@ -1179,6 +1373,7 @@ export function createAssemblyPlan({
     groups = createSharedGroundLayoutGroups(groups, bricks, graphData);
     if (workSurfaceBrickIds !== null) {
       groups = splitWorkSurfaceGroup(groups, workSurfaceBrickIds, bricks, graphData, workSurfaceOrder);
+      groups = orderAssemblyDependencies(groups, graphData.above);
     }
   }
   let moduleNumber = 0;
@@ -1213,11 +1408,18 @@ export function createAssemblyPlan({
       componentIndexes: group.componentIndexes ?? [group.componentIndex],
       internallyConnected: group.internallyConnected,
       replayRank: group.replayRank,
+      placementGroupByIndex: group.placementGroupByIndex,
+      actionOrder: group.actionOrder,
       groupType: group.groupType,
       ...(group.buildContext ? { buildContext: { ...group.buildContext } } : {}),
       componentIds: (group.componentIndexes ?? [group.componentIndex]).map((index) => graphData.componentObjects[index].id),
     };
   });
+
+  if (moduleRecipes !== null && (typeof moduleRecipes !== 'object' || Array.isArray(moduleRecipes)
+    || Object.keys(moduleRecipes).some(id => !modules.some(m => m.id === id)))) {
+    throw new RangeError('Nested recipes must identify existing parent modules.');
+  }
 
   let stepNumber = 0;
   const nextStepId = () => ++stepNumber;
@@ -1230,7 +1432,17 @@ export function createAssemblyPlan({
   let joinStudCount = 0;
 
   for (const module of modules) {
-    const build = planModuleBuild({
+    const hasRecipe = moduleRecipes !== null && Object.hasOwn(moduleRecipes,module.id);
+    const recipe = hasRecipe ? moduleRecipes[module.id] : null;
+    if (hasRecipe && module.kind === 'grounded' && !module.buildContext
+      && [...visibleScene].some(i => module.indexes.some(j => {
+        const a = bricks[i], b = bricks[j];
+        return a.x < b.x+b.w && b.x < a.x+a.w && a.z < b.z+b.d && b.z < a.z+a.d;
+      }))) {
+      throw new RangeError('A grounded foundation recipe requires clear ground columns.');
+    }
+    const build = hasRecipe ? createNestedModuleBuild({module,recipe,bricks,createAssemblyPlan,nextStepId,nestedRecipeDepth,
+      reserveStep:step => reserveStepReferences(referenceBudget,step),allowUnderAttachments,allowWorkSurfaceUnderAttachments}) : planModuleBuild({
       module,
       bricks,
       graph: graphData,
@@ -1238,10 +1450,18 @@ export function createAssemblyPlan({
       nextStepId,
       referenceBudget,
       allowUnderAttachments,
+      allowWorkSurfaceUnderAttachments,
+      groupUnderAttachments,
       preferLocalProgress,
       preferLocalFoundations,
     });
-    steps.push(...coalesceGroundedSteps(build.steps, module, bricks, preferLocalProgress));
+    steps.push(...(hasRecipe ? build.steps : coalesceGroundedSteps(build.steps, module, bricks, preferLocalProgress)));
+    if (hasRecipe) {
+      const childJoins = build.steps.filter(step => step.kind === 'join');
+      validJoinCount += childJoins.length;
+      joinStudCount += childJoins.reduce((sum,step) => sum + step.joinContext.supportGroups
+        .reduce((n,group) => n + group.contacts.reduce((studs,contact) => studs + contact.studs,0),0),0);
+    }
     if (build.unresolved) module.status = 'unresolved';
 
     if (module.kind === 'grounded') {
@@ -1291,13 +1511,15 @@ export function createAssemblyPlan({
   }) => ({
     ...module,
     ...((workSurfaceBrickIds !== null || moduleReplay !== null
-      || groupType === 'shared-ground-layout') && groupType ? { groupType } : {}),
+      || groupType === 'shared-ground-layout' || groupType === 'detached-parts') && groupType ? { groupType } : {}),
   }));
   return {
     version: 1,
     inventory: inventoryFor(bricks),
+    integratedBuild,
     bricks,
     modules: publicModules,
+    ...(moduleRecipes ? {moduleRecipes:structuredClone(moduleRecipes)} : {}),
     steps,
     graph: { edges: graphData.edges, components: graphData.componentObjects },
     stats: {

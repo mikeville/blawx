@@ -288,6 +288,6 @@ test('semantic application rebuilds mixed ranges without mutating or losing step
   assert.deepEqual(input.steps[0].orderedOperations.flatMap(({ newBrickIds }) => newBrickIds), ['b1']);
 
   const presentation = deriveGuidePresentation({ plan, guide: result, subject: 'pickup cat truck' });
-  assert.deepEqual(presentation.sections.map(({ label }) => label), ['Lower structure', 'Main shape']);
+  assert.deepEqual(presentation.sections.map(({ label }) => label), ['Lower structure', 'Main build']);
   assert.equal(presentation.stats.coverageComplete, true);
 });

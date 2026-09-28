@@ -31,3 +31,9 @@ export function tallyParts(bricks) {
 export function inventoryMarkup(items) {
   return items.map(p => `<li class="manual-part"><div class="manual-part-picture">${partIllustration(p)}</div><b>${p.count}×</b><span class="sr-only">${escapeMarkup(p.color)}</span></li>`).join('');
 }
+
+export function stepInventoryMarkup(items) {
+  if (!items?.length) return '';
+  const count = items.reduce((sum,item) => sum+item.count,0);
+  return `<div class="manual-step-parts"><span class="manual-step-parts-label">Add ${count} ${count === 1 ? 'piece' : 'pieces'}</span><ul aria-label="Pieces for this step">${items.map(p => `<li><div class="manual-step-part-picture">${partIllustration(p)}</div><span><b>${p.count}×</b> <span>${p.w} × ${p.d}</span></span></li>`).join('')}</ul></div>`;
+}

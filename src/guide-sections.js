@@ -1,3 +1,4 @@
+import {guideComponents} from './guide-components.js';
 const LARGE_SECTION_THRESHOLD = 120;
 const SECTION_TARGET_BRICKS = 80;
 const SECTION_MAX_BRICKS = 100;
@@ -60,6 +61,15 @@ function stepCourse(step, bricksById) {
 }
 
 function splitLargeModuleSteps(steps, bricksById) {
+  if (steps.some(step => step.buildRegion)) {
+    const runs = [];
+    for (const step of steps) {
+      const id = step.buildRegion?.id ?? null;
+      if (runs.at(-1)?.id === id) runs.at(-1).steps.push(step);
+      else runs.push({id, steps: [step]});
+    }
+    return runs.flatMap(run => run.id ? [run.steps] : splitLargeModuleSteps(run.steps, bricksById));
+  }
   const total = steps.reduce((sum, step) => sum + stepBrickCount(step), 0);
   if (total < LARGE_SECTION_THRESHOLD) return [steps];
   const sectionCount = Math.ceil(total / SECTION_TARGET_BRICKS);
@@ -153,7 +163,7 @@ function groupSectionSteps(steps, bricksById) {
   return runs;
 }
 
-function sectionData({ id, label, steps, modulesById, bricksById }) {
+export function sectionData({ id, label, steps, modulesById, bricksById }) {
   const moduleIds = [...new Set(steps.map((step) => step.moduleId))];
   const brickIds = steps.flatMap((step) => step.newBrickIds);
   const bricks = brickIds.map((brickId) => bricksById.get(brickId));
@@ -181,18 +191,22 @@ function sectionData({ id, label, steps, modulesById, bricksById }) {
     brickIds,
     brickCount: brickIds.length,
     inventory: inventoryFor(bricks),
-    courseRange: { min: Math.min(...bricks.map((brick) => brick.y)), max: Math.max(...bricks.map((brick) => brick.y)) },
+    courseRange: bricks.length
+      ? { min: Math.min(...bricks.map((brick) => brick.y)), max: Math.max(...bricks.map((brick) => brick.y)) }
+      : { min: null, max: null },
     groups,
   };
 }
 
 export function createGuideSections(plan) {
   const { bricksById, modulesById } = validatePlan(plan);
+  const components = new Map(guideComponents(plan).flatMap(c => c.moduleIds.map(id => [id,c])));
   const moduleRuns = [];
   for (const step of plan.steps) {
     const current = moduleRuns.at(-1);
-    if (current?.module.id === step.moduleId) current.steps.push(step);
-    else moduleRuns.push({ module: modulesById.get(step.moduleId), steps: [step] });
+    const component = components.get(step.moduleId);
+    if (current && (component ? current.component?.id === component.id : current.module.id === step.moduleId)) current.steps.push(step);
+    else moduleRuns.push({ module: modulesById.get(step.moduleId), component, steps: [step] });
   }
 
   const drafts = [];
@@ -205,14 +219,15 @@ export function createGuideSections(plan) {
   };
 
   for (const run of moduleRuns) {
-    const isTinyFinishingModule = run.module.brickIds.length <= TINY_GROUNDED_MODULE_BRICKS
+    const isTinyFinishingModule = !run.module.recipeFamily&&!run.module.componentRecipe&&!run.steps.some(step => step.buildRegion)
+      && run.module.brickIds.length <= TINY_GROUNDED_MODULE_BRICKS
       && (run.module.kind === 'grounded' || run.module.kind === 'detail' && run.module.label.startsWith('Color detail'));
     if (isTinyFinishingModule) {
       finishing.push(run);
       continue;
     }
     flushFinishing();
-    const chunks = run.module.kind === 'grounded' ? splitLargeModuleSteps(run.steps, bricksById) : [run.steps];
+    const chunks = !run.component && run.module.kind === 'grounded' ? splitLargeModuleSteps(run.steps, bricksById) : [run.steps];
     chunks.forEach((steps, index) => drafts.push({ label: progressionLabel(run.module.label, index, chunks.length), steps }));
   }
   flushFinishing();

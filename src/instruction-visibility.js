@@ -1,13 +1,66 @@
+import {workingViewBrick} from './recipe-working-frame.js';
+import {createAssemblyJoinPreview} from './assembly-join-preview.js';
+import {chooseUpwardInsertionAzimuth} from './upward-insertion-azimuth.js';
 const DEFAULT_AZIMUTH = Math.PI * 0.75;
 const DEFAULT_ELEVATION = Math.atan(1 / Math.sqrt(2));
 const DEFAULT_MAX_RAY_TESTS = 250_000;
 const SAMPLES_PER_BRICK = 9;
+
+// Keep the familiar orientation whenever every addition is visible. Otherwise
+// choose a quarter turn that exposes the most individual pieces, then the most
+// sampled surface. Ties retain the earliest view; work is bounded per angle.
+export function chooseInstructionView({visibleBricks, highlightedIds, scale}) {
+  const highlighted = new Set(highlightedIds);
+  const highlightGroups = visibleBricks.filter(b => highlighted.has(b.id)).map(b => ({id:b.id,bricks:[b]}));
+  const angles = [DEFAULT_AZIMUTH, DEFAULT_AZIMUTH + Math.PI/2, DEFAULT_AZIMUTH - Math.PI/2, DEFAULT_AZIMUTH + Math.PI];
+  let best = null;
+  const views = [];
+  for (const azimuth of angles) {
+    const report = evaluateInstructionVisibility({visibleBricks,highlightGroups,azimuth,scale,maxRayTests:250_000});
+    const weight = report.groups.reduce((sum,g) => sum+g.visibleSampleWeight,0);
+    views.push(report);
+    if (!best || report.visibleHighlightBrickCount > best.visibleHighlightBrickCount
+      || report.visibleHighlightBrickCount === best.visibleHighlightBrickCount && weight > best.weight) best = {...report,weight};
+    if (azimuth === DEFAULT_AZIMUTH && report.passes && !report.truncated) break;
+  }
+  const hidden = new Set(best.groups.filter(g => !g.visibleBrickCount).map(g => g.id));
+  const alternative = views.map(view => ({view,count:view.groups.filter(g => hidden.has(g.id) && g.visibleBrickCount).length}))
+    .sort((a,b) => b.count-a.count)[0];
+  return {...best,turned:best.azimuth !== DEFAULT_AZIMUTH,
+    alternateAzimuth:alternative?.count > 0 ? alternative.view.azimuth : null};
+}
 
 const DEFAULT_SCALE = Object.freeze({
   studsPerVoxel: 1,
   coursesPerVoxel: 5 / 6,
   voxelMm: 8,
 });
+
+/** Use the same per-piece underside view for planning and the live renderer. */
+export function chooseUndersideInstructionView({visibleBricks, highlightedIds, scale}) {
+  const dimensions = {...DEFAULT_SCALE, ...scale};
+  const boxes = visibleBricks.map(brick => bodyBox(brick, dimensions));
+  const bodies = boxes.map(({id, min, max}) => ({id,
+    x: (min.x + max.x) / 2, y: (min.y + max.y) / 2, z: (min.z + max.z) / 2,
+    w: max.x - min.x, h: max.y - min.y, d: max.z - min.z}));
+  const highlighted = new Set(highlightedIds);
+  const preferred = chooseUpwardInsertionAzimuth(bodies, highlighted);
+  const angles = [...new Set([preferred, ...[.75, 1.25, 1.75, .25].map(a => a * Math.PI)])];
+  const byId = new Map(visibleBricks.map(b => [b.id, b]));
+  const highlightGroups = [...highlighted].map(id => ({id, bricks: byId.has(id) ? [byId.get(id)] : []}));
+  let best;
+  for (const elevation of [-Math.PI / 7, -Math.PI / 4, -Math.PI / 3, -5 * Math.PI / 12]) {
+    for (const azimuth of angles) {
+      const report = evaluateInstructionVisibility({visibleBricks, highlightGroups, azimuth, elevation, scale: dimensions});
+      // A sliver of one corner is detectable but does not explain placement.
+      // Require a clear center ray or at least four exposed corner samples.
+      const view = {...report, passes: report.passes && report.groups.every(g => g.visibleSampleWeight >= 4)};
+      if (!best || view.visibleHighlightBrickCount > best.visibleHighlightBrickCount) best = view;
+      if (view.passes && !view.truncated) return {...view, alternateAzimuth: null};
+    }
+  }
+  return {...best, alternateAzimuth: null};
+}
 
 function bodyBox(brick, scale) {
   const width = (brick.w * 8 - 0.2) / scale.voxelMm;
@@ -43,14 +96,36 @@ function bodyVisibilitySamples(box) {
 function rayHitsBox(origin, direction, box) {
   let near = -Infinity;
   let far = Infinity;
-  for (const axis of ['x', 'y', 'z']) {
-    if (Math.abs(direction[axis]) < 1e-9) {
-      if (origin[axis] < box.min[axis] || origin[axis] > box.max[axis]) return false;
-      continue;
-    }
-    const inverse = 1 / direction[axis];
-    let first = (box.min[axis] - origin[axis]) * inverse;
-    let second = (box.max[axis] - origin[axis]) * inverse;
+  // This inner loop runs millions of times per guide. Explicit axes avoid
+  // allocating an array and doing dynamic property lookups for every box.
+  if (Math.abs(direction.x) < 1e-9) {
+    if (origin.x < box.min.x || origin.x > box.max.x) return false;
+  } else {
+    const inverse = 1 / direction.x;
+    let first = (box.min.x - origin.x) * inverse;
+    let second = (box.max.x - origin.x) * inverse;
+    if (first > second) [first, second] = [second, first];
+    near = Math.max(near, first);
+    far = Math.min(far, second);
+    if (near > far) return false;
+  }
+  if (Math.abs(direction.y) < 1e-9) {
+    if (origin.y < box.min.y || origin.y > box.max.y) return false;
+  } else {
+    const inverse = 1 / direction.y;
+    let first = (box.min.y - origin.y) * inverse;
+    let second = (box.max.y - origin.y) * inverse;
+    if (first > second) [first, second] = [second, first];
+    near = Math.max(near, first);
+    far = Math.min(far, second);
+    if (near > far) return false;
+  }
+  if (Math.abs(direction.z) < 1e-9) {
+    if (origin.z < box.min.z || origin.z > box.max.z) return false;
+  } else {
+    const inverse = 1 / direction.z;
+    let first = (box.min.z - origin.z) * inverse;
+    let second = (box.max.z - origin.z) * inverse;
     if (first > second) [first, second] = [second, first];
     near = Math.max(near, first);
     far = Math.min(far, second);
@@ -197,4 +272,65 @@ export function evaluateInstructionVisibility({
     visibleHighlightBrickCount: reports.reduce((sum, group) => sum + group.visibleBrickCount, 0),
     groups: reports,
   };
+}
+
+const sequenceViews = new WeakMap();
+// Plan a run together: choose a camera that can remain useful through the next
+// placements instead of returning to the default after every easy diagram.
+export function chooseInstructionSequence(plan) {
+  if(sequenceViews.has(plan)) return sequenceViews.get(plan);
+  const byId=new Map((plan.bricks??[]).map(b=>[b.id,b]));
+  const repairedAssemblies=new Set((plan.modules??[]).filter(m=>m.localInterfaceRepair).map(m=>m.id));
+  const sharedAssemblies=new Set((plan.modules??[]).filter(m=>m.sharedHandledRecipe).map(m=>m.id));
+  const angles=[DEFAULT_AZIMUTH,DEFAULT_AZIMUTH+Math.PI/2,DEFAULT_AZIMUTH-Math.PI/2,DEFAULT_AZIMUTH+Math.PI];
+  const result=new Map();let run=[];
+  function finish() {
+    if(!run.length) return;
+    let states=angles.map((azimuth,i)=>({cost:i===0?0:.25,path:[],azimuth}));
+    for(const step of run) {
+      const visibleBricks=step.visibleBrickIds.map(id=>byId.get(id)).filter(Boolean);
+      const highlightGroups=step.highlightBrickIds.map(id=>({id,bricks:[byId.get(id)]}));
+      const views=angles.map(azimuth=>({...evaluateInstructionVisibility({visibleBricks,highlightGroups,azimuth}),alternateAzimuth:null}));
+      let available=views.filter(v=>v.passes&&!v.truncated);
+      if(!available.length) available=[chooseInstructionView({visibleBricks,highlightedIds:step.highlightBrickIds})];
+      states=available.map(view=>{
+        const previous=states.map(s=>({state:s,cost:s.cost+(s.azimuth===view.azimuth?0:1)}))
+          .sort((a,b)=>a.cost-b.cost)[0];
+        return {cost:previous.cost,path:[...previous.state.path,view],azimuth:view.azimuth};
+      });
+    }
+    const best=states.sort((a,b)=>a.cost-b.cost)[0];
+    let previous=DEFAULT_AZIMUTH;
+    run.forEach((step,i)=>{const view=best.path[i];result.set(step.id,{...view,turned:view.azimuth!==previous});previous=view.azimuth;});
+    run=[];
+  }
+  for(const [index,step] of plan.steps.entries()) {
+    if(step.workingOrientation?.kind==='inverted'){
+      finish();
+      result.set(step.id,chooseInstructionView({visibleBricks:step.visibleBrickIds.map(id=>workingViewBrick(byId.get(id),step.workingOrientation)),highlightedIds:step.highlightBrickIds}));
+      continue;
+    }
+    if(!byId.size||step.insertionDirection==='up') {finish();continue;}
+    if(step.kind==='join') {
+      finish();
+      // Repeated handled assemblies attach at different locations. Expose the
+      // current copy. Repaired interfaces use the actual exploded scene so
+      // a camera cannot pass merely because the final resting place is visible.
+      if(!step.nestedRecipe&&(repairedAssemblies.has(step.moduleId)||sharedAssemblies.has(step.moduleId)&&!step.joinContext)) {
+        const visibleBricks=step.visibleBrickIds.map(id=>byId.get(id)).filter(Boolean);
+        const expanded=createAssemblyJoinPreview({model:{kind:'bricks',bricks:visibleBricks},highlightIds:new Set(step.highlightBrickIds),joinContext:step.joinContext});
+        const view=chooseInstructionView({
+          visibleBricks:expanded.model.bricks,
+          highlightedIds:step.highlightBrickIds,
+        });
+        const previous=plan.steps[index-1];
+        const previousAngle=previous?.kind==='join'?result.get(previous.id)?.azimuth:undefined;
+        result.set(step.id,{...view,turned:view.azimuth!==(previousAngle??DEFAULT_AZIMUTH)});
+      }
+      continue;
+    }
+    if(run.length&&run[0].moduleId!==step.moduleId) finish();
+    run.push(step);
+  }
+  finish();sequenceViews.set(plan,result);return result;
 }

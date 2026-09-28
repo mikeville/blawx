@@ -1,8 +1,12 @@
+import {guideComponents} from './guide-components.js';
 import { createGuideSections } from './guide-sections.js';
 import { deriveGuidePresentation } from './guide-presentation.js';
 import { createGuideNumbering, formatGuideStepRange } from './guide-numbering.js';
 import { escapeMarkup } from './part-illustration.js';
 import { varyGuideSectionLabels } from './guide-label-variation.js';
+import { createStepGuidance } from './guide-step-guidance.js';
+import { chooseInstructionSequence } from './instruction-visibility.js';
+import { tallyParts } from './part-illustration.js';
 
 const MAX_FLAT_SECTION_STEPS = 18;
 const MIN_ORDINARY_SECTION_STEPS = 3;
@@ -210,6 +214,12 @@ function assemblyCompatible(left, right, plan) {
 }
 
 function compatibleAdjacentSections(left, right, plan) {
+  const components = guideComponents(plan);
+  const ownership = section => components.find(c => section.moduleIds.some(id => c.moduleIds.includes(id)))?.id;
+  if ((ownership(left) || ownership(right)) && ownership(left) !== ownership(right)) return false;
+  const lastRegion = plan.steps.find(step => step.id === left.stepIds.at(-1))?.buildRegion?.id;
+  const nextRegion = plan.steps.find(step => step.id === right.stepIds[0])?.buildRegion?.id;
+  if ((lastRegion || nextRegion) && lastRegion !== nextRegion) return false;
   const bothUnnamed = !hasNamedPurpose(left) && !hasNamedPurpose(right);
   const sharedNamedPurpose = hasSharedNamedPurpose(left, right);
   const hasTinySection = left.stepIds.length < MIN_ORDINARY_SECTION_STEPS
@@ -344,10 +354,25 @@ export function createFlatBookletPresentation(rawPresentation, plan) {
   const minStepsPerDisplaySection = Math.min(...sections.map(section => section.stepIds.length));
   const shortSections = sections.filter(section => section.stepIds.length < MIN_ORDINARY_SECTION_STEPS);
 
+  const variedSections = varyGuideSectionLabels(sections);
+  const structuralLabels = new Set(['Supports', 'Base assembly', 'Platform', 'Main build']);
+  const structuralCounts = new Map();
+  for (const section of sections) if (!hasNamedPurpose(section) && structuralLabels.has(baseLabel(section))) {
+    const label = baseLabel(section);
+    structuralCounts.set(label, (structuralCounts.get(label) ?? 0) + 1);
+  }
+  const ordinals = new Map();
+  const labeledSections = variedSections.map((section,index) => {
+    const source = sections[index], label = baseLabel(source), count = structuralCounts.get(label);
+    if (hasNamedPurpose(source) || !count) return section;
+    const ordinal = (ordinals.get(label) ?? 0) + 1;
+    ordinals.set(label,ordinal);
+    return {...section,label:count > 1 ? `${label} · ${ordinal}/${count}` : label};
+  });
   return {
     ...rawPresentation,
     version: 4,
-    sections: varyGuideSectionLabels(sections),
+    sections: labeledSections,
     sequence,
     stats: {
       ...rawPresentation.stats,
@@ -386,6 +411,8 @@ export function resolveBookletInitialState(readerState, sectionCount, sections =
 
 export function createChapterDiagramData(section, plan, numbering) {
   const byStep = new Map(plan.steps.map(step => [step.id, step]));
+  const byBrick = new Map((plan.bricks ?? []).map(brick => [brick.id, brick]));
+  const views = chooseInstructionSequence(plan);
   const specs = [];
   const groupFigures = new Map();
   for (const group of section.groups) {
@@ -393,12 +420,21 @@ export function createChapterDiagramData(section, plan, numbering) {
       const step = byStep.get(id);
       if (!step) throw new RangeError(`Displayed guide references missing step ${id}.`);
       const joinContext = step.kind === 'join' ? step.joinContext : null;
+      const view = views.get(id);
       const spec = {
         stepId: id,
         visible: step.visibleBrickIds,
         highlight: step.highlightBrickIds,
         insertionDirection: step.insertionDirection,
+        ...(step.workingOrientation ? {workingOrientation:step.workingOrientation} : {}),
         joinContext,
+        attachmentTask: step.attachmentTask,
+        guidance: createStepGuidance(plan, step, numbering, section.nestedRepeat && section.repeatCount > 1
+          ? {copies:section.repeatCount,attachmentStepIds:section.instances.map(instance=>instance.attachmentStepId)} : null),
+        azimuth: view?.azimuth,
+        viewTurned: view?.turned ?? false,
+        alternateAzimuth: view?.alternateAzimuth ?? null,
+        parts: tallyParts((step.newBrickIds ?? []).map(id => byBrick.get(id)).filter(Boolean)),
         unresolved: step.kind === 'unresolved' || Boolean(step.issues?.length),
         number: numbering.byStepId.get(id),
       };

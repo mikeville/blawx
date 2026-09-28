@@ -179,9 +179,10 @@ function publicModuleState(state) {
   };
 }
 
-export function assessWorkSurfaceQuality(plan) {
+export function assessWorkSurfaceQuality(plan,{moduleIds=null}={}) {
   const { ownerByBrickId, adjacency } = validatePlan(plan);
-  const workSurfaceModules = plan.modules.filter((module) => module.buildContext?.kind === 'work-surface');
+  const workSurfaceModules = plan.modules.filter((module) => moduleIds
+    ? moduleIds.has(module.id) : module.buildContext?.kind === 'work-surface');
   const states = new Map(workSurfaceModules.map((module) => [module.id, createModuleState(module)]));
   const introducedIds = new Set();
   const outerStepIds = new Set();

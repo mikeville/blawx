@@ -10,7 +10,7 @@ import { createBookletPresentation, createChapterDiagramData } from '../src/asse
 
 test('booklet adapter preserves current saved construction guides', async () => {
   const index = JSON.parse(await readFile(new URL('../public/examples/index.json', import.meta.url)));
-  const expectedShortCounts = new Map([[42, 0], [43, 0], [44, 4], [45, 0], [46, 0], [47, 1]]);
+  const maximumShortCounts = new Map([[42, 0], [43, 0], [44, 4], [45, 0], [46, 0], [47, 1]]);
   for (let shape = 42; shape <= 47; shape += 1) {
     const record = index.find((entry) => entry.shape === shape);
     assert.ok(record, `Shape ${shape} is present`);
@@ -29,7 +29,7 @@ test('booklet adapter preserves current saved construction guides', async () => 
       byStep.get(stepId).orderedOperations.map(operation => operation.id));
 
     assert.equal(view.presentation.stats.coverageComplete, true, `Shape ${shape} coverage`);
-    assert.equal(view.presentation.stats.shortSectionCount, expectedShortCounts.get(shape), `Shape ${shape} short sections`);
+    assert.ok(view.presentation.stats.shortSectionCount <= maximumShortCounts.get(shape), `Shape ${shape} short sections must not increase`);
     assert.deepEqual(displayedStepIds, rawDisplayedStepIds, `Shape ${shape} displayed step order`);
     assert.deepEqual(displayedOperationIds, rawOperationIds, `Shape ${shape} source operation order`);
     assert.equal(

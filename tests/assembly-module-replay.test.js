@@ -238,3 +238,16 @@ test('replay retains an existing rectangular work-surface recipe without a secon
   assert.deepEqual(recipe(candidate), recipe(beforePlan));
   assert.deepEqual(candidate.modules.find(({ id }) => id === band.id).buildContext, band.buildContext);
 });
+
+test('automatically discovered detached review groups retain their replay classification',()=>{
+  const brickModel=model([brick(0,0,0,2,2),brick(0,1,0,2,2),brick(8,3,0),brick(12,4,0)]);
+  const before=createAssemblyPlan({brickModel});
+  const detached=before.modules.find(m=>m.kind==='floating'&&m.brickIds.length>1);
+  assert.ok(detached);assert.equal(detached.groupType,'detached-parts');
+  const moduleReplay=before.modules.map(m=>({...m,brickOrder:before.steps.filter(s=>s.moduleId===m.id).flatMap(s=>s.newBrickIds)}));
+  const after=createAssemblyPlan({brickModel,moduleReplay});
+  assert.equal(after.stats.unresolvedBrickCount,before.stats.unresolvedBrickCount);
+  assert.equal(after.stats.validJoinCount,before.stats.validJoinCount);
+  assert.equal(after.modules.find(m=>m.id===detached.id).status,'unresolved');
+  assert.deepEqual(after.steps.filter(s=>s.moduleId===detached.id),before.steps.filter(s=>s.moduleId===detached.id));
+});

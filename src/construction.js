@@ -122,7 +122,7 @@ function candidateScore({ w, d }, x, z, y, width, lowerOwners, bridgeTracker, or
     + bridgeTracker.benefit(lower) * 15_000 + supported * 4 - alignedLowerSeams * (y % 2 === 1 ? 1_500 : 0);
 }
 
-function mappedLayers(cells) {
+function mappedLayers(cells, preserveThinLayers = false) {
   const layers = new Map();
   let mappedCellCount = 0;
   for (const cell of cells) {
@@ -134,11 +134,30 @@ function mappedLayers(cells) {
       mappedCellCount += 1;
     }
   }
+  // A one-voxel shelf can fall entirely between rounded course boundaries.
+  // Recover its lower half-course only where the ordinary mapping is empty;
+  // existing colors and cells always win. This remains a candidate mapping,
+  // selected by the complete construction pipeline after assembly validation.
+  if (preserveThinLayers) {
+    const occupied = new Set([...layers].flatMap(([y, layer]) => layer.map(cell => studKey(cell.x, y, cell.z))));
+    for (const cell of cells) {
+      const startY = Math.round(cell.y * 5 / 6);
+      if (startY !== Math.round((cell.y + 1) * 5 / 6) || startY === 0) continue;
+      const y = startY - 1;
+      const overlap = Math.min((cell.y + 1) * 5, (y + 1) * 6) - Math.max(cell.y * 5, y * 6);
+      const key = studKey(cell.x, y, cell.z);
+      if (overlap < 3 || occupied.has(key)) continue;
+      if (!layers.has(y)) layers.set(y, []);
+      layers.get(y).push(cell);
+      occupied.add(key);
+      mappedCellCount += 1;
+    }
+  }
   for (const layer of layers.values()) layer.sort((a, b) => a.z - b.z || a.x - b.x || a.color.localeCompare(b.color));
   return { layers, mappedCellCount };
 }
 
-function packCells(cells, { scanOrder = 'rows', orientationPhase = 0 } = {}) {
+function packCells(cells, { scanOrder = 'rows', orientationPhase = 0, preserveThinLayers = false } = {}) {
   let maxX = 0;
   let maxY = 0;
   let maxZ = 0;
@@ -147,7 +166,7 @@ function packCells(cells, { scanOrder = 'rows', orientationPhase = 0 } = {}) {
     maxY = Math.max(maxY, cell.y);
     maxZ = Math.max(maxZ, cell.z);
   }
-  const mapped = mappedLayers(cells);
+  const mapped = mappedLayers(cells, preserveThinLayers);
 
   const width = maxX + 1;
   const depth = maxZ + 1;
@@ -374,13 +393,13 @@ function createPlanFor(bricks, rawModel, sourceProgram) {
   });
 }
 
-function compactDifference(originalCells, mappedCells) {
+function compactDifference(originalCells, mappedCells, preserveThinLayers = false) {
   const originalTicks = new Map();
   const mappedTicks = new Map();
   for (const cell of originalCells) for (let tick = cell.y * 5; tick < (cell.y + 1) * 5; tick += 1) {
     originalTicks.set(cell.x + cell.z * 64 + tick * 4096, cell.color);
   }
-  const { layers } = mappedLayers(mappedCells);
+  const { layers } = mappedLayers(mappedCells, preserveThinLayers);
   for (const [course, cells] of layers) for (const cell of cells) for (let tick = course * 6; tick < (course + 1) * 6; tick += 1) {
     mappedTicks.set(cell.x + cell.z * 64 + tick * 4096, cell.color);
   }
@@ -619,26 +638,27 @@ export function inspectConstruction(brickModel) {
 
 export function convertToBricks(options = {}) {
   const started = now();
-  const { rawModel, sourceProgram = null, adjustments = false, scaleMode } = options;
+  const { rawModel, sourceProgram = null, adjustments = false, scaleMode, preserveThinLayers = false } = options;
   if (typeof adjustments !== 'boolean') throw new TypeError('adjustments must be a boolean.');
+  if (typeof preserveThinLayers !== 'boolean') throw new TypeError('preserveThinLayers must be a boolean.');
   if (scaleMode != null && scaleMode !== 'compact') throw new TypeError('scaleMode is no longer supported; compact conversion is the only mode.');
   const validation = validateVoxels(rawModel);
   if (!validation.valid) throw new TypeError(`Invalid raw voxel model: ${validation.errors.join(' ')}`);
   const rawCellCount = validation.stats.cellCount;
-  const initialMapping = mappedLayers(rawModel.cells);
+  const initialMapping = mappedLayers(rawModel.cells, preserveThinLayers);
   const expandedVolume = initialMapping.mappedCellCount;
   if (expandedVolume > MAX_EXPANDED_CELLS) throw new RangeError(`Expanded construction volume exceeds the ${MAX_EXPANDED_CELLS} stud-course-cell limit.`);
   if (expandedVolume === 0) throw new RangeError('Compact vertical resampling removed every source cell; raw geometry remains available.');
 
   const baselinePackStarted = now();
   let cells = rawModel.cells;
-  let packed = packCells(cells);
+  let packed = packCells(cells, { preserveThinLayers });
   let bricks = packed.bricks;
   let mappedCellCount = packed.mappedCellCount;
   let packingMs = now() - baselinePackStarted;
   let diagnostics = inspectConstruction({ version: 1, kind: 'bricks', bricks });
   const adjustmentRecords = [];
-  let packingStrategy = { name: 'baseline', scanOrder: 'rows', orientationPhase: 0 };
+  let packingStrategy = { name: 'baseline', scanOrder: 'rows', orientationPhase: 0, preserveThinLayers };
   const adjustmentSearch = {
     budget: Math.min(32, Math.floor(rawCellCount * 0.01)),
     candidateCount: 0,
@@ -702,7 +722,7 @@ export function convertToBricks(options = {}) {
     if (assemblyPlan) {
       for (const variant of PACKING_VARIANTS) {
         const repackStarted = now();
-        const variantPacked = packCells(cells, variant);
+        const variantPacked = packCells(cells, { ...variant, preserveThinLayers });
         packingMs += now() - repackStarted;
         adjustmentSearch.packingVariantsTried += 1;
         const variantDiagnostics = inspectConstruction({ version: 1, kind: 'bricks', bricks: variantPacked.bricks });
@@ -717,7 +737,7 @@ export function convertToBricks(options = {}) {
         diagnostics = variantDiagnostics;
         assemblyPlan = variantPlan;
         assemblyFeedback.final = assemblyFeedbackStats(assemblyPlan);
-        packingStrategy = variant;
+        packingStrategy = { ...variant, preserveThinLayers };
         adjustmentSearch.packingRetiled = true;
       }
 
@@ -737,7 +757,7 @@ export function convertToBricks(options = {}) {
           attempted.add(candidate.identity);
           adjustmentSearch.trialCount += 1;
           const adjustedCells = [...cells, { x: candidate.x, y: candidate.y, z: candidate.z, color: candidate.color }];
-          const adjustedVolume = mappedLayers(adjustedCells).mappedCellCount;
+          const adjustedVolume = mappedLayers(adjustedCells, preserveThinLayers).mappedCellCount;
           if (adjustedVolume <= 0 || adjustedVolume > MAX_EXPANDED_CELLS) continue;
           const repackStarted = now();
           const adjustedPacked = packCells(adjustedCells, packingStrategy);
@@ -757,7 +777,7 @@ export function convertToBricks(options = {}) {
           adjustmentRecords.push({
             type: 'add-voxel-assembly-support',
             cell: { x: candidate.x, y: candidate.y, z: candidate.z, color: candidate.color },
-            addedStudCourseCells: mappedLayers([candidate]).mappedCellCount,
+            addedStudCourseCells: mappedLayers([candidate], preserveThinLayers).mappedCellCount,
             reason: `${candidate.reason} Accepted only after both graph diagnostics and assembly feedback passed.`,
             before,
             after: structuralSnapshot(diagnostics),
@@ -776,8 +796,8 @@ export function convertToBricks(options = {}) {
   adjustmentSearch.after = structuralSnapshot(diagnostics);
 
   const addedVoxelCount = cells.length - rawCellCount;
-  const differences = compactDifference(rawModel.cells, cells);
-  const baselineResampling = compactDifference(rawModel.cells, rawModel.cells);
+  const differences = compactDifference(rawModel.cells, cells, preserveThinLayers);
+  const baselineResampling = compactDifference(rawModel.cells, rawModel.cells, preserveThinLayers);
   const conversionMs = now() - started;
   const metrics = {
     conversionMs,
@@ -792,6 +812,7 @@ export function convertToBricks(options = {}) {
     colorDifferenceRatio: differences.recoloredVolumeVoxelEquivalent / rawCellCount,
     structuralAddedVoxelCount: addedVoxelCount,
     structuralAddedMappedCellCount: mappedCellCount - initialMapping.mappedCellCount,
+    recoveredThinLayerCellCount: initialMapping.mappedCellCount - mappedLayers(rawModel.cells).mappedCellCount,
     adjustmentSearch,
     assemblyFeedback,
     packingStrategy: packingStrategy.name,
