@@ -9,19 +9,14 @@ import {
   groupBrickOutlinesBySourceColor,
 } from './black-piece-ink.js';
 import { createStudRenderSettings } from './stud-appearance.js';
+import {chooseUpwardInsertionAzimuth} from './upward-insertion-azimuth.js';
+import {chooseUndersideInstructionView} from './instruction-visibility.js';
+export {chooseUpwardInsertionAzimuth} from './upward-insertion-azimuth.js';
 
 const ISO_ORIGIN = Math.PI / 4;
 const QUARTER_TURN = Math.PI / 2;
 const STANDARD_ELEVATION = Math.atan(1 / Math.sqrt(2));
 const UNDERSIDE_ELEVATION = -Math.PI / 7;
-const UPWARD_AZIMUTHS = Object.freeze([
-  Math.PI * 0.75,
-  Math.PI * 1.25,
-  Math.PI * 1.75,
-  Math.PI * 0.25,
-]);
-const MAX_VISIBILITY_RAY_TESTS = 250_000;
-const MAX_VISIBILITY_BODIES = Math.floor(MAX_VISIBILITY_RAY_TESTS / (UPWARD_AZIMUTHS.length * 9));
 const EDGE_SEGMENTS = [[0, 1], [1, 3], [3, 2], [2, 0], [4, 5], [5, 7], [7, 6], [6, 4], [0, 4], [1, 5], [2, 6], [3, 7]];
 const EDGE_POINTS = [[-1,-1,-1],[1,-1,-1],[-1,1,-1],[1,1,-1],[-1,-1,1],[1,-1,1],[-1,1,1],[1,1,1]];
 const DARK_FACE_LUMINANCE_FLOOR = 0.03;
@@ -81,108 +76,6 @@ export function getInstructionHighlightStyle() {
   return ACCEPTED_INSTRUCTION_HIGHLIGHT_STYLE;
 }
 
-function bodyBox(body) {
-  return {
-    id: body.id,
-    min: { x: body.x - body.w / 2, y: body.y - body.h / 2, z: body.z - body.d / 2 },
-    max: { x: body.x + body.w / 2, y: body.y + body.h / 2, z: body.z + body.d / 2 },
-  };
-}
-
-function bodyVisibilitySamples(box) {
-  const center = {
-    x: (box.min.x + box.max.x) / 2,
-    y: (box.min.y + box.max.y) / 2,
-    z: (box.min.z + box.max.z) / 2,
-    weight: 4,
-  };
-  const corners = [];
-  for (const x of [box.min.x, box.max.x]) {
-    for (const y of [box.min.y, box.max.y]) {
-      for (const z of [box.min.z, box.max.z]) corners.push({ x, y, z, weight: 1 });
-    }
-  }
-  return [center, ...corners];
-}
-
-function rayHitsBox(origin, direction, box) {
-  let near = -Infinity;
-  let far = Infinity;
-  for (const axis of ['x', 'y', 'z']) {
-    if (Math.abs(direction[axis]) < 1e-9) {
-      if (origin[axis] < box.min[axis] || origin[axis] > box.max[axis]) return false;
-      continue;
-    }
-    const inverse = 1 / direction[axis];
-    let first = (box.min[axis] - origin[axis]) * inverse;
-    let second = (box.max[axis] - origin[axis]) * inverse;
-    if (first > second) [first, second] = [second, first];
-    near = Math.max(near, first);
-    far = Math.min(far, second);
-    if (near > far) return false;
-  }
-  return far > 1e-5;
-}
-
-function visibilityScore(sampledBoxes, allBoxes, azimuth) {
-  const horizontal = Math.cos(UNDERSIDE_ELEVATION);
-  const direction = {
-    x: Math.sin(azimuth) * horizontal,
-    y: Math.sin(UNDERSIDE_ELEVATION),
-    z: Math.cos(azimuth) * horizontal,
-  };
-  let score = 0;
-  for (const sampled of sampledBoxes) {
-    for (const point of bodyVisibilitySamples(sampled)) {
-      const origin = {
-        x: point.x + direction.x * 1e-4,
-        y: point.y + direction.y * 1e-4,
-        z: point.z + direction.z * 1e-4,
-      };
-      const hidden = allBoxes.some(box => box !== sampled && rayHitsBox(origin, direction, box));
-      if (!hidden) score += point.weight;
-    }
-  }
-  return score;
-}
-
-function evenlySample(items, count) {
-  if (items.length <= count) return items;
-  if (count <= 0) return [];
-  return Array.from({ length: count }, (_, index) => items[Math.floor(index * items.length / count)]);
-}
-
-export function chooseUpwardInsertionAzimuth(bodies, highlightIds) {
-  const bodyBoxes = bodies.map(bodyBox);
-  let highlighted = bodyBoxes.filter(box => highlightIds?.has(box.id));
-  let boxes = bodyBoxes;
-  if (!highlighted.length || boxes.length < 2) return UPWARD_AZIMUTHS[0];
-
-  if (boxes.length > MAX_VISIBILITY_BODIES) {
-    const retainedHighlighted = evenlySample(highlighted, Math.min(64, MAX_VISIBILITY_BODIES));
-    const context = bodyBoxes.filter(box => !highlightIds.has(box.id));
-    boxes = [...retainedHighlighted, ...evenlySample(context, MAX_VISIBILITY_BODIES - retainedHighlighted.length)];
-    highlighted = retainedHighlighted;
-  }
-
-  // Bound worst-case local work while sampling the highlighted geometry evenly.
-  const perBodyTests = UPWARD_AZIMUTHS.length * 9 * boxes.length;
-  const sampleCount = Math.max(1, Math.min(highlighted.length, Math.floor(MAX_VISIBILITY_RAY_TESTS / perBodyTests)));
-  const sampled = sampleCount === highlighted.length
-    ? highlighted
-    : evenlySample(highlighted, sampleCount);
-  let bestAzimuth = UPWARD_AZIMUTHS[0];
-  let bestScore = -1;
-  for (const azimuth of UPWARD_AZIMUTHS) {
-    const score = visibilityScore(sampled, boxes, azimuth);
-    if (score > bestScore) {
-      bestScore = score;
-      bestAzimuth = azimuth;
-    }
-  }
-  return bestAzimuth;
-}
-
 function makeEdgeGeometry(bodies) {
   const positions = new Float32Array(bodies.length * 72);
   let cursor = 0;
@@ -224,7 +117,7 @@ function makeUpwardInsertionArrow(bodies) {
   );
 }
 
-function makeDownwardJoinArrow({ start, end }) {
+function makeJoinArrow({ start, end }) {
   const origin = new THREE.Vector3(start.x, start.y, start.z);
   const direction = new THREE.Vector3(end.x - start.x, end.y - start.y, end.z - start.z);
   const length = direction.length();
@@ -311,7 +204,9 @@ export class ProductViewer {
     frameModel = model,
     highlightIds = null,
     insertionDirection = null,
+    workingOrientation = null,
     joinContext = null,
+    attachmentTask = null,
     studAppearance = null,
     blackPieceOutline = DEFAULT_BLACK_PIECE_OUTLINE,
     animate = true,
@@ -326,10 +221,18 @@ export class ProductViewer {
     let data = isBricks ? brickPreviewData(renderModel) : voxelPreviewData(renderModel);
     const appearance = ACCEPTED_INSTRUCTION_APPEARANCE;
     const instructionDiagram = highlightIds !== null;
-    const fromBelow = insertionDirection === 'up';
+    const inverted=workingOrientation?.kind==='inverted';
+    this.group.rotation.x=inverted?Math.PI:0;
+    const fromBelow = insertionDirection === 'up' && !inverted;
     // Reset on every model so an underside step cannot affect the next ordinary one.
     this.elevation = fromBelow ? UNDERSIDE_ELEVATION : STANDARD_ELEVATION;
-    if (fromBelow) this.azimuth = chooseUpwardInsertionAzimuth(data.bodies, highlightIds);
+    if (fromBelow) {
+      const view = isBricks ? chooseUndersideInstructionView({
+        visibleBricks: renderModel.bricks, highlightedIds: [...(highlightIds ?? [])], scale: renderModel.meta?.scale,
+      }) : {azimuth: chooseUpwardInsertionAzimuth(data.bodies, highlightIds), elevation: UNDERSIDE_ELEVATION};
+      this.azimuth = view.azimuth;
+      this.elevation = view.elevation;
+    }
     const geometry = new THREE.BoxGeometry(1, 1, 1);
     const voxelMm = renderModel.meta?.scale?.voxelMm ?? 8;
     const studSettings = createStudRenderSettings(data.studs, voxelMm, studAppearance);
@@ -397,7 +300,7 @@ export class ProductViewer {
       }
     }
 
-    let insertionArrow = null;
+    const insertionArrows = [];
     const joinArrows = [];
     if (highlightIds) {
       const activeBodies = data.bodies.filter(body => highlightIds.has(body.id));
@@ -434,18 +337,22 @@ export class ProductViewer {
         this.renderObjects.push(activeOutlines);
       }
 
-      if (fromBelow) {
-        insertionArrow = makeUpwardInsertionArrow(activeBodies);
-        if (insertionArrow) {
-          insertionArrow.renderOrder = 4;
-          this.group.add(insertionArrow);
+      if (fromBelow && !joinPreview.active) {
+        const groups = attachmentTask?.kind === 'individual-pieces'
+          ? activeBodies.map(body => [body]) : [activeBodies];
+        for (const bodies of groups) {
+          const arrow = makeUpwardInsertionArrow(bodies);
+          if (!arrow) continue;
+          arrow.renderOrder = 4;
+          this.group.add(arrow);
           // ArrowHelper owns its materials and exposes dispose() for them.
-          this.renderObjects.push(insertionArrow);
+          this.renderObjects.push(arrow);
+          insertionArrows.push(arrow);
         }
       }
       if (joinPreview.active) {
         for (const arrowData of joinPreview.arrows) {
-          const arrow = makeDownwardJoinArrow(arrowData);
+          const arrow = makeJoinArrow(arrowData);
           if (!arrow) continue;
           arrow.renderOrder = 4;
           this.group.add(arrow);
@@ -483,9 +390,9 @@ export class ProductViewer {
         box.expandByPoint(new THREE.Vector3(b.x+b.w/2,b.y+b.h/2,b.z+b.d/2));
       }
     } else box.setFromObject(this.group);
-    if (insertionArrow) {
-      insertionArrow.updateWorldMatrix(true, true);
-      box.expandByObject(insertionArrow, true);
+    for (const arrow of insertionArrows) {
+      arrow.updateWorldMatrix(true, true);
+      box.expandByObject(arrow, true);
     }
     if (joinPreview.active) {
       // frameModel describes the final construction. Extend that stable frame
@@ -499,6 +406,7 @@ export class ProductViewer {
         box.expandByObject(arrow, true);
       }
     }
+    if(inverted)box.applyMatrix4(new THREE.Matrix4().makeRotationX(Math.PI));
     this.center = box.getCenter(new THREE.Vector3());
     const sphere = box.getBoundingSphere(new THREE.Sphere());
     this.distance = Math.max(18, sphere.radius * 3.2);
