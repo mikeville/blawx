@@ -98,3 +98,15 @@ test('rejects inputs that cannot fit a bounded partition', () => {
   assert.throws(() => createRectangularLayerGroups([], { maxBricks: 0 }), /positive integer/);
   assert.throws(() => createRectangularLayerGroups([brick('same', 0, 1, 0), brick('same', 2, 1, 0)]), /Duplicate/);
 });
+
+test('balanced panels keep protruding details with the adjoining course without losing parts',()=>{
+  const bricks=[];let n=0;
+  for(let z=0;z<5;z++)for(let x=0;x<6;x++)bricks.push(brick(`p${n++}`,x*2,1,z*2,2,2,'red'));
+  bricks.push(brick('detail',4,1,-1,2,1,'blue'));
+  for(let turn=0;turn<4;turn++){
+    const moved=rotateTranslate(bricks,turn),groups=createRectangularLayerGroups(moved,{maxBricks:24,maxPartTypes:8,balancePanels:true});
+    assert.equal(groups.length,2);assert.ok(groups.every(g=>g.brickIds.length>=15&&g.brickIds.length<=24));
+    assert.deepEqual(groups.flatMap(g=>g.brickIds).sort(),bricks.map(b=>b.id).sort());
+    assert.ok(groups.find(g=>g.brickIds.includes('detail')).brickIds.length>1);
+  }
+});

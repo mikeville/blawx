@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 
 import { createAssemblyPlan } from '../src/assembly.js';
 import { prepareAssemblyGuide } from '../src/prepare-assembly-guide.js';
-import { planSubassemblies } from '../src/plan-subassemblies.js';
+import { planSubassemblies, revisitSubassembliesAfterAttachment } from '../src/plan-subassemblies.js';
 import { unresolvedCells } from '../src/refine-construction.js';
 
 const brick = (x, y, z, w = 1, d = 1, color = 'red') => ({ x, y, z, w, d, color });
@@ -147,4 +147,61 @@ test('rejects a band that would require simultaneous alignment onto more than fo
 test('rejects incomplete inputs instead of guessing at a pre-guide or malformed result', () => {
   assert.throws(() => planSubassemblies(), /completed construction result/);
   assert.throws(() => planSubassemblies({ brickModel: { version: 1, kind: 'bricks', bricks: [] } }), /prepared result/);
+});
+
+test('a shared ground context retains true ownership for a separately built bridge', () => {
+  for (const turns of [0, 1, 2, 3]) {
+    const source = prepared(transformBricks([...bridge(), brick(-1, 0, 0, 1, 1, 'lightGray')], {turns, dx: 8, dz: -3}));
+    assert.ok(source.assemblyPlan.modules.some(m => m.groupType === 'shared-ground-layout'));
+    const frozen = structuredClone(source), result = planSubassemblies(source);
+    assert.equal(result.subassemblyRefinement.selected, true);
+    assert.deepEqual(source, frozen);
+    assert.deepEqual(result.brickModel, source.brickModel);
+    assert.equal(result.assemblyPlan.stats.unresolvedBrickCount, 0);
+    const assembly = result.assemblyPlan.modules.find(m => m.buildContext);
+    const ground = result.assemblyPlan.modules.find(m => m.groupType === 'shared-ground-layout');
+    assert.equal(ground.componentIds.length, 2);
+    assert.equal(assembly.componentIds.length, 1);
+    const component = result.assemblyPlan.graph.components.find(c => c.id === assembly.componentIds[0]);
+    assert.ok(assembly.brickIds.every(id => component.brickIds.includes(id)));
+    const join = result.assemblyPlan.steps.find(s => s.moduleId === assembly.id && s.kind === 'join');
+    assert.equal(join.joinContext.supportGroups.length, 2);
+    assert.equal(join.issues.length, 0);
+    assert.deepEqual(result.instructionPlan.steps.flatMap(s => s.sourceStepIds), result.assemblyPlan.steps.map(s => s.id));
+    assert.deepEqual(result.assemblyPlan.steps.flatMap(s => s.newBrickIds).sort(), source.assemblyPlan.bricks.map(b => b.id).sort());
+  }
+});
+
+test('a shared work area does not make disconnected selections into an assembly', () => {
+  const source = prepared([...bridge(), brick(-1, 0, 0, 1, 1, 'lightGray')]);
+  const loose = source.assemblyPlan.bricks.filter(b => b.y === 1).map(b => b.id);
+  assert.throws(() => createAssemblyPlan({brickModel: source.brickModel, workSurfaceBrickIds: loose}), /internally stud-connected/);
+});
+
+test('refreshes discovery after an accepted interface repair while sharing the evaluation allowance', () => {
+  const source = prepared([...bridge(), brick(-1, 0, 0, 1, 1, 'lightGray')]);
+  const pending = {...source, attachmentRefinement: {selected: true},
+    subassemblyRefinement: {selected: false, evaluatedCount: 7}};
+  const frozen = structuredClone(pending), result = revisitSubassembliesAfterAttachment(pending);
+  assert.equal(result.subassemblyRefinement.selected, true);
+  assert.equal(result.subassemblyRefinement.revisitedAfterAttachment, true);
+  assert.equal(result.subassemblyRefinement.limits.maxFullCandidates, 1);
+  assert.equal(result.subassemblyRefinement.totalEvaluatedCount, 8);
+  assert.deepEqual(result.subassemblyRefinement.previous, pending.subassemblyRefinement);
+  assert.deepEqual(pending, frozen);
+  assert.equal(revisitSubassembliesAfterAttachment(result), result);
+});
+
+test('does not repeat discovery without changed interfaces, available budget, or unresolved roots', () => {
+  const source = prepared(bridge());
+  const pending = {...source, attachmentRefinement: {selected: true},
+    subassemblyRefinement: {selected: false, evaluatedCount: 0}};
+  for (const change of [r => {r.attachmentRefinement.selected = false;},
+    r => {r.subassemblyRefinement.evaluatedCount = 8;},
+    r => {r.assemblyPlan.stats.rootFailureCount = 0;},
+    r => {r.assemblyPlan.modules[0].buildContext = {kind: 'work-surface'};}]) {
+    const protectedResult = structuredClone(pending);change(protectedResult);
+    assert.equal(revisitSubassembliesAfterAttachment(protectedResult), protectedResult);
+  }
+  for (const maxEvaluations of [-1, 9, 1.5]) assert.throws(() => planSubassemblies(source, {maxEvaluations}), /allowance/);
 });

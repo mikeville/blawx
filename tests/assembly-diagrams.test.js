@@ -60,6 +60,17 @@ function makePlan({
 
 const brick = (id, x, y, z, w, d, color = 'orange') => ({ id, x, y, z, w, d, color });
 
+test('keeps an addition visible before a later piece covers it, even when its operation has another visible piece', () => {
+  const plan = makePlan({
+    bricks: [brick('hidden', 3, 0, 3, 1, 1), brick('visible', 7, 0, 0, 1, 1), brick('cover', 0, 1, 0, 8, 8)],
+    stepBrickIds: [['hidden', 'visible'], ['cover']],
+  });
+  const result = compactAssemblyPlan(plan);
+  assert.equal(result.plan.steps.length, 2);
+  assert.equal(result.report.rejectedMergeCounts.visibility, 1);
+  assert.deepEqual(result.plan.steps.flatMap(step => step.newBrickIds), ['hidden', 'visible', 'cover']);
+});
+
 function connectedPatchPlan({ orderPolicy = 'connected-patches' } = {}) {
   const floor = Array.from({ length: 7 }, (_, index) => brick(`floor-${index}`, index, 2, 0, 1, 1));
   const bonds = Array.from({ length: 6 }, (_, index) => brick(`bond-${index}`, index, 3, 0, 2, 1));
@@ -259,21 +270,22 @@ test('connected-patch diagrams rewind before a trailing loose prerequisite and e
   assert.deepEqual(source, before);
   assert.deepEqual(first, second);
   assert.deepEqual(first.plan.steps.map(({ sourceStepIds }) => sourceStepIds), [
-    Array.from({ length: 10 }, (_, index) => `step-${index + 1}`),
+    ['step-1', 'step-2', 'step-3', 'step-4'],
+    ['step-5', 'step-6', 'step-7', 'step-8', 'step-9', 'step-10'],
     ['step-11', 'step-12'],
   ]);
-  assert.deepEqual(cumulativeComponentsAtDiagramEnds(first.plan), [1, 1]);
-  assert.ok(first.plan.steps.every(({ newBrickIds }) => newBrickIds.length <= 12));
+  assert.deepEqual(cumulativeComponentsAtDiagramEnds(first.plan), [1, 1, 1]);
+  assert.ok(first.plan.steps.every(({ newBrickIds }) => newBrickIds.length <= 6));
   assert.deepEqual(first.plan.steps.flatMap(({ sourceStepIds }) => sourceStepIds), source.steps.map(({ id }) => id));
   assert.equal(first.report.sourceStepCoverageComplete, true);
   assert.equal(first.report.brickCoverageComplete, true);
   assert.deepEqual(first.report.connectedPatchCompaction, {
     selected: 'connected-endpoints',
-    basicInstructionDiagramCount: 2,
-    connectedInstructionDiagramCount: 2,
+    basicInstructionDiagramCount: 3,
+    connectedInstructionDiagramCount: 3,
     maxAdditionalDiagramCount: 1,
-    basicBoundaryStats: { buildDiagramCount: 2, detachedBrickExposure: 1, peakDetachedBrickCount: 1 },
-    connectedBoundaryStats: { buildDiagramCount: 2, detachedBrickExposure: 0, peakDetachedBrickCount: 0 },
+    basicBoundaryStats: { buildDiagramCount: 3, detachedBrickExposure: 2, peakDetachedBrickCount: 1 },
+    connectedBoundaryStats: { buildDiagramCount: 3, detachedBrickExposure: 0, peakDetachedBrickCount: 0 },
   });
 });
 
@@ -300,10 +312,11 @@ test('course-first work-surface diagrams retain the ordinary compaction endpoint
   const { plan: compacted } = compactAssemblyPlan(source);
 
   assert.deepEqual(compacted.steps.map(({ sourceStepIds }) => sourceStepIds), [
-    Array.from({ length: 11 }, (_, index) => `step-${index + 1}`),
+    Array.from({ length: 5 }, (_, index) => `step-${index + 1}`),
+    Array.from({ length: 6 }, (_, index) => `step-${index + 6}`),
     ['step-12'],
   ]);
-  assert.deepEqual(cumulativeComponentsAtDiagramEnds(compacted), [2, 1]);
+  assert.deepEqual(cumulativeComponentsAtDiagramEnds(compacted), [2, 2, 1]);
 });
 
 test('does not accept a final bridge while an earlier highlighted seed remains disconnected', () => {
@@ -431,4 +444,32 @@ test('course, distance, and direction bounds reject unsafe display merges and re
   assert.ok(report.rejectedMergeCounts['insertion-direction'] >= 1);
   assert.equal(report.sourceStepCoverageComplete, true);
   assert.equal(report.brickCoverageComplete, true);
+});
+
+
+test('diagram connectivity cannot pass through pieces hidden from the current assembly scene', () => {
+  const plan=makePlan({bricks:[brick('context',1,0,0,1,1),brick('left',0,0,0,1,1),brick('right',2,0,0,1,1)],
+    stepBrickIds:[['context'],[],['left'],['right']],stepKinds:['build','join','build','build']});
+  plan.steps[3].visibleBrickIds=['left','right'];
+  const result=compactAssemblyPlan(plan);
+  assert.deepEqual(result.plan.steps.map(s=>s.sourceStepIds),[['step-1'],['step-2'],['step-3'],['step-4']]);
+  assert.ok(result.report.rejectedMergeCounts['not-face-connected']>=1);
+});
+
+test('diagram connectivity uses fresh geometry when a caller revises the same plan', () => {
+  const plan=makePlan({bricks:[brick('context',1,0,0,1,1),brick('left',0,0,0,1,1),brick('right',2,0,0,1,1)],
+    stepBrickIds:[['context'],[],['left'],['right']],stepKinds:['build','join','build','build']});
+  const groups=p=>compactAssemblyPlan(p).plan.steps.map(s=>s.sourceStepIds);
+  const connected=[['step-1'],['step-2'],['step-3','step-4']];
+  assert.deepEqual(groups(plan),connected);
+  plan.bricks[0].x=10;
+  assert.deepEqual(groups(plan),[['step-1'],['step-2'],['step-3'],['step-4']]);
+  plan.bricks[0].x=1;
+  assert.deepEqual(groups(plan),connected);
+});
+
+test('a future overlapping piece cannot replace the visible bridge used by earlier diagrams', () => {
+  const plan=makePlan({bricks:[brick('context',1,0,0,1,1),brick('left',0,0,0,1,1),brick('right',2,0,0,1,1),brick('future-overlap',1,0,0,1,1)],
+    stepBrickIds:[['context'],[],['left'],['right'],['future-overlap']],stepKinds:['build','join','build','build','unresolved']});
+  assert.deepEqual(compactAssemblyPlan(plan).plan.steps.map(s=>s.sourceStepIds),[['step-1'],['step-2'],['step-3','step-4'],['step-5']]);
 });

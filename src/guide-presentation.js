@@ -116,7 +116,7 @@ function sectionSignature(section, rotationQuarterTurns, context) {
   return `${section.status}||${semanticSignature(section)}||${geometry}||${stepStructure}||${groupStructure}`;
 }
 
-function canonicalSignature(section, context) {
+export function canonicalSignature(section, context) {
   const candidates = Array.from({ length: QUARTER_TURNS }, (_, rotationQuarterTurns) => ({
     rotationQuarterTurns,
     signature: sectionSignature(section, rotationQuarterTurns, context),
@@ -126,6 +126,8 @@ function canonicalSignature(section, context) {
 }
 
 function transformBetween(representative, instance, context) {
+  if(!representative.brickIds.length&&!instance.brickIds.length)return {
+    rotationQuarterTurns:0,translation:{x:0,y:0,z:0}};
   const targetBricks = instance.brickIds.map((brickId) => context.bricksById.get(brickId));
   const targetOrigin = boundsOrigin(targetBricks);
   const targetSignature = sectionSignature(instance, 0, context);
@@ -146,12 +148,98 @@ function transformBetween(representative, instance, context) {
   return null;
 }
 
+function continuationContacts(module, brickIds, end, context) {
+  const continuation = module.repeatContinuation;
+  if (!continuation?.brickIds?.length) return new Set();
+  const steps = context.plan.steps;
+  const joinIndex = steps.findIndex(s => s.id === continuation.joinSourceStepId
+    || s.sourceStepIds?.includes(continuation.joinSourceStepId));
+  const join = steps[joinIndex], interfaces = new Set(continuation.brickIds);
+  if (joinIndex <= end || join.kind !== 'join' || join.issues?.length
+    || join.joinContext?.direction !== 'down' || interfaces.size !== continuation.brickIds.length
+    || [...interfaces].some(id => brickIds.has(id))) return new Set();
+  const group = join.joinContext.supportGroups.find(g => g.brickIds.length === brickIds.size+interfaces.size
+    && g.brickIds.every(id => brickIds.has(id) || interfaces.has(id)));
+  if (!group) return new Set();
+  const placements = steps.slice(end+1,joinIndex).filter(s => s.newBrickIds.some(id => interfaces.has(id)));
+  if (placements.some(s => s.kind !== 'build' || s.issues?.length || s.nestedRecipe
+    || (s.insertionDirection ?? 'down') !== 'down'
+    || context.modulesById.get(s.moduleId)?.buildContext)
+    || [...interfaces].some(id => placements.filter(s => s.newBrickIds.includes(id)).length !== 1)) return new Set();
+  const contacts = new Set();
+  for (const {a,b} of context.plan.graph?.edges ?? []) {
+    const core = brickIds.has(a) ? a : brickIds.has(b) ? b : null;
+    const other = core === a ? b : a;
+    if (!core || !interfaces.has(other)) continue;
+    const lower = context.bricksById.get(core), upper = context.bricksById.get(other);
+    const step = placements.find(s => s.newBrickIds.includes(other));
+    if (upper.y !== lower.y+1 || !step.visibleBrickIds.includes(core)
+      || step.newBrickIds.includes(core)) return new Set();
+    contacts.add([a,b].sort().join('|'));
+  }
+  return contacts;
+}
+
+function eligibleHandledRepeat(section,module,context){
+  const familyId=module.sharedHandledRecipe?.familyId;
+  if(!familyId||module.buildContext||module.kind!=='detail')return false;
+  const ids=new Set(module.brickIds),steps=section.stepIds.map(id=>context.stepsById.get(id));
+  if(section.brickIds.length!==ids.size||section.brickIds.some(id=>!ids.has(id))
+    ||steps.some(s=>s.kind!=='build'||s.moduleId!==module.id||s.nestedRecipe||(s.insertionDirection??'down')!=='down'
+      ||s.issues.some(i=>i.code!=='temporary-hold'||i.severity!=='warning')||s.visibleBrickIds.some(id=>!ids.has(id))))return false;
+  const family=new Set(context.plan.modules.filter(m=>m.sharedHandledRecipe?.familyId===familyId).map(m=>m.id));
+  const joins=context.plan.steps.filter(s=>family.has(s.moduleId)&&s.kind==='join');
+  const join=joins.find(s=>s.moduleId===module.id),firstJoin=context.plan.steps.findIndex(s=>s===joins[0]);
+  if(family.size<2||joins.length!==family.size||joins.some(s=>s.issues.length)||!join
+    ||join.highlightBrickIds.length!==ids.size||join.highlightBrickIds.some(id=>!ids.has(id))
+    ||context.plan.steps.some((s,i)=>family.has(s.moduleId)&&s.newBrickIds.length&&i>=firstJoin))return false;
+  const edges=context.plan.graph?.edges??[],external=edges.filter(({a,b})=>ids.has(a)!==ids.has(b));
+  if(!external.length||external.some(({a,b})=>!join.visibleBrickIds.includes(ids.has(a)?b:a)))return false;
+  const reached=new Set([module.brickIds[0]]);
+  for(const id of reached)for(const {a,b} of edges){const other=a===id?b:b===id?a:null;if(ids.has(other))reached.add(other);}
+  return reached.size===ids.size;
+}
+
+export function eligibleNestedRepeat(section, context) {
+  const recipe = section.nestedRepeat;
+  if (!recipe || section.moduleIds.length !== 1) return false;
+  const steps = section.stepIds.map(id => context.stepsById.get(id));
+  const join = context.stepsById.get(recipe.attachmentStepId);
+  const ids = new Set(section.brickIds);
+  if (steps.length < 2 || !join || join.kind !== 'join' || join.issues?.length
+    || join.nestedRecipe?.id !== recipe.scopeId || !join.nestedRecipe.separate
+    || join.moduleId !== section.moduleIds[0] || join.newBrickIds.length
+    || !['up','down'].includes(join.joinContext?.direction)
+    || join.highlightBrickIds.length !== ids.size || join.highlightBrickIds.some(id => !ids.has(id))
+    || steps.some(s => s.kind !== 'build' || s.nestedRecipe?.id !== recipe.scopeId
+      || (s.insertionDirection ?? 'down') !== 'down' || !s.newBrickIds.length
+      || s.issues.some(i => i.code !== 'temporary-hold' || i.severity !== 'warning')
+      || s.visibleBrickIds.some(id => !ids.has(id)))) return false;
+  const start = context.plan.steps.indexOf(steps[0]);
+  if (steps.some((s,i) => context.plan.steps[start+i] !== s)
+    || context.plan.steps[start+steps.length] !== join) return false;
+  const edges = context.plan.graph?.edges ?? [];
+  const contacts = new Set(join.joinContext.supportGroups.flatMap(g => g.contacts)
+    .map(c => [c.supportBrickId,c.bandBrickId].sort().join('|')));
+  const external = edges.filter(({a,b}) => ids.has(a) !== ids.has(b));
+  if (!external.length || external.some(({a,b}) => !contacts.has([a,b].sort().join('|'))
+    || !join.visibleBrickIds.includes(ids.has(a) ? b : a))) return false;
+  const reached = new Set([section.brickIds[0]]);
+  for (const id of reached) for (const {a,b} of edges) {
+    const other = a === id ? b : b === id ? a : null;
+    if (ids.has(other)) reached.add(other);
+  }
+  return reached.size === ids.size;
+}
+
 function eligibleForRepeat(section, context) {
   // An unresolved grounded section may repeat because this projection keeps its
   // warning state. The exact signature also requires the same affected geometry;
   // joins and dependencies remain ineligible so repetition cannot imply success.
   if (section.moduleIds.length !== 1) return false;
+  if (section.nestedRepeat) return eligibleNestedRepeat(section, context);
   const module = context.modulesById.get(section.moduleIds[0]);
+  if(module.sharedHandledRecipe)return eligibleHandledRepeat(section,module,context);
   if (module.kind !== 'grounded') return false;
   if (module.brickIds.length !== section.brickIds.length
     || module.brickIds.some((brickId) => !section.brickIds.includes(brickId))) return false;
@@ -160,12 +248,40 @@ function eligibleForRepeat(section, context) {
     return step.moduleId !== module.id || step.kind === 'join' || step.newBrickIds.length === 0;
   })) return false;
   const brickIds = new Set(section.brickIds);
-  return !(context.plan.graph?.edges ?? []).some(({ a, b }) => brickIds.has(a) !== brickIds.has(b));
+  const externalEdges = (context.plan.graph?.edges ?? []).filter(({a,b})=>brickIds.has(a)!==brickIds.has(b));
+  if (!externalEdges.length) return true;
+  // A completed component may repeat before a checked join. Every external
+  // contact must belong to that join or its explicit supported continuation.
+  const end = Math.max(...section.stepIds.map(id=>context.plan.steps.findIndex(s=>s.id===id)));
+  const joins = context.plan.steps.slice(end+1).filter(s=>s.kind==='join' && !s.issues?.length
+    && s.joinContext?.direction==='down');
+  const contacts = new Set(joins.flatMap(s=>s.joinContext.supportGroups.flatMap(group=>
+    group.contacts.map(c=>[c.supportBrickId,c.bandBrickId].sort().join('|')))));
+  // A repeated grounded core may receive distinct, explicitly built interface
+  // pieces before its checked join. The full support group and all intervening
+  // placements must still exist; a marker alone cannot waive dependencies.
+  for (const contact of continuationContacts(module, brickIds, end, context)) contacts.add(contact);
+  if (!externalEdges.every(({a,b})=>contacts.has([a,b].sort().join('|')))) return false;
+  const adjacency=new Map([...brickIds].map(id=>[id,[]]));
+  for(const {a,b} of context.plan.graph.edges) if(brickIds.has(a)&&brickIds.has(b)) {
+    adjacency.get(a).push(b);adjacency.get(b).push(a);
+  }
+  const reached=new Set([section.brickIds[0]]);
+  for(const id of reached) for(const neighbor of adjacency.get(id)) reached.add(neighbor);
+  return reached.size===brickIds.size;
 }
 
 function genericLabel(section, index, context) {
+  if (section.nestedRepeat) return 'Assembly';
+  if(section.stepIds.length&&section.stepIds.every(id=>context.stepsById.get(id).kind==='join'))return 'Attach assemblies';
+  if (section.stepIds.length && section.stepIds.every(id => context.stepsById.get(id).insertionDirection === 'up')) return 'Underside';
   const modules = section.moduleIds.map((moduleId) => context.modulesById.get(moduleId));
-  if (modules.some(({ buildContext }) => buildContext?.kind === 'work-surface')) return 'Main assembly';
+  if(modules.length&&modules.every(module=>module.sharedHandledRecipe||module.localInterfaceRepair))return 'Assembly';
+  if (modules.every(module => /^Base assembly \d+$/.test(module.label))) return 'Base assembly';
+  if (modules.some(({ buildContext }) => buildContext?.kind === 'work-surface')) return 'Platform';
+  const sectionBrickIds = new Set(section.brickIds);
+  if (context.plan.steps.some(step => step.kind === 'join'
+    && step.joinContext?.supportGroups?.some(group => group.brickIds?.some(id => sectionBrickIds.has(id))))) return 'Supports';
   if (/finishing/i.test(section.label) || modules.every(({ label, kind }) => kind === 'detail' || /^Color detail/.test(label))) {
     return 'Finishing touches';
   }
@@ -173,7 +289,7 @@ function genericLabel(section, index, context) {
   if (modules.some(({ kind }) => kind === 'floating')) return 'Upper details';
   if (index === 0) return 'Base';
   if (modules.some(({ label }) => /^Upper section/.test(label))) return 'Upper details';
-  return 'Main shape';
+  return 'Main build';
 }
 
 function assignLabels(entries, context) {
@@ -249,6 +365,7 @@ function presentationEntry(representative, instances, index, context) {
     sectionId: section.id,
     brickIds: [...section.brickIds],
     transform: transformBetween(representative, section, context),
+    ...(section.nestedRepeat ? {attachmentStepId: section.nestedRepeat.attachmentStepId} : {}),
   }));
   const allBricks = instanceData.flatMap(({ brickIds }) => brickIds.map((brickId) => context.bricksById.get(brickId)));
   return {
@@ -274,7 +391,8 @@ export function deriveGuidePresentation({ plan, guide, subject = null } = {}) {
 
   for (const section of guide.sections) {
     const eligible = eligibleForRepeat(section, context);
-    const signature = eligible ? canonicalSignature(section, context).signature : null;
+    const family=section.nestedRepeat?.familyId ?? context.modulesById.get(section.moduleIds[0])?.sharedHandledRecipe?.familyId;
+    const signature = eligible ? (family?`${family}||`:'')+canonicalSignature(section, context).signature : null;
     let group = signature ? groupBySignature.get(signature) : null;
     if (!group) {
       group = { representative: section, instances: [] };

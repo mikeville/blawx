@@ -155,7 +155,7 @@ test('table support applies only at the selected floor and leaves an elevated in
   assert.equal(introducedOnce(plan), true);
 });
 
-test('a prior overhead component blocks the full downward work-surface join sweep', () => {
+test('an independent overhead assembly is scheduled after the join, while forced reverse order stays blocked', () => {
   const source = model([
     brick(0, 0, 0), brick(0, 1, 0), brick(0, 2, 0),
     brick(5, 0, 0, 1, 1, 'blue'),
@@ -174,10 +174,18 @@ test('a prior overhead component blocks the full downward work-surface join swee
   const workSurface = plan.modules.find(({ groupType }) => groupType === 'work-surface');
   const join = plan.steps.filter(({ moduleId }) => moduleId === workSurface.id).at(-1);
 
-  assert.equal(join.kind, 'unresolved');
-  assert.equal(join.issues.some(({ code }) => code === 'blocked-module-insertion'), true);
-  assert.equal(plan.stats.blockedJoinCount, 1);
-  assert.equal(plan.stats.validJoinCount, 0);
+  assert.equal(join.kind, 'join');
+  assert.equal(plan.stats.blockedJoinCount, 0);
+  assert.equal(plan.stats.validJoinCount, 1);
+  const overhead = plan.modules.find(module => module.brickIds.some(id => plan.bricks.find(brick => brick.id === id).y === 4));
+  assert.ok(plan.modules.indexOf(overhead) > plan.modules.indexOf(workSurface));
+  const replay = [overhead, ...plan.modules.filter(module => module !== overhead)].map(module => ({...module,
+    brickOrder: plan.steps.filter(step => step.moduleId === module.id).flatMap(step => step.newBrickIds)}));
+  const blocked = createAssemblyPlan({brickModel: source, moduleReplay: replay});
+  const blockedJoin = blocked.steps.filter(step => step.moduleId === workSurface.id).at(-1);
+  assert.equal(blockedJoin.kind, 'unresolved');
+  assert.ok(blockedJoin.issues.some(issue => issue.code === 'blocked-module-insertion'));
+  assert.equal(blocked.stats.blockedJoinCount, 1);
   assert.equal(plan.stats.coverageComplete, true);
   assert.equal(introducedOnce(plan), true);
 });

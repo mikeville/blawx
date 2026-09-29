@@ -5,7 +5,9 @@ export function bookletViewerOptions(spec, visibleModel) {
     frameModel: visibleModel,
     highlightIds: new Set(spec.highlight),
     insertionDirection: spec.insertionDirection,
+    workingOrientation: spec.workingOrientation,
     joinContext: spec.joinContext,
+    attachmentTask: spec.attachmentTask,
     animate: false,
   };
 }
@@ -65,7 +67,7 @@ export function createBookletRenderer({ result, byId }) {
       stage.style.width = `${width}px`; stage.style.height = `${height}px`; viewer.resize();
       const visibleModel = model(record.spec.visible);
       const retained = record.azimuth;
-      viewer.azimuth = Math.PI * .75;
+      viewer.azimuth = record.spec.azimuth ?? Math.PI * .75;
       viewer.setModel(visibleModel, bookletViewerOptions(record.spec, visibleModel));
       record.azimuth = retained ?? viewer.azimuth;
       viewer.azimuth = record.azimuth; viewer.updateCamera(); viewer.renderer.render(viewer.scene, viewer.camera);
@@ -129,5 +131,11 @@ export function createBookletRenderer({ result, byId }) {
     viewer.dispose();
     stage.remove();
   }
-  return { observe, dispose };
+  function setAzimuth(canvas, azimuth) {
+    const record = records.get(canvas);
+    if (!record || !Number.isFinite(azimuth)) return;
+    record.azimuth = azimuth;
+    enqueue(canvas);
+  }
+  return { observe, dispose, setAzimuth };
 }

@@ -305,7 +305,7 @@ test('an occupied floor-to-target sweep keeps a hanging brick unresolved', () =>
   assert.equal(plan.steps.flatMap(({ issues }) => issues).some(({ code }) => code === 'unsupported-addition'), true);
 });
 
-test('under-attachments require direct engagement and one independently recoverable blocker', () => {
+test('under-attachments require direct engagement and recover multiple clear hanging pieces', () => {
   const noUpperEngagement = createAssemblyPlan({
     brickModel: model([brick(0, 0, 0), brick(4, 2, 0)]),
     allowUnderAttachments: true,
@@ -320,12 +320,13 @@ test('under-attachments require direct engagement and one independently recovera
 
   assert.equal(noUpperEngagement.stats.upwardInsertionBrickCount, 0);
   assert.equal(noUpperEngagement.stats.unresolvedBrickCount, 1);
-  assert.equal(twoBlockers.stats.upwardInsertionBrickCount, 0);
-  assert.equal(twoBlockers.stats.rootFailureCount, 2);
+  assert.equal(twoBlockers.stats.upwardInsertionBrickCount, 2);
+  assert.equal(twoBlockers.stats.rootFailureCount, 0);
+  assert.equal(twoBlockers.stats.unresolvedBrickCount, 0);
   assert.equal(twoBlockers.stats.coverageComplete, true);
 });
 
-test('an upper brick without an independent valid support cannot authorize an under-attachment', () => {
+test('a supported bridge permits a connected hanging chain in descending order', () => {
   const plan = createAssemblyPlan({
     brickModel: model([
       brick(0, 0, 0), brick(0, 1, 0), brick(0, 2, 0), brick(0, 3, 0),
@@ -334,12 +335,14 @@ test('an upper brick without an independent valid support cannot authorize an un
     ]),
     allowUnderAttachments: true,
   });
-  const invalidUpper = plan.steps.find(({ newBrickIds }) => newBrickIds.some((id) => id.includes('1,3,0:2x1')));
+  const hangingUpper = plan.steps.find(({ newBrickIds }) => newBrickIds.some((id) => id.includes('1,3,0:2x1')));
 
-  assert.equal(plan.stats.upwardInsertionBrickCount, 0);
-  assert.equal(plan.stats.rootFailureCount, 2);
-  assert.equal(invalidUpper.kind, 'unresolved');
-  assert.equal(invalidUpper.issues.some(({ code }) => code === 'unresolved-prerequisite'), true);
+  assert.equal(plan.stats.upwardInsertionBrickCount, 3);
+  assert.equal(plan.stats.rootFailureCount, 0);
+  assert.equal(plan.stats.unresolvedBrickCount, 0);
+  assert.equal(hangingUpper.insertionDirection, 'up');
+  const lower = plan.steps.filter(s => s.newBrickIds.some(id => id.includes(',2,0:1x1') && !id.includes('0,2,0:')));
+  assert.ok(lower.every(s => plan.steps.indexOf(s) > plan.steps.indexOf(hangingUpper)));
   assert.equal(plan.stats.coverageComplete, true);
 });
 
@@ -358,4 +361,10 @@ test('side contact is not treated as stud engagement and invalid models fail clo
     () => createAssemblyPlan({ brickModel: model([brick(0, 0, 0, 2, 2), brick(1, 0, 1)]) }),
     /collision/,
   );
+});
+
+test('a bridge with no independent valid connection cannot suspend another piece',()=>{
+  const plan=createAssemblyPlan({brickModel:model([brick(0,0,0),brick(0,3,0,2,1),brick(1,2,0)]),allowUnderAttachments:true});
+  assert.equal(plan.stats.upwardInsertionBrickCount,0);
+  assert.ok(plan.stats.unresolvedBrickCount>0);
 });

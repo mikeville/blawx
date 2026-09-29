@@ -1,5 +1,7 @@
+import {guideComponents} from './guide-components.js';
 import { createGuideSections, createGuideSectionsFromRanges } from './guide-sections.js';
 import { deriveGuidePresentation } from './guide-presentation.js';
+import { restoreNestedRecipeSections } from './nested-recipe-presentation.js';
 
 const MAX_BRICKS = 5_000;
 const MAX_STEPS = 2_000;
@@ -224,18 +226,31 @@ function protectedRepeatRanges(plan, guide) {
   const presentation = deriveGuidePresentation({ plan, guide });
   const sectionsById = new Map(guide.sections.map((section) => [section.id, section]));
   const stepIndexById = new Map(plan.steps.map((step, index) => [step.id, index]));
-  return presentation.sections
+  const ranges = presentation.sections
     .filter(({ repeatCount }) => repeatCount > 1)
     .flatMap((entry) => entry.sectionIds.map((sectionId) => {
       const section = sectionsById.get(sectionId);
       if (!section?.stepIds?.length) throw new RangeError(`Repeated guide section ${sectionId} has no steps.`);
+      let endStepId=section.stepIds.at(-1);
+      if(section.nestedRepeat){
+        let end=stepIndexById.get(section.nestedRepeat.attachmentStepId);
+        while(end+1<plan.steps.length&&!plan.steps[end+1].newBrickIds.length)end++;
+        endStepId=plan.steps[end].id;
+      }
       return {
         startStepId: section.stepIds[0],
-        endStepId: section.stepIds.at(-1),
+        endStepId,
         repeatGroupId: entry.id,
       };
     }))
     .sort((a, b) => stepIndexById.get(a.startStepId) - stepIndexById.get(b.startStepId));
+  for (const component of guideComponents(plan)) {
+    const start = stepIndexById.get(component.steps[0].id), end = stepIndexById.get(component.steps.at(-1).id);
+    // Existing repetition owns its exact range. Do not introduce overlapping ranges.
+    if (ranges.some(r => stepIndexById.get(r.startStepId) <= end && stepIndexById.get(r.endStepId) >= start)) continue;
+    ranges.push({startStepId: component.steps[0].id, endStepId: component.steps.at(-1).id, repeatGroupId: component.id});
+  }
+  return ranges.sort((a, b) => stepIndexById.get(a.startStepId) - stepIndexById.get(b.startStepId));
 }
 
 function canonicalInputWithoutFingerprint({ subject, bricks, steps, modules, graph, protectedRanges }) {
@@ -561,7 +576,8 @@ export function validateSemanticGuideAnnotation(input, annotation) {
 export function applySemanticGuide({ plan, guide = createGuideSections(plan), subject = '', annotation } = {}) {
   const input = createSemanticGuideInput({ plan, guide, subject });
   const normalized = validateSemanticGuideAnnotation(input, annotation);
-  const result = createGuideSectionsFromRanges(plan, normalized.sections);
+  const result = restoreNestedRecipeSections(plan,createGuideSectionsFromRanges(plan, normalized.sections),
+    guide.sections.filter(section=>section.nestedRepeat));
   return {
     ...result,
     semantics: {

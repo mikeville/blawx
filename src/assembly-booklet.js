@@ -1,4 +1,5 @@
-import { escapeMarkup as escape, inventoryMarkup } from './part-illustration.js';
+import { guidanceMarkup } from './guide-step-guidance.js';
+import { escapeMarkup as escape, inventoryMarkup, stepInventoryMarkup } from './part-illustration.js';
 import { createBookletPresentation, createChapterDiagramData, guideRangeMarkup, resolveBookletInitialState } from './assembly-booklet-presentation.js';
 import { createBookletRenderer } from './assembly-booklet-renderer.js';
 import { mountBookletNavigation } from './assembly-booklet-navigation.js';
@@ -130,6 +131,7 @@ export function mountAssemblyBooklet(host, {
   document.addEventListener('pointerdown', onOutsidePointer);
   function expandChapter(details) {
     if (disposed) return;
+    if (activeDetails === details && details.querySelector('.manual-diagram')) return;
     const switchedChapters = Boolean(activeDetails && activeDetails !== details);
     if (activeDetails && activeDetails!==details) {
       activeDetails.open = false;
@@ -143,22 +145,23 @@ export function mountAssemblyBooklet(host, {
     const stepSpecs = [...specs];
     const warning = spec => {
       const id = `manual-tooltip-${details.dataset.chapter}-${spec.index}`;
-      return `<span class="manual-issue-wrap"><button class="manual-issue" type="button" aria-describedby="${id}" aria-expanded="false"><span aria-hidden="true">△</span><span class="sr-only">Connection warning</span></button><span class="manual-tooltip" id="${id}" role="tooltip">Connection needs review</span></span>`;
+      return `<span class="manual-issue-wrap"><button class="manual-issue" type="button" aria-describedby="${id}" aria-expanded="false"><span aria-hidden="true">△</span><span class="sr-only">Connection warning</span></button><span class="manual-tooltip" id="${id}" role="tooltip">${escape(spec.guidance.warning)}</span></span>`;
     };
     const figure = spec => {
         const number = String(spec.number);
         const downwardJoin = spec.joinContext?.direction === 'down';
-        const direction = downwardJoin ? '<span class="manual-direction">Attach</span>'
-          : spec.insertionDirection === 'up' ? '<span class="manual-direction">From below</span>' : '';
+        const inverted=spec.workingOrientation?.kind==='inverted';
+        const direction = downwardJoin ? '<span class="manual-direction">Attach</span>' : '';
         const supportCount = spec.joinContext?.supportGroups?.length ?? 0;
-        const action = downwardJoin ? ` · lower the assembled section onto ${supportCount} ${supportCount === 1 ? 'support' : 'supports'}`
+        const action = inverted ? ' · build upside down' : downwardJoin ? ` · lower the assembled section onto ${supportCount} ${supportCount === 1 ? 'support' : 'supports'}`
           : spec.insertionDirection === 'up' ? ' · attach from below' : '';
-        return `<figure class="manual-diagram" data-step-id="${escape(spec.stepId)}"><figcaption><button class="manual-step-expand" type="button" aria-label="Enlarge step ${number}"${wideGuide.matches ? '' : ' disabled'}>${number}</button>${direction}${spec.unresolved ? warning(spec) : ''}</figcaption><div class="manual-canvas-wrap"><canvas tabindex="0" data-diagram="${spec.index}" aria-label="${escape(section.label)} · step ${number}${action}"></canvas></div></figure>`;
+        const otherSide = spec.alternateAzimuth === null ? '' : `<button class="manual-other-view" type="button" data-first="${spec.azimuth}" data-other="${spec.alternateAzimuth}">See other side</button>`;
+        return `<figure class="manual-diagram" data-step-id="${escape(spec.stepId)}"><figcaption><button class="manual-step-expand" type="button" aria-label="Enlarge step ${number}"${wideGuide.matches ? '' : ' disabled'}>${number}</button>${direction}${spec.unresolved ? warning(spec) : ''}</figcaption>${stepInventoryMarkup(spec.parts)}<div class="manual-canvas-wrap"><canvas tabindex="0" data-diagram="${spec.index}" aria-label="${escape(section.label)} · step ${number}${action}"></canvas></div>${otherSide}${guidanceMarkup(spec.guidance)}</figure>`;
     };
     let placements = '';
     if (section.repeatCount>1) {
       const ids = section.instances.flatMap(instance=>instance.brickIds);
-      const specIndex = specs.push({ visible:plan.bricks.map(brick=>brick.id), highlight:ids, insertionDirection:null, joinContext:null })-1;
+      const specIndex = specs.push({ visible:ids, highlight:ids, insertionDirection:null, joinContext:null })-1;
       placements = `<figure class="manual-diagram manual-placement"><figcaption><strong>${section.repeatCount}×</strong></figcaption><div class="manual-canvas-wrap"><canvas tabindex="0" data-diagram="${specIndex}" aria-label="${escape(section.label)} · positions of all ${section.repeatCount} copies"></canvas></div></figure>`;
     }
     const figures = `<div class="manual-diagram-grid">${stepSpecs.map(figure).join('')}${placements}</div>`;
@@ -171,6 +174,27 @@ export function mountAssemblyBooklet(host, {
   }
   function closeFullscreenStep() {
     fullscreenStep?.close();
+  }
+  function onOtherView(event) {
+    const button = event.target.closest('.manual-other-view');
+    if (!button) return;
+    const other = button.dataset.showingOther !== 'true';
+    renderer?.setAzimuth?.(button.closest('figure').querySelector('canvas'), Number(other ? button.dataset.other : button.dataset.first));
+    button.dataset.showingOther = String(other);
+    button.textContent = other ? 'Return to first view' : 'See other side';
+  }
+  host.addEventListener('click', onOtherView);
+  const readingSteps = presentation.sections.flatMap((section,chapterIndex) =>
+    section.groups.flatMap(group => group.stepIds.map(stepId => ({stepId,chapterIndex}))));
+  function navigateReadingStep(index) {
+    const next = readingSteps[index];
+    if (!next) return;
+    closeFullscreenStep();
+    const details = host.querySelector(`.manual-chapter[data-chapter="${next.chapterIndex}"]`);
+    details.open = true;
+    expandChapter(details);
+    const figure = [...details.querySelectorAll('.manual-diagram')].find(node => node.dataset.stepId === next.stepId);
+    figure?.querySelector('.manual-step-expand')?.click();
   }
   function onStepExpand(event) {
     const trigger = event.target.closest('.manual-step-expand');
@@ -190,9 +214,20 @@ export function mountAssemblyBooklet(host, {
       },
     });
     fullscreenStep.element.addEventListener('click', onIssueClick);
+    fullscreenStep.element.addEventListener('click', onOtherView);
     fullscreenStep.element.addEventListener('keydown', onIssueKeydown);
     fullscreenStep.element.addEventListener('pointerout', onIssuePointerOut);
     fullscreenStep.element.addEventListener('focusout', onIssueFocusOut);
+    const index = readingSteps.findIndex(step => step.stepId === figure.dataset.stepId);
+    const navigation = document.createElement('nav');
+    navigation.className = 'manual-reading-navigation';
+    navigation.setAttribute('aria-label','Guide steps');
+    navigation.innerHTML = `<button type="button" data-reading-direction="-1"${index === 0 ? ' disabled' : ''}>← Previous</button><span>${index+1} / ${readingSteps.length}</span><button type="button" data-reading-direction="1"${index === readingSteps.length-1 ? ' disabled' : ''}>Next →</button>`;
+    navigation.addEventListener('click', event => {
+      const button = event.target.closest('[data-reading-direction]');
+      if (button && !button.disabled) navigateReadingStep(index+Number(button.dataset.readingDirection));
+    });
+    fullscreenStep.element.querySelector('.fullscreen-layer-inner').append(navigation);
   }
   function syncStepExpansion(event) {
     host.querySelectorAll('.manual-step-expand').forEach(button => { button.disabled = !event.matches; });
@@ -212,5 +247,5 @@ export function mountAssemblyBooklet(host, {
   const initial = initialState.openChapterIndex >= 0
     ? host.querySelector(`.manual-chapter[data-chapter="${initialState.openChapterIndex}"]`) : null;
   if (initial) initial.open = true;
-  return ()=>{disposed=true;closeFullscreenStep();releaseAll();disposeNavigation();wideGuide.removeEventListener?.('change', syncStepExpansion);host.removeEventListener('click', onStepExpand);host.removeEventListener('click', onIssueClick);host.removeEventListener('keydown', onIssueKeydown);host.removeEventListener('pointerout', onIssuePointerOut);host.removeEventListener('focusout', onIssueFocusOut);document.removeEventListener('pointerdown', onOutsidePointer);host.replaceChildren();diagnosticsHost?.replaceChildren();};
+  return ()=>{disposed=true;closeFullscreenStep();releaseAll();disposeNavigation();wideGuide.removeEventListener?.('change', syncStepExpansion);host.removeEventListener('click', onStepExpand);host.removeEventListener('click', onOtherView);host.removeEventListener('click', onIssueClick);host.removeEventListener('keydown', onIssueKeydown);host.removeEventListener('pointerout', onIssuePointerOut);host.removeEventListener('focusout', onIssueFocusOut);document.removeEventListener('pointerdown', onOutsidePointer);host.replaceChildren();diagnosticsHost?.replaceChildren();};
 }

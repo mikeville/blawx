@@ -27,10 +27,10 @@ function cellsOf(brick) {
   return cells;
 }
 
-function rootBricks(plan) {
+function rootBricks(plan, rootFloor = null) {
   const ids = new Set(plan.steps.flatMap((step) => step.issues
     .filter(({ code }) => code === 'unsupported-addition').flatMap(({ brickIds }) => brickIds)));
-  return plan.bricks.filter(({ id }) => ids.has(id));
+  return plan.bricks.filter(({ id, y }) => ids.has(id) && (rootFloor === null || y === rootFloor));
 }
 
 function oldUnresolvedCount(plan, oldCells) {
@@ -73,10 +73,10 @@ function planFor(brickModel, preferLocalProgress) {
   return createAssemblyPlan({ brickModel, preferLocalProgress });
 }
 
-function rootInterfaceTargets(model, plan) {
+function rootInterfaceTargets(model, plan, rootFloor) {
   const profile = packingProfile(model.bricks);
   const indexes = new Set();
-  for (const root of rootBricks(plan)) {
+  for (const root of rootBricks(plan, rootFloor)) {
     for (let y = Math.max(0, root.y - 1); y <= root.y + 1; y += 1) {
       for (let x = root.x - 1; x <= root.x + root.w; x += 1) for (let z = root.z - 1; z <= root.z + root.d; z += 1) {
         const occupied = profile.cells.get(cellKey(x, y, z));
@@ -114,14 +114,14 @@ function phaseReport() {
   };
 }
 
-function exactPhase({ model, plan, originalCells, preferLocalProgress }) {
+function exactPhase({ model, plan, originalCells, preferLocalProgress, rootFloor }) {
   const phase = phaseReport();
   let currentModel = model;
   let currentPlan = plan;
   const attempted = new Set();
   for (let round = 0; round < MAX_ACCEPTED_ROUNDS && phase.evaluations < MAX_PLAN_CHECKS; round += 1) {
     phase.rounds += 1;
-    const targets = rootInterfaceTargets(currentModel, currentPlan);
+    const targets = rootInterfaceTargets(currentModel, currentPlan, rootFloor);
     if (!targets.length) break;
     const generated = proposeBrickRefinements(currentModel, {
       maxPatches: 96,
@@ -196,6 +196,9 @@ function exactPhase({ model, plan, originalCells, preferLocalProgress }) {
     });
     currentModel = best.model;
     currentPlan = best.plan;
+    // Every proposal was evaluated against the previous model. An unselected
+    // independent repair remains eligible after the chosen repair changes it.
+    attempted.clear();
   }
   phase.limitReached = phase.evaluations >= MAX_PLAN_CHECKS;
   return { model: currentModel, plan: currentPlan, phase };
@@ -223,12 +226,12 @@ function boundsOf(bricks) {
   }), { minX: Infinity, maxX: -Infinity, minZ: Infinity, maxZ: -Infinity });
 }
 
-function extensionProposals(model, plan, remainingAddedCells) {
+function extensionProposals(model, plan, remainingAddedCells, rootFloor) {
   if (remainingAddedCells <= 0) return [];
   const profile = packingProfile(model.bricks);
   const resolvedGrounded = groundedResolvedBrickKeys(plan, profile);
   const occupancy = profile.cells;
-  const roots = rootBricks(plan);
+  const roots = rootBricks(plan, rootFloor);
   const bounds = boundsOf(model.bricks);
   const proposals = new Map();
   for (const root of roots) {
@@ -297,7 +300,7 @@ function supersetPackingRejections(before, after) {
   return reasons;
 }
 
-function extensionPhase({ model, plan, originalCells, preferLocalProgress, addedBudget }) {
+function extensionPhase({ model, plan, originalCells, preferLocalProgress, addedBudget, rootFloor }) {
   const phase = phaseReport();
   let currentModel = model;
   let currentPlan = plan;
@@ -305,7 +308,7 @@ function extensionPhase({ model, plan, originalCells, preferLocalProgress, added
   const attempted = new Set();
   for (let round = 0; round < MAX_ACCEPTED_ROUNDS && phase.evaluations < MAX_PLAN_CHECKS && remainingAddedCells > 0; round += 1) {
     phase.rounds += 1;
-    const proposals = extensionProposals(currentModel, currentPlan, remainingAddedCells);
+    const proposals = extensionProposals(currentModel, currentPlan, remainingAddedCells, rootFloor);
     phase.proposalsGenerated += proposals.length;
     const remainingRounds = MAX_ACCEPTED_ROUNDS - round;
     const roundLimit = Math.ceil((MAX_PLAN_CHECKS - phase.evaluations) / remainingRounds);
@@ -384,6 +387,7 @@ function extensionPhase({ model, plan, originalCells, preferLocalProgress, added
     });
     currentModel = best.model;
     currentPlan = best.plan;
+    attempted.clear();
     remainingAddedCells -= best.addedCells.length;
   }
   phase.limitReached = phase.evaluations >= MAX_PLAN_CHECKS;
@@ -392,16 +396,19 @@ function extensionPhase({ model, plan, originalCells, preferLocalProgress, added
   return { model: currentModel, plan: currentPlan, phase };
 }
 
-export function refineConstructionRoots(result, { allowExtensions = false } = {}) {
+export function refineConstructionRoots(result, { allowExtensions = false, rootFloor = null } = {}) {
   if (!result || typeof result !== 'object' || !result.brickModel) throw new TypeError('result must contain a brickModel.');
   if (typeof allowExtensions !== 'boolean') throw new TypeError('allowExtensions must be a boolean.');
+  if (rootFloor !== null && (!Number.isSafeInteger(rootFloor) || rootFloor < 1)) {
+    throw new RangeError('rootFloor must be null or a positive integer.');
+  }
   const started = globalThis.performance?.now?.() ?? Date.now();
   const originalModel = result.brickModel;
   const originalPlan = result.assemblyPlan ?? createAssemblyPlan({ brickModel: originalModel });
   const originalProfile = packingProfile(originalModel.bricks);
   const originalCells = new Set(originalProfile.cells.keys());
   const preferLocalProgress = result.packingRefinement?.localOrdering?.selected === true;
-  const exact = exactPhase({ model: originalModel, plan: originalPlan, originalCells, preferLocalProgress });
+  const exact = exactPhase({ model: originalModel, plan: originalPlan, originalCells, preferLocalProgress, rootFloor });
   const mappedCellCount = Number.isSafeInteger(result.metrics?.mappedCellCount)
     ? result.metrics.mappedCellCount : originalCells.size;
   const existingAdded = Number.isSafeInteger(result.metrics?.structuralAddedMappedCellCount)
@@ -415,6 +422,7 @@ export function refineConstructionRoots(result, { allowExtensions = false } = {}
       originalCells,
       preferLocalProgress,
       addedBudget: extensionBudget,
+      rootFloor,
     })
     : { model: exact.model, plan: exact.plan, phase: { ...phaseReport(), addedCellBudget: extensionBudget, addedCellCount: 0 } };
   const ended = globalThis.performance?.now?.() ?? Date.now();
@@ -435,6 +443,7 @@ export function refineConstructionRoots(result, { allowExtensions = false } = {}
     version: 1,
     policy: 'root-targeted-exact-then-concealed-extension',
     allowExtensions,
+    ...(rootFloor === null ? {} : {rootFloor}),
     limits: {
       maxPlanChecksPerPhase: MAX_PLAN_CHECKS,
       maxAcceptedRoundsPerPhase: MAX_ACCEPTED_ROUNDS,

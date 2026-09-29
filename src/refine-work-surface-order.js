@@ -51,27 +51,37 @@ export function workSurfacePreservationRejections(before, candidate, module) {
 
 // One usability comparison AFTER a band has passed the structural search. The
 // baseline remains available; clearer grouping cannot excuse new failures.
-export function refineWorkSurfaceOrder(result) {
+export function refineWorkSurfaceOrder(result, {prioritizeHandling = false} = {}) {
   const module = result.assemblyPlan.modules.find(item => item.buildContext?.kind === 'work-surface');
   if (!module) return result;
   const started = performance.now();
   const selectedIds = new Set(module.brickIds);
   const regularity = assessBandRegularity(result.assemblyPlan.bricks.filter(brick => selectedIds.has(brick.id)));
-  const policy = regularity.eligible ? 'rectangular-layers' : 'connected-patches';
   const before = measurements(result, module.id);
+  const handlingRepair = prioritizeHandling && before.canonical.peakLooseBrickCount > 6;
+  const policy = regularity.eligible && !handlingRepair ? 'rectangular-layers' : 'connected-patches';
   const limits = {maxFullCandidates:1, maxAdditionalBandDiagrams:policy === 'rectangular-layers' ? 2
+    : handlingRepair ? Math.max(2, Math.ceil(module.brickIds.length / 4))
     : Math.max(2, Math.ceil(before.bandDiagramCount / 2))};
   let candidate = null;
   let candidateMetrics = null;
   const rejectionReasons = [];
   try {
     const assemblyPlan = createAssemblyPlan({brickModel:result.brickModel,
+      integratedBuild:result.assemblyPlan.integratedBuild ?? false,
       workSurfaceBrickIds:module.brickIds, workSurfaceOrder:policy,
       preferLocalProgress:true, preferLocalFoundations:true});
     candidate = prepareAssemblyGuide({...result, assemblyPlan});
     candidateMetrics = measurements(candidate, module.id);
-    rejectionReasons.push(...workSurfacePreservationRejections(result, candidate, module),
-      ...orderQualityRejections(before.assembly, candidateMetrics.assembly));
+    rejectionReasons.push(...workSurfacePreservationRejections(result, candidate, module));
+    // Returning to a lower course is useful when it immediately captures a new
+    // foundation brick. For a loose layout, handling takes precedence over a
+    // monotone layer sweep; insertion and outside-operation guards still apply.
+    if (!handlingRepair) rejectionReasons.push(...orderQualityRejections(before.assembly, candidateMetrics.assembly));
+    else if (candidateMetrics.canonical.peakLooseBrickCount > 6
+      || candidateMetrics.canonical.detachedBrickExposure > before.canonical.detachedBrickExposure / 2) {
+      rejectionReasons.push('Handling improvement is insufficient');
+    }
     if (policy === 'rectangular-layers') {
       const originalGrouping = before.grouping;
       const newGrouping = candidateMetrics.grouping;
@@ -117,10 +127,10 @@ export function refineWorkSurfaceOrder(result) {
   const chosen = selected ? candidate : result;
   const orderingMs = performance.now() - started;
   return {...chosen,
-    workSurfaceOrdering:{version:2, policy, regularity, selected, limits,
+    workSurfaceOrdering:{version:3, policy, handlingRepair, regularity, selected, limits,
       rejectionReasons:[...new Set(rejectionReasons)], before, candidate:candidateMetrics,
       after:selected ? candidateMetrics : before, orderingMs, geometryChanges:0, colorChanges:0,
-      limitations:'Regular platforms favor rectangular same-course groups; irregular bands favor early connections. Rectangularity and loose-part exposure are separate presentation/handling proxies, not strength, table stability or finger-access checks. At most one alternative is evaluated for the selected band; rejected alternatives retain the prior guide.'},
+      limitations:'Platforms with excessive loose pieces favor early connections; otherwise regular platforms favor rectangular same-course groups. Rectangularity and loose-part exposure are presentation/handling proxies, not strength, table stability or finger-access checks. At most one alternative is evaluated for the selected band; rejected alternatives retain the prior guide.'},
     metrics:{...chosen.metrics, conversionMs:result.metrics.conversionMs + orderingMs,
       stageTiming:{...result.metrics.stageTiming, workSurfaceOrderingMs:orderingMs}},
   };

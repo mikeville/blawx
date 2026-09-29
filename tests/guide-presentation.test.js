@@ -337,3 +337,19 @@ test('uncertain proposed labels use deterministic generic presentation copy', ()
   assert.equal(presentation.sections[0].label, 'Base');
   assert.equal(Object.hasOwn(presentation.sections[0], 'semanticEvidence'), false);
 });
+
+test('completed repeated components retain checked later attachment contacts and full inventory',()=>{
+  const {plan,guide}=fixture([[red(0,0)],[red(5,0)],[{...red(0,0,1),w:6,color:'blue'}]]);
+  const [a,b,top]=plan.bricks.map(b=>b.id);
+  plan.graph.edges=[{a,b:top,studs:1},{a:b,b:top,studs:1}];
+  const join={id:'join',moduleId:plan.modules[2].id,kind:'join',newBrickIds:[],highlightBrickIds:[top],visibleBrickIds:[a,b,top],issues:[],joinContext:{direction:'down',supportGroups:[{brickIds:[a],contacts:[{supportBrickId:a,bandBrickId:top,studs:1}]},{brickIds:[b],contacts:[{supportBrickId:b,bandBrickId:top,studs:1}]}]}};
+  plan.steps.push(join);guide.sections[2].stepIds.push(join.id);guide.sections[2].groups[0].stepIds.push(join.id);
+  const result=deriveGuidePresentation({plan,guide});
+  assert.equal(result.sections[0].repeatCount,2);
+  assert.equal(result.sections[0].totalInventory[0].count,2);
+  assert.equal(result.sections.at(-1).stepIds.at(-1),'join');
+  join.issues=[{code:'blocked-module-insertion',severity:'error',brickIds:[top]}];
+  assert.ok(deriveGuidePresentation({plan,guide}).sections.every(s=>s.repeatCount===1));
+  join.issues=[];join.joinContext.supportGroups[1].contacts=[];
+  assert.ok(deriveGuidePresentation({plan,guide}).sections.every(s=>s.repeatCount===1));
+});

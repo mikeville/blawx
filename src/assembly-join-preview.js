@@ -57,12 +57,15 @@ function liftCoursesFor(bricks, { studsPerVoxel, coursesPerVoxel }) {
 export function createAssemblyJoinPreview({ model, highlightIds, joinContext } = {}) {
   if (model?.kind !== 'bricks' || !Array.isArray(model.bricks)
     || !(highlightIds instanceof Set) || highlightIds.size < 2
-    || joinContext?.direction !== 'down'
+    || !['down','up'].includes(joinContext?.direction)
     || !Array.isArray(joinContext.supportGroups)
     || joinContext.supportGroups.length < MIN_SUPPORT_GROUPS
     || joinContext.supportGroups.length > MAX_SUPPORT_GROUPS
     || joinContext.requiresAlignment !== (joinContext.supportGroups.length > 1)) return inactive(model);
 
+  const upwards = joinContext.direction === 'up';
+  if (upwards && joinContext.supportGroups.length !== 1) return inactive(model);
+  const sign = upwards ? -1 : 1;
   const bricksById = new Map();
   for (const brick of model.bricks) {
     if (typeof brick?.id !== 'string' || bricksById.has(brick.id)) return inactive(model);
@@ -75,6 +78,8 @@ export function createAssemblyJoinPreview({ model, highlightIds, joinContext } =
   const targetStuds = [];
   const sourceArrows = [];
   const usedContacts = new Set();
+  const supportFloor = joinContext.supportFloorY ?? 0;
+  if (!Number.isSafeInteger(supportFloor) || supportFloor < 0) return inactive(model);
   for (let groupIndex = 0; groupIndex < joinContext.supportGroups.length; groupIndex += 1) {
     const group = joinContext.supportGroups[groupIndex];
     if (!Array.isArray(group?.brickIds) || !group.brickIds.length || !Array.isArray(group.contacts) || !group.contacts.length) {
@@ -82,7 +87,9 @@ export function createAssemblyJoinPreview({ model, highlightIds, joinContext } =
     }
     const supportIds = new Set(group.brickIds);
     if ([...supportIds].some((id) => !bricksById.has(id) || highlightIds.has(id))
-      || ![...supportIds].some((id) => bricksById.get(id).y === 0)) return inactive(model);
+      || ![...supportIds].some((id) => bricksById.get(id).y === supportFloor)
+      || (upwards || supportFloor > 0) && (!internallyConnected(supportIds,bricksById)
+        || [...supportIds].some(id => bricksById.get(id).y < supportFloor))) return inactive(model);
 
     const groupStuds = [];
     for (const contact of group.contacts) {
@@ -91,7 +98,9 @@ export function createAssemblyJoinPreview({ model, highlightIds, joinContext } =
       const band = bricksById.get(contact?.bandBrickId);
       if (usedContacts.has(key) || !support || !band || !supportIds.has(support.id) || highlightIds.has(support.id)
         || !highlightIds.has(band.id) || !Number.isSafeInteger(contact.studs) || contact.studs <= 0) return inactive(model);
-      const studs = overlapStuds(support, band);
+      const studs = upwards
+        ? overlapStuds(band, support).map(stud => ({...stud,supportBrickId:support.id,bandBrickId:band.id}))
+        : overlapStuds(support, band);
       if (studs.length !== contact.studs) return inactive(model);
       usedContacts.add(key);
       groupStuds.push(...studs);
@@ -117,7 +126,7 @@ export function createAssemblyJoinPreview({ model, highlightIds, joinContext } =
       targetStud: { ...targetStud },
       x: targetStud.x + 0.5,
       z: targetStud.z + 0.5,
-      targetCourse: bricksById.get(targetStud.supportBrickId).y + 1,
+      targetCourse: bricksById.get(targetStud.supportBrickId).y + (upwards ? 0 : 1),
     });
   }
 
@@ -130,17 +139,17 @@ export function createAssemblyJoinPreview({ model, highlightIds, joinContext } =
   const upperGap = 0.28;
   const liftHeight = liftCourses / coursesPerVoxel;
   const arrows = sourceArrows.map(({ x, z, targetCourse, ...fields }) => {
-    const targetY = targetCourse / coursesPerVoxel + studTopOffset + lowerGap;
+    const targetY = targetCourse / coursesPerVoxel + (upwards ? -lowerGap : studTopOffset + lowerGap);
     return {
       ...fields,
-      start: { x: x / studsPerVoxel, y: targetY + liftHeight - upperGap - lowerGap, z: z / studsPerVoxel },
+      start: { x: x / studsPerVoxel, y: targetY + sign * (liftHeight - upperGap - lowerGap), z: z / studsPerVoxel },
       end: { x: x / studsPerVoxel, y: targetY, z: z / studsPerVoxel },
     };
   });
   const previewModel = {
     ...model,
     bricks: model.bricks.map((brick) => highlightIds.has(brick.id)
-      ? { ...brick, y: brick.y + liftCourses }
+      ? { ...brick, y: brick.y + sign * liftCourses }
       : { ...brick }),
   };
   return { active: true, model: previewModel, liftCourses, arrows, targetStuds };
