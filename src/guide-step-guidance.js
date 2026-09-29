@@ -258,21 +258,99 @@ export function createStepGuidance(plan, step, numbering, repetition = null) {
   }else if(previous?.workingOrientation?.kind==='inverted'){
     instruction=`Turn the completed section upright. ${instruction}`.trim();
   }
-  return {instruction, warning, map, mapLabel};
+  const displayInstruction = conciseStepInstruction(plan, step, numbering, repetition, instruction);
+  const cue = inverted || previous?.workingOrientation?.kind === 'inverted' ? 'turn'
+    : step.insertionDirection === 'up' ? 'underneath'
+    : displayInstruction.includes('flat table') ? 'table' : 'build';
+  return {instruction, displayInstruction, cue, warning, map, mapLabel};
+}
+
+// The reader needs handling changes, not narration of every visible layer.
+// Retain detailed guidance as data for callers; the reader shows handling only.
+function conciseStepInstruction(plan, step, numbering, repetition, detailed) {
+  const module = plan.modules?.find(m => m.id === step.moduleId);
+  const scope = nestedRecipeScopes(step).findLast(item => item.separate);
+  const steps = plan.steps.filter(s => scope
+    ? nestedRecipeScopes(s).some(item => item.id === scope.id)
+    : s.moduleId === step.moduleId);
+  const first = steps.find(s => s.kind === 'build');
+  const join = steps.find(s => s.kind === 'join' && (scope ? s.nestedRecipe?.id === scope.id : !s.nestedRecipe));
+  const joinNumber = join && numbering.byStepId.get(join.id);
+  const previous = plan.steps[plan.steps.indexOf(step) - 1];
+  const inverted = step.workingOrientation?.kind === 'inverted';
+  const startingInverted = inverted && (previous?.workingOrientation?.kind !== 'inverted'
+    || previous.nestedRecipe?.id !== step.nestedRecipe?.id);
+  const turnUpright = !inverted && previous?.workingOrientation?.kind === 'inverted';
+  const notes = [];
+  if (turnUpright) notes.push('Turn the completed section upright.');
+  if (startingInverted) notes.push('Build upside down on a flat table, studs facing down.');
+
+  if (module?.mirroredAssembly && first?.id === step.id) return detailed;
+  if (step.insertionDirection === 'up' && !inverted) {
+    const separate = scope || module?.buildContext?.kind === 'work-surface'
+      || plan.moduleRecipes?.[module?.id]?.kind === 'foundation';
+    notes.push(separate ? 'Lift and support the connected section.' : 'Support the model.');
+    notes.push(step.attachmentTask?.kind === 'individual-pieces'
+      ? 'Attach underneath, one piece at a time, studs facing up.'
+      : 'Attach underneath, studs facing up.');
+    return notes.join(' ');
+  }
+  if (step.kind === 'join') return notes.join(' ');
+
+  if (first?.id === step.id) {
+    const family = module?.sharedHandledRecipe && plan.modules.filter(m =>
+      m.sharedHandledRecipe?.familyId === module.sharedHandledRecipe.familyId);
+    const copies = repetition?.copies ?? family?.length ?? 1;
+    const isSeparate = scope || module?.buildContext?.kind === 'work-surface' || family;
+    if (copies > 1) notes.push(`Build ${copies} copies${startingInverted ? '.' : ' on a flat table.'}`);
+    else if (isSeparate && !startingInverted) notes.push('Build separately on a flat table. Keep flat until connected.');
+    else if (!startingInverted && (step.groundLayout || step.placementTask?.kind === 'ground-layout'
+      || plan.moduleRecipes?.[module?.id]?.kind === 'foundation')) notes.push('Build on a flat table. Keep flat until connected.');
+
+    const attachmentIds = repetition?.attachmentStepIds ?? (family ? plan.steps.filter(s =>
+      family.some(m => m.id === s.moduleId) && s.kind === 'join').map(s => s.id) : []);
+    const numbers = [...new Set(attachmentIds.map(id => numbering.byStepId.get(id)))];
+    if (numbers.length && numbers.every(Number.isInteger)) notes.push(`Attach in steps ${numbers.join(', ')}.`);
+    else if (joinNumber) notes.push(`Attach in step ${joinNumber}.`);
+
+    // Grounded repeated supports may receive a later platform rather than
+    // owning a join. Keep their table-handling instruction at the first step.
+    if (!isSeparate && !notes.length) {
+      const ids = new Set(module?.brickIds ?? []);
+      const receiver = guideComponents(plan).find(c => c.moduleIds.includes(step.moduleId))?.attachment
+        ?? plan.steps.find(s => s.kind === 'join' && s.joinContext?.supportGroups?.some(g =>
+          g.brickIds?.some(id => ids.has(id))));
+      const number = receiver && numbering.byStepId.get(receiver.id);
+      if (number) notes.push(`Build on a flat table. Keep flat until step ${number}.`);
+    }
+    const completion = step.tableRecipe && numbering.byStepId.get(step.tableRecipe.completionStepId);
+    if (completion && !startingInverted) notes.push(`Keep flat through step ${completion}.`);
+  }
+  const byId = new Map((plan.bricks ?? []).map(b => [b.id, b]));
+  if (step.workingFeature || new Set((step.newBrickIds ?? []).map(id => byId.get(id)?.y).filter(Number.isFinite)).size > 1) {
+    notes.push('Build from the bottom up.');
+  }
+  return notes.join(' ');
 }
 
 export function guidanceMarkup(guidance) {
-  if (!guidance?.instruction && !guidance?.map) return '';
-  let map = '';
-  if (guidance.map) {
-    const {width,depth,bricks,contacts} = guidance.map;
-    const rects = bricks.map(b => `<rect x="${b.x}" y="${b.z}" width="${b.w}" height="${b.d}" fill="${b.added ? '#f5cfdb' : '#dededb'}" stroke="#444" stroke-width=".08"/>`).join('');
-    const grid = [];
-    for(let x=0;x<=width;x++) grid.push(`M${x},0V${depth}`);
-    for(let z=0;z<=depth;z++) grid.push(`M0,${z}H${width}`);
-    const dots = contacts.map(c => `<circle cx="${c.x+.5}" cy="${c.z+.5}" r=".3" fill="#a02352"/>`).join('');
-    const label = `${guidance.mapLabel}, top view. ${width} by ${depth} studs. One grid square is one stud.${contacts.length ? ' Dots mark connection studs.' : ' Pink marks new pieces.'}`;
-    map = `<details class="manual-placement-map"><summary>Placement map · ${width} × ${depth} studs</summary><svg role="img" aria-label="${escapeMarkup(label)}" viewBox="-.5 -.5 ${width+1} ${depth+1}">${rects}<path d="${grid.join('')}" fill="none" stroke="#888" stroke-width=".025"/>${dots}</svg><p>${escapeMarkup(label)}</p></details>`;
-  }
-  return `<div class="manual-guidance">${guidance.instruction ? `<p>${escapeMarkup(guidance.instruction)}</p>` : ''}${map}</div>`;
+  const instruction = guidance?.displayInstruction ?? guidance?.instruction;
+  // The interactive assembly diagram carries placement. Keep measured map data
+  // separate from reader presentation rather than adding a duplicate disclosure.
+  if (!instruction) return '';
+  return `<div class="manual-guidance">${handlingCueMarkup(instruction, guidance.cue)}</div>`;
+}
+
+function handlingCueMarkup(instruction, kind) {
+  // Symbols supplement the words; they never carry a handling instruction alone.
+  const symbols = {
+    table: '<path d="M3 16h18M5 16v5M19 16v5M7 16V8h10v8M8 8V5h3v3M13 8V5h3v3"/>',
+    turn: '<path d="M4 9a9 9 0 0 1 16 0M20 4v5h-5M6 15h12v6H6zM8 15v-3h3v3M13 15v-3h3v3"/>',
+    underneath: '<path d="M4 4h16v6H4zM12 22V14M8 18l4-4 4 4"/>',
+    build: '<path d="M4 21h16v-7H4zM7 14V7h10v7M10 7V4h4v3"/>',
+  };
+  const boundary = instruction.indexOf('. ');
+  const lead = boundary < 0 ? instruction : instruction.slice(0, boundary + 1);
+  const detail = boundary < 0 ? '' : instruction.slice(boundary + 2);
+  return `<div class="manual-handling-cue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${symbols[kind] ?? symbols.build}</svg><div><p class="manual-cue-action">${escapeMarkup(lead)}</p>${detail ? `<p class="manual-cue-detail">${escapeMarkup(detail)}</p>` : ''}</div></div>`;
 }

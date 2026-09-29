@@ -151,9 +151,7 @@ export function mountAssemblyBooklet(host, {
         const number = String(spec.number);
         const downwardJoin = spec.joinContext?.direction === 'down';
         const inverted=spec.workingOrientation?.kind==='inverted';
-        const direction = inverted ? '<span class="manual-direction">Upside down</span>' : downwardJoin ? '<span class="manual-direction">Attach</span>'
-          : spec.insertionDirection === 'up' ? '<span class="manual-direction">From below</span>'
-          : spec.viewTurned ? '<span class="manual-direction">View turned</span>' : '';
+        const direction = downwardJoin ? '<span class="manual-direction">Attach</span>' : '';
         const supportCount = spec.joinContext?.supportGroups?.length ?? 0;
         const action = inverted ? ' · build upside down' : downwardJoin ? ` · lower the assembled section onto ${supportCount} ${supportCount === 1 ? 'support' : 'supports'}`
           : spec.insertionDirection === 'up' ? ' · attach from below' : '';
