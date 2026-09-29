@@ -5,10 +5,11 @@ import { createAssemblyJoinPreview } from './assembly-join-preview.js';
 import { BRICK_OUTLINE_WIDTH, BrickOutlineBatch } from './brick-outlines.js';
 import {
   DEFAULT_BLACK_PIECE_OUTLINE,
-  SOURCE_NEAR_BLACK_LUMINANCE_THRESHOLD,
+  getBrickFaceColor,
   groupBrickOutlinesBySourceColor,
 } from './black-piece-ink.js';
 import { createStudRenderSettings } from './stud-appearance.js';
+import {brickUndersideParts, BRICK_UNDERSIDE_MM} from './brick-undersides.js';
 import {chooseUpwardInsertionAzimuth} from './upward-insertion-azimuth.js';
 import {chooseUndersideInstructionView} from './instruction-visibility.js';
 export {chooseUpwardInsertionAzimuth} from './upward-insertion-azimuth.js';
@@ -19,7 +20,7 @@ const STANDARD_ELEVATION = Math.atan(1 / Math.sqrt(2));
 const UNDERSIDE_ELEVATION = -Math.PI / 7;
 const EDGE_SEGMENTS = [[0, 1], [1, 3], [3, 2], [2, 0], [4, 5], [5, 7], [7, 6], [6, 4], [0, 4], [1, 5], [2, 6], [3, 7]];
 const EDGE_POINTS = [[-1,-1,-1],[1,-1,-1],[-1,1,-1],[1,1,-1],[-1,-1,1],[1,-1,1],[-1,1,1],[1,1,1]];
-const DARK_FACE_LUMINANCE_FLOOR = 0.03;
+export {getBrickFaceColor} from './black-piece-ink.js';
 
 const ACCEPTED_INSTRUCTION_HIGHLIGHT_STYLE = 'pastel-color';
 const ACCEPTED_INSTRUCTION_APPEARANCE = Object.freeze({
@@ -48,14 +49,6 @@ export function getInstructionContextColor(source) {
   tone.lerp(neutral, 1 - appearance.contextSaturation);
   tone.lerp(new THREE.Color(appearance.contextPaperColor), appearance.contextPaperBlend);
   return tone;
-}
-
-export function getBrickFaceColor(source) {
-  const tone = source instanceof THREE.Color ? source.clone() : new THREE.Color(source);
-  const luminance = tone.r * 0.2126 + tone.g * 0.7152 + tone.b * 0.0722;
-  if (luminance >= SOURCE_NEAR_BLACK_LUMINANCE_THRESHOLD) return tone;
-  if (luminance > 0) return tone.multiplyScalar(DARK_FACE_LUMINANCE_FLOOR / luminance);
-  return tone.setRGB(DARK_FACE_LUMINANCE_FLOOR, DARK_FACE_LUMINANCE_FLOOR, DARK_FACE_LUMINANCE_FLOOR);
 }
 
 export function getInstructionActiveMaterialAppearance(source, liftDarkFaces = true) {
@@ -243,11 +236,25 @@ export class ProductViewer {
     this.resources.push(geometry, studGeometry);
     const matrix = new THREE.Matrix4();
     const materials = new Map();
-    for (const [items, shape, scaled] of [[data.bodies, geometry, true], [data.studs, studGeometry, false]]) {
+    const underside = isBricks && (inverted || fromBelow) ? brickUndersideParts(data.bodies, voxelMm) : null;
+    const renderBatches = [[underside?.walls ?? data.bodies, geometry, true], [data.studs, studGeometry, false]];
+    if (underside) {
+      const ring=new THREE.Shape();
+      ring.absarc(0,0,BRICK_UNDERSIDE_MM.tubeOuterRadius/voxelMm,0,Math.PI*2,false);
+      const hole=new THREE.Path();hole.absarc(0,0,BRICK_UNDERSIDE_MM.tubeInnerRadius/voxelMm,0,Math.PI*2,true);ring.holes.push(hole);
+      const tubeGeometry=new THREE.ExtrudeGeometry(ring,{depth:1,bevelEnabled:false,curveSegments:16});
+      tubeGeometry.rotateX(Math.PI/2);tubeGeometry.translate(0,.5,0);
+      const pinGeometry=new THREE.CylinderGeometry(BRICK_UNDERSIDE_MM.pinRadius/voxelMm,BRICK_UNDERSIDE_MM.pinRadius/voxelMm,1,32);
+      const recessGeometry=new THREE.PlaneGeometry(1,1);recessGeometry.rotateX(Math.PI/2);
+      this.resources.push(tubeGeometry,pinGeometry,recessGeometry);
+      renderBatches.push([underside.tubes,tubeGeometry,true],[underside.pins,pinGeometry,true],
+        [underside.recesses,recessGeometry,true,true]);
+    }
+    for (const [items, shape, scaled, recessed] of renderBatches) {
       const groups = new Map();
       for (const item of items) {
         const context = Boolean(highlightIds && !highlightIds.has(item.id));
-        const key = `${item.color}:${context ? 'context' : 'active'}`;
+        const key = `${item.color}:${context ? 'context' : 'active'}:${recessed ? 'recess' : 'surface'}`;
         if (!groups.has(key)) groups.set(key, { context, color: item.color, entries: [] });
         groups.get(key).entries.push(item);
       }
@@ -286,6 +293,11 @@ export class ProductViewer {
               polygonOffsetUnits: 1,
             });
           }
+          if (recessed) {
+            // Subtle cavity shading makes depth legible in the flat diagram lighting.
+            const shade=context ? 0.94 : 0.78;
+            material.color.multiplyScalar(shade);material.emissive.multiplyScalar(shade);
+          }
           materials.set(key, material);
           this.resources.push(material);
         }
@@ -297,6 +309,20 @@ export class ProductViewer {
         });
         this.renderObjects.push(mesh);
         this.group.add(mesh);
+      }
+    }
+
+    if (underside) {
+      for (const outlineGroup of groupBrickOutlinesBySourceColor({bodies:data.bodies,studs:[]},blackPieceOutline)) {
+        for (const context of [false,true]) {
+          const ids=new Set(outlineGroup.bodies.filter(b=>Boolean(highlightIds&&!highlightIds.has(b.id))===context).map(b=>b.id));
+          const positions=underside.outlines.filter(o=>ids.has(o.id)).flatMap(o=>o.positions);
+          if(!positions.length)continue;
+          const edges=new THREE.BufferGeometry();edges.setAttribute('position',new THREE.Float32BufferAttribute(positions,3));
+          const ink=new THREE.LineBasicMaterial({color:context?appearance.contextEdge:outlineGroup.color});
+          const lines=new THREE.LineSegments(edges,ink);lines.renderOrder=3;
+          this.resources.push(edges,ink);this.renderObjects.push(lines);this.group.add(lines);
+        }
       }
     }
 

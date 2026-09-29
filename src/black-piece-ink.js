@@ -10,6 +10,17 @@ export const BLACK_PIECE_OUTLINE_COLORS = Object.freeze({
 export const DEFAULT_BLACK_PIECE_OUTLINE = 'soft';
 export const SOURCE_NEAR_BLACK_LUMINANCE_THRESHOLD = 0.02;
 
+export function getBrickFaceColor(source) {
+  const tone = source instanceof THREE.Color ? source.clone() : new THREE.Color(source);
+  const luminance = getSourceColorLuminance(tone);
+  if (luminance >= SOURCE_NEAR_BLACK_LUMINANCE_THRESHOLD) return tone;
+  return luminance > 0 ? tone.multiplyScalar(0.03 / luminance) : tone.setRGB(0.03, 0.03, 0.03);
+}
+
+export function getBrickOutlineColor(color) {
+  return isNearBlackSourceColor(color) ? BLACK_PIECE_OUTLINE_COLORS[DEFAULT_BLACK_PIECE_OUTLINE] : DARK_BRICK_OUTLINE_COLOR;
+}
+
 export function getSourceColorLuminance(source) {
   const tone = source instanceof THREE.Color ? source : new THREE.Color(source);
   return tone.r * 0.2126 + tone.g * 0.7152 + tone.b * 0.0722;
